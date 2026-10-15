@@ -86,7 +86,7 @@ test('all seven requested archive collections publish nonempty source text and d
   const codex = archive.filter((entry) => entry.category === 'codex');
   assert.deepEqual(
     codex.map((entry) => entry.title),
-    ['광추', '적대적 생물', '에이언즈', '캐릭터', '고유 명사', '유물', '파벌'],
+    ['에이언즈', '고유 명사', '파벌', '광추', '적대적 생물', '캐릭터', '유물'],
   );
   for (const entry of codex) {
     assert.ok(entry.chapters.length > 0);
@@ -108,4 +108,50 @@ test('all seven requested archive collections publish nonempty source text and d
       payload.rows.length,
     );
   }
+});
+
+test('train archive uses NounAtlas text and SortID order, with story updates kept as variants', () => {
+  const [aeons, terms, factions] = archive.filter((entry) => entry.category === 'codex');
+  assert.deepEqual(
+    [aeons.chapters.length, terms.chapters.length, factions.chapters.length],
+    [16, 40, 35],
+  );
+  assert.deepEqual(
+    aeons.chapters.slice(0, 5).map((chapter) => chapter.title),
+    ['에이언즈', '「개척」, 아키비리', '「파멸」, 나누크', '「수렵」, 란', '「지식」, 누스'],
+  );
+  assert.deepEqual(
+    terms.chapters.slice(0, 4).map((chapter) => chapter.title),
+    ['명사', '헤르타(지명)', '야릴로-Ⅵ(지명)', '선주 「나부」(지명)'],
+  );
+  assert.deepEqual(
+    factions.chapters.slice(0, 7).map((chapter) => chapter.title),
+    [
+      '파벌',
+      '은하열차 - 개척',
+      '스텔라론 헌터 - ???',
+      '무명객 - 개척',
+      '선주 연맹 - 수렵',
+      '갤럭시 레인저 - 수렵',
+      '자멸자 - 공허',
+    ],
+  );
+  for (const entry of [aeons, terms, factions]) {
+    assert.equal(entry.chapters[0].intro, true);
+    for (const chapter of entry.chapters) {
+      const payload = JSON.parse(fs.readFileSync(`public/${chapter.content!.file}`, 'utf8'));
+      assert.equal(payload.referenceCommit, '724b139d8c9c32d12552eb95745a4fee72bfe48b');
+      assert.ok(payload.rows.every((row: DialogueRow) => row.source?.startsWith('NounAtlas:')));
+      assert.equal(payload.rows[0].variant, '기본 기록');
+    }
+  }
+  const intro = JSON.parse(fs.readFileSync(`public/${aeons.chapters[0].content!.file}`, 'utf8'));
+  assert.match(intro.rows[0].text, /^깊은 하늘과 별바다를 거니는/);
+  assert.ok(!intro.rows[0].text.includes('지식학회'));
+  const nanook = aeons.chapters.find((chapter) => chapter.id === 'noun-atlas-102')!;
+  const updated = JSON.parse(fs.readFileSync(`public/${nanook.content!.file}`, 'utf8'));
+  assert.equal(updated.rows.length, 2);
+  assert.notEqual(updated.rows[0].text, updated.rows[1].text);
+  const qlipoth = aeons.chapters.find((chapter) => chapter.id === 'noun-atlas-107')!;
+  assert.ok(qlipoth.aliases?.includes('aeon-1'));
 });

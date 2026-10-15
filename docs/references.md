@@ -74,6 +74,12 @@
 
 스타레일에 적용할 때는 원문 순서를 유지할 식별자와 장·장면 경계를 데이터 계약에 맞춰 정한다. 전체 JSON을 브라우저에 올리는 방식이 실제 스타레일 데이터 규모에 적합한지는 별도 측정한다. 붕괴 3rd 대사 데이터와 엑셀 파일은 참고 원본에만 보관하고 hsrArchive의 사이트 데이터로 넣지 않는다.
 
+## 열차 자료실 원문 입력
+
+- 에이언즈·고유 명사·파벌: `DimbreathBot/TurnBasedGameData`의 고정 커밋 `724b139d8c9c32d12552eb95745a4fee72bfe48b`에 있는 `ExcelOutput/NounAtlas.json`, `ExcelOutput/NounAtlasChangeInfo.json`, `TextMap/TextMapKR_0.json`, `TextMap/TextMapKR_1.json`.
+- [자료실 항목 표](https://github.com/DimbreathBot/TurnBasedGameData/blob/724b139d8c9c32d12552eb95745a4fee72bfe48b/ExcelOutput/NounAtlas.json)의 제목·본문 해시와 정렬 순서를 대조하고, 한국어 입력은 Git blob 해시로 검증한다. 원본 전체 한국어 맵과 설정 표는 `.cache/train-databank`에만 보관한다.
+- 입력을 직접 비교해 100개 원문과 91개 메뉴가 모두 연결됨을 확인했다. 사이트 화면의 기준은 LimBooks로 유지하며, 자료실 전용 원문을 시뮬레이션 우주 연구 기록과 구분한다. 이 작업은 게임 바이너리 추출기를 새로 실행한 것이 아니다.
+
 ## paimooon.github.io — 텍스트 추출 전용
 
 - 원본: https://github.com/paimooon/paimooon.github.io

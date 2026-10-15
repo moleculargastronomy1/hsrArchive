@@ -1,12 +1,1610 @@
 [
   {
+    "id": "codex-aeons",
+    "title": "에이언즈",
+    "description": "깊은 하늘과 별바다를 거니는 이 신비한 존재에 대해서는 알려진 바가 거의 없다.",
+    "subtitle": "아카이브",
+    "category": "codex",
+    "world": "universe",
+    "order": 12,
+    "language": "ko-KR",
+    "tags": [
+      "에이언즈",
+      "아카이브"
+    ],
+    "source": {
+      "kind": "extracted",
+      "version": "열차 자료실 NounAtlas 724b139",
+      "sourceIds": [
+        "noun-atlas-100",
+        "noun-atlas-101",
+        "noun-atlas-102",
+        "noun-atlas-103",
+        "noun-atlas-104",
+        "noun-atlas-105",
+        "noun-atlas-106",
+        "noun-atlas-107",
+        "noun-atlas-108",
+        "noun-atlas-109",
+        "noun-atlas-110",
+        "noun-atlas-115",
+        "noun-atlas-111",
+        "noun-atlas-112",
+        "noun-atlas-113",
+        "noun-atlas-114"
+      ]
+    },
+    "chapters": [
+      {
+        "id": "noun-atlas-100",
+        "title": "에이언즈",
+        "intro": true,
+        "aliases": [],
+        "blocks": [],
+        "content": {
+          "file": "content/codex-aeons--noun-atlas-100.json",
+          "rows": 1,
+          "missing": 0,
+          "sourceIds": [
+            "noun-atlas-100"
+          ]
+        }
+      },
+      {
+        "id": "noun-atlas-101",
+        "title": "「개척」, 아키비리",
+        "intro": false,
+        "aliases": [
+          "lore-10042"
+        ],
+        "blocks": [],
+        "content": {
+          "file": "content/codex-aeons--noun-atlas-101.json",
+          "rows": 1,
+          "missing": 0,
+          "sourceIds": [
+            "noun-atlas-101"
+          ]
+        }
+      },
+      {
+        "id": "noun-atlas-102",
+        "title": "「파멸」, 나누크",
+        "intro": false,
+        "aliases": [
+          "aeon-6"
+        ],
+        "blocks": [],
+        "content": {
+          "file": "content/codex-aeons--noun-atlas-102.json",
+          "rows": 2,
+          "missing": 0,
+          "sourceIds": [
+            "noun-atlas-102"
+          ]
+        }
+      },
+      {
+        "id": "noun-atlas-103",
+        "title": "「수렵」, 란",
+        "intro": false,
+        "aliases": [
+          "aeon-5"
+        ],
+        "blocks": [],
+        "content": {
+          "file": "content/codex-aeons--noun-atlas-103.json",
+          "rows": 1,
+          "missing": 0,
+          "sourceIds": [
+            "noun-atlas-103"
+          ]
+        }
+      },
+      {
+        "id": "noun-atlas-104",
+        "title": "「지식」, 누스",
+        "intro": false,
+        "aliases": [
+          "aeon-9"
+        ],
+        "blocks": [],
+        "content": {
+          "file": "content/codex-aeons--noun-atlas-104.json",
+          "rows": 2,
+          "missing": 0,
+          "sourceIds": [
+            "noun-atlas-104"
+          ]
+        }
+      },
+      {
+        "id": "noun-atlas-105",
+        "title": "「화합」, 시페",
+        "intro": false,
+        "aliases": [
+          "aeon-10"
+        ],
+        "blocks": [],
+        "content": {
+          "file": "content/codex-aeons--noun-atlas-105.json",
+          "rows": 1,
+          "missing": 0,
+          "sourceIds": [
+            "noun-atlas-105"
+          ]
+        }
+      },
+      {
+        "id": "noun-atlas-106",
+        "title": "「공허」, Ⅸ",
+        "intro": false,
+        "aliases": [
+          "aeon-3"
+        ],
+        "blocks": [],
+        "content": {
+          "file": "content/codex-aeons--noun-atlas-106.json",
+          "rows": 1,
+          "missing": 0,
+          "sourceIds": [
+            "noun-atlas-106"
+          ]
+        }
+      },
+      {
+        "id": "noun-atlas-107",
+        "title": "「보존」, 클리포트",
+        "intro": false,
+        "aliases": [
+          "aeon-1"
+        ],
+        "blocks": [],
+        "content": {
+          "file": "content/codex-aeons--noun-atlas-107.json",
+          "rows": 1,
+          "missing": 0,
+          "sourceIds": [
+            "noun-atlas-107"
+          ]
+        }
+      },
+      {
+        "id": "noun-atlas-108",
+        "title": "「풍요」, 약사",
+        "intro": false,
+        "aliases": [
+          "aeon-4"
+        ],
+        "blocks": [],
+        "content": {
+          "file": "content/codex-aeons--noun-atlas-108.json",
+          "rows": 1,
+          "missing": 0,
+          "sourceIds": [
+            "noun-atlas-108"
+          ]
+        }
+      },
+      {
+        "id": "noun-atlas-109",
+        "title": "「탐식」, 우로보로스",
+        "intro": false,
+        "aliases": [
+          "aeon-12"
+        ],
+        "blocks": [],
+        "content": {
+          "file": "content/codex-aeons--noun-atlas-109.json",
+          "rows": 1,
+          "missing": 0,
+          "sourceIds": [
+            "noun-atlas-109"
+          ]
+        }
+      },
+      {
+        "id": "noun-atlas-110",
+        "title": "「환락」, 아하",
+        "intro": false,
+        "aliases": [
+          "aeon-7"
+        ],
+        "blocks": [],
+        "content": {
+          "file": "content/codex-aeons--noun-atlas-110.json",
+          "rows": 1,
+          "missing": 0,
+          "sourceIds": [
+            "noun-atlas-110"
+          ]
+        }
+      },
+      {
+        "id": "noun-atlas-115",
+        "title": "「기억」, 후리",
+        "intro": false,
+        "aliases": [
+          "aeon-2"
+        ],
+        "blocks": [],
+        "content": {
+          "file": "content/codex-aeons--noun-atlas-115.json",
+          "rows": 2,
+          "missing": 0,
+          "sourceIds": [
+            "noun-atlas-115"
+          ]
+        }
+      },
+      {
+        "id": "noun-atlas-111",
+        "title": "「미(美)」, 이드릴라",
+        "intro": false,
+        "aliases": [
+          "lore-10087"
+        ],
+        "blocks": [],
+        "content": {
+          "file": "content/codex-aeons--noun-atlas-111.json",
+          "rows": 1,
+          "missing": 0,
+          "sourceIds": [
+            "noun-atlas-111"
+          ]
+        }
+      },
+      {
+        "id": "noun-atlas-112",
+        "title": "「번식」, 타이츠론스",
+        "intro": false,
+        "aliases": [
+          "aeon-8"
+        ],
+        "blocks": [],
+        "content": {
+          "file": "content/codex-aeons--noun-atlas-112.json",
+          "rows": 1,
+          "missing": 0,
+          "sourceIds": [
+            "noun-atlas-112"
+          ]
+        }
+      },
+      {
+        "id": "noun-atlas-113",
+        "title": "「신비」, 미토스",
+        "intro": false,
+        "aliases": [
+          "aeon-14"
+        ],
+        "blocks": [],
+        "content": {
+          "file": "content/codex-aeons--noun-atlas-113.json",
+          "rows": 1,
+          "missing": 0,
+          "sourceIds": [
+            "noun-atlas-113"
+          ]
+        }
+      },
+      {
+        "id": "noun-atlas-114",
+        "title": "「균형」, 후",
+        "intro": false,
+        "aliases": [
+          "aeon-13"
+        ],
+        "blocks": [],
+        "content": {
+          "file": "content/codex-aeons--noun-atlas-114.json",
+          "rows": 1,
+          "missing": 0,
+          "sourceIds": [
+            "noun-atlas-114"
+          ]
+        }
+      }
+    ]
+  },
+  {
+    "id": "codex-terms",
+    "title": "고유 명사",
+    "description": "태초 혼돈의 균열에서 새싹이 돋아났고 억만 년 단위의 시간을 관개하며 새싹은 거대한 나무로 자라났다.",
+    "subtitle": "아카이브",
+    "category": "codex",
+    "world": "universe",
+    "order": 13,
+    "language": "ko-KR",
+    "tags": [
+      "고유 명사",
+      "아카이브"
+    ],
+    "source": {
+      "kind": "extracted",
+      "version": "열차 자료실 NounAtlas 724b139",
+      "sourceIds": [
+        "noun-atlas-0",
+        "noun-atlas-1",
+        "noun-atlas-2",
+        "noun-atlas-3",
+        "noun-atlas-26",
+        "noun-atlas-27",
+        "noun-atlas-23",
+        "noun-atlas-4",
+        "noun-atlas-5",
+        "noun-atlas-6",
+        "noun-atlas-7",
+        "noun-atlas-8",
+        "noun-atlas-9",
+        "noun-atlas-10",
+        "noun-atlas-11",
+        "noun-atlas-12",
+        "noun-atlas-13",
+        "noun-atlas-14",
+        "noun-atlas-15",
+        "noun-atlas-16",
+        "noun-atlas-17",
+        "noun-atlas-18",
+        "noun-atlas-19",
+        "noun-atlas-20",
+        "noun-atlas-21",
+        "noun-atlas-22",
+        "noun-atlas-25",
+        "noun-atlas-28",
+        "noun-atlas-29",
+        "noun-atlas-30",
+        "noun-atlas-31",
+        "noun-atlas-32",
+        "noun-atlas-33",
+        "noun-atlas-34",
+        "noun-atlas-36",
+        "noun-atlas-38",
+        "noun-atlas-39",
+        "noun-atlas-40",
+        "noun-atlas-41",
+        "noun-atlas-42"
+      ]
+    },
+    "chapters": [
+      {
+        "id": "noun-atlas-0",
+        "title": "명사",
+        "intro": true,
+        "aliases": [
+          "reference-terms-intro"
+        ],
+        "blocks": [],
+        "content": {
+          "file": "content/codex-terms--noun-atlas-0.json",
+          "rows": 1,
+          "missing": 0,
+          "sourceIds": [
+            "noun-atlas-0"
+          ]
+        }
+      },
+      {
+        "id": "noun-atlas-1",
+        "title": "헤르타(지명)",
+        "intro": false,
+        "aliases": [],
+        "blocks": [],
+        "content": {
+          "file": "content/codex-terms--noun-atlas-1.json",
+          "rows": 1,
+          "missing": 0,
+          "sourceIds": [
+            "noun-atlas-1"
+          ]
+        }
+      },
+      {
+        "id": "noun-atlas-2",
+        "title": "야릴로-Ⅵ(지명)",
+        "intro": false,
+        "aliases": [],
+        "blocks": [],
+        "content": {
+          "file": "content/codex-terms--noun-atlas-2.json",
+          "rows": 1,
+          "missing": 0,
+          "sourceIds": [
+            "noun-atlas-2"
+          ]
+        }
+      },
+      {
+        "id": "noun-atlas-3",
+        "title": "선주 「나부」(지명)",
+        "intro": false,
+        "aliases": [],
+        "blocks": [],
+        "content": {
+          "file": "content/codex-terms--noun-atlas-3.json",
+          "rows": 1,
+          "missing": 0,
+          "sourceIds": [
+            "noun-atlas-3"
+          ]
+        }
+      },
+      {
+        "id": "noun-atlas-26",
+        "title": "선주 「요청」(지명)",
+        "intro": false,
+        "aliases": [],
+        "blocks": [],
+        "content": {
+          "file": "content/codex-terms--noun-atlas-26.json",
+          "rows": 1,
+          "missing": 0,
+          "sourceIds": [
+            "noun-atlas-26"
+          ]
+        }
+      },
+      {
+        "id": "noun-atlas-27",
+        "title": "선주 「주명」(지명)",
+        "intro": false,
+        "aliases": [],
+        "blocks": [],
+        "content": {
+          "file": "content/codex-terms--noun-atlas-27.json",
+          "rows": 1,
+          "missing": 0,
+          "sourceIds": [
+            "noun-atlas-27"
+          ]
+        }
+      },
+      {
+        "id": "noun-atlas-23",
+        "title": "페나코니(지명)",
+        "intro": false,
+        "aliases": [],
+        "blocks": [],
+        "content": {
+          "file": "content/codex-terms--noun-atlas-23.json",
+          "rows": 2,
+          "missing": 0,
+          "sourceIds": [
+            "noun-atlas-23"
+          ]
+        }
+      },
+      {
+        "id": "noun-atlas-4",
+        "title": "루이스•플레밍(인물)",
+        "intro": false,
+        "aliases": [],
+        "blocks": [],
+        "content": {
+          "file": "content/codex-terms--noun-atlas-4.json",
+          "rows": 1,
+          "missing": 0,
+          "sourceIds": [
+            "noun-atlas-4"
+          ]
+        }
+      },
+      {
+        "id": "noun-atlas-5",
+        "title": "헤르타(인물)",
+        "intro": false,
+        "aliases": [],
+        "blocks": [],
+        "content": {
+          "file": "content/codex-terms--noun-atlas-5.json",
+          "rows": 1,
+          "missing": 0,
+          "sourceIds": [
+            "noun-atlas-5"
+          ]
+        }
+      },
+      {
+        "id": "noun-atlas-6",
+        "title": "공감각 비콘(과학 기술)",
+        "intro": false,
+        "aliases": [],
+        "blocks": [],
+        "content": {
+          "file": "content/codex-terms--noun-atlas-6.json",
+          "rows": 1,
+          "missing": 0,
+          "sourceIds": [
+            "noun-atlas-6"
+          ]
+        }
+      },
+      {
+        "id": "noun-atlas-7",
+        "title": "앰버기원(역법)",
+        "intro": false,
+        "aliases": [],
+        "blocks": [],
+        "content": {
+          "file": "content/codex-terms--noun-atlas-7.json",
+          "rows": 1,
+          "missing": 0,
+          "sourceIds": [
+            "noun-atlas-7"
+          ]
+        }
+      },
+      {
+        "id": "noun-atlas-8",
+        "title": "개척력(역법)",
+        "intro": false,
+        "aliases": [],
+        "blocks": [],
+        "content": {
+          "file": "content/codex-terms--noun-atlas-8.json",
+          "rows": 1,
+          "missing": 0,
+          "sourceIds": [
+            "noun-atlas-8"
+          ]
+        }
+      },
+      {
+        "id": "noun-atlas-9",
+        "title": "허수의 나무 (학설)",
+        "intro": false,
+        "aliases": [],
+        "blocks": [],
+        "content": {
+          "file": "content/codex-terms--noun-atlas-9.json",
+          "rows": 1,
+          "missing": 0,
+          "sourceIds": [
+            "noun-atlas-9"
+          ]
+        }
+      },
+      {
+        "id": "noun-atlas-10",
+        "title": "에이든(인물)",
+        "intro": false,
+        "aliases": [],
+        "blocks": [],
+        "content": {
+          "file": "content/codex-terms--noun-atlas-10.json",
+          "rows": 1,
+          "missing": 0,
+          "sourceIds": [
+            "noun-atlas-10"
+          ]
+        }
+      },
+      {
+        "id": "noun-atlas-11",
+        "title": "우주 여행(현상)",
+        "intro": false,
+        "aliases": [],
+        "blocks": [],
+        "content": {
+          "file": "content/codex-terms--noun-atlas-11.json",
+          "rows": 1,
+          "missing": 0,
+          "sourceIds": [
+            "noun-atlas-11"
+          ]
+        }
+      },
+      {
+        "id": "noun-atlas-12",
+        "title": "만계의 암(현상)",
+        "intro": false,
+        "aliases": [],
+        "blocks": [],
+        "content": {
+          "file": "content/codex-terms--noun-atlas-12.json",
+          "rows": 2,
+          "missing": 0,
+          "sourceIds": [
+            "noun-atlas-12"
+          ]
+        }
+      },
+      {
+        "id": "noun-atlas-13",
+        "title": "스텔라론(물체)",
+        "intro": false,
+        "aliases": [],
+        "blocks": [],
+        "content": {
+          "file": "content/codex-terms--noun-atlas-13.json",
+          "rows": 1,
+          "missing": 0,
+          "sourceIds": [
+            "noun-atlas-13"
+          ]
+        }
+      },
+      {
+        "id": "noun-atlas-14",
+        "title": "열계(현상)",
+        "intro": false,
+        "aliases": [],
+        "blocks": [],
+        "content": {
+          "file": "content/codex-terms--noun-atlas-14.json",
+          "rows": 1,
+          "missing": 0,
+          "sourceIds": [
+            "noun-atlas-14"
+          ]
+        }
+      },
+      {
+        "id": "noun-atlas-15",
+        "title": "사도(현상)",
+        "intro": false,
+        "aliases": [],
+        "blocks": [],
+        "content": {
+          "file": "content/codex-terms--noun-atlas-15.json",
+          "rows": 1,
+          "missing": 0,
+          "sourceIds": [
+            "noun-atlas-15"
+          ]
+        }
+      },
+      {
+        "id": "noun-atlas-16",
+        "title": "절멸 대군(인물)",
+        "intro": false,
+        "aliases": [],
+        "blocks": [],
+        "content": {
+          "file": "content/codex-terms--noun-atlas-16.json",
+          "rows": 1,
+          "missing": 0,
+          "sourceIds": [
+            "noun-atlas-16"
+          ]
+        }
+      },
+      {
+        "id": "noun-atlas-17",
+        "title": "「제왕」루버트(인물)",
+        "intro": false,
+        "aliases": [],
+        "blocks": [],
+        "content": {
+          "file": "content/codex-terms--noun-atlas-17.json",
+          "rows": 1,
+          "missing": 0,
+          "sourceIds": [
+            "noun-atlas-17"
+          ]
+        }
+      },
+      {
+        "id": "noun-atlas-18",
+        "title": "운명의 길을 걷는 자(현상)",
+        "intro": false,
+        "aliases": [],
+        "blocks": [],
+        "content": {
+          "file": "content/codex-terms--noun-atlas-18.json",
+          "rows": 1,
+          "missing": 0,
+          "sourceIds": [
+            "noun-atlas-18"
+          ]
+        }
+      },
+      {
+        "id": "noun-atlas-19",
+        "title": "곤충 떼 재난(현상)",
+        "intro": false,
+        "aliases": [],
+        "blocks": [],
+        "content": {
+          "file": "content/codex-terms--noun-atlas-19.json",
+          "rows": 1,
+          "missing": 0,
+          "sourceIds": [
+            "noun-atlas-19"
+          ]
+        }
+      },
+      {
+        "id": "noun-atlas-20",
+        "title": "완•매(인물)",
+        "intro": false,
+        "aliases": [],
+        "blocks": [],
+        "content": {
+          "file": "content/codex-terms--noun-atlas-20.json",
+          "rows": 1,
+          "missing": 0,
+          "sourceIds": [
+            "noun-atlas-20"
+          ]
+        }
+      },
+      {
+        "id": "noun-atlas-21",
+        "title": "폴카•카카몬드(인물)",
+        "intro": false,
+        "aliases": [],
+        "blocks": [],
+        "content": {
+          "file": "content/codex-terms--noun-atlas-21.json",
+          "rows": 1,
+          "missing": 0,
+          "sourceIds": [
+            "noun-atlas-21"
+          ]
+        }
+      },
+      {
+        "id": "noun-atlas-22",
+        "title": "조화를 이루는 현(현상)",
+        "intro": false,
+        "aliases": [],
+        "blocks": [],
+        "content": {
+          "file": "content/codex-terms--noun-atlas-22.json",
+          "rows": 1,
+          "missing": 0,
+          "sourceIds": [
+            "noun-atlas-22"
+          ]
+        }
+      },
+      {
+        "id": "noun-atlas-25",
+        "title": "존재의 지평선(현상)",
+        "intro": false,
+        "aliases": [],
+        "blocks": [],
+        "content": {
+          "file": "content/codex-terms--noun-atlas-25.json",
+          "rows": 1,
+          "missing": 0,
+          "sourceIds": [
+            "noun-atlas-25"
+          ]
+        }
+      },
+      {
+        "id": "noun-atlas-28",
+        "title": "「셉터」 시스템(과학 기술)",
+        "intro": false,
+        "aliases": [],
+        "blocks": [],
+        "content": {
+          "file": "content/codex-terms--noun-atlas-28.json",
+          "rows": 1,
+          "missing": 0,
+          "sourceIds": [
+            "noun-atlas-28"
+          ]
+        }
+      },
+      {
+        "id": "noun-atlas-29",
+        "title": "지식 특이점(현상)",
+        "intro": false,
+        "aliases": [],
+        "blocks": [],
+        "content": {
+          "file": "content/codex-terms--noun-atlas-29.json",
+          "rows": 1,
+          "missing": 0,
+          "sourceIds": [
+            "noun-atlas-29"
+          ]
+        }
+      },
+      {
+        "id": "noun-atlas-30",
+        "title": "학파 전쟁(현상)",
+        "intro": false,
+        "aliases": [],
+        "blocks": [],
+        "content": {
+          "file": "content/codex-terms--noun-atlas-30.json",
+          "rows": 1,
+          "missing": 0,
+          "sourceIds": [
+            "noun-atlas-30"
+          ]
+        }
+      },
+      {
+        "id": "noun-atlas-31",
+        "title": "앰포리어스(지명)",
+        "intro": false,
+        "aliases": [],
+        "blocks": [],
+        "content": {
+          "file": "content/codex-terms--noun-atlas-31.json",
+          "rows": 2,
+          "missing": 0,
+          "sourceIds": [
+            "noun-atlas-31"
+          ]
+        }
+      },
+      {
+        "id": "noun-atlas-32",
+        "title": "은하열차 열차 칸(과학 기술)",
+        "intro": false,
+        "aliases": [],
+        "blocks": [],
+        "content": {
+          "file": "content/codex-terms--noun-atlas-32.json",
+          "rows": 1,
+          "missing": 0,
+          "sourceIds": [
+            "noun-atlas-32"
+          ]
+        }
+      },
+      {
+        "id": "noun-atlas-33",
+        "title": "잔다르•원•쿠와바라(인물)",
+        "intro": false,
+        "aliases": [],
+        "blocks": [],
+        "content": {
+          "file": "content/codex-terms--noun-atlas-33.json",
+          "rows": 1,
+          "missing": 0,
+          "sourceIds": [
+            "noun-atlas-33"
+          ]
+        }
+      },
+      {
+        "id": "noun-atlas-34",
+        "title": "선견천(지명)",
+        "intro": false,
+        "aliases": [],
+        "blocks": [],
+        "content": {
+          "file": "content/codex-terms--noun-atlas-34.json",
+          "rows": 1,
+          "missing": 0,
+          "sourceIds": [
+            "noun-atlas-34"
+          ]
+        }
+      },
+      {
+        "id": "noun-atlas-36",
+        "title": "네 가지 종말론(학설)",
+        "intro": false,
+        "aliases": [],
+        "blocks": [],
+        "content": {
+          "file": "content/codex-terms--noun-atlas-36.json",
+          "rows": 1,
+          "missing": 0,
+          "sourceIds": [
+            "noun-atlas-36"
+          ]
+        }
+      },
+      {
+        "id": "noun-atlas-38",
+        "title": "이상 낙원(지명)",
+        "intro": false,
+        "aliases": [],
+        "blocks": [],
+        "content": {
+          "file": "content/codex-terms--noun-atlas-38.json",
+          "rows": 1,
+          "missing": 0,
+          "sourceIds": [
+            "noun-atlas-38"
+          ]
+        }
+      },
+      {
+        "id": "noun-atlas-39",
+        "title": "환조(현상)",
+        "intro": false,
+        "aliases": [],
+        "blocks": [],
+        "content": {
+          "file": "content/codex-terms--noun-atlas-39.json",
+          "rows": 1,
+          "missing": 0,
+          "sourceIds": [
+            "noun-atlas-39"
+          ]
+        }
+      },
+      {
+        "id": "noun-atlas-40",
+        "title": "아삿 프라마드(인물)",
+        "intro": false,
+        "aliases": [],
+        "blocks": [],
+        "content": {
+          "file": "content/codex-terms--noun-atlas-40.json",
+          "rows": 1,
+          "missing": 0,
+          "sourceIds": [
+            "noun-atlas-40"
+          ]
+        }
+      },
+      {
+        "id": "noun-atlas-41",
+        "title": "페가나(지명)",
+        "intro": false,
+        "aliases": [],
+        "blocks": [],
+        "content": {
+          "file": "content/codex-terms--noun-atlas-41.json",
+          "rows": 1,
+          "missing": 0,
+          "sourceIds": [
+            "noun-atlas-41"
+          ]
+        }
+      },
+      {
+        "id": "noun-atlas-42",
+        "title": "아스트로폴리스(지명)",
+        "intro": false,
+        "aliases": [],
+        "blocks": [],
+        "content": {
+          "file": "content/codex-terms--noun-atlas-42.json",
+          "rows": 1,
+          "missing": 0,
+          "sourceIds": [
+            "noun-atlas-42"
+          ]
+        }
+      }
+    ]
+  },
+  {
+    "id": "codex-factions",
+    "title": "파벌",
+    "description": "평범한 종족이 신의 의도를 추측하는 것은 헛수고다.",
+    "subtitle": "아카이브",
+    "category": "codex",
+    "world": "universe",
+    "order": 14,
+    "language": "ko-KR",
+    "tags": [
+      "파벌",
+      "아카이브"
+    ],
+    "source": {
+      "kind": "extracted",
+      "version": "열차 자료실 NounAtlas 724b139",
+      "sourceIds": [
+        "noun-atlas-200",
+        "noun-atlas-201",
+        "noun-atlas-202",
+        "noun-atlas-203",
+        "noun-atlas-204",
+        "noun-atlas-223",
+        "noun-atlas-227",
+        "noun-atlas-205",
+        "noun-atlas-206",
+        "noun-atlas-207",
+        "noun-atlas-208",
+        "noun-atlas-209",
+        "noun-atlas-234",
+        "noun-atlas-224",
+        "noun-atlas-210",
+        "noun-atlas-211",
+        "noun-atlas-212",
+        "noun-atlas-233",
+        "noun-atlas-213",
+        "noun-atlas-214",
+        "noun-atlas-228",
+        "noun-atlas-215",
+        "noun-atlas-216",
+        "noun-atlas-217",
+        "noun-atlas-235",
+        "noun-atlas-218",
+        "noun-atlas-219",
+        "noun-atlas-225",
+        "noun-atlas-226",
+        "noun-atlas-220",
+        "noun-atlas-221",
+        "noun-atlas-222",
+        "noun-atlas-232",
+        "noun-atlas-230",
+        "noun-atlas-231"
+      ]
+    },
+    "chapters": [
+      {
+        "id": "noun-atlas-200",
+        "title": "파벌",
+        "intro": true,
+        "aliases": [
+          "book-47-section-1"
+        ],
+        "blocks": [],
+        "content": {
+          "file": "content/codex-factions--noun-atlas-200.json",
+          "rows": 1,
+          "missing": 0,
+          "sourceIds": [
+            "noun-atlas-200"
+          ]
+        }
+      },
+      {
+        "id": "noun-atlas-201",
+        "title": "은하열차 - 개척",
+        "intro": false,
+        "aliases": [
+          "book-47-section-2"
+        ],
+        "blocks": [],
+        "content": {
+          "file": "content/codex-factions--noun-atlas-201.json",
+          "rows": 1,
+          "missing": 0,
+          "sourceIds": [
+            "noun-atlas-201"
+          ]
+        }
+      },
+      {
+        "id": "noun-atlas-202",
+        "title": "스텔라론 헌터 - ???",
+        "intro": false,
+        "aliases": [
+          "book-47-section-3"
+        ],
+        "blocks": [],
+        "content": {
+          "file": "content/codex-factions--noun-atlas-202.json",
+          "rows": 1,
+          "missing": 0,
+          "sourceIds": [
+            "noun-atlas-202"
+          ]
+        }
+      },
+      {
+        "id": "noun-atlas-203",
+        "title": "무명객 - 개척",
+        "intro": false,
+        "aliases": [
+          "book-47-section-4"
+        ],
+        "blocks": [],
+        "content": {
+          "file": "content/codex-factions--noun-atlas-203.json",
+          "rows": 1,
+          "missing": 0,
+          "sourceIds": [
+            "noun-atlas-203"
+          ]
+        }
+      },
+      {
+        "id": "noun-atlas-204",
+        "title": "선주 연맹 - 수렵",
+        "intro": false,
+        "aliases": [
+          "book-47-section-5"
+        ],
+        "blocks": [],
+        "content": {
+          "file": "content/codex-factions--noun-atlas-204.json",
+          "rows": 1,
+          "missing": 0,
+          "sourceIds": [
+            "noun-atlas-204"
+          ]
+        }
+      },
+      {
+        "id": "noun-atlas-223",
+        "title": "갤럭시 레인저 - 수렵",
+        "intro": false,
+        "aliases": [],
+        "blocks": [],
+        "content": {
+          "file": "content/codex-factions--noun-atlas-223.json",
+          "rows": 2,
+          "missing": 0,
+          "sourceIds": [
+            "noun-atlas-223"
+          ]
+        }
+      },
+      {
+        "id": "noun-atlas-227",
+        "title": "자멸자 - 공허",
+        "intro": false,
+        "aliases": [],
+        "blocks": [],
+        "content": {
+          "file": "content/codex-factions--noun-atlas-227.json",
+          "rows": 1,
+          "missing": 0,
+          "sourceIds": [
+            "noun-atlas-227"
+          ]
+        }
+      },
+      {
+        "id": "noun-atlas-205",
+        "title": "혼돈의 의사 - 공허",
+        "intro": false,
+        "aliases": [
+          "book-47-section-6"
+        ],
+        "blocks": [],
+        "content": {
+          "file": "content/codex-factions--noun-atlas-205.json",
+          "rows": 1,
+          "missing": 0,
+          "sourceIds": [
+            "noun-atlas-205"
+          ]
+        }
+      },
+      {
+        "id": "noun-atlas-206",
+        "title": "제Ⅸ 기관 - 공허",
+        "intro": false,
+        "aliases": [
+          "book-47-section-7"
+        ],
+        "blocks": [],
+        "content": {
+          "file": "content/codex-factions--noun-atlas-206.json",
+          "rows": 1,
+          "missing": 0,
+          "sourceIds": [
+            "noun-atlas-206"
+          ]
+        }
+      },
+      {
+        "id": "noun-atlas-207",
+        "title": "풍요의 백성 - 풍요",
+        "intro": false,
+        "aliases": [
+          "book-47-section-8"
+        ],
+        "blocks": [],
+        "content": {
+          "file": "content/codex-factions--noun-atlas-207.json",
+          "rows": 1,
+          "missing": 0,
+          "sourceIds": [
+            "noun-atlas-207"
+          ]
+        }
+      },
+      {
+        "id": "noun-atlas-208",
+        "title": "약을 구하는 자 - 풍요",
+        "intro": false,
+        "aliases": [
+          "book-47-section-9"
+        ],
+        "blocks": [],
+        "content": {
+          "file": "content/codex-factions--noun-atlas-208.json",
+          "rows": 1,
+          "missing": 0,
+          "sourceIds": [
+            "noun-atlas-208"
+          ]
+        }
+      },
+      {
+        "id": "noun-atlas-209",
+        "title": "반물질 군단 - 파멸",
+        "intro": false,
+        "aliases": [
+          "book-47-section-10"
+        ],
+        "blocks": [],
+        "content": {
+          "file": "content/codex-factions--noun-atlas-209.json",
+          "rows": 1,
+          "missing": 0,
+          "sourceIds": [
+            "noun-atlas-209"
+          ]
+        }
+      },
+      {
+        "id": "noun-atlas-234",
+        "title": "절멸 대군 - 파멸",
+        "intro": false,
+        "aliases": [],
+        "blocks": [],
+        "content": {
+          "file": "content/codex-factions--noun-atlas-234.json",
+          "rows": 2,
+          "missing": 0,
+          "sourceIds": [
+            "noun-atlas-234"
+          ]
+        }
+      },
+      {
+        "id": "noun-atlas-224",
+        "title": "소멸파 - 파멸",
+        "intro": false,
+        "aliases": [],
+        "blocks": [],
+        "content": {
+          "file": "content/codex-factions--noun-atlas-224.json",
+          "rows": 1,
+          "missing": 0,
+          "sourceIds": [
+            "noun-atlas-224"
+          ]
+        }
+      },
+      {
+        "id": "noun-atlas-210",
+        "title": "가족 - 화합",
+        "intro": false,
+        "aliases": [
+          "book-47-section-11"
+        ],
+        "blocks": [],
+        "content": {
+          "file": "content/codex-factions--noun-atlas-210.json",
+          "rows": 1,
+          "missing": 0,
+          "sourceIds": [
+            "noun-atlas-210"
+          ]
+        }
+      },
+      {
+        "id": "noun-atlas-211",
+        "title": "지니어스 클럽 - 지식",
+        "intro": false,
+        "aliases": [
+          "book-47-section-12"
+        ],
+        "blocks": [],
+        "content": {
+          "file": "content/codex-factions--noun-atlas-211.json",
+          "rows": 1,
+          "missing": 0,
+          "sourceIds": [
+            "noun-atlas-211"
+          ]
+        }
+      },
+      {
+        "id": "noun-atlas-212",
+        "title": "지식학회 - 지식",
+        "intro": false,
+        "aliases": [
+          "book-47-section-13"
+        ],
+        "blocks": [],
+        "content": {
+          "file": "content/codex-factions--noun-atlas-212.json",
+          "rows": 1,
+          "missing": 0,
+          "sourceIds": [
+            "noun-atlas-212"
+          ]
+        }
+      },
+      {
+        "id": "noun-atlas-233",
+        "title": "원구의 숲 - 지식",
+        "intro": false,
+        "aliases": [],
+        "blocks": [],
+        "content": {
+          "file": "content/codex-factions--noun-atlas-233.json",
+          "rows": 1,
+          "missing": 0,
+          "sourceIds": [
+            "noun-atlas-233"
+          ]
+        }
+      },
+      {
+        "id": "noun-atlas-213",
+        "title": "축성가(築城家) - 보존",
+        "intro": false,
+        "aliases": [
+          "book-47-section-14"
+        ],
+        "blocks": [],
+        "content": {
+          "file": "content/codex-factions--noun-atlas-213.json",
+          "rows": 1,
+          "missing": 0,
+          "sourceIds": [
+            "noun-atlas-213"
+          ]
+        }
+      },
+      {
+        "id": "noun-atlas-214",
+        "title": "스타피스 컴퍼니 - 보존",
+        "intro": false,
+        "aliases": [
+          "book-47-section-15"
+        ],
+        "blocks": [],
+        "content": {
+          "file": "content/codex-factions--noun-atlas-214.json",
+          "rows": 1,
+          "missing": 0,
+          "sourceIds": [
+            "noun-atlas-214"
+          ]
+        }
+      },
+      {
+        "id": "noun-atlas-228",
+        "title": "10인의 스톤하트 - 보존",
+        "intro": false,
+        "aliases": [],
+        "blocks": [],
+        "content": {
+          "file": "content/codex-factions--noun-atlas-228.json",
+          "rows": 1,
+          "missing": 0,
+          "sourceIds": [
+            "noun-atlas-228"
+          ]
+        }
+      },
+      {
+        "id": "noun-atlas-215",
+        "title": "곤충 떼 - 번식",
+        "intro": false,
+        "aliases": [
+          "book-47-section-16"
+        ],
+        "blocks": [],
+        "content": {
+          "file": "content/codex-factions--noun-atlas-215.json",
+          "rows": 1,
+          "missing": 0,
+          "sourceIds": [
+            "noun-atlas-215"
+          ]
+        }
+      },
+      {
+        "id": "noun-atlas-216",
+        "title": "기억의 정원 - 기억",
+        "intro": false,
+        "aliases": [
+          "book-47-section-17"
+        ],
+        "blocks": [],
+        "content": {
+          "file": "content/codex-factions--noun-atlas-216.json",
+          "rows": 1,
+          "missing": 0,
+          "sourceIds": [
+            "noun-atlas-216"
+          ]
+        }
+      },
+      {
+        "id": "noun-atlas-217",
+        "title": "소각공 - 기억",
+        "intro": false,
+        "aliases": [
+          "book-47-section-18"
+        ],
+        "blocks": [],
+        "content": {
+          "file": "content/codex-factions--noun-atlas-217.json",
+          "rows": 1,
+          "missing": 0,
+          "sourceIds": [
+            "noun-atlas-217"
+          ]
+        }
+      },
+      {
+        "id": "noun-atlas-235",
+        "title": "무루의 아이 - 기억",
+        "intro": false,
+        "aliases": [],
+        "blocks": [],
+        "content": {
+          "file": "content/codex-factions--noun-atlas-235.json",
+          "rows": 2,
+          "missing": 0,
+          "sourceIds": [
+            "noun-atlas-235"
+          ]
+        }
+      },
+      {
+        "id": "noun-atlas-218",
+        "title": "비애의 연극인 - 환락",
+        "intro": false,
+        "aliases": [
+          "book-47-section-19"
+        ],
+        "blocks": [],
+        "content": {
+          "file": "content/codex-factions--noun-atlas-218.json",
+          "rows": 1,
+          "missing": 0,
+          "sourceIds": [
+            "noun-atlas-218"
+          ]
+        }
+      },
+      {
+        "id": "noun-atlas-219",
+        "title": "가면의 우인 - 환락",
+        "intro": false,
+        "aliases": [
+          "book-47-section-20"
+        ],
+        "blocks": [],
+        "content": {
+          "file": "content/codex-factions--noun-atlas-219.json",
+          "rows": 1,
+          "missing": 0,
+          "sourceIds": [
+            "noun-atlas-219"
+          ]
+        }
+      },
+      {
+        "id": "noun-atlas-225",
+        "title": "거울을 안은 자 - 미",
+        "intro": false,
+        "aliases": [],
+        "blocks": [],
+        "content": {
+          "file": "content/codex-factions--noun-atlas-225.json",
+          "rows": 1,
+          "missing": 0,
+          "sourceIds": [
+            "noun-atlas-225"
+          ]
+        }
+      },
+      {
+        "id": "noun-atlas-226",
+        "title": "미의 기사단 - 미",
+        "intro": false,
+        "aliases": [],
+        "blocks": [],
+        "content": {
+          "file": "content/codex-factions--noun-atlas-226.json",
+          "rows": 1,
+          "missing": 0,
+          "sourceIds": [
+            "noun-atlas-226"
+          ]
+        }
+      },
+      {
+        "id": "noun-atlas-220",
+        "title": "허구 역사학자 - 신비",
+        "intro": false,
+        "aliases": [
+          "book-47-section-21"
+        ],
+        "blocks": [],
+        "content": {
+          "file": "content/codex-factions--noun-atlas-220.json",
+          "rows": 1,
+          "missing": 0,
+          "sourceIds": [
+            "noun-atlas-220"
+          ]
+        }
+      },
+      {
+        "id": "noun-atlas-221",
+        "title": "리들러 - 신비",
+        "intro": false,
+        "aliases": [
+          "book-47-section-22"
+        ],
+        "blocks": [],
+        "content": {
+          "file": "content/codex-factions--noun-atlas-221.json",
+          "rows": 1,
+          "missing": 0,
+          "sourceIds": [
+            "noun-atlas-221"
+          ]
+        }
+      },
+      {
+        "id": "noun-atlas-222",
+        "title": "중재관 - 균형",
+        "intro": false,
+        "aliases": [],
+        "blocks": [],
+        "content": {
+          "file": "content/codex-factions--noun-atlas-222.json",
+          "rows": 1,
+          "missing": 0,
+          "sourceIds": [
+            "noun-atlas-222"
+          ]
+        }
+      },
+      {
+        "id": "noun-atlas-232",
+        "title": "단륜사 - 균형",
+        "intro": false,
+        "aliases": [],
+        "blocks": [],
+        "content": {
+          "file": "content/codex-factions--noun-atlas-232.json",
+          "rows": 1,
+          "missing": 0,
+          "sourceIds": [
+            "noun-atlas-232"
+          ]
+        }
+      },
+      {
+        "id": "noun-atlas-230",
+        "title": "천외 합창단 - 질서",
+        "intro": false,
+        "aliases": [],
+        "blocks": [],
+        "content": {
+          "file": "content/codex-factions--noun-atlas-230.json",
+          "rows": 1,
+          "missing": 0,
+          "sourceIds": [
+            "noun-atlas-230"
+          ]
+        }
+      },
+      {
+        "id": "noun-atlas-231",
+        "title": "장례식 안내원 - 종말",
+        "intro": false,
+        "aliases": [],
+        "blocks": [],
+        "content": {
+          "file": "content/codex-factions--noun-atlas-231.json",
+          "rows": 1,
+          "missing": 0,
+          "sourceIds": [
+            "noun-atlas-231"
+          ]
+        }
+      }
+    ]
+  },
+  {
     "id": "codex-light-cones",
     "title": "광추",
     "description": "광추에 담긴 기억과 이야기.",
     "subtitle": "아카이브",
     "category": "codex",
     "world": "universe",
-    "order": 12,
+    "order": 15,
     "language": "ko-KR",
     "tags": [
       "광추",
@@ -2408,7 +4006,7 @@
     "subtitle": "아카이브",
     "category": "codex",
     "world": "universe",
-    "order": 13,
+    "order": 16,
     "language": "ko-KR",
     "tags": [
       "적대적 생물",
@@ -13588,315 +15186,13 @@
     ]
   },
   {
-    "id": "codex-aeons",
-    "title": "에이언즈",
-    "description": "별바다의 에이언즈와 운명의 길에 관한 기록.",
-    "subtitle": "아카이브",
-    "category": "codex",
-    "world": "universe",
-    "order": 14,
-    "language": "ko-KR",
-    "tags": [
-      "에이언즈",
-      "아카이브"
-    ],
-    "source": {
-      "kind": "extracted",
-      "version": "한국어 고정 자료 a66ec9c",
-      "sourceIds": [
-        "aeon-1",
-        "aeon-10",
-        "aeon-11",
-        "aeon-12",
-        "aeon-13",
-        "aeon-14",
-        "aeon-2",
-        "aeon-3",
-        "aeon-4",
-        "aeon-5",
-        "aeon-6",
-        "aeon-7",
-        "aeon-8",
-        "aeon-9",
-        "lore-10036",
-        "lore-10037",
-        "lore-10038",
-        "lore-10039",
-        "lore-10040",
-        "lore-10041",
-        "lore-10042",
-        "lore-10043",
-        "lore-10044",
-        "lore-10084",
-        "lore-10085",
-        "lore-10086",
-        "lore-10087",
-        "lore-10088",
-        "lore-10089",
-        "lore-10090",
-        "lore-10114",
-        "lore-10313"
-      ]
-    },
-    "chapters": [
-      {
-        "id": "aeon-6",
-        "title": "나누크",
-        "blocks": [],
-        "content": {
-          "file": "content/codex-aeons--aeon-6.json",
-          "rows": 3,
-          "missing": 0,
-          "sourceIds": [
-            "aeon-6",
-            "lore-10036"
-          ]
-        }
-      },
-      {
-        "id": "aeon-9",
-        "title": "누스",
-        "blocks": [],
-        "content": {
-          "file": "content/codex-aeons--aeon-9.json",
-          "rows": 3,
-          "missing": 0,
-          "sourceIds": [
-            "aeon-9",
-            "lore-10043"
-          ]
-        }
-      },
-      {
-        "id": "aeon-5",
-        "title": "란",
-        "blocks": [],
-        "content": {
-          "file": "content/codex-aeons--aeon-5.json",
-          "rows": 3,
-          "missing": 0,
-          "sourceIds": [
-            "aeon-5",
-            "lore-10037"
-          ]
-        }
-      },
-      {
-        "id": "lore-10084",
-        "title": "룽(龍)",
-        "blocks": [],
-        "content": {
-          "file": "content/codex-aeons--lore-10084.json",
-          "rows": 1,
-          "missing": 0,
-          "sourceIds": [
-            "lore-10084"
-          ]
-        }
-      },
-      {
-        "id": "aeon-14",
-        "title": "미토스",
-        "blocks": [],
-        "content": {
-          "file": "content/codex-aeons--aeon-14.json",
-          "rows": 2,
-          "missing": 0,
-          "sourceIds": [
-            "aeon-14",
-            "lore-10085"
-          ]
-        }
-      },
-      {
-        "id": "aeon-10",
-        "title": "시페",
-        "blocks": [],
-        "content": {
-          "file": "content/codex-aeons--aeon-10.json",
-          "rows": 2,
-          "missing": 0,
-          "sourceIds": [
-            "aeon-10",
-            "lore-10038"
-          ]
-        }
-      },
-      {
-        "id": "lore-10042",
-        "title": "아키비리",
-        "blocks": [],
-        "content": {
-          "file": "content/codex-aeons--lore-10042.json",
-          "rows": 1,
-          "missing": 0,
-          "sourceIds": [
-            "lore-10042"
-          ]
-        }
-      },
-      {
-        "id": "aeon-7",
-        "title": "아하",
-        "blocks": [],
-        "content": {
-          "file": "content/codex-aeons--aeon-7.json",
-          "rows": 4,
-          "missing": 0,
-          "sourceIds": [
-            "aeon-7",
-            "lore-10044"
-          ]
-        }
-      },
-      {
-        "id": "aeon-4",
-        "title": "약사",
-        "blocks": [],
-        "content": {
-          "file": "content/codex-aeons--aeon-4.json",
-          "rows": 3,
-          "missing": 0,
-          "sourceIds": [
-            "aeon-4",
-            "lore-10041"
-          ]
-        }
-      },
-      {
-        "id": "aeon-11",
-        "title": "에나",
-        "blocks": [],
-        "content": {
-          "file": "content/codex-aeons--aeon-11.json",
-          "rows": 1,
-          "missing": 0,
-          "sourceIds": [
-            "aeon-11"
-          ]
-        }
-      },
-      {
-        "id": "aeon-12",
-        "title": "우로보로스",
-        "blocks": [],
-        "content": {
-          "file": "content/codex-aeons--aeon-12.json",
-          "rows": 2,
-          "missing": 0,
-          "sourceIds": [
-            "aeon-12",
-            "lore-10086"
-          ]
-        }
-      },
-      {
-        "id": "lore-10087",
-        "title": "이드릴라",
-        "blocks": [],
-        "content": {
-          "file": "content/codex-aeons--lore-10087.json",
-          "rows": 1,
-          "missing": 0,
-          "sourceIds": [
-            "lore-10087"
-          ]
-        }
-      },
-      {
-        "id": "aeon-1",
-        "title": "클리포트",
-        "blocks": [],
-        "content": {
-          "file": "content/codex-aeons--aeon-1.json",
-          "rows": 4,
-          "missing": 0,
-          "sourceIds": [
-            "aeon-1",
-            "lore-10040"
-          ]
-        }
-      },
-      {
-        "id": "aeon-8",
-        "title": "타이츠론스",
-        "blocks": [],
-        "content": {
-          "file": "content/codex-aeons--aeon-8.json",
-          "rows": 3,
-          "missing": 0,
-          "sourceIds": [
-            "aeon-8",
-            "lore-10088"
-          ]
-        }
-      },
-      {
-        "id": "lore-10089",
-        "title": "테르미누스",
-        "blocks": [],
-        "content": {
-          "file": "content/codex-aeons--lore-10089.json",
-          "rows": 2,
-          "missing": 0,
-          "sourceIds": [
-            "lore-10089",
-            "lore-10313"
-          ]
-        }
-      },
-      {
-        "id": "aeon-13",
-        "title": "후",
-        "blocks": [],
-        "content": {
-          "file": "content/codex-aeons--aeon-13.json",
-          "rows": 2,
-          "missing": 0,
-          "sourceIds": [
-            "aeon-13",
-            "lore-10114"
-          ]
-        }
-      },
-      {
-        "id": "aeon-2",
-        "title": "후리",
-        "blocks": [],
-        "content": {
-          "file": "content/codex-aeons--aeon-2.json",
-          "rows": 4,
-          "missing": 0,
-          "sourceIds": [
-            "aeon-2",
-            "lore-10090"
-          ]
-        }
-      },
-      {
-        "id": "aeon-3",
-        "title": "Ⅸ",
-        "blocks": [],
-        "content": {
-          "file": "content/codex-aeons--aeon-3.json",
-          "rows": 3,
-          "missing": 0,
-          "sourceIds": [
-            "aeon-3",
-            "lore-10039"
-          ]
-        }
-      }
-    ]
-  },
-  {
     "id": "codex-characters",
     "title": "캐릭터",
     "description": "캐릭터 소개와 인물 이야기.",
     "subtitle": "아카이브",
     "category": "codex",
     "world": "universe",
-    "order": 15,
+    "order": 17,
     "language": "ko-KR",
     "tags": [
       "캐릭터",
@@ -15090,5025 +16386,13 @@
     ]
   },
   {
-    "id": "codex-terms",
-    "title": "고유 명사",
-    "description": "지명과 인물, 세계관의 용어 설명.",
-    "subtitle": "아카이브",
-    "category": "codex",
-    "world": "universe",
-    "order": 16,
-    "language": "ko-KR",
-    "tags": [
-      "고유 명사",
-      "아카이브"
-    ],
-    "source": {
-      "kind": "extracted",
-      "version": "한국어 고정 자료 a66ec9c",
-      "sourceIds": [
-        "world-602",
-        "world-501",
-        "world-601",
-        "world-401",
-        "lore-10001",
-        "lore-10002",
-        "lore-10003",
-        "lore-10004",
-        "lore-10005",
-        "lore-10006",
-        "lore-10007",
-        "lore-10008",
-        "lore-10009",
-        "lore-10010",
-        "lore-10011",
-        "lore-10012",
-        "lore-10013",
-        "lore-10014",
-        "lore-10015",
-        "lore-10016",
-        "lore-10017",
-        "lore-10018",
-        "lore-10019",
-        "lore-10020",
-        "lore-10021",
-        "lore-10022",
-        "lore-10023",
-        "lore-10024",
-        "lore-10025",
-        "lore-10026",
-        "lore-10027",
-        "lore-10028",
-        "lore-10029",
-        "lore-10030",
-        "lore-10031",
-        "lore-10032",
-        "lore-10033",
-        "lore-10034",
-        "lore-10035",
-        "lore-10036",
-        "lore-10037",
-        "lore-10038",
-        "lore-10039",
-        "lore-10040",
-        "lore-10041",
-        "lore-10042",
-        "lore-10043",
-        "lore-10044",
-        "lore-10045",
-        "lore-10046",
-        "lore-10047",
-        "lore-10048",
-        "lore-10049",
-        "lore-10050",
-        "lore-10051",
-        "lore-10052",
-        "lore-10054",
-        "lore-10055",
-        "lore-10056",
-        "lore-10057",
-        "lore-10058",
-        "lore-10059",
-        "lore-10060",
-        "lore-10061",
-        "lore-10062",
-        "lore-10063",
-        "lore-10064",
-        "lore-10065",
-        "lore-10066",
-        "lore-10067",
-        "lore-10068",
-        "lore-10069",
-        "lore-10070",
-        "lore-10071",
-        "lore-10072",
-        "lore-10073",
-        "lore-10074",
-        "lore-10075",
-        "lore-10076",
-        "lore-10077",
-        "lore-10078",
-        "lore-10079",
-        "lore-10080",
-        "lore-10081",
-        "lore-10082",
-        "lore-10083",
-        "lore-10084",
-        "lore-10085",
-        "lore-10086",
-        "lore-10087",
-        "lore-10088",
-        "lore-10089",
-        "lore-10090",
-        "lore-10091",
-        "lore-10092",
-        "lore-10093",
-        "lore-10094",
-        "lore-10095",
-        "lore-10096",
-        "lore-10097",
-        "lore-10098",
-        "lore-10099",
-        "lore-10100",
-        "lore-10101",
-        "lore-10102",
-        "lore-10103",
-        "lore-10104",
-        "lore-10105",
-        "lore-10106",
-        "lore-10107",
-        "lore-10108",
-        "lore-10109",
-        "lore-10110",
-        "lore-10111",
-        "lore-10112",
-        "lore-10113",
-        "lore-10114",
-        "lore-10115",
-        "lore-10116",
-        "lore-10117",
-        "lore-10118",
-        "lore-10119",
-        "lore-10120",
-        "lore-10121",
-        "lore-10122",
-        "lore-10123",
-        "lore-10124",
-        "lore-10125",
-        "lore-10126",
-        "lore-10127",
-        "lore-10128",
-        "lore-10129",
-        "lore-10130",
-        "lore-10131",
-        "lore-10132",
-        "lore-10133",
-        "lore-10134",
-        "lore-10135",
-        "lore-10136",
-        "lore-10137",
-        "lore-10138",
-        "lore-10139",
-        "lore-10140",
-        "lore-10141",
-        "lore-10142",
-        "lore-10143",
-        "lore-10144",
-        "lore-10145",
-        "lore-10146",
-        "lore-10147",
-        "lore-10149",
-        "lore-10150",
-        "lore-10151",
-        "lore-10152",
-        "lore-10153",
-        "lore-10154",
-        "lore-10155",
-        "lore-10156",
-        "lore-10157",
-        "lore-10158",
-        "lore-10159",
-        "lore-10160",
-        "lore-10161",
-        "lore-10162",
-        "lore-10163",
-        "lore-10164",
-        "lore-10165",
-        "lore-10166",
-        "lore-10167",
-        "lore-10168",
-        "lore-10169",
-        "lore-10170",
-        "lore-10171",
-        "lore-10172",
-        "lore-10173",
-        "lore-10174",
-        "lore-10175",
-        "lore-10176",
-        "lore-10177",
-        "lore-10178",
-        "lore-10179",
-        "lore-10180",
-        "lore-10181",
-        "lore-10182",
-        "lore-10183",
-        "lore-10184",
-        "lore-10185",
-        "lore-10186",
-        "lore-10200",
-        "lore-10201",
-        "lore-10202",
-        "lore-10203",
-        "lore-10204",
-        "lore-10205",
-        "lore-10206",
-        "lore-10210",
-        "lore-10211",
-        "lore-10212",
-        "lore-10213",
-        "lore-10214",
-        "lore-10215",
-        "lore-10216",
-        "lore-10217",
-        "lore-10220",
-        "lore-10221",
-        "lore-10222",
-        "lore-10223",
-        "lore-10224",
-        "lore-10225",
-        "lore-10226",
-        "lore-10227",
-        "lore-10228",
-        "lore-10229",
-        "lore-10230",
-        "lore-10231",
-        "lore-10232",
-        "lore-10233",
-        "lore-10234",
-        "lore-10235",
-        "lore-10236",
-        "lore-10237",
-        "lore-10238",
-        "lore-10239",
-        "lore-10240",
-        "lore-10241",
-        "lore-10242",
-        "lore-10243",
-        "lore-10244",
-        "lore-10245",
-        "lore-10246",
-        "lore-10247",
-        "lore-10248",
-        "lore-10249",
-        "lore-10250",
-        "lore-10251",
-        "lore-10252",
-        "lore-10253",
-        "lore-10254",
-        "lore-10255",
-        "lore-10256",
-        "lore-10257",
-        "lore-10258",
-        "lore-10259",
-        "lore-10260",
-        "lore-10261",
-        "lore-10262",
-        "lore-10263",
-        "lore-10264",
-        "lore-10265",
-        "lore-10266",
-        "lore-10267",
-        "lore-10268",
-        "lore-10269",
-        "lore-10270",
-        "lore-10271",
-        "lore-10272",
-        "lore-10273",
-        "lore-10274",
-        "lore-10275",
-        "lore-10276",
-        "lore-10277",
-        "lore-10278",
-        "lore-10279",
-        "lore-10280",
-        "lore-10281",
-        "lore-10282",
-        "lore-10283",
-        "lore-10284",
-        "lore-10285",
-        "lore-10286",
-        "lore-10287",
-        "lore-10288",
-        "lore-10289",
-        "lore-10290",
-        "lore-10291",
-        "lore-10292",
-        "lore-10293",
-        "lore-10294",
-        "lore-10295",
-        "lore-10296",
-        "lore-10297",
-        "lore-10298",
-        "lore-10299",
-        "lore-10300",
-        "lore-10301",
-        "lore-10302",
-        "lore-10303",
-        "lore-10304",
-        "lore-10305",
-        "lore-10306",
-        "lore-10307",
-        "lore-10308",
-        "lore-10309",
-        "lore-10310",
-        "lore-10311",
-        "lore-10312",
-        "lore-10313",
-        "lore-10314",
-        "lore-10315",
-        "lore-10400",
-        "lore-10401",
-        "lore-10402",
-        "lore-10403",
-        "lore-10404",
-        "lore-10405",
-        "lore-10406",
-        "lore-10407",
-        "lore-10408",
-        "lore-10409",
-        "lore-10410",
-        "lore-10411",
-        "lore-10412",
-        "lore-10413",
-        "lore-10414",
-        "lore-10415",
-        "lore-10416",
-        "lore-10417",
-        "lore-10418",
-        "lore-10419",
-        "lore-10420",
-        "lore-10421",
-        "lore-10422",
-        "lore-10423",
-        "lore-10424",
-        "lore-10425",
-        "lore-10426",
-        "lore-10427",
-        "lore-10428",
-        "lore-10429",
-        "lore-10430",
-        "lore-10431",
-        "lore-10432",
-        "lore-10433",
-        "lore-10434",
-        "lore-10435",
-        "lore-10436",
-        "lore-10437",
-        "lore-10438",
-        "lore-10439",
-        "lore-10440",
-        "lore-10441",
-        "lore-20000",
-        "lore-20002",
-        "lore-20003",
-        "lore-20004",
-        "lore-20005",
-        "lore-20006",
-        "lore-20007",
-        "lore-20008",
-        "lore-20011",
-        "lore-20012",
-        "lore-20013",
-        "lore-20014",
-        "lore-20015",
-        "lore-20016",
-        "lore-20017",
-        "lore-20018",
-        "lore-20019",
-        "lore-20022",
-        "lore-20023",
-        "lore-20024",
-        "lore-20025",
-        "lore-20026",
-        "lore-20027",
-        "lore-20028",
-        "lore-20051",
-        "lore-20052",
-        "lore-20053",
-        "lore-20054",
-        "lore-20055",
-        "lore-20056",
-        "lore-20057",
-        "lore-20058",
-        "lore-20059",
-        "lore-20060",
-        "lore-20061",
-        "lore-20062",
-        "lore-20063",
-        "lore-20064",
-        "lore-20065",
-        "lore-20066",
-        "lore-20067",
-        "lore-20068",
-        "lore-20069",
-        "lore-20070",
-        "lore-20071",
-        "lore-20072",
-        "lore-20073",
-        "lore-20074",
-        "lore-20075",
-        "lore-20076",
-        "lore-20077",
-        "lore-20078",
-        "lore-20079",
-        "lore-20080",
-        "lore-20081",
-        "lore-20082",
-        "lore-20083",
-        "lore-20084",
-        "lore-20085",
-        "lore-20088",
-        "lore-20089",
-        "lore-20090",
-        "lore-20091",
-        "lore-20092",
-        "lore-20093",
-        "lore-20094",
-        "lore-20095",
-        "lore-20096",
-        "lore-20097",
-        "lore-20098",
-        "lore-20099",
-        "lore-20100",
-        "lore-20101",
-        "lore-20102",
-        "lore-20103",
-        "lore-20104",
-        "lore-20105",
-        "lore-20106",
-        "lore-20107",
-        "lore-10442",
-        "lore-10443",
-        "lore-10444",
-        "lore-10445",
-        "reference-terms-intro"
-      ]
-    },
-    "chapters": [
-      {
-        "id": "lore-10013",
-        "title": "[개척자]",
-        "blocks": [],
-        "content": {
-          "file": "content/codex-terms--lore-10013.json",
-          "rows": 1,
-          "missing": 0,
-          "sourceIds": [
-            "lore-10013"
-          ]
-        }
-      },
-      {
-        "id": "lore-20069",
-        "title": "[단항]의 시점으로 전환 중…",
-        "blocks": [],
-        "content": {
-          "file": "content/codex-terms--lore-20069.json",
-          "rows": 3,
-          "missing": 0,
-          "sourceIds": [
-            "lore-20069",
-            "lore-20080",
-            "lore-20083"
-          ]
-        }
-      },
-      {
-        "id": "lore-20085",
-        "title": "[달리아]의 기억이 서서히 떠오르는 중……",
-        "blocks": [],
-        "content": {
-          "file": "content/codex-terms--lore-20085.json",
-          "rows": 1,
-          "missing": 0,
-          "sourceIds": [
-            "lore-20085"
-          ]
-        }
-      },
-      {
-        "id": "lore-20079",
-        "title": "[로빈]의 기억이 서서히 떠오르는 중……",
-        "blocks": [],
-        "content": {
-          "file": "content/codex-terms--lore-20079.json",
-          "rows": 3,
-          "missing": 0,
-          "sourceIds": [
-            "lore-20079",
-            "lore-20084",
-            "lore-20095"
-          ]
-        }
-      },
-      {
-        "id": "lore-20028",
-        "title": "[로빈]의 시점으로 전환 중…",
-        "blocks": [],
-        "content": {
-          "file": "content/codex-terms--lore-20028.json",
-          "rows": 1,
-          "missing": 0,
-          "sourceIds": [
-            "lore-20028"
-          ]
-        }
-      },
-      {
-        "id": "lore-20026",
-        "title": "[로빈]의 시점으로 전환 중…?",
-        "blocks": [],
-        "content": {
-          "file": "content/codex-terms--lore-20026.json",
-          "rows": 1,
-          "missing": 0,
-          "sourceIds": [
-            "lore-20026"
-          ]
-        }
-      },
-      {
-        "id": "lore-20063",
-        "title": "[마이데이]의 시점으로 전환 중…",
-        "blocks": [],
-        "content": {
-          "file": "content/codex-terms--lore-20063.json",
-          "rows": 2,
-          "missing": 0,
-          "sourceIds": [
-            "lore-20063",
-            "lore-20066"
-          ]
-        }
-      },
-      {
-        "id": "lore-20097",
-        "title": "[망귀인]의 시점으로 전환 중……",
-        "blocks": [],
-        "content": {
-          "file": "content/codex-terms--lore-20097.json",
-          "rows": 1,
-          "missing": 0,
-          "sourceIds": [
-            "lore-20097"
-          ]
-        }
-      },
-      {
-        "id": "lore-20088",
-        "title": "[반디]의 기억이 서서히 떠오르는 중……",
-        "blocks": [],
-        "content": {
-          "file": "content/codex-terms--lore-20088.json",
-          "rows": 4,
-          "missing": 0,
-          "sourceIds": [
-            "lore-20088",
-            "lore-20089",
-            "lore-20090",
-            "lore-20094"
-          ]
-        }
-      },
-      {
-        "id": "lore-20008",
-        "title": "[반디]의 시점으로 전환 중…",
-        "blocks": [],
-        "content": {
-          "file": "content/codex-terms--lore-20008.json",
-          "rows": 1,
-          "missing": 0,
-          "sourceIds": [
-            "lore-20008"
-          ]
-        }
-      },
-      {
-        "id": "lore-20027",
-        "title": "[부트힐]의 시점으로 전환 중…",
-        "blocks": [],
-        "content": {
-          "file": "content/codex-terms--lore-20027.json",
-          "rows": 1,
-          "missing": 0,
-          "sourceIds": [
-            "lore-20027"
-          ]
-        }
-      },
-      {
-        "id": "lore-20058",
-        "title": "[부트힐]의 촬영장으로 전환 중……",
-        "blocks": [],
-        "content": {
-          "file": "content/codex-terms--lore-20058.json",
-          "rows": 1,
-          "missing": 0,
-          "sourceIds": [
-            "lore-20058"
-          ]
-        }
-      },
-      {
-        "id": "lore-20081",
-        "title": "[블랙 스완]의 시점으로 전환 중…",
-        "blocks": [],
-        "content": {
-          "file": "content/codex-terms--lore-20081.json",
-          "rows": 2,
-          "missing": 0,
-          "sourceIds": [
-            "lore-20081",
-            "lore-20082"
-          ]
-        }
-      },
-      {
-        "id": "lore-20054",
-        "title": "[비소]의 시점으로 전환 중",
-        "blocks": [],
-        "content": {
-          "file": "content/codex-terms--lore-20054.json",
-          "rows": 1,
-          "missing": 0,
-          "sourceIds": [
-            "lore-20054"
-          ]
-        }
-      },
-      {
-        "id": "lore-20075",
-        "title": "[사이퍼]의 시점으로 전환 중……",
-        "blocks": [],
-        "content": {
-          "file": "content/codex-terms--lore-20075.json",
-          "rows": 2,
-          "missing": 0,
-          "sourceIds": [
-            "lore-20075",
-            "lore-20076"
-          ]
-        }
-      },
-      {
-        "id": "lore-20059",
-        "title": "[선데이]의 시점으로 전환 중…",
-        "blocks": [],
-        "content": {
-          "file": "content/codex-terms--lore-20059.json",
-          "rows": 2,
-          "missing": 0,
-          "sourceIds": [
-            "lore-20059",
-            "lore-20060"
-          ]
-        }
-      },
-      {
-        "id": "lore-20103",
-        "title": "[스파키]의 시점으로 전환 중……",
-        "blocks": [],
-        "content": {
-          "file": "content/codex-terms--lore-20103.json",
-          "rows": 1,
-          "missing": 0,
-          "sourceIds": [
-            "lore-20103"
-          ]
-        }
-      },
-      {
-        "id": "lore-20061",
-        "title": "[아글라이아]의 시점으로 전환 중…",
-        "blocks": [],
-        "content": {
-          "file": "content/codex-terms--lore-20061.json",
-          "rows": 1,
-          "missing": 0,
-          "sourceIds": [
-            "lore-20061"
-          ]
-        }
-      },
-      {
-        "id": "lore-20067",
-        "title": "[아낙사]의 시점으로 전환 중…",
-        "blocks": [],
-        "content": {
-          "file": "content/codex-terms--lore-20067.json",
-          "rows": 2,
-          "missing": 0,
-          "sourceIds": [
-            "lore-20067",
-            "lore-20068"
-          ]
-        }
-      },
-      {
-        "id": "lore-20004",
-        "title": "[아케론]의 시점으로 전환 중…",
-        "blocks": [],
-        "content": {
-          "file": "content/codex-terms--lore-20004.json",
-          "rows": 1,
-          "missing": 0,
-          "sourceIds": [
-            "lore-20004"
-          ]
-        }
-      },
-      {
-        "id": "lore-20099",
-        "title": "[애쉬베일]의 시점으로 전환 중……",
-        "blocks": [],
-        "content": {
-          "file": "content/codex-terms--lore-20099.json",
-          "rows": 2,
-          "missing": 0,
-          "sourceIds": [
-            "lore-20099",
-            "lore-20100"
-          ]
-        }
-      },
-      {
-        "id": "lore-20002",
-        "title": "[어벤츄린]의 시점으로 전환 중…",
-        "blocks": [],
-        "content": {
-          "file": "content/codex-terms--lore-20002.json",
-          "rows": 3,
-          "missing": 0,
-          "sourceIds": [
-            "lore-20002",
-            "lore-20003",
-            "lore-20005"
-          ]
-        }
-      },
-      {
-        "id": "lore-20107",
-        "title": "[어벤츄린]의 시점으로 전환 중……",
-        "blocks": [],
-        "content": {
-          "file": "content/codex-terms--lore-20107.json",
-          "rows": 1,
-          "missing": 0,
-          "sourceIds": [
-            "lore-20107"
-          ]
-        }
-      },
-      {
-        "id": "lore-20102",
-        "title": "[에바네시아]의 시점으로 전환 중……",
-        "blocks": [],
-        "content": {
-          "file": "content/codex-terms--lore-20102.json",
-          "rows": 2,
-          "missing": 0,
-          "sourceIds": [
-            "lore-20102",
-            "lore-20104"
-          ]
-        }
-      },
-      {
-        "id": "lore-20051",
-        "title": "[영사]의 시점으로 전환 중",
-        "blocks": [],
-        "content": {
-          "file": "content/codex-terms--lore-20051.json",
-          "rows": 2,
-          "missing": 0,
-          "sourceIds": [
-            "lore-20051",
-            "lore-20057"
-          ]
-        }
-      },
-      {
-        "id": "lore-20055",
-        "title": "[운리]의 시점으로 전환 중",
-        "blocks": [],
-        "content": {
-          "file": "content/codex-terms--lore-20055.json",
-          "rows": 1,
-          "missing": 0,
-          "sourceIds": [
-            "lore-20055"
-          ]
-        }
-      },
-      {
-        "id": "lore-20098",
-        "title": "[은랑]의 시점으로 전환 중……",
-        "blocks": [],
-        "content": {
-          "file": "content/codex-terms--lore-20098.json",
-          "rows": 2,
-          "missing": 0,
-          "sourceIds": [
-            "lore-20098",
-            "lore-20105"
-          ]
-        }
-      },
-      {
-        "id": "lore-20007",
-        "title": "[제이드]의 시점으로 전환 중…",
-        "blocks": [],
-        "content": {
-          "file": "content/codex-terms--lore-20007.json",
-          "rows": 1,
-          "missing": 0,
-          "sourceIds": [
-            "lore-20007"
-          ]
-        }
-      },
-      {
-        "id": "lore-20052",
-        "title": "[초구]의 시점으로 전환 중",
-        "blocks": [],
-        "content": {
-          "file": "content/codex-terms--lore-20052.json",
-          "rows": 1,
-          "missing": 0,
-          "sourceIds": [
-            "lore-20052"
-          ]
-        }
-      },
-      {
-        "id": "lore-20012",
-        "title": "[초구]의 시점으로 전환 중…",
-        "blocks": [],
-        "content": {
-          "file": "content/codex-terms--lore-20012.json",
-          "rows": 1,
-          "missing": 0,
-          "sourceIds": [
-            "lore-20012"
-          ]
-        }
-      },
-      {
-        "id": "lore-20071",
-        "title": "[카스토리스]의 시점으로 전환 중……",
-        "blocks": [],
-        "content": {
-          "file": "content/codex-terms--lore-20071.json",
-          "rows": 4,
-          "missing": 0,
-          "sourceIds": [
-            "lore-20071",
-            "lore-20072",
-            "lore-20073",
-            "lore-20074"
-          ]
-        }
-      },
-      {
-        "id": "lore-20078",
-        "title": "[카오스라나]의 기억이 파도처럼 밀려온다…",
-        "blocks": [],
-        "content": {
-          "file": "content/codex-terms--lore-20078.json",
-          "rows": 1,
-          "missing": 0,
-          "sourceIds": [
-            "lore-20078"
-          ]
-        }
-      },
-      {
-        "id": "lore-20006",
-        "title": "[토파즈]의 시점으로 전환 중…",
-        "blocks": [],
-        "content": {
-          "file": "content/codex-terms--lore-20006.json",
-          "rows": 1,
-          "missing": 0,
-          "sourceIds": [
-            "lore-20006"
-          ]
-        }
-      },
-      {
-        "id": "lore-20064",
-        "title": "[트리비]의 시점으로 전환 중…",
-        "blocks": [],
-        "content": {
-          "file": "content/codex-terms--lore-20064.json",
-          "rows": 2,
-          "missing": 0,
-          "sourceIds": [
-            "lore-20064",
-            "lore-20065"
-          ]
-        }
-      },
-      {
-        "id": "lore-20062",
-        "title": "[헤르타]의 시점으로 전환 중…",
-        "blocks": [],
-        "content": {
-          "file": "content/codex-terms--lore-20062.json",
-          "rows": 3,
-          "missing": 0,
-          "sourceIds": [
-            "lore-20062",
-            "lore-20070",
-            "lore-20092"
-          ]
-        }
-      },
-      {
-        "id": "lore-20091",
-        "title": "[히메코]의 시점으로 전환 중……",
-        "blocks": [],
-        "content": {
-          "file": "content/codex-terms--lore-20091.json",
-          "rows": 4,
-          "missing": 0,
-          "sourceIds": [
-            "lore-20091",
-            "lore-20096",
-            "lore-20101",
-            "lore-20106"
-          ]
-        }
-      },
-      {
-        "id": "lore-20077",
-        "title": "[히아킨]의 시점으로 전환 중…",
-        "blocks": [],
-        "content": {
-          "file": "content/codex-terms--lore-20077.json",
-          "rows": 1,
-          "missing": 0,
-          "sourceIds": [
-            "lore-20077"
-          ]
-        }
-      },
-      {
-        "id": "lore-20053",
-        "title": "[Mar. 7th]의 시점으로 전환 중",
-        "blocks": [],
-        "content": {
-          "file": "content/codex-terms--lore-20053.json",
-          "rows": 2,
-          "missing": 0,
-          "sourceIds": [
-            "lore-20053",
-            "lore-20056"
-          ]
-        }
-      },
-      {
-        "id": "lore-20011",
-        "title": "[Mar. 7th]의 시점으로 전환 중…",
-        "blocks": [],
-        "content": {
-          "file": "content/codex-terms--lore-20011.json",
-          "rows": 1,
-          "missing": 0,
-          "sourceIds": [
-            "lore-20011"
-          ]
-        }
-      },
-      {
-        "id": "lore-10270",
-        "title": "「구름 속 폐성」 조석의 눈",
-        "blocks": [],
-        "content": {
-          "file": "content/codex-terms--lore-10270.json",
-          "rows": 1,
-          "missing": 0,
-          "sourceIds": [
-            "lore-10270"
-          ]
-        }
-      },
-      {
-        "id": "lore-10227",
-        "title": "「닥쳐」",
-        "blocks": [],
-        "content": {
-          "file": "content/codex-terms--lore-10227.json",
-          "rows": 1,
-          "missing": 0,
-          "sourceIds": [
-            "lore-10227"
-          ]
-        }
-      },
-      {
-        "id": "lore-10311",
-        "title": "「달리아」 콘스탄스",
-        "blocks": [],
-        "content": {
-          "file": "content/codex-terms--lore-10311.json",
-          "rows": 1,
-          "missing": 0,
-          "sourceIds": [
-            "lore-10311"
-          ]
-        }
-      },
-      {
-        "id": "lore-10159",
-        "title": "「레버리」 호텔",
-        "blocks": [],
-        "content": {
-          "file": "content/codex-terms--lore-10159.json",
-          "rows": 1,
-          "missing": 0,
-          "sourceIds": [
-            "lore-10159"
-          ]
-        }
-      },
-      {
-        "id": "lore-10272",
-        "title": "「몰락한 황혼의 도시」 오크마",
-        "blocks": [],
-        "content": {
-          "file": "content/codex-terms--lore-10272.json",
-          "rows": 1,
-          "missing": 0,
-          "sourceIds": [
-            "lore-10272"
-          ]
-        }
-      },
-      {
-        "id": "lore-10169",
-        "title": "「무엇이 죽음으로 향하는가」",
-        "blocks": [],
-        "content": {
-          "file": "content/codex-terms--lore-10169.json",
-          "rows": 2,
-          "missing": 0,
-          "sourceIds": [
-            "lore-10169",
-            "lore-10181"
-          ]
-        }
-      },
-      {
-        "id": "lore-10216",
-        "title": "「붉은 달」",
-        "blocks": [],
-        "content": {
-          "file": "content/codex-terms--lore-10216.json",
-          "rows": 1,
-          "missing": 0,
-          "sourceIds": [
-            "lore-10216"
-          ]
-        }
-      },
-      {
-        "id": "lore-10217",
-        "title": "「비황」",
-        "blocks": [],
-        "content": {
-          "file": "content/codex-terms--lore-10217.json",
-          "rows": 1,
-          "missing": 0,
-          "sourceIds": [
-            "lore-10217"
-          ]
-        }
-      },
-      {
-        "id": "lore-10271",
-        "title": "「빛이 없는 기도당」 여명의 절벽",
-        "blocks": [],
-        "content": {
-          "file": "content/codex-terms--lore-10271.json",
-          "rows": 1,
-          "missing": 0,
-          "sourceIds": [
-            "lore-10271"
-          ]
-        }
-      },
-      {
-        "id": "lore-10411",
-        "title": "「세상 끝」 술집",
-        "blocks": [],
-        "content": {
-          "file": "content/codex-terms--lore-10411.json",
-          "rows": 1,
-          "missing": 0,
-          "sourceIds": [
-            "lore-10411"
-          ]
-        }
-      },
-      {
-        "id": "lore-10146",
-        "title": "「시계공」",
-        "blocks": [],
-        "content": {
-          "file": "content/codex-terms--lore-10146.json",
-          "rows": 3,
-          "missing": 0,
-          "sourceIds": [
-            "lore-10146",
-            "lore-10177",
-            "lore-20024"
-          ]
-        }
-      },
-      {
-        "id": "lore-10421",
-        "title": "「잔본」 공간",
-        "blocks": [],
-        "content": {
-          "file": "content/codex-terms--lore-10421.json",
-          "rows": 1,
-          "missing": 0,
-          "sourceIds": [
-            "lore-10421"
-          ]
-        }
-      },
-      {
-        "id": "lore-10269",
-        "title": "「천궁 요새」 조석의 눈",
-        "blocks": [],
-        "content": {
-          "file": "content/codex-terms--lore-10269.json",
-          "rows": 1,
-          "missing": 0,
-          "sourceIds": [
-            "lore-10269"
-          ]
-        }
-      },
-      {
-        "id": "lore-10267",
-        "title": "「태양과 번개의 기사」 셀리오스",
-        "blocks": [],
-        "content": {
-          "file": "content/codex-terms--lore-10267.json",
-          "rows": 2,
-          "missing": 0,
-          "sourceIds": [
-            "lore-10267",
-            "lore-10268"
-          ]
-        }
-      },
-      {
-        "id": "lore-10273",
-        "title": "「태양과 번개의 업과」 아퀼라",
-        "blocks": [],
-        "content": {
-          "file": "content/codex-terms--lore-10273.json",
-          "rows": 1,
-          "missing": 0,
-          "sourceIds": [
-            "lore-10273"
-          ]
-        }
-      },
-      {
-        "id": "lore-10143",
-        "title": "#27 루버트",
-        "blocks": [],
-        "content": {
-          "file": "content/codex-terms--lore-10143.json",
-          "rows": 1,
-          "missing": 0,
-          "sourceIds": [
-            "lore-10143"
-          ]
-        }
-      },
-      {
-        "id": "lore-10134",
-        "title": "≪에테르 배틀≫",
-        "blocks": [],
-        "content": {
-          "file": "content/codex-terms--lore-10134.json",
-          "rows": 1,
-          "missing": 0,
-          "sourceIds": [
-            "lore-10134"
-          ]
-        }
-      },
-      {
-        "id": "lore-10407",
-        "title": "2차원 시티",
-        "blocks": [],
-        "content": {
-          "file": "content/codex-terms--lore-10407.json",
-          "rows": 1,
-          "missing": 0,
-          "sourceIds": [
-            "lore-10407"
-          ]
-        }
-      },
-      {
-        "id": "lore-10056",
-        "title": "가면의 우인",
-        "blocks": [],
-        "content": {
-          "file": "content/codex-terms--lore-10056.json",
-          "rows": 1,
-          "missing": 0,
-          "sourceIds": [
-            "lore-10056"
-          ]
-        }
-      },
-      {
-        "id": "lore-10049",
-        "title": "가족",
-        "blocks": [],
-        "content": {
-          "file": "content/codex-terms--lore-10049.json",
-          "rows": 1,
-          "missing": 0,
-          "sourceIds": [
-            "lore-10049"
-          ]
-        }
-      },
-      {
-        "id": "lore-20000",
-        "title": "개척자 시점으로 돌아가는 중…",
-        "blocks": [],
-        "content": {
-          "file": "content/codex-terms--lore-20000.json",
-          "rows": 1,
-          "missing": 0,
-          "sourceIds": [
-            "lore-20000"
-          ]
-        }
-      },
-      {
-        "id": "lore-10155",
-        "title": "갤러거",
-        "blocks": [],
-        "content": {
-          "file": "content/codex-terms--lore-10155.json",
-          "rows": 3,
-          "missing": 0,
-          "sourceIds": [
-            "lore-10155",
-            "lore-10179",
-            "lore-20023"
-          ]
-        }
-      },
-      {
-        "id": "lore-10079",
-        "title": "갤럭시 레인저",
-        "blocks": [],
-        "content": {
-          "file": "content/codex-terms--lore-10079.json",
-          "rows": 1,
-          "missing": 0,
-          "sourceIds": [
-            "lore-10079"
-          ]
-        }
-      },
-      {
-        "id": "lore-10058",
-        "title": "거울을 안은 자",
-        "blocks": [],
-        "content": {
-          "file": "content/codex-terms--lore-10058.json",
-          "rows": 1,
-          "missing": 0,
-          "sourceIds": [
-            "lore-10058"
-          ]
-        }
-      },
-      {
-        "id": "lore-10252",
-        "title": "검은 물결",
-        "blocks": [],
-        "content": {
-          "file": "content/codex-terms--lore-10252.json",
-          "rows": 1,
-          "missing": 0,
-          "sourceIds": [
-            "lore-10252"
-          ]
-        }
-      },
-      {
-        "id": "lore-10027",
-        "title": "게파드•랜도",
-        "blocks": [],
-        "content": {
-          "file": "content/codex-terms--lore-10027.json",
-          "rows": 1,
-          "missing": 0,
-          "sourceIds": [
-            "lore-10027"
-          ]
-        }
-      },
-      {
-        "id": "lore-10095",
-        "title": "경계의 닻",
-        "blocks": [],
-        "content": {
-          "file": "content/codex-terms--lore-10095.json",
-          "rows": 1,
-          "missing": 0,
-          "sourceIds": [
-            "lore-10095"
-          ]
-        }
-      },
-      {
-        "id": "lore-10212",
-        "title": "경기 함선",
-        "blocks": [],
-        "content": {
-          "file": "content/codex-terms--lore-10212.json",
-          "rows": 1,
-          "missing": 0,
-          "sourceIds": [
-            "lore-10212"
-          ]
-        }
-      },
-      {
-        "id": "lore-10123",
-        "title": "경류",
-        "blocks": [],
-        "content": {
-          "file": "content/codex-terms--lore-10123.json",
-          "rows": 1,
-          "missing": 0,
-          "sourceIds": [
-            "lore-10123"
-          ]
-        }
-      },
-      {
-        "id": "lore-10105",
-        "title": "경원",
-        "blocks": [],
-        "content": {
-          "file": "content/codex-terms--lore-10105.json",
-          "rows": 1,
-          "missing": 0,
-          "sourceIds": [
-            "lore-10105"
-          ]
-        }
-      },
-      {
-        "id": "lore-10133",
-        "title": "계네빈",
-        "blocks": [],
-        "content": {
-          "file": "content/codex-terms--lore-10133.json",
-          "rows": 1,
-          "missing": 0,
-          "sourceIds": [
-            "lore-10133"
-          ]
-        }
-      },
-      {
-        "id": "lore-10046",
-        "title": "곤충 떼",
-        "blocks": [],
-        "content": {
-          "file": "content/codex-terms--lore-10046.json",
-          "rows": 1,
-          "missing": 0,
-          "sourceIds": [
-            "lore-10046"
-          ]
-        }
-      },
-      {
-        "id": "lore-10144",
-        "title": "곤충 떼 재난",
-        "blocks": [],
-        "content": {
-          "file": "content/codex-terms--lore-10144.json",
-          "rows": 1,
-          "missing": 0,
-          "sourceIds": [
-            "lore-10144"
-          ]
-        }
-      },
-      {
-        "id": "lore-10165",
-        "title": "공감각 꿈세계",
-        "blocks": [],
-        "content": {
-          "file": "content/codex-terms--lore-10165.json",
-          "rows": 1,
-          "missing": 0,
-          "sourceIds": [
-            "lore-10165"
-          ]
-        }
-      },
-      {
-        "id": "lore-10244",
-        "title": "공정의 저울, 탈란톤",
-        "blocks": [],
-        "content": {
-          "file": "content/codex-terms--lore-10244.json",
-          "rows": 1,
-          "missing": 0,
-          "sourceIds": [
-            "lore-10244"
-          ]
-        }
-      },
-      {
-        "id": "lore-10007",
-        "title": "공허",
-        "blocks": [],
-        "content": {
-          "file": "content/codex-terms--lore-10007.json",
-          "rows": 1,
-          "missing": 0,
-          "sourceIds": [
-            "lore-10007"
-          ]
-        }
-      },
-      {
-        "id": "lore-10137",
-        "title": "곽향",
-        "blocks": [],
-        "content": {
-          "file": "content/codex-terms--lore-10137.json",
-          "rows": 1,
-          "missing": 0,
-          "sourceIds": [
-            "lore-10137"
-          ]
-        }
-      },
-      {
-        "id": "lore-10010",
-        "title": "광추",
-        "blocks": [],
-        "content": {
-          "file": "content/codex-terms--lore-10010.json",
-          "rows": 1,
-          "missing": 0,
-          "sourceIds": [
-            "lore-10010"
-          ]
-        }
-      },
-      {
-        "id": "lore-10136",
-        "title": "구름 위 5전사",
-        "blocks": [],
-        "content": {
-          "file": "content/codex-terms--lore-10136.json",
-          "rows": 1,
-          "missing": 0,
-          "sourceIds": [
-            "lore-10136"
-          ]
-        }
-      },
-      {
-        "id": "lore-10312",
-        "title": "그라모스 철기",
-        "blocks": [],
-        "content": {
-          "file": "content/codex-terms--lore-10312.json",
-          "rows": 1,
-          "missing": 0,
-          "sourceIds": [
-            "lore-10312"
-          ]
-        }
-      },
-      {
-        "id": "lore-10417",
-        "title": "그래피아",
-        "blocks": [],
-        "content": {
-          "file": "content/codex-terms--lore-10417.json",
-          "rows": 1,
-          "missing": 0,
-          "sourceIds": [
-            "lore-10417"
-          ]
-        }
-      },
-      {
-        "id": "lore-10408",
-        "title": "그래피아 아카데미",
-        "blocks": [],
-        "content": {
-          "file": "content/codex-terms--lore-10408.json",
-          "rows": 1,
-          "missing": 0,
-          "sourceIds": [
-            "lore-10408"
-          ]
-        }
-      },
-      {
-        "id": "lore-10406",
-        "title": "그림 속 세계",
-        "blocks": [],
-        "content": {
-          "file": "content/codex-terms--lore-10406.json",
-          "rows": 1,
-          "missing": 0,
-          "sourceIds": [
-            "lore-10406"
-          ]
-        }
-      },
-      {
-        "id": "lore-10164",
-        "title": "기억 물질",
-        "blocks": [],
-        "content": {
-          "file": "content/codex-terms--lore-10164.json",
-          "rows": 1,
-          "missing": 0,
-          "sourceIds": [
-            "lore-10164"
-          ]
-        }
-      },
-      {
-        "id": "lore-10163",
-        "title": "기억의 영역",
-        "blocks": [],
-        "content": {
-          "file": "content/codex-terms--lore-10163.json",
-          "rows": 1,
-          "missing": 0,
-          "sourceIds": [
-            "lore-10163"
-          ]
-        }
-      },
-      {
-        "id": "lore-10173",
-        "title": "기억의 영역 밈",
-        "blocks": [],
-        "content": {
-          "file": "content/codex-terms--lore-10173.json",
-          "rows": 1,
-          "missing": 0,
-          "sourceIds": [
-            "lore-10173"
-          ]
-        }
-      },
-      {
-        "id": "lore-10057",
-        "title": "기억의 정원",
-        "blocks": [],
-        "content": {
-          "file": "content/codex-terms--lore-10057.json",
-          "rows": 1,
-          "missing": 0,
-          "sourceIds": [
-            "lore-10057"
-          ]
-        }
-      },
-      {
-        "id": "lore-10255",
-        "title": "깨달음의 나무 정원",
-        "blocks": [],
-        "content": {
-          "file": "content/codex-terms--lore-10255.json",
-          "rows": 2,
-          "missing": 0,
-          "sourceIds": [
-            "lore-10255",
-            "lore-10256"
-          ]
-        }
-      },
-      {
-        "id": "lore-10172",
-        "title": "꿈방울",
-        "blocks": [],
-        "content": {
-          "file": "content/codex-terms--lore-10172.json",
-          "rows": 1,
-          "missing": 0,
-          "sourceIds": [
-            "lore-10172"
-          ]
-        }
-      },
-      {
-        "id": "lore-10174",
-        "title": "꿈세계 여권",
-        "blocks": [],
-        "content": {
-          "file": "content/codex-terms--lore-10174.json",
-          "rows": 1,
-          "missing": 0,
-          "sourceIds": [
-            "lore-10174"
-          ]
-        }
-      },
-      {
-        "id": "lore-10167",
-        "title": "꿈의 주인",
-        "blocks": [],
-        "content": {
-          "file": "content/codex-terms--lore-10167.json",
-          "rows": 2,
-          "missing": 0,
-          "sourceIds": [
-            "lore-10167",
-            "lore-10314"
-          ]
-        }
-      },
-      {
-        "id": "lore-10182",
-        "title": "꿈이 흐르는 암초",
-        "blocks": [],
-        "content": {
-          "file": "content/codex-terms--lore-10182.json",
-          "rows": 1,
-          "missing": 0,
-          "sourceIds": [
-            "lore-10182"
-          ]
-        }
-      },
-      {
-        "id": "lore-10036",
-        "title": "나누크",
-        "blocks": [],
-        "content": {
-          "file": "content/codex-terms--lore-10036.json",
-          "rows": 1,
-          "missing": 0,
-          "sourceIds": [
-            "lore-10036"
-          ]
-        }
-      },
-      {
-        "id": "lore-10106",
-        "title": "나찰",
-        "blocks": [],
-        "content": {
-          "file": "content/codex-terms--lore-10106.json",
-          "rows": 1,
-          "missing": 0,
-          "sourceIds": [
-            "lore-10106"
-          ]
-        }
-      },
-      {
-        "id": "lore-10032",
-        "title": "나타샤",
-        "blocks": [],
-        "content": {
-          "file": "content/codex-terms--lore-10032.json",
-          "rows": 1,
-          "missing": 0,
-          "sourceIds": [
-            "lore-10032"
-          ]
-        }
-      },
-      {
-        "id": "lore-10419",
-        "title": "나힐럭스",
-        "blocks": [],
-        "content": {
-          "file": "content/codex-terms--lore-10419.json",
-          "rows": 1,
-          "missing": 0,
-          "sourceIds": [
-            "lore-10419"
-          ]
-        }
-      },
-      {
-        "id": "lore-10290",
-        "title": "노래의 해안",
-        "blocks": [],
-        "content": {
-          "file": "content/codex-terms--lore-10290.json",
-          "rows": 1,
-          "missing": 0,
-          "sourceIds": [
-            "lore-10290"
-          ]
-        }
-      },
-      {
-        "id": "lore-10043",
-        "title": "누스",
-        "blocks": [],
-        "content": {
-          "file": "content/codex-terms--lore-10043.json",
-          "rows": 1,
-          "missing": 0,
-          "sourceIds": [
-            "lore-10043"
-          ]
-        }
-      },
-      {
-        "id": "lore-10015",
-        "title": "단항",
-        "blocks": [],
-        "content": {
-          "file": "content/codex-terms--lore-10015.json",
-          "rows": 1,
-          "missing": 0,
-          "sourceIds": [
-            "lore-10015"
-          ]
-        }
-      },
-      {
-        "id": "lore-10293",
-        "title": "단항•등황",
-        "blocks": [],
-        "content": {
-          "file": "content/codex-terms--lore-10293.json",
-          "rows": 1,
-          "missing": 0,
-          "sourceIds": [
-            "lore-10293"
-          ]
-        }
-      },
-      {
-        "id": "lore-10124",
-        "title": "단항•음월",
-        "blocks": [],
-        "content": {
-          "file": "content/codex-terms--lore-10124.json",
-          "rows": 1,
-          "missing": 0,
-          "sourceIds": [
-            "lore-10124"
-          ]
-        }
-      },
-      {
-        "id": "lore-10410",
-        "title": "도브브룩 구역",
-        "blocks": [],
-        "content": {
-          "file": "content/codex-terms--lore-10410.json",
-          "rows": 1,
-          "missing": 0,
-          "sourceIds": [
-            "lore-10410"
-          ]
-        }
-      },
-      {
-        "id": "lore-10130",
-        "title": "뒤돌아보지 마",
-        "blocks": [],
-        "content": {
-          "file": "content/codex-terms--lore-10130.json",
-          "rows": 1,
-          "missing": 0,
-          "sourceIds": [
-            "lore-10130"
-          ]
-        }
-      },
-      {
-        "id": "lore-10437",
-        "title": "등대",
-        "blocks": [],
-        "content": {
-          "file": "content/codex-terms--lore-10437.json",
-          "rows": 2,
-          "missing": 0,
-          "sourceIds": [
-            "lore-10437",
-            "lore-10443"
-          ]
-        }
-      },
-      {
-        "id": "lore-10184",
-        "title": "뜨거운 모래의 순간",
-        "blocks": [],
-        "content": {
-          "file": "content/codex-terms--lore-10184.json",
-          "rows": 1,
-          "missing": 0,
-          "sourceIds": [
-            "lore-10184"
-          ]
-        }
-      },
-      {
-        "id": "lore-10220",
-        "title": "라파",
-        "blocks": [],
-        "content": {
-          "file": "content/codex-terms--lore-10220.json",
-          "rows": 2,
-          "missing": 0,
-          "sourceIds": [
-            "lore-10220",
-            "lore-10221"
-          ]
-        }
-      },
-      {
-        "id": "lore-10037",
-        "title": "란",
-        "blocks": [],
-        "content": {
-          "file": "content/codex-terms--lore-10037.json",
-          "rows": 1,
-          "missing": 0,
-          "sourceIds": [
-            "lore-10037"
-          ]
-        }
-      },
-      {
-        "id": "lore-10175",
-        "title": "로빈",
-        "blocks": [],
-        "content": {
-          "file": "content/codex-terms--lore-10175.json",
-          "rows": 1,
-          "missing": 0,
-          "sourceIds": [
-            "lore-10175"
-          ]
-        }
-      },
-      {
-        "id": "lore-10439",
-        "title": "로빈•서머레토",
-        "blocks": [],
-        "content": {
-          "file": "content/codex-terms--lore-10439.json",
-          "rows": 1,
-          "missing": 0,
-          "sourceIds": [
-            "lore-10439"
-          ]
-        }
-      },
-      {
-        "id": "lore-10121",
-        "title": "루카",
-        "blocks": [],
-        "content": {
-          "file": "content/codex-terms--lore-10121.json",
-          "rows": 1,
-          "missing": 0,
-          "sourceIds": [
-            "lore-10121"
-          ]
-        }
-      },
-      {
-        "id": "lore-10084",
-        "title": "룽(龍)",
-        "blocks": [],
-        "content": {
-          "file": "content/codex-terms--lore-10084.json",
-          "rows": 1,
-          "missing": 0,
-          "sourceIds": [
-            "lore-10084"
-          ]
-        }
-      },
-      {
-        "id": "lore-10420",
-        "title": "류스케",
-        "blocks": [],
-        "content": {
-          "file": "content/codex-terms--lore-10420.json",
-          "rows": 1,
-          "missing": 0,
-          "sourceIds": [
-            "lore-10420"
-          ]
-        }
-      },
-      {
-        "id": "lore-10276",
-        "title": "리고스",
-        "blocks": [],
-        "content": {
-          "file": "content/codex-terms--lore-10276.json",
-          "rows": 2,
-          "missing": 0,
-          "sourceIds": [
-            "lore-10276",
-            "lore-10288"
-          ]
-        }
-      },
-      {
-        "id": "lore-10081",
-        "title": "리들러",
-        "blocks": [],
-        "content": {
-          "file": "content/codex-terms--lore-10081.json",
-          "rows": 1,
-          "missing": 0,
-          "sourceIds": [
-            "lore-10081"
-          ]
-        }
-      },
-      {
-        "id": "lore-10122",
-        "title": "링스",
-        "blocks": [],
-        "content": {
-          "file": "content/codex-terms--lore-10122.json",
-          "rows": 1,
-          "missing": 0,
-          "sourceIds": [
-            "lore-10122"
-          ]
-        }
-      },
-      {
-        "id": "lore-10230",
-        "title": "마이데이",
-        "blocks": [],
-        "content": {
-          "file": "content/codex-terms--lore-10230.json",
-          "rows": 3,
-          "missing": 0,
-          "sourceIds": [
-            "lore-10230",
-            "lore-10258",
-            "lore-10299"
-          ]
-        }
-      },
-      {
-        "id": "lore-10245",
-        "title": "만 갈래의 문, 야누스",
-        "blocks": [],
-        "content": {
-          "file": "content/codex-terms--lore-10245.json",
-          "rows": 1,
-          "missing": 0,
-          "sourceIds": [
-            "lore-10245"
-          ]
-        }
-      },
-      {
-        "id": "lore-10423",
-        "title": "만원",
-        "blocks": [],
-        "content": {
-          "file": "content/codex-terms--lore-10423.json",
-          "rows": 2,
-          "missing": 0,
-          "sourceIds": [
-            "lore-10423",
-            "lore-10426"
-          ]
-        }
-      },
-      {
-        "id": "lore-10205",
-        "title": "맥택",
-        "blocks": [],
-        "content": {
-          "file": "content/codex-terms--lore-10205.json",
-          "rows": 1,
-          "missing": 0,
-          "sourceIds": [
-            "lore-10205"
-          ]
-        }
-      },
-      {
-        "id": "reference-terms-intro",
-        "title": "명사",
-        "blocks": [],
-        "content": {
-          "file": "content/codex-terms--reference-terms-intro.json",
-          "rows": 1,
-          "missing": 0,
-          "sourceIds": [
-            "reference-terms-intro"
-          ]
-        }
-      },
-      {
-        "id": "lore-10433",
-        "title": "모토코",
-        "blocks": [],
-        "content": {
-          "file": "content/codex-terms--lore-10433.json",
-          "rows": 1,
-          "missing": 0,
-          "sourceIds": [
-            "lore-10433"
-          ]
-        }
-      },
-      {
-        "id": "lore-10309",
-        "title": "무루의 아이",
-        "blocks": [],
-        "content": {
-          "file": "content/codex-terms--lore-10309.json",
-          "rows": 1,
-          "missing": 0,
-          "sourceIds": [
-            "lore-10309"
-          ]
-        }
-      },
-      {
-        "id": "lore-10051",
-        "title": "무명객",
-        "blocks": [],
-        "content": {
-          "file": "content/codex-terms--lore-10051.json",
-          "rows": 1,
-          "missing": 0,
-          "sourceIds": [
-            "lore-10051"
-          ]
-        }
-      },
-      {
-        "id": "lore-10077",
-        "title": "미(美)의 기사단",
-        "blocks": [],
-        "content": {
-          "file": "content/codex-terms--lore-10077.json",
-          "rows": 1,
-          "missing": 0,
-          "sourceIds": [
-            "lore-10077"
-          ]
-        }
-      },
-      {
-        "id": "lore-10233",
-        "title": "미미",
-        "blocks": [],
-        "content": {
-          "file": "content/codex-terms--lore-10233.json",
-          "rows": 3,
-          "missing": 0,
-          "sourceIds": [
-            "lore-10233",
-            "lore-10281",
-            "lore-10307"
-          ]
-        }
-      },
-      {
-        "id": "lore-10145",
-        "title": "미샤",
-        "blocks": [],
-        "content": {
-          "file": "content/codex-terms--lore-10145.json",
-          "rows": 2,
-          "missing": 0,
-          "sourceIds": [
-            "lore-10145",
-            "lore-10176"
-          ]
-        }
-      },
-      {
-        "id": "lore-10430",
-        "title": "미착",
-        "blocks": [],
-        "content": {
-          "file": "content/codex-terms--lore-10430.json",
-          "rows": 1,
-          "missing": 0,
-          "sourceIds": [
-            "lore-10430"
-          ]
-        }
-      },
-      {
-        "id": "lore-10085",
-        "title": "미토스",
-        "blocks": [],
-        "content": {
-          "file": "content/codex-terms--lore-10085.json",
-          "rows": 1,
-          "missing": 0,
-          "sourceIds": [
-            "lore-10085"
-          ]
-        }
-      },
-      {
-        "id": "lore-10150",
-        "title": "반디",
-        "blocks": [],
-        "content": {
-          "file": "content/codex-terms--lore-10150.json",
-          "rows": 2,
-          "missing": 0,
-          "sourceIds": [
-            "lore-10150",
-            "lore-20025"
-          ]
-        }
-      },
-      {
-        "id": "lore-10047",
-        "title": "반물질 군단",
-        "blocks": [],
-        "content": {
-          "file": "content/codex-terms--lore-10047.json",
-          "rows": 1,
-          "missing": 0,
-          "sourceIds": [
-            "lore-10047"
-          ]
-        }
-      },
-      {
-        "id": "lore-10235",
-        "title": "반석의 근간, 지오리오스",
-        "blocks": [],
-        "content": {
-          "file": "content/codex-terms--lore-10235.json",
-          "rows": 1,
-          "missing": 0,
-          "sourceIds": [
-            "lore-10235"
-          ]
-        }
-      },
-      {
-        "id": "lore-10248",
-        "title": "반신",
-        "blocks": [],
-        "content": {
-          "file": "content/codex-terms--lore-10248.json",
-          "rows": 1,
-          "missing": 0,
-          "sourceIds": [
-            "lore-10248"
-          ]
-        }
-      },
-      {
-        "id": "lore-10215",
-        "title": "방호 전쟁",
-        "blocks": [],
-        "content": {
-          "file": "content/codex-terms--lore-10215.json",
-          "rows": 1,
-          "missing": 0,
-          "sourceIds": [
-            "lore-10215"
-          ]
-        }
-      },
-      {
-        "id": "lore-10111",
-        "title": "백로",
-        "blocks": [],
-        "content": {
-          "file": "content/codex-terms--lore-10111.json",
-          "rows": 1,
-          "missing": 0,
-          "sourceIds": [
-            "lore-10111"
-          ]
-        }
-      },
-      {
-        "id": "lore-10061",
-        "title": "벨로보그",
-        "blocks": [],
-        "content": {
-          "file": "content/codex-terms--lore-10061.json",
-          "rows": 1,
-          "missing": 0,
-          "sourceIds": [
-            "lore-10061"
-          ]
-        }
-      },
-      {
-        "id": "lore-10240",
-        "title": "변화의 동전, 자그레우스",
-        "blocks": [],
-        "content": {
-          "file": "content/codex-terms--lore-10240.json",
-          "rows": 1,
-          "missing": 0,
-          "sourceIds": [
-            "lore-10240"
-          ]
-        }
-      },
-      {
-        "id": "lore-10214",
-        "title": "보리인",
-        "blocks": [],
-        "content": {
-          "file": "content/codex-terms--lore-10214.json",
-          "rows": 1,
-          "missing": 0,
-          "sourceIds": [
-            "lore-10214"
-          ]
-        }
-      },
-      {
-        "id": "lore-10008",
-        "title": "보존",
-        "blocks": [],
-        "content": {
-          "file": "content/codex-terms--lore-10008.json",
-          "rows": 1,
-          "missing": 0,
-          "sourceIds": [
-            "lore-10008"
-          ]
-        }
-      },
-      {
-        "id": "lore-10132",
-        "title": "복순이",
-        "blocks": [],
-        "content": {
-          "file": "content/codex-terms--lore-10132.json",
-          "rows": 1,
-          "missing": 0,
-          "sourceIds": [
-            "lore-10132"
-          ]
-        }
-      },
-      {
-        "id": "lore-10113",
-        "title": "부현",
-        "blocks": [],
-        "content": {
-          "file": "content/codex-terms--lore-10113.json",
-          "rows": 1,
-          "missing": 0,
-          "sourceIds": [
-            "lore-10113"
-          ]
-        }
-      },
-      {
-        "id": "lore-10239",
-        "title": "분열의 가지, 세르세스",
-        "blocks": [],
-        "content": {
-          "file": "content/codex-terms--lore-10239.json",
-          "rows": 1,
-          "missing": 0,
-          "sourceIds": [
-            "lore-10239"
-          ]
-        }
-      },
-      {
-        "id": "lore-10129",
-        "title": "불멸의 거목",
-        "blocks": [],
-        "content": {
-          "file": "content/codex-terms--lore-10129.json",
-          "rows": 1,
-          "missing": 0,
-          "sourceIds": [
-            "lore-10129"
-          ]
-        }
-      },
-      {
-        "id": "lore-10253",
-        "title": "불을 훔치는 자",
-        "blocks": [],
-        "content": {
-          "file": "content/codex-terms--lore-10253.json",
-          "rows": 3,
-          "missing": 0,
-          "sourceIds": [
-            "lore-10253",
-            "lore-10254",
-            "lore-10279"
-          ]
-        }
-      },
-      {
-        "id": "lore-10025",
-        "title": "브로냐•랜드",
-        "blocks": [],
-        "content": {
-          "file": "content/codex-terms--lore-10025.json",
-          "rows": 2,
-          "missing": 0,
-          "sourceIds": [
-            "lore-10025",
-            "lore-10118"
-          ]
-        }
-      },
-      {
-        "id": "lore-10154",
-        "title": "블랙 스완",
-        "blocks": [],
-        "content": {
-          "file": "content/codex-terms--lore-10154.json",
-          "rows": 1,
-          "missing": 0,
-          "sourceIds": [
-            "lore-10154"
-          ]
-        }
-      },
-      {
-        "id": "lore-10022",
-        "title": "블레이드",
-        "blocks": [],
-        "content": {
-          "file": "content/codex-terms--lore-10022.json",
-          "rows": 1,
-          "missing": 0,
-          "sourceIds": [
-            "lore-10022"
-          ]
-        }
-      },
-      {
-        "id": "lore-10275",
-        "title": "비밀 미궁",
-        "blocks": [],
-        "content": {
-          "file": "content/codex-terms--lore-10275.json",
-          "rows": 1,
-          "missing": 0,
-          "sourceIds": [
-            "lore-10275"
-          ]
-        }
-      },
-      {
-        "id": "lore-10201",
-        "title": "비소",
-        "blocks": [],
-        "content": {
-          "file": "content/codex-terms--lore-10201.json",
-          "rows": 1,
-          "missing": 0,
-          "sourceIds": [
-            "lore-10201"
-          ]
-        }
-      },
-      {
-        "id": "lore-10096",
-        "title": "비술",
-        "blocks": [],
-        "content": {
-          "file": "content/codex-terms--lore-10096.json",
-          "rows": 1,
-          "missing": 0,
-          "sourceIds": [
-            "lore-10096"
-          ]
-        }
-      },
-      {
-        "id": "lore-10055",
-        "title": "비애의 연극인",
-        "blocks": [],
-        "content": {
-          "file": "content/codex-terms--lore-10055.json",
-          "rows": 1,
-          "missing": 0,
-          "sourceIds": [
-            "lore-10055"
-          ]
-        }
-      },
-      {
-        "id": "lore-10186",
-        "title": "빛나는 펠드스파호",
-        "blocks": [],
-        "content": {
-          "file": "content/codex-terms--lore-10186.json",
-          "rows": 1,
-          "missing": 0,
-          "sourceIds": [
-            "lore-10186"
-          ]
-        }
-      },
-      {
-        "id": "lore-10294",
-        "title": "빛이 흔적을 남긴 신성한 숲",
-        "blocks": [],
-        "content": {
-          "file": "content/codex-terms--lore-10294.json",
-          "rows": 1,
-          "missing": 0,
-          "sourceIds": [
-            "lore-10294"
-          ]
-        }
-      },
-      {
-        "id": "lore-10082",
-        "title": "사도",
-        "blocks": [],
-        "content": {
-          "file": "content/codex-terms--lore-10082.json",
-          "rows": 1,
-          "missing": 0,
-          "sourceIds": [
-            "lore-10082"
-          ]
-        }
-      },
-      {
-        "id": "lore-10260",
-        "title": "사이퍼",
-        "blocks": [],
-        "content": {
-          "file": "content/codex-terms--lore-10260.json",
-          "rows": 3,
-          "missing": 0,
-          "sourceIds": [
-            "lore-10260",
-            "lore-10264",
-            "lore-10303"
-          ]
-        }
-      },
-      {
-        "id": "lore-10030",
-        "title": "삼포•코스키",
-        "blocks": [],
-        "content": {
-          "file": "content/codex-terms--lore-10030.json",
-          "rows": 1,
-          "missing": 0,
-          "sourceIds": [
-            "lore-10030"
-          ]
-        }
-      },
-      {
-        "id": "lore-10063",
-        "title": "상층 구역",
-        "blocks": [],
-        "content": {
-          "file": "content/codex-terms--lore-10063.json",
-          "rows": 1,
-          "missing": 0,
-          "sourceIds": [
-            "lore-10063"
-          ]
-        }
-      },
-      {
-        "id": "lore-10151",
-        "title": "샘",
-        "blocks": [],
-        "content": {
-          "file": "content/codex-terms--lore-10151.json",
-          "rows": 1,
-          "missing": 0,
-          "sourceIds": [
-            "lore-10151"
-          ]
-        }
-      },
-      {
-        "id": "lore-10442",
-        "title": "생명과학연구원",
-        "blocks": [],
-        "content": {
-          "file": "content/codex-terms--lore-10442.json",
-          "rows": 1,
-          "missing": 0,
-          "sourceIds": [
-            "lore-10442"
-          ]
-        }
-      },
-      {
-        "id": "lore-10028",
-        "title": "서벌•랜도",
-        "blocks": [],
-        "content": {
-          "file": "content/codex-terms--lore-10028.json",
-          "rows": 1,
-          "missing": 0,
-          "sourceIds": [
-            "lore-10028"
-          ]
-        }
-      },
-      {
-        "id": "lore-10147",
-        "title": "선데이",
-        "blocks": [],
-        "content": {
-          "file": "content/codex-terms--lore-10147.json",
-          "rows": 3,
-          "missing": 0,
-          "sourceIds": [
-            "lore-10147",
-            "lore-10178",
-            "lore-10225"
-          ]
-        }
-      },
-      {
-        "id": "lore-10065",
-        "title": "선주",
-        "blocks": [],
-        "content": {
-          "file": "content/codex-terms--lore-10065.json",
-          "rows": 1,
-          "missing": 0,
-          "sourceIds": [
-            "lore-10065"
-          ]
-        }
-      },
-      {
-        "id": "lore-10052",
-        "title": "선주 연맹",
-        "blocks": [],
-        "content": {
-          "file": "content/codex-terms--lore-10052.json",
-          "rows": 1,
-          "missing": 0,
-          "sourceIds": [
-            "lore-10052"
-          ]
-        }
-      },
-      {
-        "id": "lore-10112",
-        "title": "설의",
-        "blocks": [],
-        "content": {
-          "file": "content/codex-terms--lore-10112.json",
-          "rows": 1,
-          "missing": 0,
-          "sourceIds": [
-            "lore-10112"
-          ]
-        }
-      },
-      {
-        "id": "lore-10200",
-        "title": "성천 연무 의식",
-        "blocks": [],
-        "content": {
-          "file": "content/codex-terms--lore-10200.json",
-          "rows": 1,
-          "missing": 0,
-          "sourceIds": [
-            "lore-10200"
-          ]
-        }
-      },
-      {
-        "id": "lore-10011",
-        "title": "성혼",
-        "blocks": [],
-        "content": {
-          "file": "content/codex-terms--lore-10011.json",
-          "rows": 1,
-          "missing": 0,
-          "sourceIds": [
-            "lore-10011"
-          ]
-        }
-      },
-      {
-        "id": "lore-10238",
-        "title": "세상의 왕좌, 케팔",
-        "blocks": [],
-        "content": {
-          "file": "content/codex-terms--lore-10238.json",
-          "rows": 1,
-          "missing": 0,
-          "sourceIds": [
-            "lore-10238"
-          ]
-        }
-      },
-      {
-        "id": "lore-10140",
-        "title": "세양",
-        "blocks": [],
-        "content": {
-          "file": "content/codex-terms--lore-10140.json",
-          "rows": 1,
-          "missing": 0,
-          "sourceIds": [
-            "lore-10140"
-          ]
-        }
-      },
-      {
-        "id": "lore-10104",
-        "title": "소상",
-        "blocks": [],
-        "content": {
-          "file": "content/codex-terms--lore-10104.json",
-          "rows": 1,
-          "missing": 0,
-          "sourceIds": [
-            "lore-10104"
-          ]
-        }
-      },
-      {
-        "id": "lore-10094",
-        "title": "속성",
-        "blocks": [],
-        "content": {
-          "file": "content/codex-terms--lore-10094.json",
-          "rows": 1,
-          "missing": 0,
-          "sourceIds": [
-            "lore-10094"
-          ]
-        }
-      },
-      {
-        "id": "lore-10183",
-        "title": "솔글래드™ 축제 오디션",
-        "blocks": [],
-        "content": {
-          "file": "content/codex-terms--lore-10183.json",
-          "rows": 1,
-          "missing": 0,
-          "sourceIds": [
-            "lore-10183"
-          ]
-        }
-      },
-      {
-        "id": "lore-10441",
-        "title": "수길라이트",
-        "blocks": [],
-        "content": {
-          "file": "content/codex-terms--lore-10441.json",
-          "rows": 1,
-          "missing": 0,
-          "sourceIds": [
-            "lore-10441"
-          ]
-        }
-      },
-      {
-        "id": "lore-10004",
-        "title": "수렵",
-        "blocks": [],
-        "content": {
-          "file": "content/codex-terms--lore-10004.json",
-          "rows": 1,
-          "missing": 0,
-          "sourceIds": [
-            "lore-10004"
-          ]
-        }
-      },
-      {
-        "id": "lore-10062",
-        "title": "수호자",
-        "blocks": [],
-        "content": {
-          "file": "content/codex-terms--lore-10062.json",
-          "rows": 2,
-          "missing": 0,
-          "sourceIds": [
-            "lore-10062",
-            "lore-10120"
-          ]
-        }
-      },
-      {
-        "id": "lore-10034",
-        "title": "스바로그",
-        "blocks": [],
-        "content": {
-          "file": "content/codex-terms--lore-10034.json",
-          "rows": 1,
-          "missing": 0,
-          "sourceIds": [
-            "lore-10034"
-          ]
-        }
-      },
-      {
-        "id": "lore-10424",
-        "title": "스타레일 FES",
-        "blocks": [],
-        "content": {
-          "file": "content/codex-terms--lore-10424.json",
-          "rows": 1,
-          "missing": 0,
-          "sourceIds": [
-            "lore-10424"
-          ]
-        }
-      },
-      {
-        "id": "lore-10074",
-        "title": "스타피스 컴퍼니",
-        "blocks": [],
-        "content": {
-          "file": "content/codex-terms--lore-10074.json",
-          "rows": 1,
-          "missing": 0,
-          "sourceIds": [
-            "lore-10074"
-          ]
-        }
-      },
-      {
-        "id": "lore-10445",
-        "title": "스텔라론 헌터",
-        "blocks": [],
-        "content": {
-          "file": "content/codex-terms--lore-10445.json",
-          "rows": 1,
-          "missing": 0,
-          "sourceIds": [
-            "lore-10445"
-          ]
-        }
-      },
-      {
-        "id": "lore-10153",
-        "title": "스파클",
-        "blocks": [],
-        "content": {
-          "file": "content/codex-terms--lore-10153.json",
-          "rows": 1,
-          "missing": 0,
-          "sourceIds": [
-            "lore-10153"
-          ]
-        }
-      },
-      {
-        "id": "lore-10412",
-        "title": "스파키",
-        "blocks": [],
-        "content": {
-          "file": "content/codex-terms--lore-10412.json",
-          "rows": 1,
-          "missing": 0,
-          "sourceIds": [
-            "lore-10412"
-          ]
-        }
-      },
-      {
-        "id": "lore-10156",
-        "title": "시계 소년",
-        "blocks": [],
-        "content": {
-          "file": "content/codex-terms--lore-10156.json",
-          "rows": 1,
-          "missing": 0,
-          "sourceIds": [
-            "lore-10156"
-          ]
-        }
-      },
-      {
-        "id": "lore-10168",
-        "title": "시계 트릭",
-        "blocks": [],
-        "content": {
-          "file": "content/codex-terms--lore-10168.json",
-          "rows": 1,
-          "missing": 0,
-          "sourceIds": [
-            "lore-10168"
-          ]
-        }
-      },
-      {
-        "id": "lore-10139",
-        "title": "시왕사",
-        "blocks": [],
-        "content": {
-          "file": "content/codex-terms--lore-10139.json",
-          "rows": 1,
-          "missing": 0,
-          "sourceIds": [
-            "lore-10139"
-          ]
-        }
-      },
-      {
-        "id": "lore-10038",
-        "title": "시페",
-        "blocks": [],
-        "content": {
-          "file": "content/codex-terms--lore-10038.json",
-          "rows": 1,
-          "missing": 0,
-          "sourceIds": [
-            "lore-10038"
-          ]
-        }
-      },
-      {
-        "id": "lore-10289",
-        "title": "신화의 밖",
-        "blocks": [],
-        "content": {
-          "file": "content/codex-terms--lore-10289.json",
-          "rows": 1,
-          "missing": 0,
-          "sourceIds": [
-            "lore-10289"
-          ]
-        }
-      },
-      {
-        "id": "lore-10070",
-        "title": "실버메인 철위대",
-        "blocks": [],
-        "content": {
-          "file": "content/codex-terms--lore-10070.json",
-          "rows": 1,
-          "missing": 0,
-          "sourceIds": [
-            "lore-10070"
-          ]
-        }
-      },
-      {
-        "id": "lore-10211",
-        "title": "십방광영법계",
-        "blocks": [],
-        "content": {
-          "file": "content/codex-terms--lore-10211.json",
-          "rows": 1,
-          "missing": 0,
-          "sourceIds": [
-            "lore-10211"
-          ]
-        }
-      },
-      {
-        "id": "lore-10228",
-        "title": "아글라이아",
-        "blocks": [],
-        "content": {
-          "file": "content/codex-terms--lore-10228.json",
-          "rows": 2,
-          "missing": 0,
-          "sourceIds": [
-            "lore-10228",
-            "lore-10297"
-          ]
-        }
-      },
-      {
-        "id": "lore-10261",
-        "title": "아낙사",
-        "blocks": [],
-        "content": {
-          "file": "content/codex-terms--lore-10261.json",
-          "rows": 3,
-          "missing": 0,
-          "sourceIds": [
-            "lore-10261",
-            "lore-10263",
-            "lore-10301"
-          ]
-        }
-      },
-      {
-        "id": "lore-10019",
-        "title": "아를란",
-        "blocks": [],
-        "content": {
-          "file": "content/codex-terms--lore-10019.json",
-          "rows": 1,
-          "missing": 0,
-          "sourceIds": [
-            "lore-10019"
-          ]
-        }
-      },
-      {
-        "id": "lore-10431",
-        "title": "아삿 프라마드",
-        "blocks": [],
-        "content": {
-          "file": "content/codex-terms--lore-10431.json",
-          "rows": 1,
-          "missing": 0,
-          "sourceIds": [
-            "lore-10431"
-          ]
-        }
-      },
-      {
-        "id": "lore-10018",
-        "title": "아스타",
-        "blocks": [],
-        "content": {
-          "file": "content/codex-terms--lore-10018.json",
-          "rows": 1,
-          "missing": 0,
-          "sourceIds": [
-            "lore-10018"
-          ]
-        }
-      },
-      {
-        "id": "world-602",
-        "title": "아스트로폴리스",
-        "blocks": [],
-        "content": {
-          "file": "content/codex-terms--world-602.json",
-          "rows": 3,
-          "missing": 0,
-          "sourceIds": [
-            "world-602",
-            "lore-10435"
-          ]
-        }
-      },
-      {
-        "id": "lore-10277",
-        "title": "아이언툼",
-        "blocks": [],
-        "content": {
-          "file": "content/codex-terms--lore-10277.json",
-          "rows": 2,
-          "missing": 0,
-          "sourceIds": [
-            "lore-10277",
-            "lore-10308"
-          ]
-        }
-      },
-      {
-        "id": "lore-10138",
-        "title": "아젠티",
-        "blocks": [],
-        "content": {
-          "file": "content/codex-terms--lore-10138.json",
-          "rows": 1,
-          "missing": 0,
-          "sourceIds": [
-            "lore-10138"
-          ]
-        }
-      },
-      {
-        "id": "lore-20093",
-        "title": "아직 끝나지 않은 [키레네]의 이야기……",
-        "blocks": [],
-        "content": {
-          "file": "content/codex-terms--lore-20093.json",
-          "rows": 1,
-          "missing": 0,
-          "sourceIds": [
-            "lore-20093"
-          ]
-        }
-      },
-      {
-        "id": "lore-10434",
-        "title": "아집",
-        "blocks": [],
-        "content": {
-          "file": "content/codex-terms--lore-10434.json",
-          "rows": 1,
-          "missing": 0,
-          "sourceIds": [
-            "lore-10434"
-          ]
-        }
-      },
-      {
-        "id": "lore-20015",
-        "title": "아침 이슬 공관",
-        "blocks": [],
-        "content": {
-          "file": "content/codex-terms--lore-20015.json",
-          "rows": 1,
-          "missing": 0,
-          "sourceIds": [
-            "lore-20015"
-          ]
-        }
-      },
-      {
-        "id": "lore-20016",
-        "title": "아침 이슬의 순간",
-        "blocks": [],
-        "content": {
-          "file": "content/codex-terms--lore-20016.json",
-          "rows": 1,
-          "missing": 0,
-          "sourceIds": [
-            "lore-20016"
-          ]
-        }
-      },
-      {
-        "id": "lore-10152",
-        "title": "아케론",
-        "blocks": [],
-        "content": {
-          "file": "content/codex-terms--lore-10152.json",
-          "rows": 2,
-          "missing": 0,
-          "sourceIds": [
-            "lore-10152",
-            "lore-20022"
-          ]
-        }
-      },
-      {
-        "id": "lore-10042",
-        "title": "아키비리",
-        "blocks": [],
-        "content": {
-          "file": "content/codex-terms--lore-10042.json",
-          "rows": 1,
-          "missing": 0,
-          "sourceIds": [
-            "lore-10042"
-          ]
-        }
-      },
-      {
-        "id": "lore-10044",
-        "title": "아하",
-        "blocks": [],
-        "content": {
-          "file": "content/codex-terms--lore-10044.json",
-          "rows": 1,
-          "missing": 0,
-          "sourceIds": [
-            "lore-10044"
-          ]
-        }
-      },
-      {
-        "id": "lore-10416",
-        "title": "애쉬베일",
-        "blocks": [],
-        "content": {
-          "file": "content/codex-terms--lore-10416.json",
-          "rows": 1,
-          "missing": 0,
-          "sourceIds": [
-            "lore-10416"
-          ]
-        }
-      },
-      {
-        "id": "world-501",
-        "title": "앰포리어스",
-        "blocks": [],
-        "content": {
-          "file": "content/codex-terms--world-501.json",
-          "rows": 2,
-          "missing": 0,
-          "sourceIds": [
-            "world-501"
-          ]
-        }
-      },
-      {
-        "id": "lore-10060",
-        "title": "야릴로-Ⅵ",
-        "blocks": [],
-        "content": {
-          "file": "content/codex-terms--lore-10060.json",
-          "rows": 1,
-          "missing": 0,
-          "sourceIds": [
-            "lore-10060"
-          ]
-        }
-      },
-      {
-        "id": "lore-10438",
-        "title": "야불리",
-        "blocks": [],
-        "content": {
-          "file": "content/codex-terms--lore-10438.json",
-          "rows": 2,
-          "missing": 0,
-          "sourceIds": [
-            "lore-10438",
-            "lore-10444"
-          ]
-        }
-      },
-      {
-        "id": "lore-10041",
-        "title": "약사",
-        "blocks": [],
-        "content": {
-          "file": "content/codex-terms--lore-10041.json",
-          "rows": 1,
-          "missing": 0,
-          "sourceIds": [
-            "lore-10041"
-          ]
-        }
-      },
-      {
-        "id": "lore-10127",
-        "title": "약왕의 비전",
-        "blocks": [],
-        "content": {
-          "file": "content/codex-terms--lore-10127.json",
-          "rows": 1,
-          "missing": 0,
-          "sourceIds": [
-            "lore-10127"
-          ]
-        }
-      },
-      {
-        "id": "lore-10073",
-        "title": "약을 구하는 자",
-        "blocks": [],
-        "content": {
-          "file": "content/codex-terms--lore-10073.json",
-          "rows": 1,
-          "missing": 0,
-          "sourceIds": [
-            "lore-10073"
-          ]
-        }
-      },
-      {
-        "id": "lore-10097",
-        "title": "약점 격파•물리",
-        "blocks": [],
-        "content": {
-          "file": "content/codex-terms--lore-10097.json",
-          "rows": 1,
-          "missing": 0,
-          "sourceIds": [
-            "lore-10097"
-          ]
-        }
-      },
-      {
-        "id": "lore-10098",
-        "title": "약점 격파•바람",
-        "blocks": [],
-        "content": {
-          "file": "content/codex-terms--lore-10098.json",
-          "rows": 1,
-          "missing": 0,
-          "sourceIds": [
-            "lore-10098"
-          ]
-        }
-      },
-      {
-        "id": "lore-10099",
-        "title": "약점 격파•번개",
-        "blocks": [],
-        "content": {
-          "file": "content/codex-terms--lore-10099.json",
-          "rows": 1,
-          "missing": 0,
-          "sourceIds": [
-            "lore-10099"
-          ]
-        }
-      },
-      {
-        "id": "lore-10102",
-        "title": "약점 격파•양자",
-        "blocks": [],
-        "content": {
-          "file": "content/codex-terms--lore-10102.json",
-          "rows": 1,
-          "missing": 0,
-          "sourceIds": [
-            "lore-10102"
-          ]
-        }
-      },
-      {
-        "id": "lore-10101",
-        "title": "약점 격파•얼음",
-        "blocks": [],
-        "content": {
-          "file": "content/codex-terms--lore-10101.json",
-          "rows": 1,
-          "missing": 0,
-          "sourceIds": [
-            "lore-10101"
-          ]
-        }
-      },
-      {
-        "id": "lore-10103",
-        "title": "약점 격파•허수",
-        "blocks": [],
-        "content": {
-          "file": "content/codex-terms--lore-10103.json",
-          "rows": 1,
-          "missing": 0,
-          "sourceIds": [
-            "lore-10103"
-          ]
-        }
-      },
-      {
-        "id": "lore-10100",
-        "title": "약점 격파•화염",
-        "blocks": [],
-        "content": {
-          "file": "content/codex-terms--lore-10100.json",
-          "rows": 1,
-          "missing": 0,
-          "sourceIds": [
-            "lore-10100"
-          ]
-        }
-      },
-      {
-        "id": "lore-10109",
-        "title": "어공",
-        "blocks": [],
-        "content": {
-          "file": "content/codex-terms--lore-10109.json",
-          "rows": 1,
-          "missing": 0,
-          "sourceIds": [
-            "lore-10109"
-          ]
-        }
-      },
-      {
-        "id": "lore-10242",
-        "title": "어둠의 손, 타나토스",
-        "blocks": [],
-        "content": {
-          "file": "content/codex-terms--lore-10242.json",
-          "rows": 1,
-          "missing": 0,
-          "sourceIds": [
-            "lore-10242"
-          ]
-        }
-      },
-      {
-        "id": "lore-10160",
-        "title": "어린아이의 꿈",
-        "blocks": [],
-        "content": {
-          "file": "content/codex-terms--lore-10160.json",
-          "rows": 2,
-          "missing": 0,
-          "sourceIds": [
-            "lore-10160",
-            "lore-10180"
-          ]
-        }
-      },
-      {
-        "id": "lore-10149",
-        "title": "어벤츄린",
-        "blocks": [],
-        "content": {
-          "file": "content/codex-terms--lore-10149.json",
-          "rows": 1,
-          "missing": 0,
-          "sourceIds": [
-            "lore-10149"
-          ]
-        }
-      },
-      {
-        "id": "lore-10440",
-        "title": "어벤츄린•웨이브",
-        "blocks": [],
-        "content": {
-          "file": "content/codex-terms--lore-10440.json",
-          "rows": 1,
-          "missing": 0,
-          "sourceIds": [
-            "lore-10440"
-          ]
-        }
-      },
-      {
-        "id": "lore-10413",
-        "title": "에바네시아",
-        "blocks": [],
-        "content": {
-          "file": "content/codex-terms--lore-10413.json",
-          "rows": 1,
-          "missing": 0,
-          "sourceIds": [
-            "lore-10413"
-          ]
-        }
-      },
-      {
-        "id": "lore-10287",
-        "title": "에버나이트",
-        "blocks": [],
-        "content": {
-          "file": "content/codex-terms--lore-10287.json",
-          "rows": 2,
-          "missing": 0,
-          "sourceIds": [
-            "lore-10287",
-            "lore-10291"
-          ]
-        }
-      },
-      {
-        "id": "lore-10162",
-        "title": "에브긴인",
-        "blocks": [],
-        "content": {
-          "file": "content/codex-terms--lore-10162.json",
-          "rows": 1,
-          "missing": 0,
-          "sourceIds": [
-            "lore-10162"
-          ]
-        }
-      },
-      {
-        "id": "lore-10067",
-        "title": "에이언즈",
-        "blocks": [],
-        "content": {
-          "file": "content/codex-terms--lore-10067.json",
-          "rows": 1,
-          "missing": 0,
-          "sourceIds": [
-            "lore-10067"
-          ]
-        }
-      },
-      {
-        "id": "lore-10135",
-        "title": "에테르 정령",
-        "blocks": [],
-        "content": {
-          "file": "content/codex-terms--lore-10135.json",
-          "rows": 1,
-          "missing": 0,
-          "sourceIds": [
-            "lore-10135"
-          ]
-        }
-      },
-      {
-        "id": "lore-10274",
-        "title": "엘리사이 에데스",
-        "blocks": [],
-        "content": {
-          "file": "content/codex-terms--lore-10274.json",
-          "rows": 1,
-          "missing": 0,
-          "sourceIds": [
-            "lore-10274"
-          ]
-        }
-      },
-      {
-        "id": "lore-10023",
-        "title": "엘리오",
-        "blocks": [],
-        "content": {
-          "file": "content/codex-terms--lore-10023.json",
-          "rows": 1,
-          "missing": 0,
-          "sourceIds": [
-            "lore-10023"
-          ]
-        }
-      },
-      {
-        "id": "lore-10265",
-        "title": "여명의 절벽",
-        "blocks": [],
-        "content": {
-          "file": "content/codex-terms--lore-10265.json",
-          "rows": 1,
-          "missing": 0,
-          "sourceIds": [
-            "lore-10265"
-          ]
-        }
-      },
-      {
-        "id": "lore-10107",
-        "title": "연경",
-        "blocks": [],
-        "content": {
-          "file": "content/codex-terms--lore-10107.json",
-          "rows": 1,
-          "missing": 0,
-          "sourceIds": [
-            "lore-10107"
-          ]
-        }
-      },
-      {
-        "id": "lore-10071",
-        "title": "열계",
-        "blocks": [],
-        "content": {
-          "file": "content/codex-terms--lore-10071.json",
-          "rows": 1,
-          "missing": 0,
-          "sourceIds": [
-            "lore-10071"
-          ]
-        }
-      },
-      {
-        "id": "lore-10072",
-        "title": "열계 창조물",
-        "blocks": [],
-        "content": {
-          "file": "content/codex-terms--lore-10072.json",
-          "rows": 1,
-          "missing": 0,
-          "sourceIds": [
-            "lore-10072"
-          ]
-        }
-      },
-      {
-        "id": "lore-10284",
-        "title": "영겁 회귀",
-        "blocks": [],
-        "content": {
-          "file": "content/codex-terms--lore-10284.json",
-          "rows": 1,
-          "missing": 0,
-          "sourceIds": [
-            "lore-10284"
-          ]
-        }
-      },
-      {
-        "id": "lore-10243",
-        "title": "영원한 밤의 장막, 오로닉스",
-        "blocks": [],
-        "content": {
-          "file": "content/codex-terms--lore-10243.json",
-          "rows": 1,
-          "missing": 0,
-          "sourceIds": [
-            "lore-10243"
-          ]
-        }
-      },
-      {
-        "id": "lore-10249",
-        "title": "오크마",
-        "blocks": [],
-        "content": {
-          "file": "content/codex-terms--lore-10249.json",
-          "rows": 1,
-          "missing": 0,
-          "sourceIds": [
-            "lore-10249"
-          ]
-        }
-      },
-      {
-        "id": "lore-10069",
-        "title": "와일드 파이어",
-        "blocks": [],
-        "content": {
-          "file": "content/codex-terms--lore-10069.json",
-          "rows": 1,
-          "missing": 0,
-          "sourceIds": [
-            "lore-10069"
-          ]
-        }
-      },
-      {
-        "id": "lore-10141",
-        "title": "완•매",
-        "blocks": [],
-        "content": {
-          "file": "content/codex-terms--lore-10141.json",
-          "rows": 1,
-          "missing": 0,
-          "sourceIds": [
-            "lore-10141"
-          ]
-        }
-      },
-      {
-        "id": "lore-10125",
-        "title": "용의 군사",
-        "blocks": [],
-        "content": {
-          "file": "content/codex-terms--lore-10125.json",
-          "rows": 1,
-          "missing": 0,
-          "sourceIds": [
-            "lore-10125"
-          ]
-        }
-      },
-      {
-        "id": "lore-10128",
-        "title": "용존(龍尊)",
-        "blocks": [],
-        "content": {
-          "file": "content/codex-terms--lore-10128.json",
-          "rows": 1,
-          "missing": 0,
-          "sourceIds": [
-            "lore-10128"
-          ]
-        }
-      },
-      {
-        "id": "lore-10266",
-        "title": "용해 고성",
-        "blocks": [],
-        "content": {
-          "file": "content/codex-terms--lore-10266.json",
-          "rows": 1,
-          "missing": 0,
-          "sourceIds": [
-            "lore-10266"
-          ]
-        }
-      },
-      {
-        "id": "lore-10086",
-        "title": "우로보로스",
-        "blocks": [],
-        "content": {
-          "file": "content/codex-terms--lore-10086.json",
-          "rows": 1,
-          "missing": 0,
-          "sourceIds": [
-            "lore-10086"
-          ]
-        }
-      },
-      {
-        "id": "lore-10203",
-        "title": "운리",
-        "blocks": [],
-        "content": {
-          "file": "content/codex-terms--lore-10203.json",
-          "rows": 1,
-          "missing": 0,
-          "sourceIds": [
-            "lore-10203"
-          ]
-        }
-      },
-      {
-        "id": "lore-10001",
-        "title": "운명의 길",
-        "blocks": [],
-        "content": {
-          "file": "content/codex-terms--lore-10001.json",
-          "rows": 1,
-          "missing": 0,
-          "sourceIds": [
-            "lore-10001"
-          ]
-        }
-      },
-      {
-        "id": "lore-10083",
-        "title": "운명의 길을 걷는 자",
-        "blocks": [],
-        "content": {
-          "file": "content/codex-terms--lore-10083.json",
-          "rows": 1,
-          "missing": 0,
-          "sourceIds": [
-            "lore-10083"
-          ]
-        }
-      },
-      {
-        "id": "lore-10251",
-        "title": "운명의 심연",
-        "blocks": [],
-        "content": {
-          "file": "content/codex-terms--lore-10251.json",
-          "rows": 1,
-          "missing": 0,
-          "sourceIds": [
-            "lore-10251"
-          ]
-        }
-      },
-      {
-        "id": "lore-10223",
-        "title": "원구의 숲",
-        "blocks": [],
-        "content": {
-          "file": "content/codex-terms--lore-10223.json",
-          "rows": 1,
-          "missing": 0,
-          "sourceIds": [
-            "lore-10223"
-          ]
-        }
-      },
-      {
-        "id": "lore-10222",
-        "title": "원시 박사",
-        "blocks": [],
-        "content": {
-          "file": "content/codex-terms--lore-10222.json",
-          "rows": 1,
-          "missing": 0,
-          "sourceIds": [
-            "lore-10222"
-          ]
-        }
-      },
-      {
-        "id": "lore-10017",
-        "title": "웰트•양",
-        "blocks": [],
-        "content": {
-          "file": "content/codex-terms--lore-10017.json",
-          "rows": 1,
-          "missing": 0,
-          "sourceIds": [
-            "lore-10017"
-          ]
-        }
-      },
-      {
-        "id": "lore-10012",
-        "title": "유물",
-        "blocks": [],
-        "content": {
-          "file": "content/codex-terms--lore-10012.json",
-          "rows": 1,
-          "missing": 0,
-          "sourceIds": [
-            "lore-10012"
-          ]
-        }
-      },
-      {
-        "id": "lore-10213",
-        "title": "유폐옥",
-        "blocks": [],
-        "content": {
-          "file": "content/codex-terms--lore-10213.json",
-          "rows": 1,
-          "missing": 0,
-          "sourceIds": [
-            "lore-10213"
-          ]
-        }
-      },
-      {
-        "id": "lore-10021",
-        "title": "은랑",
-        "blocks": [],
-        "content": {
-          "file": "content/codex-terms--lore-10021.json",
-          "rows": 1,
-          "missing": 0,
-          "sourceIds": [
-            "lore-10021"
-          ]
-        }
-      },
-      {
-        "id": "lore-10045",
-        "title": "은하열차",
-        "blocks": [],
-        "content": {
-          "file": "content/codex-terms--lore-10045.json",
-          "rows": 1,
-          "missing": 0,
-          "sourceIds": [
-            "lore-10045"
-          ]
-        }
-      },
-      {
-        "id": "lore-10087",
-        "title": "이드릴라",
-        "blocks": [],
-        "content": {
-          "file": "content/codex-terms--lore-10087.json",
-          "rows": 1,
-          "missing": 0,
-          "sourceIds": [
-            "lore-10087"
-          ]
-        }
-      },
-      {
-        "id": "lore-10295",
-        "title": "이름 없는 티탄의 거대 무덤",
-        "blocks": [],
-        "content": {
-          "file": "content/codex-terms--lore-10295.json",
-          "rows": 1,
-          "missing": 0,
-          "sourceIds": [
-            "lore-10295"
-          ]
-        }
-      },
-      {
-        "id": "world-601",
-        "title": "이상 낙원",
-        "blocks": [],
-        "content": {
-          "file": "content/codex-terms--world-601.json",
-          "rows": 2,
-          "missing": 0,
-          "sourceIds": [
-            "world-601"
-          ]
-        }
-      },
-      {
-        "id": "lore-10126",
-        "title": "인연경",
-        "blocks": [],
-        "content": {
-          "file": "content/codex-terms--lore-10126.json",
-          "rows": 1,
-          "missing": 0,
-          "sourceIds": [
-            "lore-10126"
-          ]
-        }
-      },
-      {
-        "id": "lore-10091",
-        "title": "일반 공격",
-        "blocks": [],
-        "content": {
-          "file": "content/codex-terms--lore-10091.json",
-          "rows": 1,
-          "missing": 0,
-          "sourceIds": [
-            "lore-10091"
-          ]
-        }
-      },
-      {
-        "id": "lore-20018",
-        "title": "자멸자",
-        "blocks": [],
-        "content": {
-          "file": "content/codex-terms--lore-20018.json",
-          "rows": 1,
-          "missing": 0,
-          "sourceIds": [
-            "lore-20018"
-          ]
-        }
-      },
-      {
-        "id": "lore-10075",
-        "title": "장례식 안내원",
-        "blocks": [],
-        "content": {
-          "file": "content/codex-terms--lore-10075.json",
-          "rows": 1,
-          "missing": 0,
-          "sourceIds": [
-            "lore-10075"
-          ]
-        }
-      },
-      {
-        "id": "lore-10282",
-        "title": "재창기",
-        "blocks": [],
-        "content": {
-          "file": "content/codex-terms--lore-10282.json",
-          "rows": 3,
-          "missing": 0,
-          "sourceIds": [
-            "lore-10282",
-            "lore-10283",
-            "lore-10296"
-          ]
-        }
-      },
-      {
-        "id": "lore-10092",
-        "title": "전투 스킬 포인트",
-        "blocks": [],
-        "content": {
-          "file": "content/codex-terms--lore-10092.json",
-          "rows": 1,
-          "missing": 0,
-          "sourceIds": [
-            "lore-10092"
-          ]
-        }
-      },
-      {
-        "id": "lore-10108",
-        "title": "정운",
-        "blocks": [],
-        "content": {
-          "file": "content/codex-terms--lore-10108.json",
-          "rows": 2,
-          "missing": 0,
-          "sourceIds": [
-            "lore-10108",
-            "lore-10226"
-          ]
-        }
-      },
-      {
-        "id": "lore-10026",
-        "title": "제레",
-        "blocks": [],
-        "content": {
-          "file": "content/codex-terms--lore-10026.json",
-          "rows": 1,
-          "missing": 0,
-          "sourceIds": [
-            "lore-10026"
-          ]
-        }
-      },
-      {
-        "id": "lore-20014",
-        "title": "제이드",
-        "blocks": [],
-        "content": {
-          "file": "content/codex-terms--lore-20014.json",
-          "rows": 1,
-          "missing": 0,
-          "sourceIds": [
-            "lore-20014"
-          ]
-        }
-      },
-      {
-        "id": "lore-10078",
-        "title": "제Ⅸ 기관",
-        "blocks": [],
-        "content": {
-          "file": "content/codex-terms--lore-10078.json",
-          "rows": 1,
-          "missing": 0,
-          "sourceIds": [
-            "lore-10078"
-          ]
-        }
-      },
-      {
-        "id": "lore-10234",
-        "title": "조석의 눈, 아퀼라",
-        "blocks": [],
-        "content": {
-          "file": "content/codex-terms--lore-10234.json",
-          "rows": 1,
-          "missing": 0,
-          "sourceIds": [
-            "lore-10234"
-          ]
-        }
-      },
-      {
-        "id": "lore-10166",
-        "title": "조화의 축제",
-        "blocks": [],
-        "content": {
-          "file": "content/codex-terms--lore-10166.json",
-          "rows": 1,
-          "missing": 0,
-          "sourceIds": [
-            "lore-10166"
-          ]
-        }
-      },
-      {
-        "id": "lore-10315",
-        "title": "좀먹은 참나무의 꿈",
-        "blocks": [],
-        "content": {
-          "file": "content/codex-terms--lore-10315.json",
-          "rows": 1,
-          "missing": 0,
-          "sourceIds": [
-            "lore-10315"
-          ]
-        }
-      },
-      {
-        "id": "lore-10171",
-        "title": "좋은꿈 극단",
-        "blocks": [],
-        "content": {
-          "file": "content/codex-terms--lore-10171.json",
-          "rows": 1,
-          "missing": 0,
-          "sourceIds": [
-            "lore-10171"
-          ]
-        }
-      },
-      {
-        "id": "lore-10428",
-        "title": "죽음의 전령",
-        "blocks": [],
-        "content": {
-          "file": "content/codex-terms--lore-10428.json",
-          "rows": 1,
-          "missing": 0,
-          "sourceIds": [
-            "lore-10428"
-          ]
-        }
-      },
-      {
-        "id": "lore-10115",
-        "title": "중재관",
-        "blocks": [],
-        "content": {
-          "file": "content/codex-terms--lore-10115.json",
-          "rows": 1,
-          "missing": 0,
-          "sourceIds": [
-            "lore-10115"
-          ]
-        }
-      },
-      {
-        "id": "lore-10050",
-        "title": "지니어스 클럽",
-        "blocks": [],
-        "content": {
-          "file": "content/codex-terms--lore-10050.json",
-          "rows": 1,
-          "missing": 0,
-          "sourceIds": [
-            "lore-10050"
-          ]
-        }
-      },
-      {
-        "id": "lore-10005",
-        "title": "지식",
-        "blocks": [],
-        "content": {
-          "file": "content/codex-terms--lore-10005.json",
-          "rows": 1,
-          "missing": 0,
-          "sourceIds": [
-            "lore-10005"
-          ]
-        }
-      },
-      {
-        "id": "lore-10068",
-        "title": "지오매로우",
-        "blocks": [],
-        "content": {
-          "file": "content/codex-terms--lore-10068.json",
-          "rows": 1,
-          "missing": 0,
-          "sourceIds": [
-            "lore-10068"
-          ]
-        }
-      },
-      {
-        "id": "lore-10241",
-        "title": "천벌의 창, 니카도르",
-        "blocks": [],
-        "content": {
-          "file": "content/codex-terms--lore-10241.json",
-          "rows": 1,
-          "missing": 0,
-          "sourceIds": [
-            "lore-10241"
-          ]
-        }
-      },
-      {
-        "id": "lore-10110",
-        "title": "청작",
-        "blocks": [],
-        "content": {
-          "file": "content/codex-terms--lore-10110.json",
-          "rows": 1,
-          "missing": 0,
-          "sourceIds": [
-            "lore-10110"
-          ]
-        }
-      },
-      {
-        "id": "lore-10202",
-        "title": "초구",
-        "blocks": [],
-        "content": {
-          "file": "content/codex-terms--lore-10202.json",
-          "rows": 1,
-          "missing": 0,
-          "sourceIds": [
-            "lore-10202"
-          ]
-        }
-      },
-      {
-        "id": "lore-20019",
-        "title": "초석",
-        "blocks": [],
-        "content": {
-          "file": "content/codex-terms--lore-20019.json",
-          "rows": 1,
-          "missing": 0,
-          "sourceIds": [
-            "lore-20019"
-          ]
-        }
-      },
-      {
-        "id": "lore-10405",
-        "title": "초토 기원",
-        "blocks": [],
-        "content": {
-          "file": "content/codex-terms--lore-10405.json",
-          "rows": 1,
-          "missing": 0,
-          "sourceIds": [
-            "lore-10405"
-          ]
-        }
-      },
-      {
-        "id": "lore-10048",
-        "title": "축성가(築城家)",
-        "blocks": [],
-        "content": {
-          "file": "content/codex-terms--lore-10048.json",
-          "rows": 1,
-          "missing": 0,
-          "sourceIds": [
-            "lore-10048"
-          ]
-        }
-      },
-      {
-        "id": "lore-10236",
-        "title": "충만의 잔, 파구사",
-        "blocks": [],
-        "content": {
-          "file": "content/codex-terms--lore-10236.json",
-          "rows": 1,
-          "missing": 0,
-          "sourceIds": [
-            "lore-10236"
-          ]
-        }
-      },
-      {
-        "id": "lore-10161",
-        "title": "츠가냐",
-        "blocks": [],
-        "content": {
-          "file": "content/codex-terms--lore-10161.json",
-          "rows": 1,
-          "missing": 0,
-          "sourceIds": [
-            "lore-10161"
-          ]
-        }
-      },
-      {
-        "id": "lore-10231",
-        "title": "카스토리스",
-        "blocks": [],
-        "content": {
-          "file": "content/codex-terms--lore-10231.json",
-          "rows": 3,
-          "missing": 0,
-          "sourceIds": [
-            "lore-10231",
-            "lore-10262",
-            "lore-10300"
-          ]
-        }
-      },
-      {
-        "id": "lore-10020",
-        "title": "카프카",
-        "blocks": [],
-        "content": {
-          "file": "content/codex-terms--lore-10020.json",
-          "rows": 1,
-          "missing": 0,
-          "sourceIds": [
-            "lore-10020"
-          ]
-        }
-      },
-      {
-        "id": "lore-10436",
-        "title": "케네스•아리타",
-        "blocks": [],
-        "content": {
-          "file": "content/codex-terms--lore-10436.json",
-          "rows": 1,
-          "missing": 0,
-          "sourceIds": [
-            "lore-10436"
-          ]
-        }
-      },
-      {
-        "id": "lore-10286",
-        "title": "케리드라",
-        "blocks": [],
-        "content": {
-          "file": "content/codex-terms--lore-10286.json",
-          "rows": 2,
-          "missing": 0,
-          "sourceIds": [
-            "lore-10286",
-            "lore-10305"
-          ]
-        }
-      },
-      {
-        "id": "lore-10418",
-        "title": "쿠치바",
-        "blocks": [],
-        "content": {
-          "file": "content/codex-terms--lore-10418.json",
-          "rows": 1,
-          "missing": 0,
-          "sourceIds": [
-            "lore-10418"
-          ]
-        }
-      },
-      {
-        "id": "lore-10029",
-        "title": "쿠쿠리아•랜드",
-        "blocks": [],
-        "content": {
-          "file": "content/codex-terms--lore-10029.json",
-          "rows": 2,
-          "missing": 0,
-          "sourceIds": [
-            "lore-10029",
-            "lore-10119"
-          ]
-        }
-      },
-      {
-        "id": "lore-10250",
-        "title": "크렘노스성",
-        "blocks": [],
-        "content": {
-          "file": "content/codex-terms--lore-10250.json",
-          "rows": 1,
-          "missing": 0,
-          "sourceIds": [
-            "lore-10250"
-          ]
-        }
-      },
-      {
-        "id": "lore-10035",
-        "title": "클라라",
-        "blocks": [],
-        "content": {
-          "file": "content/codex-terms--lore-10035.json",
-          "rows": 1,
-          "missing": 0,
-          "sourceIds": [
-            "lore-10035"
-          ]
-        }
-      },
-      {
-        "id": "lore-20017",
-        "title": "클락 스튜디오 테마파크",
-        "blocks": [],
-        "content": {
-          "file": "content/codex-terms--lore-20017.json",
-          "rows": 1,
-          "missing": 0,
-          "sourceIds": [
-            "lore-20017"
-          ]
-        }
-      },
-      {
-        "id": "lore-10040",
-        "title": "클리포트",
-        "blocks": [],
-        "content": {
-          "file": "content/codex-terms--lore-10040.json",
-          "rows": 1,
-          "missing": 0,
-          "sourceIds": [
-            "lore-10040"
-          ]
-        }
-      },
-      {
-        "id": "lore-10280",
-        "title": "키레네",
-        "blocks": [],
-        "content": {
-          "file": "content/codex-terms--lore-10280.json",
-          "rows": 2,
-          "missing": 0,
-          "sourceIds": [
-            "lore-10280",
-            "lore-10310"
-          ]
-        }
-      },
-      {
-        "id": "lore-10088",
-        "title": "타이츠론스",
-        "blocks": [],
-        "content": {
-          "file": "content/codex-terms--lore-10088.json",
-          "rows": 1,
-          "missing": 0,
-          "sourceIds": [
-            "lore-10088"
-          ]
-        }
-      },
-      {
-        "id": "lore-10292",
-        "title": "테라복스",
-        "blocks": [],
-        "content": {
-          "file": "content/codex-terms--lore-10292.json",
-          "rows": 1,
-          "missing": 0,
-          "sourceIds": [
-            "lore-10292"
-          ]
-        }
-      },
-      {
-        "id": "lore-10089",
-        "title": "테르미누스",
-        "blocks": [],
-        "content": {
-          "file": "content/codex-terms--lore-10089.json",
-          "rows": 2,
-          "missing": 0,
-          "sourceIds": [
-            "lore-10089",
-            "lore-10313"
-          ]
-        }
-      },
-      {
-        "id": "lore-10131",
-        "title": "토파즈",
-        "blocks": [],
-        "content": {
-          "file": "content/codex-terms--lore-10131.json",
-          "rows": 1,
-          "missing": 0,
-          "sourceIds": [
-            "lore-10131"
-          ]
-        }
-      },
-      {
-        "id": "lore-10298",
-        "title": "트리비",
-        "blocks": [],
-        "content": {
-          "file": "content/codex-terms--lore-10298.json",
-          "rows": 1,
-          "missing": 0,
-          "sourceIds": [
-            "lore-10298"
-          ]
-        }
-      },
-      {
-        "id": "lore-10229",
-        "title": "트리비, 트리앤, 트리논",
-        "blocks": [],
-        "content": {
-          "file": "content/codex-terms--lore-10229.json",
-          "rows": 2,
-          "missing": 0,
-          "sourceIds": [
-            "lore-10229",
-            "lore-10257"
-          ]
-        }
-      },
-      {
-        "id": "lore-10246",
-        "title": "티탄",
-        "blocks": [],
-        "content": {
-          "file": "content/codex-terms--lore-10246.json",
-          "rows": 1,
-          "missing": 0,
-          "sourceIds": [
-            "lore-10246"
-          ]
-        }
-      },
-      {
-        "id": "lore-10003",
-        "title": "파멸",
-        "blocks": [],
-        "content": {
-          "file": "content/codex-terms--lore-10003.json",
-          "rows": 1,
-          "missing": 0,
-          "sourceIds": [
-            "lore-10003"
-          ]
-        }
-      },
-      {
-        "id": "lore-10232",
-        "title": "파이논",
-        "blocks": [],
-        "content": {
-          "file": "content/codex-terms--lore-10232.json",
-          "rows": 3,
-          "missing": 0,
-          "sourceIds": [
-            "lore-10232",
-            "lore-10278",
-            "lore-10306"
-          ]
-        }
-      },
-      {
-        "id": "lore-10415",
-        "title": "펄",
-        "blocks": [],
-        "content": {
-          "file": "content/codex-terms--lore-10415.json",
-          "rows": 1,
-          "missing": 0,
-          "sourceIds": [
-            "lore-10415"
-          ]
-        }
-      },
-      {
-        "id": "lore-10425",
-        "title": "펄럭스 그룹",
-        "blocks": [],
-        "content": {
-          "file": "content/codex-terms--lore-10425.json",
-          "rows": 1,
-          "missing": 0,
-          "sourceIds": [
-            "lore-10425"
-          ]
-        }
-      },
-      {
-        "id": "lore-10432",
-        "title": "페가나",
-        "blocks": [],
-        "content": {
-          "file": "content/codex-terms--lore-10432.json",
-          "rows": 1,
-          "missing": 0,
-          "sourceIds": [
-            "lore-10432"
-          ]
-        }
-      },
-      {
-        "id": "world-401",
-        "title": "페나코니",
-        "blocks": [],
-        "content": {
-          "file": "content/codex-terms--world-401.json",
-          "rows": 2,
-          "missing": 0,
-          "sourceIds": [
-            "world-401"
-          ]
-        }
-      },
-      {
-        "id": "lore-10185",
-        "title": "페나코니 극장",
-        "blocks": [],
-        "content": {
-          "file": "content/codex-terms--lore-10185.json",
-          "rows": 1,
-          "missing": 0,
-          "sourceIds": [
-            "lore-10185"
-          ]
-        }
-      },
-      {
-        "id": "lore-10224",
-        "title": "페나코니 종이접기 아카데미",
-        "blocks": [],
-        "content": {
-          "file": "content/codex-terms--lore-10224.json",
-          "rows": 1,
-          "missing": 0,
-          "sourceIds": [
-            "lore-10224"
-          ]
-        }
-      },
-      {
-        "id": "lore-10158",
-        "title": "페나코니(꿈세계)",
-        "blocks": [],
-        "content": {
-          "file": "content/codex-terms--lore-10158.json",
-          "rows": 1,
-          "missing": 0,
-          "sourceIds": [
-            "lore-10158"
-          ]
-        }
-      },
-      {
-        "id": "lore-10157",
-        "title": "페나코니(현실)",
-        "blocks": [],
-        "content": {
-          "file": "content/codex-terms--lore-10157.json",
-          "rows": 1,
-          "missing": 0,
-          "sourceIds": [
-            "lore-10157"
-          ]
-        }
-      },
-      {
-        "id": "lore-10031",
-        "title": "페라게야•세르게예브나",
-        "blocks": [],
-        "content": {
-          "file": "content/codex-terms--lore-10031.json",
-          "rows": 1,
-          "missing": 0,
-          "sourceIds": [
-            "lore-10031"
-          ]
-        }
-      },
-      {
-        "id": "lore-10009",
-        "title": "풍요",
-        "blocks": [],
-        "content": {
-          "file": "content/codex-terms--lore-10009.json",
-          "rows": 1,
-          "missing": 0,
-          "sourceIds": [
-            "lore-10009"
-          ]
-        }
-      },
-      {
-        "id": "lore-10054",
-        "title": "풍요의 백성",
-        "blocks": [],
-        "content": {
-          "file": "content/codex-terms--lore-10054.json",
-          "rows": 1,
-          "missing": 0,
-          "sourceIds": [
-            "lore-10054"
-          ]
-        }
-      },
-      {
-        "id": "lore-10093",
-        "title": "필살기",
-        "blocks": [],
-        "content": {
-          "file": "content/codex-terms--lore-10093.json",
-          "rows": 1,
-          "missing": 0,
-          "sourceIds": [
-            "lore-10093"
-          ]
-        }
-      },
-      {
-        "id": "lore-10064",
-        "title": "하층 구역",
-        "blocks": [],
-        "content": {
-          "file": "content/codex-terms--lore-10064.json",
-          "rows": 1,
-          "missing": 0,
-          "sourceIds": [
-            "lore-10064"
-          ]
-        }
-      },
-      {
-        "id": "lore-10422",
-        "title": "행복 미소 연구회",
-        "blocks": [],
-        "content": {
-          "file": "content/codex-terms--lore-10422.json",
-          "rows": 2,
-          "missing": 0,
-          "sourceIds": [
-            "lore-10422",
-            "lore-10427"
-          ]
-        }
-      },
-      {
-        "id": "lore-10002",
-        "title": "행적",
-        "blocks": [],
-        "content": {
-          "file": "content/codex-terms--lore-10002.json",
-          "rows": 1,
-          "missing": 0,
-          "sourceIds": [
-            "lore-10002"
-          ]
-        }
-      },
-      {
-        "id": "lore-10080",
-        "title": "허구 역사학자",
-        "blocks": [],
-        "content": {
-          "file": "content/codex-terms--lore-10080.json",
-          "rows": 1,
-          "missing": 0,
-          "sourceIds": [
-            "lore-10080"
-          ]
-        }
-      },
-      {
-        "id": "lore-10066",
-        "title": "허수의 나무",
-        "blocks": [],
-        "content": {
-          "file": "content/codex-terms--lore-10066.json",
-          "rows": 1,
-          "missing": 0,
-          "sourceIds": [
-            "lore-10066"
-          ]
-        }
-      },
-      {
-        "id": "lore-10024",
-        "title": "헤르타",
-        "blocks": [],
-        "content": {
-          "file": "content/codex-terms--lore-10024.json",
-          "rows": 1,
-          "missing": 0,
-          "sourceIds": [
-            "lore-10024"
-          ]
-        }
-      },
-      {
-        "id": "lore-10206",
-        "title": "호뢰",
-        "blocks": [],
-        "content": {
-          "file": "content/codex-terms--lore-10206.json",
-          "rows": 1,
-          "missing": 0,
-          "sourceIds": [
-            "lore-10206"
-          ]
-        }
-      },
-      {
-        "id": "lore-10059",
-        "title": "혼돈의 의사",
-        "blocks": [],
-        "content": {
-          "file": "content/codex-terms--lore-10059.json",
-          "rows": 1,
-          "missing": 0,
-          "sourceIds": [
-            "lore-10059"
-          ]
-        }
-      },
-      {
-        "id": "lore-10429",
-        "title": "화중은천",
-        "blocks": [],
-        "content": {
-          "file": "content/codex-terms--lore-10429.json",
-          "rows": 1,
-          "missing": 0,
-          "sourceIds": [
-            "lore-10429"
-          ]
-        }
-      },
-      {
-        "id": "lore-10006",
-        "title": "화합",
-        "blocks": [],
-        "content": {
-          "file": "content/codex-terms--lore-10006.json",
-          "rows": 1,
-          "missing": 0,
-          "sourceIds": [
-            "lore-10006"
-          ]
-        }
-      },
-      {
-        "id": "lore-10404",
-        "title": "환락의 가면",
-        "blocks": [],
-        "content": {
-          "file": "content/codex-terms--lore-10404.json",
-          "rows": 1,
-          "missing": 0,
-          "sourceIds": [
-            "lore-10404"
-          ]
-        }
-      },
-      {
-        "id": "lore-10400",
-        "title": "환월",
-        "blocks": [],
-        "content": {
-          "file": "content/codex-terms--lore-10400.json",
-          "rows": 1,
-          "missing": 0,
-          "sourceIds": [
-            "lore-10400"
-          ]
-        }
-      },
-      {
-        "id": "lore-10403",
-        "title": "환월 게임",
-        "blocks": [],
-        "content": {
-          "file": "content/codex-terms--lore-10403.json",
-          "rows": 1,
-          "missing": 0,
-          "sourceIds": [
-            "lore-10403"
-          ]
-        }
-      },
-      {
-        "id": "lore-10409",
-        "title": "환월의 비밀 정원",
-        "blocks": [],
-        "content": {
-          "file": "content/codex-terms--lore-10409.json",
-          "rows": 1,
-          "missing": 0,
-          "sourceIds": [
-            "lore-10409"
-          ]
-        }
-      },
-      {
-        "id": "lore-10401",
-        "title": "환조",
-        "blocks": [],
-        "content": {
-          "file": "content/codex-terms--lore-10401.json",
-          "rows": 1,
-          "missing": 0,
-          "sourceIds": [
-            "lore-10401"
-          ]
-        }
-      },
-      {
-        "id": "lore-10402",
-        "title": "환조종",
-        "blocks": [],
-        "content": {
-          "file": "content/codex-terms--lore-10402.json",
-          "rows": 1,
-          "missing": 0,
-          "sourceIds": [
-            "lore-10402"
-          ]
-        }
-      },
-      {
-        "id": "lore-10237",
-        "title": "황금의 고치, 네스티아",
-        "blocks": [],
-        "content": {
-          "file": "content/codex-terms--lore-10237.json",
-          "rows": 1,
-          "missing": 0,
-          "sourceIds": [
-            "lore-10237"
-          ]
-        }
-      },
-      {
-        "id": "lore-10170",
-        "title": "황금의 순간",
-        "blocks": [],
-        "content": {
-          "file": "content/codex-terms--lore-10170.json",
-          "rows": 1,
-          "missing": 0,
-          "sourceIds": [
-            "lore-10170"
-          ]
-        }
-      },
-      {
-        "id": "lore-10247",
-        "title": "황금의 후예",
-        "blocks": [],
-        "content": {
-          "file": "content/codex-terms--lore-10247.json",
-          "rows": 1,
-          "missing": 0,
-          "sourceIds": [
-            "lore-10247"
-          ]
-        }
-      },
-      {
-        "id": "lore-10204",
-        "title": "회염",
-        "blocks": [],
-        "content": {
-          "file": "content/codex-terms--lore-10204.json",
-          "rows": 1,
-          "missing": 0,
-          "sourceIds": [
-            "lore-10204"
-          ]
-        }
-      },
-      {
-        "id": "lore-10116",
-        "title": "효과 해제",
-        "blocks": [],
-        "content": {
-          "file": "content/codex-terms--lore-10116.json",
-          "rows": 2,
-          "missing": 0,
-          "sourceIds": [
-            "lore-10116",
-            "lore-10117"
-          ]
-        }
-      },
-      {
-        "id": "lore-10210",
-        "title": "효광",
-        "blocks": [],
-        "content": {
-          "file": "content/codex-terms--lore-10210.json",
-          "rows": 2,
-          "missing": 0,
-          "sourceIds": [
-            "lore-10210",
-            "lore-10414"
-          ]
-        }
-      },
-      {
-        "id": "lore-10114",
-        "title": "후",
-        "blocks": [],
-        "content": {
-          "file": "content/codex-terms--lore-10114.json",
-          "rows": 1,
-          "missing": 0,
-          "sourceIds": [
-            "lore-10114"
-          ]
-        }
-      },
-      {
-        "id": "lore-10090",
-        "title": "후리",
-        "blocks": [],
-        "content": {
-          "file": "content/codex-terms--lore-10090.json",
-          "rows": 1,
-          "missing": 0,
-          "sourceIds": [
-            "lore-10090"
-          ]
-        }
-      },
-      {
-        "id": "lore-10033",
-        "title": "후크",
-        "blocks": [],
-        "content": {
-          "file": "content/codex-terms--lore-10033.json",
-          "rows": 1,
-          "missing": 0,
-          "sourceIds": [
-            "lore-10033"
-          ]
-        }
-      },
-      {
-        "id": "lore-10076",
-        "title": "흉조 선봉",
-        "blocks": [],
-        "content": {
-          "file": "content/codex-terms--lore-10076.json",
-          "rows": 1,
-          "missing": 0,
-          "sourceIds": [
-            "lore-10076"
-          ]
-        }
-      },
-      {
-        "id": "lore-10016",
-        "title": "히메코",
-        "blocks": [],
-        "content": {
-          "file": "content/codex-terms--lore-10016.json",
-          "rows": 1,
-          "missing": 0,
-          "sourceIds": [
-            "lore-10016"
-          ]
-        }
-      },
-      {
-        "id": "lore-10285",
-        "title": "히실렌스",
-        "blocks": [],
-        "content": {
-          "file": "content/codex-terms--lore-10285.json",
-          "rows": 2,
-          "missing": 0,
-          "sourceIds": [
-            "lore-10285",
-            "lore-10304"
-          ]
-        }
-      },
-      {
-        "id": "lore-10259",
-        "title": "히아킨",
-        "blocks": [],
-        "content": {
-          "file": "content/codex-terms--lore-10259.json",
-          "rows": 2,
-          "missing": 0,
-          "sourceIds": [
-            "lore-10259",
-            "lore-10302"
-          ]
-        }
-      },
-      {
-        "id": "lore-10142",
-        "title": "Dr. 레이시오",
-        "blocks": [],
-        "content": {
-          "file": "content/codex-terms--lore-10142.json",
-          "rows": 1,
-          "missing": 0,
-          "sourceIds": [
-            "lore-10142"
-          ]
-        }
-      },
-      {
-        "id": "lore-20013",
-        "title": "Dr. 레이시오에게 도움 청하는 중…",
-        "blocks": [],
-        "content": {
-          "file": "content/codex-terms--lore-20013.json",
-          "rows": 1,
-          "missing": 0,
-          "sourceIds": [
-            "lore-20013"
-          ]
-        }
-      },
-      {
-        "id": "lore-10039",
-        "title": "Ⅸ",
-        "blocks": [],
-        "content": {
-          "file": "content/codex-terms--lore-10039.json",
-          "rows": 1,
-          "missing": 0,
-          "sourceIds": [
-            "lore-10039"
-          ]
-        }
-      },
-      {
-        "id": "lore-10014",
-        "title": "Mar. 7th",
-        "blocks": [],
-        "content": {
-          "file": "content/codex-terms--lore-10014.json",
-          "rows": 1,
-          "missing": 0,
-          "sourceIds": [
-            "lore-10014"
-          ]
-        }
-      }
-    ]
-  },
-  {
     "id": "codex-relics",
     "title": "유물",
     "description": "유물에 남겨진 이야기와 기억.",
     "subtitle": "아카이브",
     "category": "codex",
     "world": "universe",
-    "order": 17,
+    "order": 18,
     "language": "ko-KR",
     "tags": [
       "유물",
@@ -22694,336 +18978,6 @@
           "missing": 0,
           "sourceIds": [
             "item-ItemConfigRelic-31122"
-          ]
-        }
-      }
-    ]
-  },
-  {
-    "id": "codex-factions",
-    "title": "파벌",
-    "description": "은하의 다양한 파벌과 세력에 관한 기록.",
-    "subtitle": "아카이브",
-    "category": "codex",
-    "world": "universe",
-    "order": 18,
-    "language": "ko-KR",
-    "tags": [
-      "파벌",
-      "아카이브"
-    ],
-    "source": {
-      "kind": "extracted",
-      "version": "한국어 고정 자료 a66ec9c",
-      "sourceIds": [
-        "book-47-section-1",
-        "book-47-section-2",
-        "book-47-section-3",
-        "book-47-section-4",
-        "book-47-section-5",
-        "book-47-section-6",
-        "book-47-section-7",
-        "book-47-section-8",
-        "book-47-section-9",
-        "book-47-section-10",
-        "book-47-section-11",
-        "book-47-section-12",
-        "book-47-section-13",
-        "book-47-section-14",
-        "book-47-section-15",
-        "book-47-section-16",
-        "book-47-section-17",
-        "book-47-section-18",
-        "book-47-section-19",
-        "book-47-section-20",
-        "book-47-section-21",
-        "book-47-section-22"
-      ]
-    },
-    "chapters": [
-      {
-        "id": "book-47-section-20",
-        "title": "가면의 우인 - 환락",
-        "blocks": [],
-        "content": {
-          "file": "content/codex-factions--book-47-section-20.json",
-          "rows": 1,
-          "missing": 0,
-          "sourceIds": [
-            "book-47-section-20"
-          ]
-        }
-      },
-      {
-        "id": "book-47-section-11",
-        "title": "가족 - 화합",
-        "blocks": [],
-        "content": {
-          "file": "content/codex-factions--book-47-section-11.json",
-          "rows": 1,
-          "missing": 0,
-          "sourceIds": [
-            "book-47-section-11"
-          ]
-        }
-      },
-      {
-        "id": "book-47-section-16",
-        "title": "곤충 떼 - 번식",
-        "blocks": [],
-        "content": {
-          "file": "content/codex-factions--book-47-section-16.json",
-          "rows": 1,
-          "missing": 0,
-          "sourceIds": [
-            "book-47-section-16"
-          ]
-        }
-      },
-      {
-        "id": "book-47-section-17",
-        "title": "기억의 정원 - 기억",
-        "blocks": [],
-        "content": {
-          "file": "content/codex-factions--book-47-section-17.json",
-          "rows": 1,
-          "missing": 0,
-          "sourceIds": [
-            "book-47-section-17"
-          ]
-        }
-      },
-      {
-        "id": "book-47-section-22",
-        "title": "리들러 - 신비",
-        "blocks": [],
-        "content": {
-          "file": "content/codex-factions--book-47-section-22.json",
-          "rows": 1,
-          "missing": 0,
-          "sourceIds": [
-            "book-47-section-22"
-          ]
-        }
-      },
-      {
-        "id": "book-47-section-4",
-        "title": "무명객 - 개척",
-        "blocks": [],
-        "content": {
-          "file": "content/codex-factions--book-47-section-4.json",
-          "rows": 1,
-          "missing": 0,
-          "sourceIds": [
-            "book-47-section-4"
-          ]
-        }
-      },
-      {
-        "id": "book-47-section-10",
-        "title": "반물질 군단 - 파멸",
-        "blocks": [],
-        "content": {
-          "file": "content/codex-factions--book-47-section-10.json",
-          "rows": 1,
-          "missing": 0,
-          "sourceIds": [
-            "book-47-section-10"
-          ]
-        }
-      },
-      {
-        "id": "book-47-section-19",
-        "title": "비애의 연극인 - 환락",
-        "blocks": [],
-        "content": {
-          "file": "content/codex-factions--book-47-section-19.json",
-          "rows": 1,
-          "missing": 0,
-          "sourceIds": [
-            "book-47-section-19"
-          ]
-        }
-      },
-      {
-        "id": "book-47-section-5",
-        "title": "선주 연맹 - 수렵",
-        "blocks": [],
-        "content": {
-          "file": "content/codex-factions--book-47-section-5.json",
-          "rows": 1,
-          "missing": 0,
-          "sourceIds": [
-            "book-47-section-5"
-          ]
-        }
-      },
-      {
-        "id": "book-47-section-18",
-        "title": "소각공 - 기억",
-        "blocks": [],
-        "content": {
-          "file": "content/codex-factions--book-47-section-18.json",
-          "rows": 1,
-          "missing": 0,
-          "sourceIds": [
-            "book-47-section-18"
-          ]
-        }
-      },
-      {
-        "id": "book-47-section-15",
-        "title": "스타피스 컴퍼니 - 보존",
-        "blocks": [],
-        "content": {
-          "file": "content/codex-factions--book-47-section-15.json",
-          "rows": 1,
-          "missing": 0,
-          "sourceIds": [
-            "book-47-section-15"
-          ]
-        }
-      },
-      {
-        "id": "book-47-section-3",
-        "title": "스텔라론 헌터 - ???",
-        "blocks": [],
-        "content": {
-          "file": "content/codex-factions--book-47-section-3.json",
-          "rows": 1,
-          "missing": 0,
-          "sourceIds": [
-            "book-47-section-3"
-          ]
-        }
-      },
-      {
-        "id": "book-47-section-9",
-        "title": "약을 구하는 자 - 풍요",
-        "blocks": [],
-        "content": {
-          "file": "content/codex-factions--book-47-section-9.json",
-          "rows": 1,
-          "missing": 0,
-          "sourceIds": [
-            "book-47-section-9"
-          ]
-        }
-      },
-      {
-        "id": "book-47-section-2",
-        "title": "은하열차 - 개척",
-        "blocks": [],
-        "content": {
-          "file": "content/codex-factions--book-47-section-2.json",
-          "rows": 1,
-          "missing": 0,
-          "sourceIds": [
-            "book-47-section-2"
-          ]
-        }
-      },
-      {
-        "id": "book-47-section-7",
-        "title": "제Ⅸ 기관 - 공허",
-        "blocks": [],
-        "content": {
-          "file": "content/codex-factions--book-47-section-7.json",
-          "rows": 1,
-          "missing": 0,
-          "sourceIds": [
-            "book-47-section-7"
-          ]
-        }
-      },
-      {
-        "id": "book-47-section-12",
-        "title": "지니어스 클럽 - 지식",
-        "blocks": [],
-        "content": {
-          "file": "content/codex-factions--book-47-section-12.json",
-          "rows": 1,
-          "missing": 0,
-          "sourceIds": [
-            "book-47-section-12"
-          ]
-        }
-      },
-      {
-        "id": "book-47-section-13",
-        "title": "지식학회 - 지식",
-        "blocks": [],
-        "content": {
-          "file": "content/codex-factions--book-47-section-13.json",
-          "rows": 1,
-          "missing": 0,
-          "sourceIds": [
-            "book-47-section-13"
-          ]
-        }
-      },
-      {
-        "id": "book-47-section-14",
-        "title": "축성가(築城家) - 보존",
-        "blocks": [],
-        "content": {
-          "file": "content/codex-factions--book-47-section-14.json",
-          "rows": 1,
-          "missing": 0,
-          "sourceIds": [
-            "book-47-section-14"
-          ]
-        }
-      },
-      {
-        "id": "book-47-section-1",
-        "title": "파벌 총람",
-        "blocks": [],
-        "content": {
-          "file": "content/codex-factions--book-47-section-1.json",
-          "rows": 1,
-          "missing": 0,
-          "sourceIds": [
-            "book-47-section-1"
-          ]
-        }
-      },
-      {
-        "id": "book-47-section-8",
-        "title": "풍요의 백성 - 풍요",
-        "blocks": [],
-        "content": {
-          "file": "content/codex-factions--book-47-section-8.json",
-          "rows": 1,
-          "missing": 0,
-          "sourceIds": [
-            "book-47-section-8"
-          ]
-        }
-      },
-      {
-        "id": "book-47-section-21",
-        "title": "허구 역사학자 - 신비",
-        "blocks": [],
-        "content": {
-          "file": "content/codex-factions--book-47-section-21.json",
-          "rows": 1,
-          "missing": 0,
-          "sourceIds": [
-            "book-47-section-21"
-          ]
-        }
-      },
-      {
-        "id": "book-47-section-6",
-        "title": "혼돈의 의사 - 공허",
-        "blocks": [],
-        "content": {
-          "file": "content/codex-factions--book-47-section-6.json",
-          "rows": 1,
-          "missing": 0,
-          "sourceIds": [
-            "book-47-section-6"
           ]
         }
       }

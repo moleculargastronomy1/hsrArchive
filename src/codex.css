@@ -61,6 +61,39 @@
 .hero-copy {
   max-width: 49%;
 }
+.starrail-logo {
+  display: block;
+  width: 170px;
+  height: auto;
+  margin: -12px 0 2px;
+}
+.codex-variants {
+  margin-bottom: 25px;
+  padding: 14px;
+  background: var(--soft);
+  border: 1px solid var(--line);
+  border-radius: 5px;
+}
+.codex-variants label {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 12px;
+}
+.codex-variants select {
+  padding: 7px 10px;
+  border: 1px solid var(--line);
+  border-radius: 4px;
+  background: var(--surface);
+  color: var(--text);
+}
+.codex-variants > p {
+  font-family: inherit;
+  font-size: 10px;
+  color: var(--muted);
+  margin: 10px 0 0;
+  line-height: 1.8;
+}
 .hero-art {
   opacity: 0.25;
 }

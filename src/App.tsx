@@ -28,6 +28,7 @@ import OfficialVideo from './components/OfficialVideo';
 import DialogueBrowser from './components/DialogueBrowser';
 import CategoryIcon from './components/CategoryIcon';
 import CodexReader from './components/CodexReader';
+import starRailLogo from '../docs/reference-images/스타레일 로고.png';
 
 const worldName = (id: World) => worlds.find((world) => world.id === id)!.label;
 const categoryName = (id: Category) => categories.find((category) => category.id === id)!.label;
@@ -74,9 +75,6 @@ function EntryCard({
           <WorldArt world={entry.world} />
         )}
         <span className="art-index">{String(entry.order).padStart(2, '0')} / ARCHIVE</span>
-        <span className="demo-pill">
-          {entry.source.kind === 'extracted' ? '한국어 원문' : '예시 본문'}
-        </span>
       </a>
       <div className="card-body">
         <div className="card-eyebrow">{entry.arcLabel ?? worldName(entry.world)}</div>
@@ -136,7 +134,9 @@ export default function App() {
   const mainRef = useRef<HTMLElement>(null);
   const parts = path.split('/').filter(Boolean).map(decodeSegment);
   const entry = parts[0] === 'entry' ? archive.find((item) => item.id === parts[1]) : undefined;
-  const chapter = entry?.chapters.find((item) => item.id === parts[2]);
+  const chapter = entry?.chapters.find(
+    (item) => item.id === parts[2] || item.aliases?.includes(parts[2]),
+  );
   const isReader = Boolean(chapter) && entry?.category !== 'codex';
   const selectedCategory =
     categories.find((item) => item.id === params.get('category'))?.id ??
@@ -195,7 +195,11 @@ export default function App() {
   const recent = Object.entries(history)
     .filter(([id, progress]) =>
       archive.some(
-        (item) => item.id === id && item.chapters.some((ch) => ch.id === progress.chapterId),
+        (item) =>
+          item.id === id &&
+          item.chapters.some(
+            (ch) => ch.id === progress.chapterId || ch.aliases?.includes(progress.chapterId),
+          ),
       ),
     )
     .sort((a, b) => b[1].updatedAt - a[1].updatedAt);
@@ -240,12 +244,11 @@ export default function App() {
         </div>
         <section className="hero">
           <div className="hero-copy">
-            <span className="hero-eyebrow">
-              <span /> 은하를 여행하는 개척자를 위한 기록
-            </span>
+            <img className="starrail-logo" src={starRailLogo} alt="붕괴: 스타레일" />
             <h2>
-              모든 여정은
-              <br />한 편의 이야기로 남는다.
+              여정의 끝이
+              <br />
+              뭇별에 닿길
             </h2>
             <p>
               별과 별 사이에 남겨진 대화와 기록들.
@@ -597,24 +600,13 @@ export default function App() {
           description="별을 따라 이어지는 이야기를 더 편하게 읽을 수 있도록."
         />
         <article className="about-panel">
-          <h2>스타레일 텍스트 아카이브</h2>
-          <p>
-            열차 아카이브는 붕괴: 스타레일의 텍스트를 탐색하고 읽기 위한 비공식 팬 프로젝트입니다.
-            LimBooks의 분류, 챕터 탐색과 읽기 흐름을 참고해 스타레일에 맞게 새로 구현했습니다.
-          </p>
           <h2>현재 수록한 자료</h2>
           <p>
             개척 임무 33개 목차, 시뮬레이션 우주 기록과 아카이브 7개 분류에 로컬 한국어 자료를
-            연결했습니다. 원문은 starrail-quests의 고정 자료 a66ec9c를 대조해 변환했으며, 임무
-            귀속과 장면 연결이 확인되지 않은 자료는 제외했습니다. 자료의 참조 순서는 실제 플레이
-            순서와 다를 수 있으며, 모든 분기·컷신을 수록했다고 보장하지 않습니다.
-          </p>
-          <h2>자료를 연결한 방법</h2>
-          <p>
-            붕괴 3rd 텍스트 뷰어의 검색과 주변 대사 열람 방식을 참고해 새로 구현했습니다. 붕괴 3rd
-            대사는 사용하지 않았습니다. 한국어 자료의 출처·문서 ID·해시를 기록하며 게임 원문의
-            권리는 해당 권리자에게 있습니다. 기존 예시 대사는 각 개척 임무 본문 아래 접힌 영역에
-            유지했습니다.
+            연결했습니다. 에이언즈·고유 명사·파벌은 열차 자료실 전용 원문과 메뉴 순서로 제공합니다.
+            개척 임무 등은 고정된 한국어 자료를 대조해 변환했으며, 임무 귀속과 장면 연결이 확인되지
+            않은 자료는 제외했습니다. 자료의 참조 순서는 실제 플레이 순서와 다를 수 있으며, 모든
+            분기·컷신을 수록했다고 보장하지 않습니다.
           </p>
           <h2>내 서재와 읽기 설정</h2>
           <p>

@@ -23,13 +23,16 @@ export default function CodexReader({
   setHistory: Dispatch<SetStateAction<ReadingHistory>>;
 }) {
   const selected =
-    entry.chapters.find((chapter) => chapter.id === chapterId) ??
-    entry.chapters.find((chapter) => chapter.id === 'reference-terms-intro') ??
+    entry.chapters.find(
+      (chapter) => chapter.id === chapterId || chapter.aliases?.includes(chapterId ?? ''),
+    ) ??
+    entry.chapters.find((chapter) => chapter.intro) ??
     entry.chapters[0];
   const [query, setQuery] = useState('');
   const [payload, setPayload] = useState<{ file: string; rows: DialogueRow[] }>();
   const [error, setError] = useState('');
   const [retry, setRetry] = useState(0);
+  const [variantChoice, setVariantChoice] = useState<{ file: string; index: number }>();
   const file = selected.content!.file;
   const list = useMemo(
     () =>
@@ -39,6 +42,13 @@ export default function CodexReader({
     [entry, query],
   );
   const ready = payload?.file === file;
+  const records = ready ? payload!.rows : [];
+  const hasVariants = records.length > 0 && records.every((row) => typeof row.variant === 'string');
+  const variantIndex =
+    variantChoice?.file === file
+      ? Math.min(variantChoice.index, records.length - 1)
+      : records.length - 1;
+  const displayedRows = hasVariants ? [records[variantIndex]] : records;
 
   useEffect(() => {
     const controller = new AbortController();
@@ -148,18 +158,38 @@ export default function CodexReader({
             </div>
           ) : (
             <div className="codex-passages">
-              {payload.rows.map((row, index) => (
+              {hasVariants && records.length > 1 && (
+                <div className="codex-variants">
+                  <label>
+                    본문 기록{' '}
+                    <select
+                      aria-label="본문 기록 선택"
+                      value={variantIndex}
+                      onChange={(event) =>
+                        setVariantChoice({ file, index: Number(event.target.value) })
+                      }
+                    >
+                      {records.map((row, index) => (
+                        <option key={row.id} value={index}>
+                          {row.variant}
+                        </option>
+                      ))}
+                    </select>
+                  </label>
+                  <p>스토리 진행에 따라 갱신되는 기록입니다.</p>
+                </div>
+              )}
+              {displayedRows.map((row, index) => (
                 <section key={row.id}>
-                  {row.scene !== payload.rows[index - 1]?.scene && <h3>{row.scene}</h3>}
+                  {row.scene !== selected.title &&
+                    row.scene !== displayedRows[index - 1]?.scene && <h3>{row.scene}</h3>}
                   <p>{row.text}</p>
                 </section>
               ))}
             </div>
           )}
           <footer>
-            {selected.id === 'reference-terms-intro'
-              ? '사용자 제공 참고 이미지 · 고유 명사 소개문'
-              : `한국어 원문 · ${entry.source.kind === 'extracted' ? entry.source.version : '예시'}`}
+            한국어 원문 · {entry.source.kind === 'extracted' ? entry.source.version : '예시'}
             <br />
             게임 원문의 권리는 해당 권리자에게 있습니다.
           </footer>

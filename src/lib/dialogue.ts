@@ -8,6 +8,7 @@ export interface DialogueRow {
   text: string;
   type: 'dialogue' | 'choice' | 'narration';
   source?: string;
+  variant?: string;
 }
 
 export function isDialogueRows(value: unknown): value is DialogueRow[] {
@@ -20,7 +21,8 @@ export function isDialogueRows(value: unknown): value is DialogueRow[] {
         ['id', 'entryId', 'chapterId', 'mission', 'scene', 'speaker', 'text'].every(
           (key) => typeof row[key] === 'string',
         ) &&
-        ['dialogue', 'choice', 'narration'].includes(row.type),
+        ['dialogue', 'choice', 'narration'].includes(row.type) &&
+        (row.variant === undefined || typeof row.variant === 'string'),
     )
   );
 }

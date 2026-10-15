@@ -21,6 +21,8 @@ export interface Chapter {
   title: string;
   parentId?: string;
   kind?: 'branch' | 'adventure';
+  intro?: boolean;
+  aliases?: string[];
   blocks: TextBlock[];
   content?: { file: string; rows: number; missing: number; sourceIds: string[] };
 }

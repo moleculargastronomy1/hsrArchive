@@ -19,9 +19,12 @@ const handbook = JSON.parse(handbookBytes);
 if (handbook.schemaVersion !== 'starrail-handbook-originals.v1')
   throw new Error('Unsupported handbook schema');
 const providedDocuments = new Map(handbook.documents.map((doc) => [doc.id, doc]));
-const userReferenceBytes = fs.readFileSync('src/data/user-reference-texts.json');
-const userReferences = JSON.parse(userReferenceBytes);
-for (const doc of userReferences) providedDocuments.set(doc.id, doc);
+const trainDatabankBytes = fs.readFileSync('src/data/train-databank.json');
+const trainDatabank = JSON.parse(trainDatabankBytes);
+if (trainDatabank.schema !== 'hsr-train-databank.v1')
+  throw new Error('Unsupported train databank schema');
+for (const group of trainDatabank.groups)
+  for (const doc of group.documents) providedDocuments.set(doc.id, doc);
 const supplements = read(path.join(referenceRoot, 'data/mission-dialogue-supplements.json'));
 const deep = read(path.join(referenceRoot, 'data/deep-timeline-dialogue.json'));
 if (
@@ -51,7 +54,7 @@ const searchRows = [];
 const sourceFiles = {};
 let unverifiedScenes = 0;
 
-function convert(entryId, chapterId, documents, dedupeText = false) {
+function convert(entryId, chapterId, documents, dedupeText = false, sourceCommit = commit) {
   const rows = [];
   let missing = 0;
   const sharedText = new Set();
@@ -89,6 +92,7 @@ function convert(entryId, chapterId, documents, dedupeText = false) {
         text,
         talkId: raw.talk_id ?? null,
         source: origin,
+        ...(raw.variant ? { variant: raw.variant } : {}),
       });
     };
     for (const section of doc.sections) {
@@ -137,7 +141,7 @@ function convert(entryId, chapterId, documents, dedupeText = false) {
       schema: 'hsr-dialogue.v1',
       entryId,
       chapterId,
-      referenceCommit: commit,
+      referenceCommit: sourceCommit,
       sourceIds: documents.map((doc) => doc.id),
       missing,
       orderNote:
@@ -242,33 +246,14 @@ const handbookAdditions = handbook.documents.filter(
   (doc) =>
     !knownIds.has(doc.id) && ['광추 이야기', '캐릭터 이야기', '세계관·용어'].includes(doc.category),
 );
-const allNamed = [...catalog, ...handbookAdditions, ...userReferences];
-const aeonNames = new Set(
-  allNamed.filter((doc) => doc.category === '에이언즈·운명의 길').map((doc) => doc.title),
-);
-for (const id of ['lore-10042', 'lore-10084', 'lore-10087', 'lore-10089']) {
-  const doc = allNamed.find((item) => item.id === id);
-  if (!doc) throw new Error(`Missing named Aeon: ${id}`);
-  aeonNames.add(doc.title);
-}
-const factionOriginal = read(path.join(sourceRoot, 'data/documents/book-47.json'));
-sourceFiles['book-47'] = digest(
-  fs.readFileSync(path.join(sourceRoot, 'data/documents/book-47.json')),
-);
-const factionDocs = factionOriginal.sections
-  .filter((section) => section.title !== '자료 설명')
-  .map((section, index) => {
-    const doc = {
-      ...factionOriginal,
-      id: `book-47-section-${index + 1}`,
-      title: section.title,
-      sections: [section],
-      originalId: 'book-47',
-    };
-    providedDocuments.set(doc.id, doc);
-    return doc;
-  });
+const allNamed = [...catalog, ...handbookAdditions];
 const codexGroups = [
+  ...trainDatabank.groups.map((group) => [
+    group.id,
+    group.title,
+    group.description,
+    group.documents,
+  ]),
   [
     'light-cones',
     '광추',
@@ -282,25 +267,10 @@ const codexGroups = [
     handbook.documents.filter((doc) => doc.category === '적 기록'),
   ],
   [
-    'aeons',
-    '에이언즈',
-    '별바다의 에이언즈와 운명의 길에 관한 기록.',
-    allNamed.filter(
-      (doc) =>
-        aeonNames.has(doc.title) && ['에이언즈·운명의 길', '세계관·용어'].includes(doc.category),
-    ),
-  ],
-  [
     'characters',
     '캐릭터',
     '캐릭터 소개와 인물 이야기.',
     allNamed.filter((doc) => doc.category === '캐릭터 이야기'),
-  ],
-  [
-    'terms',
-    '고유 명사',
-    '지명과 인물, 세계관의 용어 설명.',
-    allNamed.filter((doc) => doc.category === '세계관·용어'),
   ],
   [
     'relics',
@@ -308,10 +278,10 @@ const codexGroups = [
     '유물에 남겨진 이야기와 기억.',
     allNamed.filter((doc) => doc.category === '유물 이야기'),
   ],
-  ['factions', '파벌', '은하의 다양한 파벌과 세력에 관한 기록.', factionDocs],
 ];
 const codex = codexGroups.map(([groupId, title, description, docs], index) => {
   const entryId = `codex-${groupId}`;
+  const isTrain = trainDatabank.groups.some((group) => group.id === groupId);
   const namedGroups = Map.groupBy(docs, (doc) => plain(doc.title));
   return {
     id: entryId,
@@ -325,19 +295,55 @@ const codex = codexGroups.map(([groupId, title, description, docs], index) => {
     tags: [title, '아카이브'],
     source: {
       kind: 'extracted',
-      version: `한국어 고정 자료 ${commit.slice(0, 7)}`,
+      version: isTrain
+        ? `열차 자료실 NounAtlas ${trainDatabank.commit.slice(0, 7)}`
+        : `한국어 고정 자료 ${commit.slice(0, 7)}`,
       sourceIds: docs.map((doc) => doc.id),
     },
     chapters: [...namedGroups]
-      .sort(([a], [b]) => a.localeCompare(b, 'ko'))
+      .sort(([a, left], [b, right]) =>
+        isTrain ? left[0].sortId - right[0].sortId : a.localeCompare(b, 'ko'),
+      )
       .map(([name, documents]) => ({
         id: documents[0].id,
         title: name,
+        ...(isTrain
+          ? { intro: documents[0].isIntroPage, aliases: legacyAliases(groupId, documents[0]) }
+          : {}),
         blocks: [],
-        content: convert(entryId, documents[0].id, documents, true),
+        content: convert(
+          entryId,
+          documents[0].id,
+          documents,
+          !isTrain,
+          isTrain ? trainDatabank.commit : commit,
+        ),
       })),
   };
 });
+function legacyAliases(groupId, doc) {
+  if (groupId === 'terms' && doc.isIntroPage) return ['reference-terms-intro'];
+  if (groupId === 'factions' && doc.nounId >= 200 && doc.nounId <= 221)
+    return [`book-47-section-${doc.nounId - 199}`];
+  if (groupId === 'aeons') {
+    const name = doc.title.split(',').at(-1).trim();
+    const old = allNamed.find(
+      (item) =>
+        item.title === name &&
+        (item.category === '에이언즈·운명의 길' ||
+          ['lore-10042', 'lore-10084', 'lore-10087', 'lore-10089'].includes(item.id)),
+    );
+    return old ? [old.id] : [];
+  }
+  return [];
+}
+const currentPayloads = new Set(
+  Object.values(metadata).map((record) => path.basename(record.file)),
+);
+for (const file of fs.readdirSync(output)) {
+  if (/^codex-(aeons|terms|factions)--/.test(file) && !currentPayloads.has(file))
+    fs.unlinkSync(path.join(output, file));
+}
 fs.writeFileSync('src/data/codex.json', JSON.stringify(codex, null, 2) + '\n');
 const trailblazeIds = new Set(
   archive.filter((entry) => entry.category === 'trailblaze').map((entry) => entry.id),
@@ -357,6 +363,10 @@ fs.writeFileSync(
   JSON.stringify({
     schema: 'hsr-dialogue.v1',
     referenceCommit: commit,
+    sourceReferences: [
+      { repository: 'mizan0515/starrail-quests', commit },
+      { repository: trainDatabank.repository, commit: trainDatabank.commit },
+    ],
     rows: searchRows.map(({ missionId, talkId, source, ...row }) => ({
       ...row,
       source: crypto.createHash('sha256').update(source).digest('hex').slice(0, 16),
@@ -372,7 +382,12 @@ fs.writeFileSync(
       sourceFiles,
       supplementalFiles: {
         'public/handbook-originals.json': digest(handbookBytes),
-        'src/data/user-reference-texts.json': digest(userReferenceBytes),
+        'src/data/train-databank.json': digest(trainDatabankBytes),
+      },
+      trainDatabank: {
+        repository: trainDatabank.repository,
+        commit: trainDatabank.commit,
+        files: trainDatabank.files,
       },
       rows: searchRows.length,
       chapters: Object.keys(metadata).length,

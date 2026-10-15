@@ -4,7 +4,7 @@
 
 - 입력: 사용자의 로컬 `E:\references\starrail-quests`, 커밋 `a66ec9c36e3321ce4ea9e62b58e9326634628dce`.
 - 고정 `dataset/manifest.json`의 조각·전체 압축·파일 SHA-256 검증을 통과한 JSON을 `.cache/starrail-source`로 복원했다. 참고 원본은 수정하지 않았다.
-- 지원 입력은 이 스냅샷의 `catalog.json`, 임무 문서 JSON, `starrail-mission-dialogue-supplements.v1`, `starrail-deep-timeline-dialogue.v1`, `starrail-handbook-originals.v1`과 별도로 기록한 사용자 제공 소개문이다. 다른 스키마는 오류로 중단한다.
+- 지원 입력은 이 스냅샷의 `catalog.json`, 임무 문서 JSON, `starrail-mission-dialogue-supplements.v1`, `starrail-deep-timeline-dialogue.v1`, `starrail-handbook-originals.v1`과 자료실 전용 `hsr-train-databank.v1`이다. 다른 스키마는 오류로 중단한다.
 - `hk3rdtextkrserch`의 부분 문자열 검색, 50건 표시, 최대 41줄 주변 대사 열람 방식을 참고해 새로 작성했다. 참고 코드·붕괴 3rd 원문·엑셀은 복사하지 않았다.
 
 ## 변환 규칙과 수록 범위
@@ -13,15 +13,17 @@
 
 일반 문서의 `LOCAL_ID_ORDER_MATCH`, 명시적 임무 귀속이 있는 추가 대사, 단일 임무 귀속이 확인된 타임라인 대사를 사용했다. `UNVERIFIED_SCENE_MAPPING` 2,450개 장면은 제외했다. 같은 임무 안에서 같은 대사 ID와 종류의 중복 참조는 한 번 표시한다. 선택지는 별도 표시한다. 사용자 요청에 따라 `{NICKNAME}`과 별표로 감싼 형태를 `[개척자]`로 표시하며, 성별 등 다른 치환 토큰은 유지한다. 지원하는 색상·크기 등 서식 태그는 표시용 문자열에서 제거한다.
 
-시뮬레이션 우주는 실험 임무·곤충 떼 재난·황금과 기계·차분화 우주·기물 기록으로 구성했다. 총 1,624개 읽기 항목(개척 33, 시뮬레이션 291, 아카이브 1,300), 56,821개 표시 행이다. 같은 임무가 분류상 두 곳에서 제공될 수 있으므로 이 수치는 서로 다른 대사 ID의 수가 아니다.
+시뮬레이션 우주는 실험 임무·곤충 떼 재난·황금과 기계·차분화 우주·기물 기록으로 구성했다. 총 1,330개 읽기 항목(개척 33, 시뮬레이션 291, 아카이브 1,006), 56,426개 표시 행이다. 같은 임무가 분류상 두 곳에서 제공될 수 있으므로 이 수치는 서로 다른 대사 ID의 수가 아니다.
 
 각 장의 JSON은 문서 ID, 대사 ID, 원본 구조 경로와 참조 커밋을 남긴다. `docs/content-provenance.json`에 사용한 문서 파일의 SHA-256과 제외 수를 기록했다. `public/content/search-index.json`에는 검색에 필요한 표시 필드와 장면 경계 식별자만 제공한다.
 
 ## 화면과 한계
 
-고유 명사의 첫 항목 「명사」 소개문은 사용자가 제공한 두 번째 참고 이미지에서 전사했다. `src/data/user-reference-texts.json`에 별도 출처로 보존하며 화면 하단에도 사용자 제공 이미지임을 표시한다. 위의 전체 수치에는 이 소개문 1개 항목·1행이 포함된다.
+에이언즈·고유 명사·파벌은 열차 자료실 전용 `NounAtlas.json`과 `NounAtlasChangeInfo.json`을 한국어 `TextMapKR_0.json`, `TextMapKR_1.json`에 정확한 64비트 해시로 연결한다. 입력 버전은 `DimbreathBot/TurnBasedGameData` 커밋 `724b139d8c9c32d12552eb95745a4fee72bfe48b`이며 Git blob과 SHA-256을 기록한다. Python 정수로 해시를 파싱해 JavaScript 숫자 정밀도 손실을 피한다. 100개 원문이 모두 연결되었고 소개문을 포함해 에이언즈 16개, 고유 명사 40개, 파벌 35개 메뉴로 묶인다.
 
-아카이브는 광추 170개, 적대적 생물 477개, 에이언즈 18개, 캐릭터 84개, 고유 명사 345개, 유물 184개, 파벌 22개를 제공한다. 기존 JSON과 같은 참고 커밋의 `public/handbook-originals.json`을 사용하며, 해당 파일은 `editorial/handbook-originals-manifest.json`의 SHA-256과 대조한다. 추가 입력 파일의 해시도 출처 기록에 남긴다. 에이언즈 4개의 명시적 용어 기록을 보완하며, 파벌은 `book-47`의 개별 절에서 연결했다. 적대적 생물의 같은 이름을 가진 전투 변형은 한 항목으로 묶고 동일한 문단을 중복 표시하지 않는다. 게임 화면의 도감 개수나 수집 상태를 재현하는 수치가 아니다.
+자료실 메뉴는 소개문을 먼저 표시하고 `SortID`를 따른다. `NounAtlasChangeInfo`의 갱신 관계를 보존하며 같은 항목의 기본 기록과 갱신 기록을 선택할 수 있다. 기본 표시는 가장 뒤의 갱신 기록이며 실제 계정의 스토리 진행·해금 상태를 추정하지 않는다. 시뮬레이션 우주의 에이언즈 연구 기록과 `LoadingDesc` 용어 설명을 자료실 본문으로 사용하지 않는다. 이미지에서 전사했던 「명사」 소개문도 자료실 원문으로 교체했다. 기존 에이언즈·파벌 읽기 주소와 소개문 주소는 별칭으로 연결한다.
+
+나머지 분류는 광추 170개, 적대적 생물 477개, 캐릭터 84개, 유물 184개를 제공한다. 기존 JSON과 같은 참고 커밋의 `public/handbook-originals.json`을 사용하며, 해당 파일은 `editorial/handbook-originals-manifest.json`의 SHA-256과 대조한다. 적대적 생물의 같은 이름을 가진 전투 변형은 한 항목으로 묶고 동일한 문단을 중복 표시하지 않는다. 이 네 분류의 수치는 게임 화면의 도감 개수나 수집 상태와 구분한다.
 
 STORIES 아래 아카이브 메뉴에서 7개 분류로 이동할 수 있다. 분류 안에서는 왼쪽 목록의 이름을 검색하고 오른쪽 패널에서 원문을 읽는다. 홈 배너 오른쪽에 공식 최신 영상을 표시하며, 개척 임무·시뮬레이션 우주·아카이브 메뉴에는 사용자가 제공한 아이콘을 사용한다.
 
@@ -35,6 +37,8 @@ STORIES 아래 아카이브 메뉴에서 7개 분류로 이동할 수 있다. �
 
 ```powershell
 python ../references/starrail-quests/tools/restore_dataset.py --bundle ../references/starrail-quests/dataset --target .cache/starrail-source
+node scripts/fetch-train-databank.mjs
+python scripts/import-train-databank.py
 node --experimental-strip-types scripts/import-local-dialogue.mjs .cache/starrail-source ../references/starrail-quests
 pnpm test
 pnpm build
