@@ -1,0 +1,91 @@
+# hsrArchive 참고 자료
+
+기록일: 2026-10-16 (Asia/Seoul)
+
+## 목표와 역할
+
+붕괴: 스타레일 자료를 공개 아카이브 사이트로 제공한다. LimBooks의 기능을 분석해 같은 역할의 기능을 구현하고, 게임별 분류와 데이터 구조는 스타레일에 맞게 설계한다. 아래 기능은 참고 코드에서 확인할 대상으로, hsrArchive에 구현을 완료했다는 뜻은 아니다.
+
+| 프로젝트 | 역할 | 로컬 위치 |
+| --- | --- | --- |
+| hsrArchive | 실제 개발·배포할 스타레일 아카이브 | `E:\hsrArchive` |
+| LimBooks | 사이트 기능, 화면 구성, 탐색과 읽기 흐름의 기준 | `E:\references\LimBooks` |
+| paimooon.github.io | 스타레일 텍스트 추출 도구로만 사용 | `E:\references\paimooon.github.io` |
+
+두 참고 저장소는 hsrArchive의 형제 폴더 아래에 별도로 clone했다. 원본 파일과 원본 Git 이력은 hsrArchive 커밋·배포에 포함되지 않는다. 다른 컴퓨터에서는 아래 URL로 다시 clone하고 이 문서의 커밋을 기준으로 확인한다.
+
+## LimBooks — 사이트 기능 참고
+
+- 원본: https://github.com/noita0130/LimBooks
+- 브랜치: `master`
+- 참고 커밋: `8b2dfe65f29c40213a7dc1a0549ec9f887040381`
+- 버전 링크: https://github.com/noita0130/LimBooks/tree/8b2dfe65f29c40213a7dc1a0549ec9f887040381
+- 구성: React, Vite, React Router, Tailwind CSS.
+
+### 분석할 기능과 코드 위치
+
+| 분석 대상 | 참고 코드 (LimBooks 기준) |
+| --- | --- |
+| 스토리 목록과 챕터 탐색 | `src/pages/StoryList.jsx`, `src/pages/ChapterList.jsx` |
+| 스토리 읽기와 페이지 이동 | `src/pages/StoryReaderPage.jsx`, `src/pages/StoryContent.jsx` |
+| 캐릭터 관련 이야기·음성 구성 | `src/pages/PersonalityPage.jsx`, `src/pages/PersonalityStoryContent.jsx`, `src/pages/PersonalityVoiceContent.jsx` |
+| 음성 재생과 음량 조절 | `src/components/AudioButton.jsx`, `src/components/VolumeControl.jsx` |
+| 다크 모드, 스크롤 복원, 이전·다음 이동 | `src/hooks/useDarkmode.jsx`, `src/pages/StoryReaderPage.jsx`, `src/utill/` |
+| 원본 데이터 구조 | `src/data/`, `src/story/`, `public/` |
+
+먼저 실제 동작과 데이터 의존성을 확인해 기능 목록을 작성한다. 림버스 고유 분류는 스타레일에 맞는 분류로 대응시키며, 음성 등 추가 자료가 필요한 기능은 실제 자료 확보 여부와 함께 검토한다. 이 목록은 초기 분석 출발점이며 원본 전체 기능 목록은 아니다.
+
+## paimooon.github.io — 텍스트 추출 전용
+
+- 원본: https://github.com/paimooon/paimooon.github.io
+- 브랜치: `main`
+- 참고 커밋: `36eca4736eecfc84d5f2053865068e4426b17186`
+- 버전 링크: https://github.com/paimooon/paimooon.github.io/tree/36eca4736eecfc84d5f2053865068e4426b17186
+- 사용 범위: 스타레일 텍스트 추출. 사이트 UI와 아카이브 기능의 참고 기준은 LimBooks다.
+- `binary.html`: README에서 스타레일 Binary File Reader로 안내하는 도구. 추출 작업 시 입력·출력 형식을 확인할 첫 대상.
+- `translate.html`: README에서 스타레일 Translate Comparer로 안내하는 도구. 추출 과정에서 언어별 텍스트 확인이 필요한 경우에만 검토한다.
+
+추출 도구의 현재 게임 버전 지원 여부와 실제 입력 파일은 아직 검증하지 않았다. 텍스트 추출·데이터 변환·사이트 구현은 아직 진행하지 않았다.
+
+## 예정 데이터 흐름
+
+1. 확보한 스타레일 입력 자료를 추출 도구로 읽는다.
+2. 추출 결과를 ID, 언어, 분류, 순서 등 사이트에 필요한 구조로 변환한다.
+3. 변환한 데이터를 hsrArchive의 탐색·읽기 화면에 연결한다.
+
+사이트용 데이터 형식은 실제 추출 결과와 LimBooks 기능 분석을 바탕으로 별도로 정한다.
+
+## 다른 컴퓨터에서 참고 원본 준비
+
+PowerShell 예시:
+
+```powershell
+git clone https://github.com/noita0130/LimBooks.git E:\references\LimBooks
+git clone https://github.com/paimooon/paimooon.github.io.git E:\references\paimooon.github.io
+```
+
+최신 브랜치는 위 참고 커밋과 다를 수 있다. 기록된 버전과 비교하려면 다음처럼 조회한다.
+
+```powershell
+git -C E:\references\LimBooks diff 8b2dfe65f29c40213a7dc1a0549ec9f887040381 HEAD --stat
+git -C E:\references\paimooon.github.io diff 36eca4736eecfc84d5f2053865068e4426b17186 HEAD --stat
+```
+
+## 참고 원본 업데이트
+
+원본을 업데이트하기로 했을 때만 실행한다. 로컬 변경이 있으면 먼저 확인한다.
+
+```powershell
+git -C E:\references\LimBooks status --short
+git -C E:\references\paimooon.github.io status --short
+git -C E:\references\LimBooks pull --ff-only
+git -C E:\references\paimooon.github.io pull --ff-only
+git -C E:\references\LimBooks rev-parse HEAD
+git -C E:\references\paimooon.github.io rev-parse HEAD
+```
+
+검토 후 이 문서의 기록일, 참고 커밋, 버전 링크와 변경된 기능 설명을 갱신한다. 원본 소스·에셋을 실제 프로젝트로 가져올 때는 해당 자료의 재사용 조건을 확인한다.
+
+## Codex에서 이어서 작업
+
+Codex 프로젝트 폴더를 `E:\hsrArchive`로 열고 작업한다. 프로젝트 루트의 `AGENTS.md`가 관련 작업에서 이 문서를 읽도록 안내한다. 로컬 경로를 변경하면 이 문서와 `AGENTS.md`의 경로 안내도 함께 수정한다.
