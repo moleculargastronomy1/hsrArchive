@@ -245,11 +245,7 @@ export default function App() {
         <section className="hero">
           <div className="hero-copy">
             <img className="starrail-logo" src={starRailLogo} alt="붕괴: 스타레일" />
-            <h2>
-              여정의 끝이
-              <br />
-              뭇별에 닿길
-            </h2>
+            <h2>여정의 끝이 뭇별에 닿길</h2>
             <p>
               별과 별 사이에 남겨진 대화와 기록들.
               <br />
@@ -323,17 +319,6 @@ export default function App() {
               {lastEntry ? '이어서 읽기' : '내 서재 열기'} <ArrowRight size={15} />
             </a>
           </section>
-        </div>
-        <div className="demo-notice">
-          <Sparkles size={17} />
-          <p>
-            <strong>이야기와 기록을 연결했습니다.</strong> 개척 임무와 시뮬레이션 우주의 한국어
-            원문과 아카이브의 설정 기록을 읽고 검색할 수 있습니다. 자료의 범위는 사이트 안내에서
-            확인해 주세요.
-          </p>
-          <a href="#/about" aria-label="예시 자료와 사이트 안내">
-            <ArrowRight size={17} />
-          </a>
         </div>
       </>
     );
@@ -791,10 +776,13 @@ export default function App() {
           {content}
         </main>
         <footer className="footer">
-          <span>
-            <span className="tiny-star">✦</span> 열차 아카이브 <span className="footer-dot">·</span>{' '}
-            비공식 스타레일 텍스트 아카이브
-          </span>
+          <div className="footer-credit">
+            <span>© 2026 HSRArchive</span>
+            <p>
+              열차 아카이브는 개인 프로젝트로 공식 서비스가 아니며, 모든 데이터의 권리와 저작권은
+              HoYoverse에게 있습니다.
+            </p>
+          </div>
           <a href="#/about">
             자료 출처와 수록 범위 <ArrowRight size={12} />
           </a>

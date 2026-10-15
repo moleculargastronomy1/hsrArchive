@@ -56,10 +56,22 @@
   line-height: 1.8;
 }
 .hero {
-  min-height: 380px;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(280px, 42%);
+  align-items: center;
+  gap: 32px;
+  min-height: 0;
+  padding: 30px 36px 52px;
 }
 .hero-copy {
-  max-width: 49%;
+  min-width: 0;
+  max-width: none;
+}
+.hero h2 {
+  font-size: clamp(24px, 2.4vw, 38px);
+  line-height: 1.4;
+  word-break: keep-all;
+  margin: 20px 0 18px;
 }
 .starrail-logo {
   display: block;
@@ -98,12 +110,10 @@
   opacity: 0.25;
 }
 .hero-video {
-  position: absolute;
+  position: relative;
   z-index: 2;
-  top: 26px;
-  right: 28px;
-  width: 40%;
-  max-width: 340px;
+  width: 100%;
+  max-width: none;
   margin: 0;
   padding: 0;
   border: 0;
@@ -298,13 +308,21 @@
   .codex-article > header {
     flex-wrap: wrap;
   }
-  .hero-copy {
-    max-width: 52%;
+  .hero {
+    grid-template-columns: 1fr;
+    gap: 26px;
+  }
+  .hero-video {
+    max-width: 520px;
   }
 }
 @media (max-width: 760px) {
   .hero {
+    padding: 26px 25px 50px;
     padding-bottom: 50px;
+  }
+  .hero h2 {
+    font-size: clamp(20px, 4.5vw, 30px);
   }
   .hero-copy {
     max-width: none;
@@ -315,7 +333,7 @@
     right: auto;
     width: 100%;
     max-width: none;
-    margin-top: 28px;
+    margin-top: 0;
   }
   .hero-art {
     width: 100%;
