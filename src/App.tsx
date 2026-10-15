@@ -244,11 +244,7 @@ export default function App() {
         <section className="hero">
           <div className="hero-copy">
             <h2>여정의 끝이 뭇별에 닿길</h2>
-            <p>
-              별과 별 사이에 남겨진 대화와 기록들.
-              <br />
-              당신이 찾던 이야기를 이곳에서 만나 보세요.
-            </p>
+            <p>별과 별 사이에 남겨진 대화와 기록들.</p>
             <a className="button gold" href="#/archive?category=trailblaze">
               이야기 둘러보기 <ArrowRight size={17} />
             </a>
@@ -558,7 +554,8 @@ export default function App() {
                       ? '관련 모험 임무 · '
                       : ''}
                   {ch.content
-                    ? `${ch.content.rows.toLocaleString('ko-KR')}줄 · 한국어 원문`
+                    ? (ch.contentNote ??
+                      `${ch.content.rows.toLocaleString('ko-KR')}줄 · 한국어 원문`)
                     : '예시 대사'}
                 </small>
               </span>
@@ -603,7 +600,7 @@ export default function App() {
         <article className="about-panel">
           <h2>현재 수록한 자료</h2>
           <p>
-            개척 임무 33개 목차, 시뮬레이션 우주 기록과 아카이브 7개 분류에 로컬 한국어 자료를
+            개척 임무 36개 목차, 시뮬레이션 우주 기록과 아카이브 7개 분류에 한국어 자료를
             연결했습니다. 에이언즈·고유 명사·파벌은 열차 자료실 전용 원문과 메뉴 순서로 제공합니다.
             개척 임무 등은 고정된 한국어 자료를 대조해 변환했으며, 임무 귀속과 장면 연결이 확인되지
             않은 자료는 제외했습니다. 자료의 참조 순서는 실제 플레이 순서와 다를 수 있으며, 모든
@@ -731,7 +728,7 @@ export default function App() {
           </a>
           <div className="sidebar-version">
             <span className="status-dot" />
-            개발 미리보기<span>v0.1.0</span>
+            베타 0.1.0
           </div>
         </div>
       </aside>
@@ -950,7 +947,7 @@ function Reader({
             <div className="reader-demo">
               <Sparkles size={14} />{' '}
               {chapter.content
-                ? '한국어 원문 · 선택지 포함'
+                ? (chapter.contentNote ?? '한국어 원문 · 선택지 포함')
                 : '실제 게임 대사가 아닌 기능 확인용 예시 본문입니다.'}
             </div>
           </header>

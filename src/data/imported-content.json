@@ -574,5 +574,42 @@
       "quest-1054418",
       "quest-1054419"
     ]
+  },
+  "paradise-records/celestial-gambit": {
+    "file": "content/paradise-records--celestial-gambit.json",
+    "rows": 1051,
+    "missing": 0,
+    "sourceIds": [
+      "quest-1054500",
+      "quest-1054501",
+      "quest-1054502",
+      "quest-1054503",
+      "quest-1054504",
+      "quest-1054506"
+    ]
+  },
+  "paradise-records/penniless-billionaire": {
+    "file": "content/paradise-records--penniless-billionaire.json",
+    "rows": 1120,
+    "missing": 0,
+    "sourceIds": [
+      "quest-1054521",
+      "quest-1054525",
+      "quest-1054526",
+      "quest-1054520",
+      "quest-1054522",
+      "quest-1054523",
+      "quest-1054524",
+      "quest-1054527",
+      "quest-1054528"
+    ]
+  },
+  "paradise-records/before-moonrise": {
+    "file": "content/paradise-records--before-moonrise.json",
+    "rows": 1,
+    "missing": 0,
+    "sourceIds": [
+      "chapter-intro-105009"
+    ]
   }
 }

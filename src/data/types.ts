@@ -23,6 +23,7 @@ export interface Chapter {
   kind?: 'branch' | 'adventure';
   intro?: boolean;
   aliases?: string[];
+  contentNote?: string;
   blocks: TextBlock[];
   content?: { file: string; rows: number; missing: number; sourceIds: string[] };
 }

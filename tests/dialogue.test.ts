@@ -70,9 +70,36 @@ test('published metadata resolves to matching Korean payloads and unique global 
   assert.equal(
     archive.filter((entry) => entry.category === 'trailblaze').flatMap((entry) => entry.chapters)
       .length,
-    33,
+    36,
   );
 });
+test('Astropolis additions preserve verified dialogue and label the introduction-only chapter', () => {
+  const entry = archive.find((item) => item.id === 'paradise-records')!;
+  const additions = entry.chapters.slice(-3);
+  assert.deepEqual(
+    additions.map((chapter) => chapter.title),
+    [
+      '제6막: 천성에 던진 승부수',
+      '개척 후문: 무일푼 재벌 프로젝트',
+      '제7막: 달 뜨기 전, 괴수와 춤을',
+    ],
+  );
+  for (const chapter of additions.slice(0, 2)) {
+    const payload = JSON.parse(fs.readFileSync(`public/${chapter.content!.file}`, 'utf8'));
+    assert.ok(payload.rows.length >= 1000);
+    assert.ok(payload.rows.some((row: DialogueRow) => row.type === 'choice'));
+    assert.ok(payload.rows.some((row: DialogueRow) => row.type === 'dialogue' && row.speaker));
+    assert.ok(payload.sourceIds.every((id: string) => id.startsWith('quest-10545')));
+  }
+  const intro = additions[2];
+  assert.equal(intro.contentNote, '챕터 소개문 수록 · 대사 본문 미수록');
+  const payload = JSON.parse(fs.readFileSync(`public/${intro.content!.file}`, 'utf8'));
+  assert.equal(payload.referenceCommit, '312b4597691e0a29cf9828a15b592757dba86949');
+  assert.equal(payload.rows.length, 1);
+  assert.equal(payload.rows[0].type, 'narration');
+  assert.ok(payload.rows[0].text.includes('현인의 피'));
+});
+
 test('official video feed validates IDs, decodes titles and sorts by publication date', () => {
   const xml = `<feed><yt:channelId>${CHANNEL_ID}</yt:channelId><entry><yt:videoId>abcdefghijk</yt:videoId><title>A &amp; B</title><published>2026-10-01T00:00:00Z</published><link rel="alternate" href="https://www.youtube.com/watch?v=abcdefghijk"/></entry><entry><yt:videoId>lmnopqrstuv</yt:videoId><title>Short</title><published>2026-10-02T00:00:00Z</published><link rel="alternate" href="https://www.youtube.com/shorts/lmnopqrstuv"/></entry></feed>`;
   const videos = parseVideos(xml);

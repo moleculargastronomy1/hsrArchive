@@ -235,6 +235,14 @@ const originalEntries: ArchiveEntry[] = [
         '제5막: 적막이 깃든 순간, 울리는 경적',
         '이상 낙원 / 아스트로폴리스',
       ),
+      { id: 'celestial-gambit', title: '제6막: 천성에 던진 승부수', blocks: [] },
+      { id: 'penniless-billionaire', title: '개척 후문: 무일푼 재벌 프로젝트', blocks: [] },
+      {
+        id: 'before-moonrise',
+        title: '제7막: 달 뜨기 전, 괴수와 춤을',
+        contentNote: '챕터 소개문 수록 · 대사 본문 미수록',
+        blocks: [],
+      },
     ],
   },
 ];
@@ -246,7 +254,10 @@ export const archive: ArchiveEntry[] = [
       ...entry,
       source: {
         kind: 'extracted',
-        version: '한국어 고정 자료 a66ec9c',
+        version:
+          entry.id === 'paradise-records'
+            ? '한국어 자료 a66ec9c · 제7막 소개문 312b459'
+            : '한국어 고정 자료 a66ec9c',
         sourceIds: entry.chapters.flatMap(
           (chapter) => contentIndex[`${entry.id}/${chapter.id}`]?.sourceIds ?? [],
         ),

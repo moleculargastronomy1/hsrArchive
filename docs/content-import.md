@@ -9,11 +9,13 @@
 
 ## 변환 규칙과 수록 범위
 
-사용자가 지정한 33개 목차를 정규화한 챕터명과 대조한다. `·`/`•`와 공백 차이를 처리하며, 모험 임무 「내가 쓰는 대로」는 정확한 임무 제목으로 연결한다. 「좋은꿈과 성배」처럼 여러 지역에 걸친 같은 챕터는 해당 임무들을 함께 묶는다.
+사용자가 지정한 목차를 정규화한 챕터명과 대조한다. `·`/`•`와 공백 차이를 처리하며, 모험 임무 「내가 쓰는 대로」는 정확한 임무 제목으로 연결한다. 「좋은꿈과 성배」처럼 여러 지역에 걸친 같은 챕터는 해당 임무들을 함께 묶는다.
 
 일반 문서의 `LOCAL_ID_ORDER_MATCH`, 명시적 임무 귀속이 있는 추가 대사, 단일 임무 귀속이 확인된 타임라인 대사를 사용했다. `UNVERIFIED_SCENE_MAPPING` 2,450개 장면은 제외했다. 같은 임무 안에서 같은 대사 ID와 종류의 중복 참조는 한 번 표시한다. 선택지는 별도 표시한다. 사용자 요청에 따라 `{NICKNAME}`과 별표로 감싼 형태를 `[개척자]`로 표시하며, 성별 등 다른 치환 토큰은 유지한다. 지원하는 색상·크기 등 서식 태그는 표시용 문자열에서 제거한다.
 
-시뮬레이션 우주는 실험 임무·곤충 떼 재난·황금과 기계·차분화 우주·기물 기록으로 구성했다. 총 1,330개 읽기 항목(개척 33, 시뮬레이션 291, 아카이브 1,006), 56,426개 표시 행이다. 같은 임무가 분류상 두 곳에서 제공될 수 있으므로 이 수치는 서로 다른 대사 ID의 수가 아니다.
+시뮬레이션 우주는 실험 임무·곤충 떼 재난·황금과 기계·차분화 우주·기물 기록으로 구성했다. 총 1,333개 읽기 항목(개척 36, 시뮬레이션 291, 아카이브 1,006), 58,598개 표시 행이다. 같은 임무가 분류상 두 곳에서 제공될 수 있으므로 이 수치는 서로 다른 대사 ID의 수가 아니다.
+
+아스트로폴리스 편의 제6막 「천성에 던진 승부수」는 6개 임무의 1,051줄, 개척 후문 「무일푼 재벌 프로젝트」는 9개 임무의 1,120줄을 기존 고정 자료에서 변환했다. 제7막 「달 뜨기 전, 괴수와 춤을」은 대사 본문을 확인하지 못해 `MissionChapterConfig` 105009의 한국어 소개문 1줄만 수록하며 화면에 이를 명시한다. 소개문은 `DimbreathBot/TurnBasedGameData` 커밋 `312b4597691e0a29cf9828a15b592757dba86949`의 `MissionChapterConfig.json`과 한국어 텍스트 맵 두 파일을 정확한 정수 해시로 연결했다. `scripts/import-astropolis-intro.py`에서 Git blob 해시를 검증하고 SHA-256을 기록한다. 소개문을 대사 본문으로 간주하거나 임무 ID 접두사로 대사를 추정하지 않는다.
 
 각 장의 JSON은 문서 ID, 대사 ID, 원본 구조 경로와 참조 커밋을 남긴다. `docs/content-provenance.json`에 사용한 문서 파일의 SHA-256과 제외 수를 기록했다. `public/content/search-index.json`에는 검색에 필요한 표시 필드와 장면 경계 식별자만 제공한다.
 
@@ -39,6 +41,7 @@ STORIES 아래 아카이브 메뉴에서 7개 분류로 이동할 수 있다. �
 python ../references/starrail-quests/tools/restore_dataset.py --bundle ../references/starrail-quests/dataset --target .cache/starrail-source
 node scripts/fetch-train-databank.mjs
 python scripts/import-train-databank.py
+python scripts/import-astropolis-intro.py .cache/astro-source
 node --experimental-strip-types scripts/import-local-dialogue.mjs .cache/starrail-source ../references/starrail-quests
 pnpm test
 pnpm build

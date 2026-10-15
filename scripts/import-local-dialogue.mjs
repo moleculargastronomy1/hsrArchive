@@ -21,6 +21,11 @@ if (handbook.schemaVersion !== 'starrail-handbook-originals.v1')
 const providedDocuments = new Map(handbook.documents.map((doc) => [doc.id, doc]));
 const trainDatabankBytes = fs.readFileSync('src/data/train-databank.json');
 const trainDatabank = JSON.parse(trainDatabankBytes);
+const chapterIntroBytes = fs.readFileSync('src/data/astropolis-intro.json');
+const chapterIntros = JSON.parse(chapterIntroBytes);
+if (chapterIntros.schema !== 'hsr-chapter-introductions.v1')
+  throw new Error('Unsupported chapter introduction schema');
+for (const doc of chapterIntros.documents) providedDocuments.set(doc.id, doc);
 if (trainDatabank.schema !== 'hsr-train-databank.v1')
   throw new Error('Unsupported train databank schema');
 for (const group of trainDatabank.groups)
@@ -158,18 +163,26 @@ function convert(entryId, chapterId, documents, dedupeText = false, sourceCommit
 for (const entry of archive.filter((item) => item.category === 'trailblaze')) {
   for (const chapter of entry.chapters) {
     const wanted = normalize(titleOf(chapter.title));
-    const docs = catalog
+    const docs = [...catalog, ...chapterIntros.documents]
       .filter((doc) =>
-        chapter.kind === 'adventure'
-          ? doc.category === '퀘스트' && normalize(doc.title) === wanted
-          : doc.category === '퀘스트' &&
-            ['개척 임무', '개척 후문', '종말 임무'].includes(doc.kind) &&
-            normalize(doc.chapter ?? '') === wanted,
+        doc.category === '챕터 소개문'
+          ? normalize(doc.chapter) === wanted
+          : chapter.kind === 'adventure'
+            ? doc.category === '퀘스트' && normalize(doc.title) === wanted
+            : doc.category === '퀘스트' &&
+              ['개척 임무', '개척 후문', '종말 임무'].includes(doc.kind) &&
+              normalize(doc.chapter ?? '') === wanted,
       )
       .sort((a, b) => Number(a.rank) - Number(b.rank) || a.id.localeCompare(b.id));
     if (!docs.length)
       throw new Error(`No exact source chapter match: ${entry.id}/${chapter.title}`);
-    const result = convert(entry.id, chapter.id, docs);
+    const result = convert(
+      entry.id,
+      chapter.id,
+      docs,
+      false,
+      docs.every((doc) => doc.category === '챕터 소개문') ? chapterIntros.commit : commit,
+    );
     console.log(
       `${entry.id}/${chapter.id}: ${docs.length} missions, ${result.rows} rows, ${result.missing} unavailable`,
     );
@@ -366,6 +379,7 @@ fs.writeFileSync(
     sourceReferences: [
       { repository: 'mizan0515/starrail-quests', commit },
       { repository: trainDatabank.repository, commit: trainDatabank.commit },
+      { repository: chapterIntros.repository, commit: chapterIntros.commit },
     ],
     rows: searchRows.map(({ missionId, talkId, source, ...row }) => ({
       ...row,
@@ -383,11 +397,18 @@ fs.writeFileSync(
       supplementalFiles: {
         'public/handbook-originals.json': digest(handbookBytes),
         'src/data/train-databank.json': digest(trainDatabankBytes),
+        'src/data/astropolis-intro.json': digest(chapterIntroBytes),
       },
       trainDatabank: {
         repository: trainDatabank.repository,
         commit: trainDatabank.commit,
         files: trainDatabank.files,
+      },
+      chapterIntroductions: {
+        repository: chapterIntros.repository,
+        commit: chapterIntros.commit,
+        files: chapterIntros.files,
+        scope: chapterIntros.scope,
       },
       rows: searchRows.length,
       chapters: Object.keys(metadata).length,

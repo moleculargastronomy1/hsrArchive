@@ -82,6 +82,8 @@
 
 ## paimooon.github.io — 텍스트 추출 전용
 
+업데이트별 확보 경로와 현재 제7막의 자료 한계는 [content-sources.md](content-sources.md)에 기록했다. 제7막 소개문 입력은 `DimbreathBot/TurnBasedGameData` 커밋 `312b4597691e0a29cf9828a15b592757dba86949`의 `ExcelOutput/MissionChapterConfig.json`, `TextMap/TextMapKR_0.json`, `TextMap/TextMapKR_1.json`이며 전체 원본은 `.cache/astro-source`에만 보관한다. 기존 참고 저장소와 기존 데이터의 고정 버전은 변경하지 않았다.
+
 - 원본: https://github.com/paimooon/paimooon.github.io
 - 브랜치: `main`
 - 참고 커밋: `36eca4736eecfc84d5f2053865068e4426b17186`

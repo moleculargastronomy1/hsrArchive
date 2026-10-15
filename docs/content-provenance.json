@@ -347,6 +347,22 @@
     "quest-1054417": "d7f5e2ba7b57ab2297695215e10e2912c5949f36e6589296367644a50f9f184e",
     "quest-1054418": "c379539249f249ae483c97c1358ef84b3f31ae02c4898a5e3b7a9c0ce7af2321",
     "quest-1054419": "ed934778d134838a5b635a74370b09247f47c4b55de8c8ef4022493913f2bde3",
+    "quest-1054500": "a95e7aebaed7c18161bab8742c69d4d982a61866c10861fa4e814ed42b937b62",
+    "quest-1054501": "b54d570501f81fb8b0c8463dd9cb05255ab8a48043fdb2af41302c79a328a719",
+    "quest-1054502": "dacf164cad77227bf3e022f7b9784c98f40421012d66297fa17f5f1d50971f01",
+    "quest-1054503": "1b01dfea3c698d7812ad6f19bca48fa23817959fd311809dfacf25e321cf0cab",
+    "quest-1054504": "f84b209f4f5bd088fb6b98c54b25b80770ea72cb734984787054ea3b5db114b7",
+    "quest-1054506": "ab43127c74053e0b23df6638000993044d43de39102f0383489e45bb932b3302",
+    "quest-1054521": "6e3306b4ce2d3fbebbba7c4679c203d2e2cddeb56a0986b74049d902093fe55d",
+    "quest-1054525": "cd9c97142abbb9c9db6ca51016e5a7773b5ed4796a498ecadd088cd60b4f76e2",
+    "quest-1054526": "cd341ba6b8b1c8a044254ca84e0d2b3099cd6bc0fd5c26fa3302d22d0a906cc3",
+    "quest-1054520": "873c77f0b4ef3dd63dd778147bbc5c4aedf92ccdd0fe883f2311bc86a70f67d4",
+    "quest-1054522": "4ea7d956c26c828d33f49aaccad1f9bc24a7f908e69ca51769cfaaace100b92a",
+    "quest-1054523": "551f75e6f2defdea762a2a8bcbe939455e9ea8b6265c569da94e9bd726c01893",
+    "quest-1054524": "63427233bf36a0cc51c5a5b910aca532a8308447e3eef6d20bb3664ef4162ced",
+    "quest-1054527": "e7dd555d39b91cf2fbf853c9a37db4a64c95419b5446aadc579c33ecaadb6cbf",
+    "quest-1054528": "734bafeb3abb28d69e8a5f06c12efd85732fd7ccf7d0b20e025cebb0d70fd588",
+    "chapter-intro-105009": "4f5d37ebd939e76418cec3b89e9d19ba67289cf2740b2de640a515a5b5059382",
     "quest-4030002": "623c7f118aeb754fe6bc2759daf2aec5232b39db49eca1cabdbc4cb9ae20eabf",
     "quest-4030003": "844dd30af38eddf4fc915a605d50a0545b298b054db9690f0a726a929c8ebfe7",
     "quest-4030004": "c2c1535e3ca6a549df051c69db1ad368d504df61cedfff53bf46117f83f348cd",
@@ -3890,7 +3906,8 @@
   },
   "supplementalFiles": {
     "public/handbook-originals.json": "213c6a52ed4eb11d54306dc05fdc8ce9e48d34c4c9ca6b2a331b57801669464f",
-    "src/data/train-databank.json": "aa68f3cbd4280616c12d27e931ce8af759af06a16ef374d7cb849f90b94fa166"
+    "src/data/train-databank.json": "aa68f3cbd4280616c12d27e931ce8af759af06a16ef374d7cb849f90b94fa166",
+    "src/data/astropolis-intro.json": "af768f8c083bf385ba6ca6985ca49112ea97a948b78c44d3aca3aa41211d2dde"
   },
   "trainDatabank": {
     "repository": "DimbreathBot/TurnBasedGameData",
@@ -3914,8 +3931,27 @@
       }
     }
   },
-  "rows": 56426,
-  "chapters": 1330,
-  "skippedUnverifiedScenes": 2450,
+  "chapterIntroductions": {
+    "repository": "DimbreathBot/TurnBasedGameData",
+    "commit": "312b4597691e0a29cf9828a15b592757dba86949",
+    "files": {
+      "TextMapKR_0.json": {
+        "gitBlob": "4c4adcf4ed86c48ebb407442801f3b3dd396eb19",
+        "sha256": "2a996609124fd7ab215cbacae43eee098578c6d7cc4c10186bb12d5dfc8fc941"
+      },
+      "TextMapKR_1.json": {
+        "gitBlob": "80eee947e1dc31577209e39d841ad2eb127541e0",
+        "sha256": "ceef6b210ebd57f955b26bffa2995487b18627cfd5a30c3b770de803c07d92b8"
+      },
+      "MissionChapterConfig.json": {
+        "gitBlob": "3131ed0c02242aa69978f3daa0e6a2f2a8df363b",
+        "sha256": "a266987091690891ff495be0bedd0760d447840571adfba5a7d51524ad7be1ec"
+      }
+    },
+    "scope": "Chapter introduction only. Mission dialogue ownership is not established."
+  },
+  "rows": 58598,
+  "chapters": 1333,
+  "skippedUnverifiedScenes": 2451,
   "note": "한국어 텍스트를 현지 파일에서 변환. 임무 귀속이 명시된 장면만 연결. 게임 원문의 권리는 해당 권리자에게 있습니다."
 }
