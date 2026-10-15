@@ -1,0 +1,31 @@
+export type Category = 'trailblaze' | 'companion' | 'readable';
+export type World = 'space-station' | 'jarilo' | 'luofu' | 'penacony';
+
+export interface TextBlock {
+  id: string;
+  type: 'narration' | 'dialogue';
+  speaker?: string;
+  text: string;
+}
+
+export interface Chapter {
+  id: string;
+  title: string;
+  blocks: TextBlock[];
+}
+
+export interface ArchiveEntry {
+  id: string;
+  title: string;
+  subtitle: string;
+  description: string;
+  category: Category;
+  world: World;
+  order: number;
+  language: 'ko-KR';
+  tags: string[];
+  source:
+    | { kind: 'demo'; note: string }
+    | { kind: 'extracted'; version: string; sourceIds: string[] };
+  chapters: Chapter[];
+}
