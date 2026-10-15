@@ -7,7 +7,7 @@ interface VideoSnapshot {
   video: { id: string; title: string; published: string; url: string; isShort: boolean };
 }
 
-export default function OfficialVideo() {
+export default function OfficialVideo({ className = '' }: { className?: string }) {
   const [snapshot, setSnapshot] = useState<VideoSnapshot>();
   const [playing, setPlaying] = useState(false);
   useEffect(() => {
@@ -26,7 +26,7 @@ export default function OfficialVideo() {
   }, []);
 
   return (
-    <section className="official-video" aria-label="스타레일 공식 최신 영상">
+    <section className={`official-video ${className}`} aria-label="스타레일 공식 최신 영상">
       <div className="video-heading">
         <Youtube size={17} />
         <span>공식 최신 영상</span>

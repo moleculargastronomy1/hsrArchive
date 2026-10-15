@@ -40,7 +40,7 @@ test('dialogue schema rejects malformed rows before rendering', () => {
 test('published metadata resolves to matching Korean payloads and unique global row IDs', () => {
   assert.deepEqual(
     categories.map((category) => category.id),
-    ['trailblaze', 'simulation'],
+    ['trailblaze', 'simulation', 'codex'],
   );
   const search = JSON.parse(fs.readFileSync('public/content/search-index.json', 'utf8'));
   assert.ok(isDialogueRows(search.rows));
@@ -80,4 +80,32 @@ test('official video feed validates IDs, decodes titles and sorts by publication
   assert.equal(videos[1].title, 'A & B');
   assert.throws(() => parseVideos(xml.replace('abcdefghijk', 'bad')));
   assert.throws(() => parseVideos('<feed/>'));
+});
+
+test('all seven requested archive collections publish nonempty source text and deduplicated monster variants', () => {
+  const codex = archive.filter((entry) => entry.category === 'codex');
+  assert.deepEqual(
+    codex.map((entry) => entry.title),
+    ['광추', '적대적 생물', '에이언즈', '캐릭터', '고유 명사', '유물', '파벌'],
+  );
+  for (const entry of codex) {
+    assert.ok(entry.chapters.length > 0);
+    assert.ok(entry.chapters.every((chapter) => chapter.content!.rows > 0));
+    assert.equal(
+      new Set(entry.chapters.map((chapter) => chapter.title)).size,
+      entry.chapters.length,
+    );
+  }
+  const terms = codex.find((entry) => entry.id === 'codex-terms')!;
+  const noun = terms.chapters.find((chapter) => chapter.title === '명사')!;
+  assert.ok(noun, 'The supplied proper noun example has a matching record');
+  const nounData = JSON.parse(fs.readFileSync(`public/${noun.content!.file}`, 'utf8'));
+  assert.ok(nounData.rows.some((row: DialogueRow) => row.text.includes('태초 혼돈의 균열')));
+  for (const monster of codex.find((entry) => entry.id === 'codex-hostile-species')!.chapters) {
+    const payload = JSON.parse(fs.readFileSync(`public/${monster.content!.file}`, 'utf8'));
+    assert.equal(
+      new Set(payload.rows.map((row: DialogueRow) => row.text)).size,
+      payload.rows.length,
+    );
+  }
 });

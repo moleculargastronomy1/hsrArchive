@@ -1,4 +1,4 @@
-export type Category = 'trailblaze' | 'simulation';
+export type Category = 'trailblaze' | 'simulation' | 'codex';
 export type World =
   | 'space-station'
   | 'jarilo'
@@ -6,7 +6,8 @@ export type World =
   | 'penacony'
   | 'amphoreus'
   | 'paradise-astropolis'
-  | 'simulated-universe';
+  | 'simulated-universe'
+  | 'universe';
 
 export interface TextBlock {
   id: string;

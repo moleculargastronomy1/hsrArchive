@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef, useState, type FormEvent } from 'react';
+import { Fragment, useCallback, useEffect, useRef, useState, type FormEvent } from 'react';
 import {
   ArrowDown,
   ArrowLeft,
@@ -9,7 +9,6 @@ import {
   Check,
   ChevronRight,
   Clock3,
-  Compass,
   Home,
   Menu,
   Moon,
@@ -17,7 +16,6 @@ import {
   SlidersHorizontal,
   Sparkles,
   Sun,
-  Orbit,
   X,
 } from 'lucide-react';
 import { archive, categories, worlds } from './data/archive';
@@ -28,8 +26,9 @@ import WorldArt from './components/WorldArt';
 import EntryArtwork, { hasCover } from './components/EntryArtwork';
 import OfficialVideo from './components/OfficialVideo';
 import DialogueBrowser from './components/DialogueBrowser';
+import CategoryIcon from './components/CategoryIcon';
+import CodexReader from './components/CodexReader';
 
-const categoryIcons = { trailblaze: Compass, simulation: Orbit };
 const worldName = (id: World) => worlds.find((world) => world.id === id)!.label;
 const categoryName = (id: Category) => categories.find((category) => category.id === id)!.label;
 const href = (path: string) => `#${path}`;
@@ -88,8 +87,7 @@ function EntryCard({
         <div className="card-footer">
           <span>
             <BookOpen size={13} />
-            {entry.chapters.length}
-            {entry.category === 'trailblaze' ? '개 항목' : '개의 장'}
+            {entry.chapters.length}개 항목
           </span>
           <button
             className={`icon-button ${saved ? 'saved' : ''}`}
@@ -139,7 +137,7 @@ export default function App() {
   const parts = path.split('/').filter(Boolean).map(decodeSegment);
   const entry = parts[0] === 'entry' ? archive.find((item) => item.id === parts[1]) : undefined;
   const chapter = entry?.chapters.find((item) => item.id === parts[2]);
-  const isReader = Boolean(chapter);
+  const isReader = Boolean(chapter) && entry?.category !== 'codex';
   const selectedCategory =
     categories.find((item) => item.id === params.get('category'))?.id ??
     (path === '/archive' ? 'trailblaze' : undefined);
@@ -159,7 +157,24 @@ export default function App() {
     mainRef.current?.focus({ preventScroll: true });
   }, [route]);
   useEffect(() => {
-    document.title = `${chapter?.title ?? entry?.title ?? (path === '/archive' ? (selectedCategory ? categoryName(selectedCategory) : '아카이브 탐색') : path === '/search' ? '대사 검색' : path === '/library' ? '내 서재' : path === '/about' ? '서고 안내' : '열차의 서고')} · 스타레일 아카이브`;
+    const pageTitle =
+      chapter?.title ??
+      entry?.title ??
+      (path === '/archive'
+        ? selectedCategory
+          ? categoryName(selectedCategory)
+          : '아카이브 탐색'
+        : path === '/search'
+          ? '대사 검색'
+          : path === '/library'
+            ? '내 서재'
+            : path === '/about'
+              ? '사이트 안내'
+              : '열차 아카이브');
+    document.title =
+      pageTitle === '열차 아카이브'
+        ? '열차 아카이브 · 붕괴: 스타레일'
+        : `${pageTitle} · 열차 아카이브`;
   }, [path, entry, chapter, selectedCategory]);
   useEffect(() => {
     const shortcut = (event: KeyboardEvent) => {
@@ -216,7 +231,7 @@ export default function App() {
             <span className="tiny-star">✦</span> THE ASTRAL ARCHIVE
           </span>
           <div className="intro-line">
-            <h1>열차의 서고</h1>
+            <h1>열차 아카이브</h1>
             <span className="language-chip">
               한국어 아카이브 <span>KO</span>
             </span>
@@ -242,6 +257,7 @@ export default function App() {
             </a>
           </div>
           <WorldArt world="space-station" hero />
+          <OfficialVideo className="hero-video" />
           <div className="hero-caption">
             <span>01 — THE BEGINNING</span>
             <span>기록으로 이어지는 은하의 여정</span>
@@ -249,11 +265,10 @@ export default function App() {
         </section>
         <div className="quick-categories">
           {categories.map((item) => {
-            const Icon = categoryIcons[item.id];
             return (
               <a key={item.id} href={href(`/archive?category=${item.id}`)}>
                 <span className={`quick-icon ${item.id}`}>
-                  <Icon size={21} strokeWidth={1.5} />
+                  <CategoryIcon category={item.id} />
                 </span>
                 <span>
                   <strong>{item.label}</strong>
@@ -278,7 +293,7 @@ export default function App() {
         </section>
         <div className="home-bottom">
           <section className="simulation-callout">
-            <Orbit size={30} strokeWidth={1} />
+            <CategoryIcon category="simulation" />
             <span className="eyebrow">SIMULATED UNIVERSE</span>
             <h2>시뮬레이션 우주</h2>
             <p>우주의 실험과 기물에 남겨진 기록을 읽어 보세요.</p>
@@ -310,9 +325,10 @@ export default function App() {
           <Sparkles size={17} />
           <p>
             <strong>이야기와 기록을 연결했습니다.</strong> 개척 임무와 시뮬레이션 우주의 한국어
-            원문을 읽고 검색할 수 있습니다. 자료의 범위는 서고 안내에서 확인해 주세요.
+            원문과 아카이브의 설정 기록을 읽고 검색할 수 있습니다. 자료의 범위는 사이트 안내에서
+            확인해 주세요.
           </p>
-          <a href="#/about" aria-label="예시 자료와 서고 안내">
+          <a href="#/about" aria-label="예시 자료와 사이트 안내">
             <ArrowRight size={17} />
           </a>
         </div>
@@ -330,7 +346,7 @@ export default function App() {
               ? '프롤로그부터 제5장까지, 개척의 여정을 순서대로 만나보세요.'
               : selectedCategory === 'simulation'
                 ? '시뮬레이션 우주의 실험, 기물과 발견의 기록을 만나보세요.'
-                : '개척의 여정과 시뮬레이션 우주의 기록을 찾아보세요.'
+                : '광추부터 파벌까지, 별바다에 남겨진 지식과 기록을 찾아보세요.'
           }
         />
         <div className="category-tabs" aria-label="자료 분류">
@@ -461,6 +477,22 @@ export default function App() {
         )}
       </>
     );
+  } else if (
+    entry?.category === 'codex' &&
+    (parts.length === 2 || (chapter && parts.length === 3))
+  ) {
+    content = (
+      <CodexReader
+        key={entry.id}
+        entry={entry}
+        chapterId={chapter?.id}
+        fontSize={fontSize}
+        setFontSize={setFontSize}
+        saved={bookmarks.includes(entry.id)}
+        toggleBookmark={() => toggleBookmark(entry.id)}
+        setHistory={setHistory}
+      />
+    );
   } else if (entry && parts.length === 2) {
     const progress = history[entry.id];
     const resume = entry.chapters.find((ch) => ch.id === progress?.chapterId) ?? entry.chapters[0];
@@ -561,21 +593,21 @@ export default function App() {
       <>
         <PageIntro
           eyebrow="ABOUT THE ARCHIVE"
-          title="서고 안내"
+          title="사이트 안내"
           description="별을 따라 이어지는 이야기를 더 편하게 읽을 수 있도록."
         />
         <article className="about-panel">
           <h2>스타레일 텍스트 아카이브</h2>
           <p>
-            열차의 서고는 붕괴: 스타레일의 텍스트를 탐색하고 읽기 위한 비공식 팬 프로젝트입니다.
+            열차 아카이브는 붕괴: 스타레일의 텍스트를 탐색하고 읽기 위한 비공식 팬 프로젝트입니다.
             LimBooks의 분류, 챕터 탐색과 읽기 흐름을 참고해 스타레일에 맞게 새로 구현했습니다.
           </p>
           <h2>현재 수록한 자료</h2>
           <p>
-            개척 임무 33개 목차와 시뮬레이션 우주 기록에 로컬 한국어 자료를 연결했습니다. 원문은
-            starrail-quests의 고정 자료 a66ec9c를 대조해 변환했으며, 임무 귀속과 장면 연결이
-            확인되지 않은 자료는 제외했습니다. 자료의 참조 순서는 실제 플레이 순서와 다를 수 있으며,
-            모든 분기·컷신을 수록했다고 보장하지 않습니다.
+            개척 임무 33개 목차, 시뮬레이션 우주 기록과 아카이브 7개 분류에 로컬 한국어 자료를
+            연결했습니다. 원문은 starrail-quests의 고정 자료 a66ec9c를 대조해 변환했으며, 임무
+            귀속과 장면 연결이 확인되지 않은 자료는 제외했습니다. 자료의 참조 순서는 실제 플레이
+            순서와 다를 수 있으며, 모든 분기·컷신을 수록했다고 보장하지 않습니다.
           </p>
           <h2>자료를 연결한 방법</h2>
           <p>
@@ -627,7 +659,7 @@ export default function App() {
         <a className="brand" href="#/">
           <span className="brand-symbol">✦</span>
           <span>
-            <strong>열차의 서고</strong>
+            <strong>열차 아카이브</strong>
             <small>HONKAI: STAR RAIL ARCHIVE</small>
           </span>
         </a>
@@ -640,7 +672,7 @@ export default function App() {
             aria-current={navActive('/') ? 'page' : undefined}
           >
             <Home size={18} />
-            서고 홈{navActive('/') && <span className="nav-dot" />}
+            아카이브 홈{navActive('/') && <span className="nav-dot" />}
           </a>
           <a className={navActive('/search') ? 'active' : ''} href="#/search">
             <Search size={18} />
@@ -648,20 +680,36 @@ export default function App() {
           </a>
           <span className="nav-label nav-space">STORIES</span>
           {categories.map((item) => {
-            const Icon = categoryIcons[item.id];
             const active =
               (navActive('/archive') && selectedCategory === item.id) ||
               entry?.category === item.id;
             return (
-              <a
-                key={item.id}
-                className={`primary-story-link ${active ? 'active' : ''}`}
-                aria-current={active ? 'page' : undefined}
-                href={href(`/archive?category=${item.id}`)}
-              >
-                <Icon size={18} />
-                {item.label}
-              </a>
+              <Fragment key={item.id}>
+                <a
+                  className={`primary-story-link ${active ? 'active' : ''}`}
+                  aria-current={active ? 'page' : undefined}
+                  href={href(`/archive?category=${item.id}`)}
+                >
+                  <CategoryIcon category={item.id} />
+                  {item.label}
+                </a>
+                {item.id === 'codex' && active && (
+                  <div className="codex-submenu" aria-label="아카이브 분류">
+                    {archive
+                      .filter((record) => record.category === 'codex')
+                      .map((record) => (
+                        <a
+                          key={record.id}
+                          href={href(readerPath(record.id))}
+                          className={entry?.id === record.id ? 'active' : ''}
+                          aria-current={entry?.id === record.id ? 'page' : undefined}
+                        >
+                          {record.title}
+                        </a>
+                      ))}
+                  </div>
+                )}
+              </Fragment>
             );
           })}
           <span className="nav-label nav-space">MY ARCHIVE</span>
@@ -683,11 +731,10 @@ export default function App() {
             읽기 기록
           </a>
         </nav>
-        <OfficialVideo />
         <div className="sidebar-bottom">
           <a href="#/about">
             <BookOpen size={15} />
-            서고 안내 <ChevronRight size={14} />
+            사이트 안내 <ChevronRight size={14} />
           </a>
           <div className="sidebar-version">
             <span className="status-dot" />
@@ -717,8 +764,8 @@ export default function App() {
                     : path === '/library'
                       ? '내 서재'
                       : path === '/about'
-                        ? '서고 안내'
-                        : '서고 홈'}
+                        ? '사이트 안내'
+                        : '아카이브 홈'}
             </span>
           </div>
           <form className="global-search" onSubmit={submitSearch} role="search">
@@ -753,7 +800,7 @@ export default function App() {
         </main>
         <footer className="footer">
           <span>
-            <span className="tiny-star">✦</span> 열차의 서고 <span className="footer-dot">·</span>{' '}
+            <span className="tiny-star">✦</span> 열차 아카이브 <span className="footer-dot">·</span>{' '}
             비공식 스타레일 텍스트 아카이브
           </span>
           <a href="#/about">

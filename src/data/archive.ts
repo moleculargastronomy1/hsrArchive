@@ -1,13 +1,16 @@
 import type { ArchiveEntry, Category, Chapter, World } from './types';
 import importedContent from './imported-content.json' with { type: 'json' };
 import simulation from './simulation.json' with { type: 'json' };
+import codex from './codex.json' with { type: 'json' };
 
 export const categories: { id: Category; label: string; description: string }[] = [
   { id: 'trailblaze', label: '개척 임무', description: '별을 잇는 여정, 그 중심의 이야기' },
   { id: 'simulation', label: '시뮬레이션 우주', description: '실험과 발견, 우주에 남겨진 기록' },
+  { id: 'codex', label: '아카이브', description: '인물과 존재, 별바다의 지식과 기록' },
 ];
 
 export const worlds: { id: World; label: string; short: string; english: string }[] = [
+  { id: 'universe', label: '은하의 기록', short: '은하', english: 'GALACTIC ARCHIVE' },
   {
     id: 'space-station',
     label: '우주정거장 「헤르타」',
@@ -255,4 +258,5 @@ export const archive: ArchiveEntry[] = [
     }),
   ),
   ...(simulation as ArchiveEntry[]),
+  ...(codex as ArchiveEntry[]),
 ];

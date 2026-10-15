@@ -203,6 +203,7 @@ export default function DialogueBrowser({
             ['all', '전체'],
             ['trailblaze', '개척 임무'],
             ['simulation', '시뮬레이션 우주'],
+            ['codex', '아카이브'],
           ].map(([id, label]) => (
             <button
               key={id}

@@ -6,9 +6,22 @@ import { archive } from '../src/data/archive.ts';
 const sourceRoot = path.resolve(process.argv[2] ?? '.cache/starrail-source');
 const referenceRoot = path.resolve(process.argv[3] ?? '../references/starrail-quests');
 const commit = 'a66ec9c36e3321ce4ea9e62b58e9326634628dce';
+const digest = (bytes) => crypto.createHash('sha256').update(bytes).digest('hex');
 const read = (file) => JSON.parse(fs.readFileSync(file, 'utf8'));
 const catalog = read(path.join(sourceRoot, 'data/catalog.json'));
 if (!Array.isArray(catalog)) throw new Error('Unsupported catalog format');
+const handbookBytes = fs.readFileSync(path.join(referenceRoot, 'public/handbook-originals.json'));
+const handbookManifest = read(
+  path.join(referenceRoot, 'editorial/handbook-originals-manifest.json'),
+);
+if (digest(handbookBytes) !== handbookManifest.sha256) throw new Error('Handbook hash mismatch');
+const handbook = JSON.parse(handbookBytes);
+if (handbook.schemaVersion !== 'starrail-handbook-originals.v1')
+  throw new Error('Unsupported handbook schema');
+const providedDocuments = new Map(handbook.documents.map((doc) => [doc.id, doc]));
+const userReferenceBytes = fs.readFileSync('src/data/user-reference-texts.json');
+const userReferences = JSON.parse(userReferenceBytes);
+for (const doc of userReferences) providedDocuments.set(doc.id, doc);
 const supplements = read(path.join(referenceRoot, 'data/mission-dialogue-supplements.json'));
 const deep = read(path.join(referenceRoot, 'data/deep-timeline-dialogue.json'));
 if (
@@ -38,13 +51,16 @@ const searchRows = [];
 const sourceFiles = {};
 let unverifiedScenes = 0;
 
-function convert(entryId, chapterId, documents) {
+function convert(entryId, chapterId, documents, dedupeText = false) {
   const rows = [];
   let missing = 0;
+  const sharedText = new Set();
   for (const meta of documents) {
     const file = path.join(sourceRoot, `data/documents/${meta.id}.json`);
-    const bytes = fs.readFileSync(file);
-    sourceFiles[meta.id] = crypto.createHash('sha256').update(bytes).digest('hex');
+    const bytes = providedDocuments.has(meta.id)
+      ? Buffer.from(JSON.stringify(providedDocuments.get(meta.id)))
+      : fs.readFileSync(file);
+    sourceFiles[meta.id] = digest(bytes);
     const doc = JSON.parse(bytes);
     if (doc.id !== meta.id || !Array.isArray(doc.sections))
       throw new Error(`Invalid document: ${meta.id}`);
@@ -56,6 +72,8 @@ function convert(entryId, chapterId, documents) {
       }
       if (raw.talk_id === 999999999) return;
       const text = plain(raw.text);
+      if (dedupeText && sharedText.has(text)) return;
+      sharedText.add(text);
       const key = raw.talk_id ? `${raw.talk_id}:${raw.label ?? ''}` : `${scene}:${text}`;
       if (seen.has(key)) return;
       seen.add(key);
@@ -215,8 +233,125 @@ const simulation = simulationGroups.map(([id, title, description, select], index
     })),
   };
 });
-fs.writeFileSync('src/data/imported-content.json', JSON.stringify(metadata, null, 2) + '\n');
 fs.writeFileSync('src/data/simulation.json', JSON.stringify(simulation, null, 2) + '\n');
+
+// Only the requested handbook categories are converted. Monster combat variants share a title;
+// keep distinct descriptions, but do not repeat an identical paragraph for every internal ID.
+const knownIds = new Set(catalog.map((doc) => doc.id));
+const handbookAdditions = handbook.documents.filter(
+  (doc) =>
+    !knownIds.has(doc.id) && ['광추 이야기', '캐릭터 이야기', '세계관·용어'].includes(doc.category),
+);
+const allNamed = [...catalog, ...handbookAdditions, ...userReferences];
+const aeonNames = new Set(
+  allNamed.filter((doc) => doc.category === '에이언즈·운명의 길').map((doc) => doc.title),
+);
+for (const id of ['lore-10042', 'lore-10084', 'lore-10087', 'lore-10089']) {
+  const doc = allNamed.find((item) => item.id === id);
+  if (!doc) throw new Error(`Missing named Aeon: ${id}`);
+  aeonNames.add(doc.title);
+}
+const factionOriginal = read(path.join(sourceRoot, 'data/documents/book-47.json'));
+sourceFiles['book-47'] = digest(
+  fs.readFileSync(path.join(sourceRoot, 'data/documents/book-47.json')),
+);
+const factionDocs = factionOriginal.sections
+  .filter((section) => section.title !== '자료 설명')
+  .map((section, index) => {
+    const doc = {
+      ...factionOriginal,
+      id: `book-47-section-${index + 1}`,
+      title: section.title,
+      sections: [section],
+      originalId: 'book-47',
+    };
+    providedDocuments.set(doc.id, doc);
+    return doc;
+  });
+const codexGroups = [
+  [
+    'light-cones',
+    '광추',
+    '광추에 담긴 기억과 이야기.',
+    allNamed.filter((doc) => doc.category === '광추 이야기'),
+  ],
+  [
+    'hostile-species',
+    '적대적 생물',
+    '적대적 생물의 설명과 기록. 같은 이름의 전투 변형은 함께 묶었습니다.',
+    handbook.documents.filter((doc) => doc.category === '적 기록'),
+  ],
+  [
+    'aeons',
+    '에이언즈',
+    '별바다의 에이언즈와 운명의 길에 관한 기록.',
+    allNamed.filter(
+      (doc) =>
+        aeonNames.has(doc.title) && ['에이언즈·운명의 길', '세계관·용어'].includes(doc.category),
+    ),
+  ],
+  [
+    'characters',
+    '캐릭터',
+    '캐릭터 소개와 인물 이야기.',
+    allNamed.filter((doc) => doc.category === '캐릭터 이야기'),
+  ],
+  [
+    'terms',
+    '고유 명사',
+    '지명과 인물, 세계관의 용어 설명.',
+    allNamed.filter((doc) => doc.category === '세계관·용어'),
+  ],
+  [
+    'relics',
+    '유물',
+    '유물에 남겨진 이야기와 기억.',
+    allNamed.filter((doc) => doc.category === '유물 이야기'),
+  ],
+  ['factions', '파벌', '은하의 다양한 파벌과 세력에 관한 기록.', factionDocs],
+];
+const codex = codexGroups.map(([groupId, title, description, docs], index) => {
+  const entryId = `codex-${groupId}`;
+  const namedGroups = Map.groupBy(docs, (doc) => plain(doc.title));
+  return {
+    id: entryId,
+    title,
+    description,
+    subtitle: '아카이브',
+    category: 'codex',
+    world: 'universe',
+    order: index + 12,
+    language: 'ko-KR',
+    tags: [title, '아카이브'],
+    source: {
+      kind: 'extracted',
+      version: `한국어 고정 자료 ${commit.slice(0, 7)}`,
+      sourceIds: docs.map((doc) => doc.id),
+    },
+    chapters: [...namedGroups]
+      .sort(([a], [b]) => a.localeCompare(b, 'ko'))
+      .map(([name, documents]) => ({
+        id: documents[0].id,
+        title: name,
+        blocks: [],
+        content: convert(entryId, documents[0].id, documents, true),
+      })),
+  };
+});
+fs.writeFileSync('src/data/codex.json', JSON.stringify(codex, null, 2) + '\n');
+const trailblazeIds = new Set(
+  archive.filter((entry) => entry.category === 'trailblaze').map((entry) => entry.id),
+);
+fs.writeFileSync(
+  'src/data/imported-content.json',
+  JSON.stringify(
+    Object.fromEntries(
+      Object.entries(metadata).filter(([key]) => trailblazeIds.has(key.split('/')[0])),
+    ),
+    null,
+    2,
+  ) + '\n',
+);
 fs.writeFileSync(
   'public/content/search-index.json',
   JSON.stringify({
@@ -235,6 +370,10 @@ fs.writeFileSync(
       reference: 'mizan0515/starrail-quests',
       commit,
       sourceFiles,
+      supplementalFiles: {
+        'public/handbook-originals.json': digest(handbookBytes),
+        'src/data/user-reference-texts.json': digest(userReferenceBytes),
+      },
       rows: searchRows.length,
       chapters: Object.keys(metadata).length,
       skippedUnverifiedScenes: unverifiedScenes,
