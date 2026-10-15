@@ -12,8 +12,9 @@
 | LimBooks | 사이트 기능, 화면 구성, 탐색과 읽기 흐름의 기준 | `E:\references\LimBooks` |
 | paimooon.github.io | 스타레일 텍스트 추출 도구로만 사용 | `E:\references\paimooon.github.io` |
 | starrail-quests 설정집 | 스타레일 자료 분류, 설정·기록 간 연결과 읽기 구성의 보조 참고 | `E:\references\starrail-quests` |
+| hk3rdtextkrserch | 붕괴 3rd 텍스트 사이트의 검색·주변 대사 열람 코드와 구현 방식 참고 | `E:\references\hk3rdtextkrserch` |
 
-세 참고 저장소는 hsrArchive의 형제 폴더 아래에 별도로 clone했다. 원본 파일과 원본 Git 이력은 hsrArchive 커밋·배포에 포함되지 않는다. 다른 컴퓨터에서는 아래 URL로 다시 clone하고 이 문서의 커밋을 기준으로 확인한다.
+네 참고 저장소는 hsrArchive의 형제 폴더 아래에 별도로 clone했다. 원본 파일과 원본 Git 이력은 hsrArchive 커밋·배포에 포함되지 않는다. 다른 컴퓨터에서는 아래 URL로 다시 clone하고 이 문서의 커밋을 기준으로 확인한다.
 
 ## LimBooks — 사이트 기능 참고
 
@@ -49,6 +50,30 @@
 - 사이트 전체 기능의 기준은 LimBooks, 텍스트 추출 도구는 paimooon.github.io로 유지한다. 이 자료는 스타레일에 맞는 콘텐츠 구성을 보조 참고한다.
 - 최초 복제는 `--depth 1`로 최신 커밋만 내려받았다. 과거 이력 분석이 필요하면 별도로 가져온다.
 
+## hk3rdtextkrserch — 텍스트 검색·열람 코드와 구현 방식 참고
+
+- 원본: https://github.com/KARON099/hk3rdtextkrserch
+- 로컬 위치: `E:\references\hk3rdtextkrserch`
+- 브랜치: `main`
+- 참고 커밋: `fc780d4cc71f49fe8d3f6788416e41f2453053d1`
+- 버전 링크: https://github.com/KARON099/hk3rdtextkrserch/tree/fc780d4cc71f49fe8d3f6788416e41f2453053d1
+- 확인일: 2026-10-16 (Asia/Seoul). 원본 코드를 정적으로 확인했으며 브라우저 실행과 성능 검증은 하지 않았다.
+- 최초 복제는 `--depth 1`로 최신 커밋만 내려받았다.
+- 사용 범위: 텍스트 검색, 검색 결과 표시, 주변 대사 열람의 코드와 구현 방식. 사이트 전체 기능의 기준은 LimBooks로 유지한다.
+
+### 확인한 구성과 동작
+
+| 참고 대상 | 코드·자료와 확인한 방식 |
+| --- | --- |
+| 정적 사이트 구성 | `index.html`에 HTML, CSS, JavaScript가 들어 있고 `loadData()`가 `dialogue.json`을 fetch한다. 별도 검색 서버를 호출하지 않는다. |
+| 대사 데이터 | `dialogue.json`의 배열에서 `chapter`, `speaker`, `text`를 읽는다. `main_all.xlsx`도 포함되어 있지만 엑셀에서 JSON으로 만드는 변환 코드는 이 참고 커밋의 추적 파일에 없다. |
+| 검색 인덱스와 처리 | 장명·화자·대사를 소문자로 미리 준비하고 `search()`에서 `includes()`로 부분 문자열을 검색한다. 2,000개 단위 처리 사이에 이벤트 루프에 제어를 넘기며, 검색 버전 번호로 오래된 검색의 반영을 막는다. |
+| 검색 결과 표시 | `renderPage()`가 50건 단위로 표시한다. `highlight()`에서 검색어를 강조하며 원문을 HTML 이스케이프한다. |
+| 주변 대사 보기 | `openContext()`와 `renderContext()`가 원본 배열의 인덱스로 선택한 대사와 주변 대사를 최대 41줄 표시한다. 41줄 단위 이동과 선택 대사로 돌아가기를 제공한다. 경계에서는 실제 앞뒤 줄 수가 달라지고, 장 경계를 별도로 제한하지 않는다. |
+| 화면과 사용성 | 모바일에서 검색 결과를 카드로 표시하고 주변 대사를 전체 화면 대화상자로 보여준다. 다크 모드 선택을 localStorage에 저장하며 로딩·오류·재시도 화면을 제공한다. |
+
+스타레일에 적용할 때는 원문 순서를 유지할 식별자와 장·장면 경계를 데이터 계약에 맞춰 정한다. 전체 JSON을 브라우저에 올리는 방식이 실제 스타레일 데이터 규모에 적합한지는 별도 측정한다. 붕괴 3rd 대사 데이터와 엑셀 파일은 참고 원본에만 보관하고 hsrArchive의 사이트 데이터로 넣지 않는다.
+
 ## paimooon.github.io — 텍스트 추출 전용
 
 - 원본: https://github.com/paimooon/paimooon.github.io
@@ -77,6 +102,7 @@ PowerShell 예시:
 git clone https://github.com/noita0130/LimBooks.git E:\references\LimBooks
 git clone https://github.com/paimooon/paimooon.github.io.git E:\references\paimooon.github.io
 git clone --depth 1 https://github.com/mizan0515/starrail-quests.git E:\references\starrail-quests
+git clone --depth 1 https://github.com/KARON099/hk3rdtextkrserch.git E:\references\hk3rdtextkrserch
 ```
 
 최신 브랜치는 위 참고 커밋과 다를 수 있다. 기록된 버전과 비교하려면 다음처럼 조회한다.
@@ -85,6 +111,7 @@ git clone --depth 1 https://github.com/mizan0515/starrail-quests.git E:\referenc
 git -C E:\references\LimBooks diff 8b2dfe65f29c40213a7dc1a0549ec9f887040381 HEAD --stat
 git -C E:\references\paimooon.github.io diff 36eca4736eecfc84d5f2053865068e4426b17186 HEAD --stat
 git -C E:\references\starrail-quests diff a66ec9c36e3321ce4ea9e62b58e9326634628dce HEAD --stat
+git -C E:\references\hk3rdtextkrserch diff fc780d4cc71f49fe8d3f6788416e41f2453053d1 HEAD --stat
 ```
 
 ## 참고 원본 업데이트
@@ -95,12 +122,15 @@ git -C E:\references\starrail-quests diff a66ec9c36e3321ce4ea9e62b58e9326634628d
 git -C E:\references\LimBooks status --short
 git -C E:\references\paimooon.github.io status --short
 git -C E:\references\starrail-quests status --short
+git -C E:\references\hk3rdtextkrserch status --short
 git -C E:\references\LimBooks pull --ff-only
 git -C E:\references\paimooon.github.io pull --ff-only
 git -C E:\references\starrail-quests pull --ff-only
+git -C E:\references\hk3rdtextkrserch pull --ff-only
 git -C E:\references\LimBooks rev-parse HEAD
 git -C E:\references\paimooon.github.io rev-parse HEAD
 git -C E:\references\starrail-quests rev-parse HEAD
+git -C E:\references\hk3rdtextkrserch rev-parse HEAD
 ```
 
 검토 후 이 문서의 기록일, 참고 커밋, 버전 링크와 변경된 기능 설명을 갱신한다. 원본 소스·에셋을 실제 프로젝트로 가져올 때는 해당 자료의 재사용 조건을 확인한다.
