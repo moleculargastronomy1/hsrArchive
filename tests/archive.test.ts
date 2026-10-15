@@ -1,6 +1,7 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { adjacentChapter, readerPath, searchEntries } from '../src/lib/archive.ts';
+import { adjacentChapter, chapterNumber, readerPath, searchEntries } from '../src/lib/archive.ts';
+import { archive } from '../src/data/archive.ts';
 import type { ArchiveEntry } from '../src/data/types.ts';
 
 const entries: ArchiveEntry[] = [
@@ -67,4 +68,41 @@ test('reader paths encode identifiers for static hash routes', () => {
   assert.equal(readerPath('station'), '/entry/station');
   assert.equal(readerPath('station', 'first'), '/entry/station/first');
   assert.equal(readerPath('a/b', 'a b'), '/entry/a%2Fb/a%20b');
+});
+
+test('subchapter numbering preserves main chapter order and navigation', () => {
+  const entry: ArchiveEntry = {
+    ...entries[0],
+    chapters: [
+      entries[0].chapters[0],
+      { id: 'branch', title: '선택 분기', parentId: 'first', kind: 'branch', blocks: [] },
+      entries[0].chapters[1],
+    ],
+  };
+  assert.equal(chapterNumber(entry, 'first'), '01');
+  assert.equal(chapterNumber(entry, 'branch'), '01.1');
+  assert.equal(chapterNumber(entry, 'last'), '02');
+  assert.equal(chapterNumber(entry, 'missing'), '');
+  assert.equal(adjacentChapter(entry, 'first', 1)?.id, 'branch');
+  assert.equal(adjacentChapter(entry, 'branch', 1)?.id, 'last');
+});
+
+test('all supplied trailblaze chapters have unique routes, valid parents and preserved demo dialogue', () => {
+  const trailblaze = archive.filter((entry) => entry.category === 'trailblaze');
+  assert.deepEqual(
+    trailblaze.map((entry) => entry.chapters.length),
+    [2, 3, 6, 8, 9, 5],
+  );
+  for (const entry of trailblaze) {
+    const visited = new Set<string>();
+    for (const chapter of entry.chapters) {
+      assert.ok(!visited.has(chapter.id), `${entry.id}: duplicate chapter ID`);
+      if (chapter.parentId) assert.ok(visited.has(chapter.parentId), 'Parent must precede child');
+      assert.ok(
+        chapter.blocks.some((block) => block.type === 'dialogue'),
+        'Demo dialogue is retained',
+      );
+      visited.add(chapter.id);
+    }
+  }
 });

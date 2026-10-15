@@ -25,7 +25,7 @@ export const worlds: { id: World; label: string; short: string; english: string 
   },
 ];
 
-// Trailblaze arc labels, titles and introductions are supplied by the user. Chapter bodies remain
+// Trailblaze arc labels, titles, introductions and chapter lists are supplied by the user. Bodies remain
 // original interface fixtures, not extracted game dialogue.
 function demoChapter(id: string, title: string, subject: string): Chapter {
   return {
@@ -74,6 +74,16 @@ function demoChapter(id: string, title: string, subject: string): Chapter {
   };
 }
 
+function subChapter(
+  id: string,
+  title: string,
+  subject: string,
+  parentId: string,
+  kind: 'branch' | 'adventure',
+): Chapter {
+  return { ...demoChapter(id, title, subject), parentId, kind };
+}
+
 export const archive: ArchiveEntry[] = [
   {
     id: 'station-departure',
@@ -88,9 +98,8 @@ export const archive: ArchiveEntry[] = [
     tags: ['프롤로그', '더 블루', '우주정거장'],
     source: { kind: 'demo', note: '사용자가 지정한 개척 임무 목록 · 본문은 기능 확인용 예시' },
     chapters: [
-      demoChapter('arrival', '낯선 곳에서의 시작', '우주정거장'),
-      demoChapter('platform', '열차가 기다리는 곳', '은하열차'),
-      demoChapter('departure', '다음 별을 향하여', '새로운 여정'),
+      demoChapter('arrival', '제1막: 오늘은 어제의 내일', '우주정거장'),
+      demoChapter('platform', '개척 후문: 인간과 신의 면류관', '우주정거장'),
     ],
   },
   {
@@ -107,8 +116,9 @@ export const archive: ArchiveEntry[] = [
     tags: ['야릴로-VI', '야릴로-Ⅵ', '벨로보그', '설원'],
     source: { kind: 'demo', note: '사용자가 지정한 개척 임무 목록 · 본문은 기능 확인용 예시' },
     chapters: [
-      demoChapter('snowfield', '설원 너머의 도시', '벨로보그'),
-      demoChapter('city', '도시에 남겨진 이야기', '야릴로-VI'),
+      demoChapter('snowfield', '제1막: 시들어가는 겨울밤', '야릴로-Ⅵ'),
+      demoChapter('city', '제2막: 동트는 태양 아래', '야릴로-Ⅵ'),
+      demoChapter('winter-dream', '개척 후문: 겨울꿈에서 깨어난 순간', '야릴로-Ⅵ'),
     ],
   },
   {
@@ -125,8 +135,12 @@ export const archive: ArchiveEntry[] = [
     tags: ['선주', '나부'],
     source: { kind: 'demo', note: '사용자가 지정한 개척 임무 목록 · 본문은 기능 확인용 예시' },
     chapters: [
-      demoChapter('harbor', '별바다의 항구', '선주 「나부」'),
-      demoChapter('clouds', '구름 너머의 기록', '선주의 여정'),
+      demoChapter('harbor', '제1막: 바람 따라 즐기는 선경', '선주 「나부」'),
+      demoChapter('clouds', '제2막: 구름에 가려진 탑', '선주 「나부」'),
+      demoChapter('aftermath', '제3막: 재앙이 지나간 자리', '선주 「나부」'),
+      demoChapter('foxian-tale', '개척 후문: 호재지이', '선주 「나부」'),
+      demoChapter('swords-upper', '개척 후문: 청천 위 교차하는 칼끝·상', '선주 「나부」'),
+      demoChapter('swords-lower', '개척 후문: 청천 위 교차하는 칼끝·하', '선주 「나부」'),
     ],
   },
   {
@@ -143,8 +157,14 @@ export const archive: ArchiveEntry[] = [
     tags: ['꿈', '페나코니'],
     source: { kind: 'demo', note: '사용자가 지정한 개척 임무 목록 · 본문은 기능 확인용 예시' },
     chapters: [
-      demoChapter('invitation', '꿈으로의 초대', '페나코니'),
-      demoChapter('dream', '밤에 남겨진 흔적', '꿈의 세계'),
+      demoChapter('invitation', '제1막: 음향과 분노', '페나코니'),
+      demoChapter('dream', '제2막: 비둘기 속의 고양이', '페나코니'),
+      demoChapter('our-time', '제3막: 우리들의 시대에', '페나코니'),
+      demoChapter('farewell', '제4막: 안녕, 페나코니', '페나코니'),
+      demoChapter('nana-outrage', '개척 후문: 나나웃레이지·인의(忍義) 없는 전쟁', '페나코니'),
+      demoChapter('eighth-day', '제5막: 여덟째 날에 오르는 여정', '페나코니'),
+      demoChapter('dream-grail', '개척 후문: 좋은꿈과 성배', '페나코니'),
+      demoChapter('memories-opening', '종말 임무: 기억은 꿈의 오프닝', '페나코니'),
     ],
   },
   {
@@ -160,7 +180,23 @@ export const archive: ArchiveEntry[] = [
     language: 'ko-KR',
     tags: ['제4장', '앰포리어스'],
     source: { kind: 'demo', note: '사용자가 지정한 개척 임무 목록 · 본문은 기능 확인용 예시' },
-    chapters: [demoChapter('journey', '앰포리어스의 기록 · 예시', '앰포리어스')],
+    chapters: [
+      demoChapter('journey', '제1막: 불을 쫓는 낙목의 영웅기', '앰포리어스'),
+      demoChapter('gate-throne', '제2막: 문의 시작, 왕좌의 종말', '앰포리어스'),
+      demoChapter('flowers', '제3막: 안식의 땅의 꽃밭을 지나', '앰포리어스'),
+      demoChapter('dawn-fall', '제4막: 여명이 틀 무렵의 추락', '앰포리어스'),
+      demoChapter('sun-destruction', '제5막: 태양이 파멸로 향하기에', '앰포리어스'),
+      demoChapter('before-heroes-die', '제6막: 영웅은 죽기 전에', '앰포리어스'),
+      demoChapter('long-night', '제7막: 긴 밤 속에 다시 대지로', '앰포리어스'),
+      demoChapter('yesterdays-tomorrow', '제8막: 어제의 내일이 되어', '앰포리어스'),
+      subChapter(
+        'as-i-write',
+        '모험 임무: 내가 쓰는 대로',
+        '앰포리어스',
+        'yesterdays-tomorrow',
+        'adventure',
+      ),
+    ],
   },
   {
     id: 'paradise-records',
@@ -176,8 +212,19 @@ export const archive: ArchiveEntry[] = [
     tags: ['제5장', '이상 낙원', '아스트로폴리스'],
     source: { kind: 'demo', note: '사용자가 지정한 개척 임무 목록 · 본문은 기능 확인용 예시' },
     chapters: [
-      demoChapter('paradise', '이상 낙원의 기록 · 예시', '이상 낙원'),
-      demoChapter('astropolis', '아스트로폴리스의 기록 · 예시', '아스트로폴리스'),
+      demoChapter('paradise', '제1막: 낙원에 오신 걸 환영합니다', '이상 낙원 / 아스트로폴리스'),
+      demoChapter('astropolis', '제2막: 새벽에 바치는 폭주', '이상 낙원 / 아스트로폴리스'),
+      demoChapter(
+        'laughter',
+        '제3막: 그리하여, 웃음소리는 멈추지 않으리',
+        '이상 낙원 / 아스트로폴리스',
+      ),
+      demoChapter('river-of-oblivion', '제4막: 산 자의 망천에 잠겨', '이상 낙원 / 아스트로폴리스'),
+      demoChapter(
+        'silent-horn',
+        '제5막: 적막이 깃든 순간, 울리는 경적',
+        '이상 낙원 / 아스트로폴리스',
+      ),
     ],
   },
   {

@@ -32,6 +32,17 @@ export function adjacentChapter(entry: ArchiveEntry, chapterId: string, directio
   return index < 0 ? undefined : entry.chapters[index + direction];
 }
 
+export function chapterNumber(entry: ArchiveEntry, chapterId: string): string {
+  const chapter = entry.chapters.find((item) => item.id === chapterId);
+  if (!chapter) return '';
+  if (chapter.parentId) {
+    const siblings = entry.chapters.filter((item) => item.parentId === chapter.parentId);
+    return `${chapterNumber(entry, chapter.parentId)}.${siblings.indexOf(chapter) + 1}`;
+  }
+  const roots = entry.chapters.filter((item) => !item.parentId);
+  return String(roots.indexOf(chapter) + 1).padStart(2, '0');
+}
+
 export function readerPath(entryId: string, chapterId?: string) {
   return `/entry/${encodeURIComponent(entryId)}${chapterId ? `/${encodeURIComponent(chapterId)}` : ''}`;
 }

@@ -693,6 +693,11 @@ button {
   color: var(--muted);
   margin-bottom: 7px;
 }
+.trailblaze-entry .card-eyebrow {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--accent);
+}
 .card-body h3 {
   font-size: 13px;
   font-weight: 600;
@@ -1003,6 +1008,9 @@ button {
   mask-image: linear-gradient(to right, transparent, #000 35%);
 }
 .entry-detail .eyebrow {
+  font-size: 14px;
+  line-height: 1.8;
+  letter-spacing: 0.5px;
   color: #596f5a;
 }
 .entry-detail h1 {
@@ -1051,6 +1059,16 @@ button {
 .chapter-list > a:hover {
   background: var(--soft);
 }
+.chapter-list > a.chapter-child {
+  padding-left: 48px;
+  background: var(--bg);
+}
+.chapter-child .chapter-number {
+  font-size: 12px;
+}
+.reader-toc > a.toc-child {
+  padding-left: 22px;
+}
 .chapter-list > a + a {
   border-top: 1px solid var(--line);
 }
@@ -1070,6 +1088,7 @@ button {
   margin-left: auto;
 }
 .chapter-number {
+  min-width: 32px;
   font-size: 17px;
   letter-spacing: 1px;
   color: var(--accent);
@@ -1537,6 +1556,9 @@ button {
   }
 }
 @media (max-width: 760px) {
+  .chapter-list > a.chapter-child {
+    padding-left: 30px;
+  }
   .entry-detail > .entry-artwork {
     width: 65%;
     opacity: 0.25;
@@ -1879,7 +1901,7 @@ button {
     font-size: 15px;
   }
   .trailblaze-grid .card-eyebrow {
-    font-size: 10px;
+    font-size: 12px;
   }
 }
 @media (max-width: 760px) {

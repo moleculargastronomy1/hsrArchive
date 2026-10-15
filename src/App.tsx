@@ -24,7 +24,7 @@ import {
 } from 'lucide-react';
 import { archive, categories, worlds } from './data/archive';
 import type { ArchiveEntry, Category, World } from './data/types';
-import { adjacentChapter, readerPath, searchEntries } from './lib/archive';
+import { adjacentChapter, chapterNumber, readerPath, searchEntries } from './lib/archive';
 import { isBookmarks, isHistory, useStored, type ReadingHistory } from './lib/storage';
 import WorldArt from './components/WorldArt';
 import EntryArtwork, { hasCover } from './components/EntryArtwork';
@@ -62,7 +62,7 @@ function EntryCard({
   onBookmark: () => void;
 }) {
   return (
-    <article className="entry-card">
+    <article className={`entry-card${entry.category === 'trailblaze' ? ' trailblaze-entry' : ''}`}>
       <a
         className={`card-art world-${entry.world}${entry.category === 'trailblaze' && hasCover(entry.world) ? ' has-cover' : ''}`}
         href={href(readerPath(entry.id))}
@@ -86,7 +86,8 @@ function EntryCard({
         <div className="card-footer">
           <span>
             <BookOpen size={13} />
-            {entry.chapters.length}개의 장
+            {entry.chapters.length}
+            {entry.category === 'trailblaze' ? '개 항목' : '개의 장'}
           </span>
           <button
             className={`icon-button ${saved ? 'saved' : ''}`}
@@ -502,15 +503,26 @@ export default function App() {
         </div>
         <div className="section-heading chapter-heading">
           <h2>이야기의 목차</h2>
-          <span>{entry.chapters.length}개의 장</span>
+          <span>{entry.chapters.length}개 항목</span>
         </div>
         <div className="chapter-list">
-          {entry.chapters.map((ch, index) => (
-            <a key={ch.id} href={href(readerPath(entry.id, ch.id))}>
-              <span className="chapter-number">{String(index + 1).padStart(2, '0')}</span>
+          {entry.chapters.map((ch) => (
+            <a
+              key={ch.id}
+              className={ch.parentId ? 'chapter-child' : undefined}
+              href={href(readerPath(entry.id, ch.id))}
+            >
+              <span className="chapter-number">{chapterNumber(entry, ch.id)}</span>
               <span>
                 <strong>{ch.title}</strong>
-                <small>{ch.blocks.length}개 텍스트 블록 · 예시 본문</small>
+                <small>
+                  {ch.kind === 'branch'
+                    ? '선택 분기 · '
+                    : ch.kind === 'adventure'
+                      ? '관련 모험 임무 · '
+                      : ''}
+                  예시 대사
+                </small>
               </span>
               {ch.id === progress?.chapterId ? (
                 <span className="reading-label">
@@ -558,8 +570,8 @@ export default function App() {
           </p>
           <h2>지금은 기본 뼈대를 준비 중입니다</h2>
           <p>
-            개척 임무 목록은 사용자가 제공한 프롤로그와 제1~5장의 제목 및 소개문으로 구성했습니다.
-            하위 목차와 챕터 본문은 기능을 확인하기 위한 자체 작성 예시이며, 공식 대사가 아닙니다.
+            개척 임무 목록과 하위 목차는 사용자가 제공한 프롤로그와 제1~5장의 제목 및 소개문으로
+            구성했습니다. 챕터 본문은 기능을 확인하기 위한 자체 작성 예시이며, 공식 대사가 아닙니다.
             현재 실제 게임 챕터 텍스트와 음성은 제공하지 않습니다.
           </p>
           <h2>앞으로 자료를 연결하는 방법</h2>
@@ -868,14 +880,14 @@ function Reader({
         <aside className="reader-toc" aria-label="챕터 목차">
           <span className="eyebrow">IN THIS STORY</span>
           <h2>{entry.title}</h2>
-          {entry.chapters.map((ch, index) => (
+          {entry.chapters.map((ch) => (
             <a
               key={ch.id}
-              className={ch.id === chapterId ? 'active' : ''}
+              className={`${ch.id === chapterId ? 'active' : ''}${ch.parentId ? ' toc-child' : ''}`}
               aria-current={ch.id === chapterId ? 'page' : undefined}
               href={href(readerPath(entry.id, ch.id))}
             >
-              <span>{String(index + 1).padStart(2, '0')}</span>
+              <span>{chapterNumber(entry, ch.id)}</span>
               {ch.title}
             </a>
           ))}
@@ -883,8 +895,7 @@ function Reader({
         <article className="reader-article" style={{ fontSize }}>
           <header>
             <span className="eyebrow">
-              {worldName(entry.world)} <span> / </span>{' '}
-              {String(entry.chapters.indexOf(chapter) + 1).padStart(2, '0')}
+              {worldName(entry.world)} <span> / </span> {chapterNumber(entry, chapterId)}
             </span>
             <h1>{chapter.title}</h1>
             <p>{entry.title}</p>

@@ -17,6 +17,8 @@ export interface TextBlock {
 export interface Chapter {
   id: string;
   title: string;
+  parentId?: string;
+  kind?: 'branch' | 'adventure';
   blocks: TextBlock[];
 }
 
