@@ -27,6 +27,7 @@ import type { ArchiveEntry, Category, World } from './data/types';
 import { adjacentChapter, readerPath, searchEntries } from './lib/archive';
 import { isBookmarks, isHistory, useStored, type ReadingHistory } from './lib/storage';
 import WorldArt from './components/WorldArt';
+import EntryArtwork, { hasCover } from './components/EntryArtwork';
 
 const categoryIcons = { trailblaze: Compass, companion: Users, readable: FileText };
 const worldName = (id: World) => worlds.find((world) => world.id === id)!.label;
@@ -63,17 +64,21 @@ function EntryCard({
   return (
     <article className="entry-card">
       <a
-        className={`card-art world-${entry.world}`}
+        className={`card-art world-${entry.world}${entry.category === 'trailblaze' && hasCover(entry.world) ? ' has-cover' : ''}`}
         href={href(readerPath(entry.id))}
         tabIndex={-1}
         aria-hidden="true"
       >
-        <WorldArt world={entry.world} />
+        {entry.category === 'trailblaze' ? (
+          <EntryArtwork world={entry.world} />
+        ) : (
+          <WorldArt world={entry.world} />
+        )}
         <span className="art-index">{String(entry.order).padStart(2, '0')} / ARCHIVE</span>
-        <span className="demo-pill">예시 자료</span>
+        <span className="demo-pill">예시 본문</span>
       </a>
       <div className="card-body">
-        <div className="card-eyebrow">{worldName(entry.world)}</div>
+        <div className="card-eyebrow">{entry.arcLabel ?? worldName(entry.world)}</div>
         <h3>
           <a href={href(readerPath(entry.id))}>{entry.title}</a>
         </h3>
@@ -149,8 +154,8 @@ export default function App() {
     mainRef.current?.focus({ preventScroll: true });
   }, [route]);
   useEffect(() => {
-    document.title = `${chapter?.title ?? entry?.title ?? (path === '/archive' ? '아카이브 탐색' : path === '/library' ? '내 서재' : path === '/about' ? '서고 안내' : '열차의 서고')} · 스타레일 아카이브`;
-  }, [path, entry, chapter]);
+    document.title = `${chapter?.title ?? entry?.title ?? (path === '/archive' ? (selectedCategory ? categoryName(selectedCategory) : '아카이브 탐색') : path === '/library' ? '내 서재' : path === '/about' ? '서고 안내' : '열차의 서고')} · 스타레일 아카이브`;
+  }, [path, entry, chapter, selectedCategory]);
   useEffect(() => {
     const shortcut = (event: KeyboardEvent) => {
       if ((event.ctrlKey || event.metaKey) && event.key.toLowerCase() === 'k') {
@@ -176,7 +181,9 @@ export default function App() {
     .sort((a, b) => b[1].updatedAt - a[1].updatedAt);
   const lastEntry = recent[0] && archive.find((item) => item.id === recent[0][0]);
   const cards = (entries: ArchiveEntry[]) => (
-    <div className="entry-grid">
+    <div
+      className={`entry-grid${entries.length && entries.every((item) => item.category === 'trailblaze') ? ' trailblaze-grid' : ''}`}
+    >
       {entries.map((item) => (
         <EntryCard
           key={item.id}
@@ -329,8 +336,12 @@ export default function App() {
       <>
         <PageIntro
           eyebrow="EXPLORE THE ARCHIVE"
-          title="이야기 탐색"
-          description="별과 인물, 작은 기록을 따라 원하는 이야기를 찾아보세요."
+          title={selectedCategory ? categoryName(selectedCategory) : '이야기 탐색'}
+          description={
+            selectedCategory === 'trailblaze'
+              ? '프롤로그부터 제5장까지, 개척의 여정을 순서대로 만나보세요.'
+              : '별과 인물, 작은 기록을 따라 원하는 이야기를 찾아보세요.'
+          }
         />
         <div className="category-tabs" aria-label="자료 분류">
           {[{ id: '', label: '전체 기록' }, ...categories].map((item) => (
@@ -367,7 +378,7 @@ export default function App() {
             </select>
           </label>
           <span>
-            총 <strong>{results.length}</strong>개 기록 · 예시 데이터
+            총 <strong>{results.length}</strong>개 기록 · 예시 본문
           </span>
         </div>
         {params.get('q') && (
@@ -459,7 +470,7 @@ export default function App() {
         </a>
         <div className={`entry-detail world-${entry.world}`}>
           <div>
-            <span className="eyebrow">{worldName(entry.world)}</span>
+            <span className="eyebrow">{entry.arcLabel ?? worldName(entry.world)}</span>
             <h1>{entry.title}</h1>
             <p>{entry.description}</p>
             <div className="tags">
@@ -467,10 +478,14 @@ export default function App() {
                 <span key={tag}>#{tag}</span>
               ))}
               <span>한국어</span>
-              <span>예시 자료</span>
+              <span>예시 본문</span>
             </div>
           </div>
-          <WorldArt world={entry.world} />
+          {entry.category === 'trailblaze' ? (
+            <EntryArtwork world={entry.world} />
+          ) : (
+            <WorldArt world={entry.world} />
+          )}
         </div>
         <div className="detail-actions">
           <a className="button primary" href={href(readerPath(entry.id, resume.id))}>
@@ -543,8 +558,9 @@ export default function App() {
           </p>
           <h2>지금은 기본 뼈대를 준비 중입니다</h2>
           <p>
-            모든 자료의 제목과 본문은 인터페이스를 확인하기 위한 자체 작성 예시이며, 실제 임무
-            제목이나 공식 대사가 아닙니다. 현재 게임 텍스트와 음성은 제공하지 않습니다.
+            개척 임무 목록은 사용자가 지정한 프롤로그와 제1~5장 제목으로 구성했습니다. 본문과 하위
+            목차는 기능을 확인하기 위한 자체 작성 예시이며, 공식 대사가 아닙니다. 현재 실제 게임
+            텍스트와 음성은 제공하지 않습니다.
           </p>
           <h2>앞으로 자료를 연결하는 방법</h2>
           <p>

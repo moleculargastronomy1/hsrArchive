@@ -12,6 +12,7 @@ export function searchEntries(
     if (world && entry.world !== world) return false;
     const text = [
       entry.title,
+      entry.arcLabel ?? '',
       entry.subtitle,
       entry.description,
       ...entry.tags,

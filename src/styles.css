@@ -571,6 +571,48 @@ button {
   grid-template-columns: repeat(4, minmax(0, 1fr));
   gap: 17px;
 }
+.trailblaze-grid {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+.trailblaze-grid .card-art {
+  height: auto;
+  aspect-ratio: 1051 / 597;
+}
+.entry-artwork {
+  display: flex;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+}
+.entry-artwork img {
+  flex: 1;
+  width: 0;
+  min-width: 0;
+  height: 100%;
+  object-fit: cover;
+}
+.has-cover::after {
+  content: '';
+  position: absolute;
+  inset: 55% 0 0;
+  background: linear-gradient(transparent, #14201dc9);
+  pointer-events: none;
+}
+.has-cover .art-index {
+  z-index: 1;
+  color: #fff;
+}
+.has-cover .demo-pill {
+  background: #ffffffe6;
+}
+.trailblaze-grid .card-eyebrow {
+  line-height: 1.8;
+  min-height: 1.8em;
+}
+.trailblaze-grid .card-body h3 {
+  line-height: 1.65;
+  word-break: keep-all;
+}
 .entry-card {
   border: 1px solid var(--line);
   border-radius: 6px;
@@ -609,6 +651,14 @@ button {
 .world-penacony {
   background: #eeebf1;
   color: #a193b4;
+}
+.world-amphoreus {
+  background: #e9e8f3;
+  color: #9a8ab2;
+}
+.world-paradise-astropolis {
+  background: #e6eef6;
+  color: #7a9ac1;
 }
 .art-index {
   position: absolute;
@@ -933,6 +983,17 @@ button {
   height: 110%;
   width: 40%;
   opacity: 0.7;
+}
+.entry-detail > .entry-artwork {
+  position: absolute;
+  right: 0;
+  top: 0;
+  width: 40%;
+  max-width: none;
+  height: 100%;
+  z-index: 0;
+  opacity: 0.5;
+  mask-image: linear-gradient(to right, transparent, #000 35%);
 }
 .entry-detail .eyebrow {
   color: #596f5a;
@@ -1374,6 +1435,9 @@ button {
   }
 }
 @media (max-width: 1000px) {
+  .trailblaze-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
   .entry-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
     gap: 18px;
@@ -1466,6 +1530,10 @@ button {
   }
 }
 @media (max-width: 760px) {
+  .entry-detail > .entry-artwork {
+    width: 65%;
+    opacity: 0.25;
+  }
   .sidebar {
     width: 232px;
     transform: translateX(-100%);
@@ -1794,6 +1862,17 @@ button {
     scroll-behavior: auto !important;
     transition: none !important;
     animation: none !important;
+  }
+}
+@media (max-width: 480px) {
+  .trailblaze-grid {
+    grid-template-columns: 1fr;
+  }
+  .trailblaze-grid .card-body h3 {
+    font-size: 15px;
+  }
+  .trailblaze-grid .card-eyebrow {
+    font-size: 10px;
   }
 }
 @media (max-width: 760px) {
