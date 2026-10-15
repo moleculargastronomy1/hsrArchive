@@ -3,6 +3,7 @@ import { ArrowLeft, Bookmark, ChevronRight, Search } from 'lucide-react';
 import type { ArchiveEntry } from '../data/types';
 import { readerPath } from '../lib/archive';
 import { isDialogueRows, type DialogueRow } from '../lib/dialogue';
+import EntryArtwork, { hasCover } from './EntryArtwork';
 import type { ReadingHistory } from '../lib/storage';
 
 export default function CodexReader({
@@ -80,6 +81,11 @@ export default function CodexReader({
       <a className="back-link" href="#/archive?category=codex">
         <ArrowLeft size={15} /> 아카이브 목록
       </a>
+      {hasCover(entry.world, entry.id) && (
+        <div className="codex-cover">
+          <EntryArtwork world={entry.world} entryId={entry.id} />
+        </div>
+      )}
       <div className="codex-heading">
         <div>
           <span className="eyebrow">GALACTIC ARCHIVE</span>

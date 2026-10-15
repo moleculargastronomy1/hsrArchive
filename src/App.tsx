@@ -64,16 +64,12 @@ function EntryCard({
   return (
     <article className={`entry-card${entry.category === 'trailblaze' ? ' trailblaze-entry' : ''}`}>
       <a
-        className={`card-art world-${entry.world}${entry.category === 'trailblaze' && hasCover(entry.world) ? ' has-cover' : ''}`}
+        className={`card-art world-${entry.world}${hasCover(entry.world, entry.id) ? ' has-cover' : ''}`}
         href={href(readerPath(entry.id))}
         tabIndex={-1}
         aria-hidden="true"
       >
-        {entry.category === 'trailblaze' ? (
-          <EntryArtwork world={entry.world} />
-        ) : (
-          <WorldArt world={entry.world} />
-        )}
+        <EntryArtwork world={entry.world} entryId={entry.id} />
         <span className="art-index">{String(entry.order).padStart(2, '0')} / ARCHIVE</span>
       </a>
       <div className="card-body">
@@ -299,7 +295,13 @@ export default function App() {
         </section>
         <div className="home-bottom">
           <section className="simulation-callout">
-            <CategoryIcon category="simulation" />
+            <a
+              className="simulation-cover"
+              href="#/archive?category=simulation"
+              aria-label="시뮬레이션 우주 둘러보기"
+            >
+              <EntryArtwork world="simulated-universe" />
+            </a>
             <span className="eyebrow">SIMULATED UNIVERSE</span>
             <h2>시뮬레이션 우주</h2>
             <p>우주의 실험과 기물에 남겨진 기록을 읽어 보세요.</p>
@@ -520,11 +522,7 @@ export default function App() {
               <span>{entry.source.kind === 'extracted' ? '한국어 원문' : '예시 본문'}</span>
             </div>
           </div>
-          {entry.category === 'trailblaze' ? (
-            <EntryArtwork world={entry.world} />
-          ) : (
-            <WorldArt world={entry.world} />
-          )}
+          <EntryArtwork world={entry.world} entryId={entry.id} />
         </div>
         <div className="detail-actions">
           <a className="button primary" href={href(readerPath(entry.id, resume.id))}>

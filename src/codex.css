@@ -163,6 +163,27 @@
   background: #e9e5d9;
   color: #a68e58;
 }
+.card-art.has-cover {
+  height: auto;
+  aspect-ratio: 16 / 9;
+}
+.simulation-cover {
+  display: block;
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  overflow: hidden;
+  border-radius: 4px;
+  background: #000;
+}
+.simulation-cover img {
+  object-fit: contain;
+}
+.codex-cover {
+  height: clamp(140px, 18vw, 240px);
+  overflow: hidden;
+  border-radius: 7px;
+  margin-bottom: 24px;
+}
 .codex-heading {
   display: flex;
   justify-content: space-between;
