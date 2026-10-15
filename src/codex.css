@@ -58,7 +58,7 @@
 .hero {
   display: grid;
   grid-template-columns: minmax(0, 1fr) minmax(280px, 42%);
-  align-items: center;
+  align-items: start;
   gap: 32px;
   min-height: 0;
   padding: 30px 36px 52px;
@@ -66,18 +66,36 @@
 .hero-copy {
   min-width: 0;
   max-width: none;
+  padding-top: 24px;
 }
 .hero h2 {
-  font-size: clamp(24px, 2.4vw, 38px);
+  font-size: clamp(28px, 2.65vw, 42px);
+  font-weight: 600;
   line-height: 1.4;
   word-break: keep-all;
-  margin: 20px 0 18px;
+  margin: 0 0 24px;
+}
+.hero-media {
+  position: relative;
+  z-index: 2;
+  min-width: 0;
+}
+.hero-brand {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 12px;
+  margin-top: 16px;
+  color: #94a39c;
+  font-size: 8px;
+  letter-spacing: 0.6px;
 }
 .starrail-logo {
   display: block;
-  width: 170px;
+  width: 118px;
+  flex-shrink: 0;
   height: auto;
-  margin: -12px 0 2px;
+  margin: 0;
 }
 .codex-variants {
   margin-bottom: 25px;
@@ -312,7 +330,7 @@
     grid-template-columns: 1fr;
     gap: 26px;
   }
-  .hero-video {
+  .hero-media {
     max-width: 520px;
   }
 }
@@ -322,10 +340,21 @@
     padding-bottom: 50px;
   }
   .hero h2 {
-    font-size: clamp(20px, 4.5vw, 30px);
+    font-size: clamp(22px, 5.1vw, 32px);
   }
   .hero-copy {
     max-width: none;
+    padding-top: 0;
+  }
+  .hero-media {
+    max-width: none;
+  }
+  .hero-brand {
+    gap: 8px;
+    font-size: 7px;
+  }
+  .starrail-logo {
+    width: 96px;
   }
   .hero-video {
     position: relative;

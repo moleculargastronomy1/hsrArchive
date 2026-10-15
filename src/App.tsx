@@ -247,7 +247,6 @@ export default function App() {
         </div>
         <section className="hero">
           <div className="hero-copy">
-            <img className="starrail-logo" src={starRailLogo} alt="붕괴: 스타레일" />
             <h2>여정의 끝이 뭇별에 닿길</h2>
             <p>
               별과 별 사이에 남겨진 대화와 기록들.
@@ -259,10 +258,15 @@ export default function App() {
             </a>
           </div>
           <WorldArt world="space-station" hero />
-          <OfficialVideo className="hero-video" />
+          <div className="hero-media">
+            <OfficialVideo className="hero-video" />
+            <div className="hero-brand">
+              <span>기록으로 이어지는 은하의 여정</span>
+              <img className="starrail-logo" src={starRailLogo} alt="붕괴: 스타레일" />
+            </div>
+          </div>
           <div className="hero-caption">
             <span>01 — THE BEGINNING</span>
-            <span>기록으로 이어지는 은하의 여정</span>
           </div>
         </section>
         <div className="quick-categories">
