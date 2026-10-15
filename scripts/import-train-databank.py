@@ -93,5 +93,5 @@ for kind, (group_id, title) in group_info.items():
 output = {'schema': 'hsr-train-databank.v1', 'repository': 'DimbreathBot/TurnBasedGameData',
           'commit': COMMIT, 'files': evidence, 'groups': groups,
           'note': 'NounAtlas SortID order. Updated text remains selectable; player unlock state is not inferred.'}
-Path('src/data/train-databank.json').write_text(json.dumps(output, ensure_ascii=False, indent=2) + '\n', encoding='utf-8')
+Path('src/data/train-databank.json').write_text(json.dumps(output, ensure_ascii=False, indent=2) + '\n', encoding='utf-8', newline='\n')
 print(json.dumps({group['title']: len(group['documents']) for group in groups}, ensure_ascii=False))

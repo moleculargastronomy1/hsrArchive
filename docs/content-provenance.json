@@ -3890,7 +3890,7 @@
   },
   "supplementalFiles": {
     "public/handbook-originals.json": "213c6a52ed4eb11d54306dc05fdc8ce9e48d34c4c9ca6b2a331b57801669464f",
-    "src/data/train-databank.json": "e5ddfb4b1d12c450f8c8ad41fe81c720cf5a95abc05cb69cb2a3646a36fdf85a"
+    "src/data/train-databank.json": "aa68f3cbd4280616c12d27e931ce8af759af06a16ef374d7cb849f90b94fa166"
   },
   "trainDatabank": {
     "repository": "DimbreathBot/TurnBasedGameData",
