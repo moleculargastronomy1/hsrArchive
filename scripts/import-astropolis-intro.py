@@ -12,6 +12,12 @@ EXPECTED = {
     'TextMapKR_0.json': '4c4adcf4ed86c48ebb407442801f3b3dd396eb19',
     'TextMapKR_1.json': '80eee947e1dc31577209e39d841ad2eb127541e0',
 }
+if len(sys.argv) > 2:
+    manifest = json.loads(Path(sys.argv[2]).read_bytes())
+    if manifest['schema'] != 'hsr-upstream-plan.v1':
+        raise ValueError('Unsupported upstream manifest')
+    COMMIT = manifest['commit']
+    EXPECTED = {Path(row['path']).name: row['sha'] for row in manifest['files']}
 evidence = {}
 
 
@@ -25,8 +31,9 @@ def read(name):
 
 
 texts = {}
-for index in range(2):
-    texts.update(read(f'TextMapKR_{index}.json'))
+for name in EXPECTED:
+    if re.fullmatch(r'TextMapKR(?:_\d+)?\.json', name):
+        texts.update(read(name))
 chapter = next(row for row in read('MissionChapterConfig.json') if row['ID'] == 105009)
 
 

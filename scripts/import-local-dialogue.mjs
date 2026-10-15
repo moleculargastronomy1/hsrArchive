@@ -57,6 +57,7 @@ fs.mkdirSync(output, { recursive: true });
 const metadata = {};
 const searchRows = [];
 const sourceFiles = {};
+const textBindings = {};
 let unverifiedScenes = 0;
 
 function convert(entryId, chapterId, documents, dedupeText = false, sourceCommit = commit) {
@@ -99,6 +100,8 @@ function convert(entryId, chapterId, documents, dedupeText = false, sourceCommit
         source: origin,
         ...(raw.variant ? { variant: raw.variant } : {}),
       });
+      if (!raw.talk_id && typeof raw.hash === 'string' && /^\d+$/.test(raw.hash))
+        textBindings[rows.at(-1).id] = raw.hash;
     };
     for (const section of doc.sections) {
       // Unknown scene mappings are not silently presented as verified story content.
@@ -358,6 +361,7 @@ for (const file of fs.readdirSync(output)) {
     fs.unlinkSync(path.join(output, file));
 }
 fs.writeFileSync('src/data/codex.json', JSON.stringify(codex, null, 2) + '\n');
+fs.writeFileSync('src/data/text-bindings.json', JSON.stringify(textBindings) + '\n');
 const trailblazeIds = new Set(
   archive.filter((entry) => entry.category === 'trailblaze').map((entry) => entry.id),
 );

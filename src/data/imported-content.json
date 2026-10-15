@@ -11,7 +11,8 @@
       "quest-1000400",
       "quest-1000402",
       "quest-1010001"
-    ]
+    ],
+    "textReferenceCommit": "312b4597691e0a29cf9828a15b592757dba86949"
   },
   "station-departure/platform": {
     "file": "content/station-departure--platform.json",
@@ -23,7 +24,8 @@
       "quest-2001001",
       "quest-2000901",
       "quest-2001002"
-    ]
+    ],
+    "textReferenceCommit": "312b4597691e0a29cf9828a15b592757dba86949"
   },
   "jarilo-records/snowfield": {
     "file": "content/jarilo-records--snowfield.json",
@@ -45,7 +47,8 @@
       "quest-1010801",
       "quest-1010901",
       "quest-1011001"
-    ]
+    ],
+    "textReferenceCommit": "312b4597691e0a29cf9828a15b592757dba86949"
   },
   "jarilo-records/city": {
     "file": "content/jarilo-records--city.json",
@@ -64,7 +67,8 @@
       "quest-1011501",
       "quest-1011502",
       "quest-1011503"
-    ]
+    ],
+    "textReferenceCommit": "312b4597691e0a29cf9828a15b592757dba86949"
   },
   "jarilo-records/winter-dream": {
     "file": "content/jarilo-records--winter-dream.json",
@@ -77,7 +81,8 @@
       "quest-2010205",
       "quest-2010206",
       "quest-2010203"
-    ]
+    ],
+    "textReferenceCommit": "312b4597691e0a29cf9828a15b592757dba86949"
   },
   "luofu-records/harbor": {
     "file": "content/luofu-records--harbor.json",
@@ -96,7 +101,8 @@
       "quest-1020901",
       "quest-1021001",
       "quest-1021101"
-    ]
+    ],
+    "textReferenceCommit": "312b4597691e0a29cf9828a15b592757dba86949"
   },
   "luofu-records/clouds": {
     "file": "content/luofu-records--clouds.json",
@@ -108,7 +114,8 @@
       "quest-1021401",
       "quest-1021501",
       "quest-1021601"
-    ]
+    ],
+    "textReferenceCommit": "312b4597691e0a29cf9828a15b592757dba86949"
   },
   "luofu-records/aftermath": {
     "file": "content/luofu-records--aftermath.json",
@@ -116,7 +123,8 @@
     "missing": 0,
     "sourceIds": [
       "quest-1021702"
-    ]
+    ],
+    "textReferenceCommit": "312b4597691e0a29cf9828a15b592757dba86949"
   },
   "luofu-records/foxian-tale": {
     "file": "content/luofu-records--foxian-tale.json",
@@ -139,7 +147,8 @@
       "quest-8015103",
       "quest-8015194",
       "quest-8015104"
-    ]
+    ],
+    "textReferenceCommit": "312b4597691e0a29cf9828a15b592757dba86949"
   },
   "luofu-records/swords-upper": {
     "file": "content/luofu-records--swords-upper.json",
@@ -157,7 +166,8 @@
       "quest-2022102",
       "quest-2022103",
       "quest-2022105"
-    ]
+    ],
+    "textReferenceCommit": "312b4597691e0a29cf9828a15b592757dba86949"
   },
   "luofu-records/swords-lower": {
     "file": "content/luofu-records--swords-lower.json",
@@ -179,7 +189,8 @@
       "quest-2022305",
       "quest-2022307",
       "quest-2022308"
-    ]
+    ],
+    "textReferenceCommit": "312b4597691e0a29cf9828a15b592757dba86949"
   },
   "penacony-records/invitation": {
     "file": "content/penacony-records--invitation.json",
@@ -198,7 +209,8 @@
       "quest-1030501",
       "quest-1030601",
       "quest-1030701"
-    ]
+    ],
+    "textReferenceCommit": "312b4597691e0a29cf9828a15b592757dba86949"
   },
   "penacony-records/dream": {
     "file": "content/penacony-records--dream.json",
@@ -214,7 +226,8 @@
       "quest-1031601",
       "quest-1031701",
       "quest-1031801"
-    ]
+    ],
+    "textReferenceCommit": "312b4597691e0a29cf9828a15b592757dba86949"
   },
   "penacony-records/our-time": {
     "file": "content/penacony-records--our-time.json",
@@ -234,7 +247,8 @@
       "quest-1033001",
       "quest-1033101",
       "quest-1033102"
-    ]
+    ],
+    "textReferenceCommit": "312b4597691e0a29cf9828a15b592757dba86949"
   },
   "penacony-records/farewell": {
     "file": "content/penacony-records--farewell.json",
@@ -248,7 +262,8 @@
       "quest-1034107",
       "quest-1034108",
       "quest-1034109"
-    ]
+    ],
+    "textReferenceCommit": "312b4597691e0a29cf9828a15b592757dba86949"
   },
   "penacony-records/nana-outrage": {
     "file": "content/penacony-records--nana-outrage.json",
@@ -267,7 +282,8 @@
       "quest-1034210",
       "quest-1034211",
       "quest-1034212"
-    ]
+    ],
+    "textReferenceCommit": "312b4597691e0a29cf9828a15b592757dba86949"
   },
   "penacony-records/eighth-day": {
     "file": "content/penacony-records--eighth-day.json",
@@ -282,7 +298,8 @@
       "quest-1036104",
       "quest-1036105",
       "quest-1036106"
-    ]
+    ],
+    "textReferenceCommit": "312b4597691e0a29cf9828a15b592757dba86949"
   },
   "penacony-records/dream-grail": {
     "file": "content/penacony-records--dream-grail.json",
@@ -301,7 +318,8 @@
       "quest-1040538",
       "quest-1040554",
       "quest-1040539"
-    ]
+    ],
+    "textReferenceCommit": "312b4597691e0a29cf9828a15b592757dba86949"
   },
   "penacony-records/memories-opening": {
     "file": "content/penacony-records--memories-opening.json",
@@ -320,7 +338,8 @@
       "quest-1033809",
       "quest-1033810",
       "quest-1033811"
-    ]
+    ],
+    "textReferenceCommit": "312b4597691e0a29cf9828a15b592757dba86949"
   },
   "amphoreus-records/journey": {
     "file": "content/amphoreus-records--journey.json",
@@ -340,7 +359,8 @@
       "quest-1040113",
       "quest-1040115",
       "quest-1040118"
-    ]
+    ],
+    "textReferenceCommit": "312b4597691e0a29cf9828a15b592757dba86949"
   },
   "amphoreus-records/gate-throne": {
     "file": "content/amphoreus-records--gate-throne.json",
@@ -360,7 +380,8 @@
       "quest-1040211",
       "quest-1040212",
       "quest-1040213"
-    ]
+    ],
+    "textReferenceCommit": "312b4597691e0a29cf9828a15b592757dba86949"
   },
   "amphoreus-records/flowers": {
     "file": "content/amphoreus-records--flowers.json",
@@ -381,7 +402,8 @@
       "quest-1040316",
       "quest-1040317",
       "quest-1040319"
-    ]
+    ],
+    "textReferenceCommit": "312b4597691e0a29cf9828a15b592757dba86949"
   },
   "amphoreus-records/dawn-fall": {
     "file": "content/amphoreus-records--dawn-fall.json",
@@ -402,7 +424,8 @@
       "quest-1040413",
       "quest-1040414",
       "quest-1040415"
-    ]
+    ],
+    "textReferenceCommit": "312b4597691e0a29cf9828a15b592757dba86949"
   },
   "amphoreus-records/sun-destruction": {
     "file": "content/amphoreus-records--sun-destruction.json",
@@ -415,7 +438,8 @@
       "quest-1040504",
       "quest-1040505",
       "quest-1040506"
-    ]
+    ],
+    "textReferenceCommit": "312b4597691e0a29cf9828a15b592757dba86949"
   },
   "amphoreus-records/before-heroes-die": {
     "file": "content/amphoreus-records--before-heroes-die.json",
@@ -437,7 +461,8 @@
       "quest-1040613",
       "quest-1040614",
       "quest-1040616"
-    ]
+    ],
+    "textReferenceCommit": "312b4597691e0a29cf9828a15b592757dba86949"
   },
   "amphoreus-records/long-night": {
     "file": "content/amphoreus-records--long-night.json",
@@ -457,7 +482,8 @@
       "quest-1043660",
       "quest-1043674",
       "quest-1043677"
-    ]
+    ],
+    "textReferenceCommit": "312b4597691e0a29cf9828a15b592757dba86949"
   },
   "amphoreus-records/yesterdays-tomorrow": {
     "file": "content/amphoreus-records--yesterdays-tomorrow.json",
@@ -479,7 +505,8 @@
       "quest-1043713",
       "quest-1043714",
       "quest-1043715"
-    ]
+    ],
+    "textReferenceCommit": "312b4597691e0a29cf9828a15b592757dba86949"
   },
   "amphoreus-records/as-i-write": {
     "file": "content/amphoreus-records--as-i-write.json",
@@ -487,7 +514,8 @@
     "missing": 0,
     "sourceIds": [
       "quest-2043701"
-    ]
+    ],
+    "textReferenceCommit": "312b4597691e0a29cf9828a15b592757dba86949"
   },
   "paradise-records/paradise": {
     "file": "content/paradise-records--paradise.json",
@@ -505,7 +533,8 @@
       "quest-1054006",
       "quest-1054007",
       "quest-1054011"
-    ]
+    ],
+    "textReferenceCommit": "312b4597691e0a29cf9828a15b592757dba86949"
   },
   "paradise-records/astropolis": {
     "file": "content/paradise-records--astropolis.json",
@@ -521,7 +550,8 @@
       "quest-1054111",
       "quest-1054110",
       "quest-1054112"
-    ]
+    ],
+    "textReferenceCommit": "312b4597691e0a29cf9828a15b592757dba86949"
   },
   "paradise-records/laughter": {
     "file": "content/paradise-records--laughter.json",
@@ -541,7 +571,8 @@
       "quest-1054210",
       "quest-1054211",
       "quest-1054212"
-    ]
+    ],
+    "textReferenceCommit": "312b4597691e0a29cf9828a15b592757dba86949"
   },
   "paradise-records/river-of-oblivion": {
     "file": "content/paradise-records--river-of-oblivion.json",
@@ -559,7 +590,8 @@
       "quest-1054308",
       "quest-1054309",
       "quest-1054310"
-    ]
+    ],
+    "textReferenceCommit": "312b4597691e0a29cf9828a15b592757dba86949"
   },
   "paradise-records/silent-horn": {
     "file": "content/paradise-records--silent-horn.json",
@@ -573,7 +605,8 @@
       "quest-1054417",
       "quest-1054418",
       "quest-1054419"
-    ]
+    ],
+    "textReferenceCommit": "312b4597691e0a29cf9828a15b592757dba86949"
   },
   "paradise-records/celestial-gambit": {
     "file": "content/paradise-records--celestial-gambit.json",
@@ -586,7 +619,8 @@
       "quest-1054503",
       "quest-1054504",
       "quest-1054506"
-    ]
+    ],
+    "textReferenceCommit": "312b4597691e0a29cf9828a15b592757dba86949"
   },
   "paradise-records/penniless-billionaire": {
     "file": "content/paradise-records--penniless-billionaire.json",
@@ -602,7 +636,8 @@
       "quest-1054524",
       "quest-1054527",
       "quest-1054528"
-    ]
+    ],
+    "textReferenceCommit": "312b4597691e0a29cf9828a15b592757dba86949"
   },
   "paradise-records/before-moonrise": {
     "file": "content/paradise-records--before-moonrise.json",
@@ -610,6 +645,7 @@
     "missing": 0,
     "sourceIds": [
       "chapter-intro-105009"
-    ]
+    ],
+    "textReferenceCommit": "312b4597691e0a29cf9828a15b592757dba86949"
   }
 }

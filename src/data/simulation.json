@@ -14,7 +14,7 @@
     ],
     "source": {
       "kind": "extracted",
-      "version": "한국어 고정 자료 a66ec9c",
+      "version": "한국어 고정 자료 a66ec9c · 원문 갱신 312b459",
       "sourceIds": [
         "quest-4030001",
         "quest-4030002",
@@ -34,7 +34,8 @@
           "missing": 0,
           "sourceIds": [
             "quest-4030001"
-          ]
+          ],
+          "textReferenceCommit": "312b4597691e0a29cf9828a15b592757dba86949"
         }
       },
       {
@@ -47,7 +48,8 @@
           "missing": 0,
           "sourceIds": [
             "quest-4030002"
-          ]
+          ],
+          "textReferenceCommit": "312b4597691e0a29cf9828a15b592757dba86949"
         }
       },
       {
@@ -60,7 +62,8 @@
           "missing": 0,
           "sourceIds": [
             "quest-4030003"
-          ]
+          ],
+          "textReferenceCommit": "312b4597691e0a29cf9828a15b592757dba86949"
         }
       },
       {
@@ -73,7 +76,8 @@
           "missing": 0,
           "sourceIds": [
             "quest-4030004"
-          ]
+          ],
+          "textReferenceCommit": "312b4597691e0a29cf9828a15b592757dba86949"
         }
       },
       {
@@ -86,7 +90,8 @@
           "missing": 0,
           "sourceIds": [
             "quest-4030007"
-          ]
+          ],
+          "textReferenceCommit": "312b4597691e0a29cf9828a15b592757dba86949"
         }
       }
     ]
@@ -106,7 +111,7 @@
     ],
     "source": {
       "kind": "extracted",
-      "version": "한국어 고정 자료 a66ec9c",
+      "version": "한국어 고정 자료 a66ec9c · 원문 갱신 312b459",
       "sourceIds": [
         "quest-8013104",
         "quest-8013101",
@@ -128,7 +133,8 @@
           "missing": 0,
           "sourceIds": [
             "quest-8013104"
-          ]
+          ],
+          "textReferenceCommit": "312b4597691e0a29cf9828a15b592757dba86949"
         }
       },
       {
@@ -141,7 +147,8 @@
           "missing": 0,
           "sourceIds": [
             "quest-8013101"
-          ]
+          ],
+          "textReferenceCommit": "312b4597691e0a29cf9828a15b592757dba86949"
         }
       },
       {
@@ -154,7 +161,8 @@
           "missing": 0,
           "sourceIds": [
             "quest-8013102"
-          ]
+          ],
+          "textReferenceCommit": "312b4597691e0a29cf9828a15b592757dba86949"
         }
       },
       {
@@ -167,7 +175,8 @@
           "missing": 0,
           "sourceIds": [
             "quest-8013105"
-          ]
+          ],
+          "textReferenceCommit": "312b4597691e0a29cf9828a15b592757dba86949"
         }
       },
       {
@@ -180,7 +189,8 @@
           "missing": 0,
           "sourceIds": [
             "quest-8013106"
-          ]
+          ],
+          "textReferenceCommit": "312b4597691e0a29cf9828a15b592757dba86949"
         }
       },
       {
@@ -193,7 +203,8 @@
           "missing": 0,
           "sourceIds": [
             "quest-8013107"
-          ]
+          ],
+          "textReferenceCommit": "312b4597691e0a29cf9828a15b592757dba86949"
         }
       },
       {
@@ -206,7 +217,8 @@
           "missing": 0,
           "sourceIds": [
             "quest-8013110"
-          ]
+          ],
+          "textReferenceCommit": "312b4597691e0a29cf9828a15b592757dba86949"
         }
       }
     ]
@@ -226,7 +238,7 @@
     ],
     "source": {
       "kind": "extracted",
-      "version": "한국어 고정 자료 a66ec9c",
+      "version": "한국어 고정 자료 a66ec9c · 원문 갱신 312b459",
       "sourceIds": [
         "quest-8016101",
         "quest-8016102",
@@ -247,7 +259,8 @@
           "missing": 0,
           "sourceIds": [
             "quest-8016101"
-          ]
+          ],
+          "textReferenceCommit": "312b4597691e0a29cf9828a15b592757dba86949"
         }
       },
       {
@@ -260,7 +273,8 @@
           "missing": 0,
           "sourceIds": [
             "quest-8016102"
-          ]
+          ],
+          "textReferenceCommit": "312b4597691e0a29cf9828a15b592757dba86949"
         }
       },
       {
@@ -273,7 +287,8 @@
           "missing": 0,
           "sourceIds": [
             "quest-8016103"
-          ]
+          ],
+          "textReferenceCommit": "312b4597691e0a29cf9828a15b592757dba86949"
         }
       },
       {
@@ -286,7 +301,8 @@
           "missing": 0,
           "sourceIds": [
             "quest-8016104"
-          ]
+          ],
+          "textReferenceCommit": "312b4597691e0a29cf9828a15b592757dba86949"
         }
       },
       {
@@ -299,7 +315,8 @@
           "missing": 0,
           "sourceIds": [
             "quest-8016105"
-          ]
+          ],
+          "textReferenceCommit": "312b4597691e0a29cf9828a15b592757dba86949"
         }
       },
       {
@@ -312,7 +329,8 @@
           "missing": 0,
           "sourceIds": [
             "quest-8016106"
-          ]
+          ],
+          "textReferenceCommit": "312b4597691e0a29cf9828a15b592757dba86949"
         }
       }
     ]
@@ -332,7 +350,7 @@
     ],
     "source": {
       "kind": "extracted",
-      "version": "한국어 고정 자료 a66ec9c",
+      "version": "한국어 고정 자료 a66ec9c · 원문 갱신 312b459",
       "sourceIds": [
         "quest-8031302",
         "quest-8031301",
@@ -351,7 +369,8 @@
           "missing": 0,
           "sourceIds": [
             "quest-8031302"
-          ]
+          ],
+          "textReferenceCommit": "312b4597691e0a29cf9828a15b592757dba86949"
         }
       },
       {
@@ -364,7 +383,8 @@
           "missing": 0,
           "sourceIds": [
             "quest-8031301"
-          ]
+          ],
+          "textReferenceCommit": "312b4597691e0a29cf9828a15b592757dba86949"
         }
       },
       {
@@ -377,7 +397,8 @@
           "missing": 0,
           "sourceIds": [
             "quest-8023401"
-          ]
+          ],
+          "textReferenceCommit": "312b4597691e0a29cf9828a15b592757dba86949"
         }
       },
       {
@@ -390,7 +411,8 @@
           "missing": 0,
           "sourceIds": [
             "quest-8041500"
-          ]
+          ],
+          "textReferenceCommit": "312b4597691e0a29cf9828a15b592757dba86949"
         }
       }
     ]
@@ -410,7 +432,7 @@
     ],
     "source": {
       "kind": "extracted",
-      "version": "한국어 고정 자료 a66ec9c",
+      "version": "한국어 고정 자료 a66ec9c · 원문 갱신 312b459",
       "sourceIds": [
         "miracle-1",
         "miracle-2",
@@ -694,7 +716,8 @@
           "missing": 0,
           "sourceIds": [
             "miracle-1"
-          ]
+          ],
+          "textReferenceCommit": "312b4597691e0a29cf9828a15b592757dba86949"
         }
       },
       {
@@ -707,7 +730,8 @@
           "missing": 0,
           "sourceIds": [
             "miracle-2"
-          ]
+          ],
+          "textReferenceCommit": "312b4597691e0a29cf9828a15b592757dba86949"
         }
       },
       {
@@ -720,7 +744,8 @@
           "missing": 0,
           "sourceIds": [
             "miracle-3"
-          ]
+          ],
+          "textReferenceCommit": "312b4597691e0a29cf9828a15b592757dba86949"
         }
       },
       {
@@ -733,7 +758,8 @@
           "missing": 0,
           "sourceIds": [
             "miracle-4"
-          ]
+          ],
+          "textReferenceCommit": "312b4597691e0a29cf9828a15b592757dba86949"
         }
       },
       {
@@ -746,7 +772,8 @@
           "missing": 0,
           "sourceIds": [
             "miracle-5"
-          ]
+          ],
+          "textReferenceCommit": "312b4597691e0a29cf9828a15b592757dba86949"
         }
       },
       {
@@ -759,7 +786,8 @@
           "missing": 0,
           "sourceIds": [
             "miracle-6"
-          ]
+          ],
+          "textReferenceCommit": "312b4597691e0a29cf9828a15b592757dba86949"
         }
       },
       {
@@ -772,7 +800,8 @@
           "missing": 0,
           "sourceIds": [
             "miracle-7"
-          ]
+          ],
+          "textReferenceCommit": "312b4597691e0a29cf9828a15b592757dba86949"
         }
       },
       {
@@ -785,7 +814,8 @@
           "missing": 0,
           "sourceIds": [
             "miracle-8"
-          ]
+          ],
+          "textReferenceCommit": "312b4597691e0a29cf9828a15b592757dba86949"
         }
       },
       {
@@ -798,7 +828,8 @@
           "missing": 0,
           "sourceIds": [
             "miracle-9"
-          ]
+          ],
+          "textReferenceCommit": "312b4597691e0a29cf9828a15b592757dba86949"
         }
       },
       {
@@ -811,7 +842,8 @@
           "missing": 0,
           "sourceIds": [
             "miracle-10"
-          ]
+          ],
+          "textReferenceCommit": "312b4597691e0a29cf9828a15b592757dba86949"
         }
       },
       {
@@ -824,7 +856,8 @@
           "missing": 0,
           "sourceIds": [
             "miracle-11"
-          ]
+          ],
+          "textReferenceCommit": "312b4597691e0a29cf9828a15b592757dba86949"
         }
       },
       {
@@ -837,7 +870,8 @@
           "missing": 0,
           "sourceIds": [
             "miracle-12"
-          ]
+          ],
+          "textReferenceCommit": "312b4597691e0a29cf9828a15b592757dba86949"
         }
       },
       {
@@ -850,7 +884,8 @@
           "missing": 0,
           "sourceIds": [
             "miracle-13"
-          ]
+          ],
+          "textReferenceCommit": "312b4597691e0a29cf9828a15b592757dba86949"
         }
       },
       {
@@ -863,7 +898,8 @@
           "missing": 0,
           "sourceIds": [
             "miracle-14"
-          ]
+          ],
+          "textReferenceCommit": "312b4597691e0a29cf9828a15b592757dba86949"
         }
       },
       {
@@ -876,7 +912,8 @@
           "missing": 0,
           "sourceIds": [
             "miracle-15"
-          ]
+          ],
+          "textReferenceCommit": "312b4597691e0a29cf9828a15b592757dba86949"
         }
       },
       {
@@ -889,7 +926,8 @@
           "missing": 0,
           "sourceIds": [
             "miracle-16"
-          ]
+          ],
+          "textReferenceCommit": "312b4597691e0a29cf9828a15b592757dba86949"
         }
       },
       {
@@ -902,7 +940,8 @@
           "missing": 0,
           "sourceIds": [
             "miracle-17"
-          ]
+          ],
+          "textReferenceCommit": "312b4597691e0a29cf9828a15b592757dba86949"
         }
       },
       {
@@ -915,7 +954,8 @@
           "missing": 0,
           "sourceIds": [
             "miracle-18"
-          ]
+          ],
+          "textReferenceCommit": "312b4597691e0a29cf9828a15b592757dba86949"
         }
       },
       {
@@ -928,7 +968,8 @@
           "missing": 0,
           "sourceIds": [
             "miracle-19"
-          ]
+          ],
+          "textReferenceCommit": "312b4597691e0a29cf9828a15b592757dba86949"
         }
       },
       {
@@ -941,7 +982,8 @@
           "missing": 0,
           "sourceIds": [
             "miracle-20"
-          ]
+          ],
+          "textReferenceCommit": "312b4597691e0a29cf9828a15b592757dba86949"
         }
       },
       {
@@ -954,7 +996,8 @@
           "missing": 0,
           "sourceIds": [
             "miracle-21"
-          ]
+          ],
+          "textReferenceCommit": "312b4597691e0a29cf9828a15b592757dba86949"
         }
       },
       {
@@ -967,7 +1010,8 @@
           "missing": 0,
           "sourceIds": [
             "miracle-22"
-          ]
+          ],
+          "textReferenceCommit": "312b4597691e0a29cf9828a15b592757dba86949"
         }
       },
       {
@@ -980,7 +1024,8 @@
           "missing": 0,
           "sourceIds": [
             "miracle-23"
-          ]
+          ],
+          "textReferenceCommit": "312b4597691e0a29cf9828a15b592757dba86949"
         }
       },
       {
@@ -993,7 +1038,8 @@
           "missing": 0,
           "sourceIds": [
             "miracle-24"
-          ]
+          ],
+          "textReferenceCommit": "312b4597691e0a29cf9828a15b592757dba86949"
         }
       },
       {
@@ -1006,7 +1052,8 @@
           "missing": 0,
           "sourceIds": [
             "miracle-25"
-          ]
+          ],
+          "textReferenceCommit": "312b4597691e0a29cf9828a15b592757dba86949"
         }
       },
       {
@@ -1019,7 +1066,8 @@
           "missing": 0,
           "sourceIds": [
             "miracle-26"
-          ]
+          ],
+          "textReferenceCommit": "312b4597691e0a29cf9828a15b592757dba86949"
         }
       },
       {
@@ -1032,7 +1080,8 @@
           "missing": 0,
           "sourceIds": [
             "miracle-28"
-          ]
+          ],
+          "textReferenceCommit": "312b4597691e0a29cf9828a15b592757dba86949"
         }
       },
       {
@@ -1045,7 +1094,8 @@
           "missing": 0,
           "sourceIds": [
             "miracle-30"
-          ]
+          ],
+          "textReferenceCommit": "312b4597691e0a29cf9828a15b592757dba86949"
         }
       },
       {
@@ -1058,7 +1108,8 @@
           "missing": 0,
           "sourceIds": [
             "miracle-32"
-          ]
+          ],
+          "textReferenceCommit": "312b4597691e0a29cf9828a15b592757dba86949"
         }
       },
       {
@@ -1071,7 +1122,8 @@
           "missing": 0,
           "sourceIds": [
             "miracle-34"
-          ]
+          ],
+          "textReferenceCommit": "312b4597691e0a29cf9828a15b592757dba86949"
         }
       },
       {
@@ -1084,7 +1136,8 @@
           "missing": 0,
           "sourceIds": [
             "miracle-36"
-          ]
+          ],
+          "textReferenceCommit": "312b4597691e0a29cf9828a15b592757dba86949"
         }
       },
       {
@@ -1097,7 +1150,8 @@
           "missing": 0,
           "sourceIds": [
             "miracle-38"
-          ]
+          ],
+          "textReferenceCommit": "312b4597691e0a29cf9828a15b592757dba86949"
         }
       },
       {
@@ -1110,7 +1164,8 @@
           "missing": 0,
           "sourceIds": [
             "miracle-39"
-          ]
+          ],
+          "textReferenceCommit": "312b4597691e0a29cf9828a15b592757dba86949"
         }
       },
       {
@@ -1123,7 +1178,8 @@
           "missing": 0,
           "sourceIds": [
             "miracle-40"
-          ]
+          ],
+          "textReferenceCommit": "312b4597691e0a29cf9828a15b592757dba86949"
         }
       },
       {
@@ -1136,7 +1192,8 @@
           "missing": 0,
           "sourceIds": [
             "miracle-41"
-          ]
+          ],
+          "textReferenceCommit": "312b4597691e0a29cf9828a15b592757dba86949"
         }
       },
       {
@@ -1149,7 +1206,8 @@
           "missing": 0,
           "sourceIds": [
             "miracle-42"
-          ]
+          ],
+          "textReferenceCommit": "312b4597691e0a29cf9828a15b592757dba86949"
         }
       },
       {
@@ -1162,7 +1220,8 @@
           "missing": 0,
           "sourceIds": [
             "miracle-43"
-          ]
+          ],
+          "textReferenceCommit": "312b4597691e0a29cf9828a15b592757dba86949"
         }
       },
       {
@@ -1175,7 +1234,8 @@
           "missing": 0,
           "sourceIds": [
             "miracle-44"
-          ]
+          ],
+          "textReferenceCommit": "312b4597691e0a29cf9828a15b592757dba86949"
         }
       },
       {
@@ -1188,7 +1248,8 @@
           "missing": 0,
           "sourceIds": [
             "miracle-45"
-          ]
+          ],
+          "textReferenceCommit": "312b4597691e0a29cf9828a15b592757dba86949"
         }
       },
       {
@@ -1201,7 +1262,8 @@
           "missing": 0,
           "sourceIds": [
             "miracle-46"
-          ]
+          ],
+          "textReferenceCommit": "312b4597691e0a29cf9828a15b592757dba86949"
         }
       },
       {
@@ -1214,7 +1276,8 @@
           "missing": 0,
           "sourceIds": [
             "miracle-47"
-          ]
+          ],
+          "textReferenceCommit": "312b4597691e0a29cf9828a15b592757dba86949"
         }
       },
       {
@@ -1227,7 +1290,8 @@
           "missing": 0,
           "sourceIds": [
             "miracle-48"
-          ]
+          ],
+          "textReferenceCommit": "312b4597691e0a29cf9828a15b592757dba86949"
         }
       },
       {
@@ -1240,7 +1304,8 @@
           "missing": 0,
           "sourceIds": [
             "miracle-49"
-          ]
+          ],
+          "textReferenceCommit": "312b4597691e0a29cf9828a15b592757dba86949"
         }
       },
       {
@@ -1253,7 +1318,8 @@
           "missing": 0,
           "sourceIds": [
             "miracle-50"
-          ]
+          ],
+          "textReferenceCommit": "312b4597691e0a29cf9828a15b592757dba86949"
         }
       },
       {
@@ -1266,7 +1332,8 @@
           "missing": 0,
           "sourceIds": [
             "miracle-51"
-          ]
+          ],
+          "textReferenceCommit": "312b4597691e0a29cf9828a15b592757dba86949"
         }
       },
       {
@@ -1279,7 +1346,8 @@
           "missing": 0,
           "sourceIds": [
             "miracle-52"
-          ]
+          ],
+          "textReferenceCommit": "312b4597691e0a29cf9828a15b592757dba86949"
         }
       },
       {
@@ -1292,7 +1360,8 @@
           "missing": 0,
           "sourceIds": [
             "miracle-53"
-          ]
+          ],
+          "textReferenceCommit": "312b4597691e0a29cf9828a15b592757dba86949"
         }
       },
       {
@@ -1305,7 +1374,8 @@
           "missing": 0,
           "sourceIds": [
             "miracle-54"
-          ]
+          ],
+          "textReferenceCommit": "312b4597691e0a29cf9828a15b592757dba86949"
         }
       },
       {
@@ -1318,7 +1388,8 @@
           "missing": 0,
           "sourceIds": [
             "miracle-55"
-          ]
+          ],
+          "textReferenceCommit": "312b4597691e0a29cf9828a15b592757dba86949"
         }
       },
       {
@@ -1331,7 +1402,8 @@
           "missing": 0,
           "sourceIds": [
             "miracle-56"
-          ]
+          ],
+          "textReferenceCommit": "312b4597691e0a29cf9828a15b592757dba86949"
         }
       },
       {
@@ -1344,7 +1416,8 @@
           "missing": 0,
           "sourceIds": [
             "miracle-57"
-          ]
+          ],
+          "textReferenceCommit": "312b4597691e0a29cf9828a15b592757dba86949"
         }
       },
       {
@@ -1357,7 +1430,8 @@
           "missing": 0,
           "sourceIds": [
             "miracle-58"
-          ]
+          ],
+          "textReferenceCommit": "312b4597691e0a29cf9828a15b592757dba86949"
         }
       },
       {
@@ -1370,7 +1444,8 @@
           "missing": 0,
           "sourceIds": [
             "miracle-59"
-          ]
+          ],
+          "textReferenceCommit": "312b4597691e0a29cf9828a15b592757dba86949"
         }
       },
       {
@@ -1383,7 +1458,8 @@
           "missing": 0,
           "sourceIds": [
             "miracle-60"
-          ]
+          ],
+          "textReferenceCommit": "312b4597691e0a29cf9828a15b592757dba86949"
         }
       },
       {
@@ -1396,7 +1472,8 @@
           "missing": 0,
           "sourceIds": [
             "miracle-62"
-          ]
+          ],
+          "textReferenceCommit": "312b4597691e0a29cf9828a15b592757dba86949"
         }
       },
       {
@@ -1409,7 +1486,8 @@
           "missing": 0,
           "sourceIds": [
             "miracle-63"
-          ]
+          ],
+          "textReferenceCommit": "312b4597691e0a29cf9828a15b592757dba86949"
         }
       },
       {
@@ -1422,7 +1500,8 @@
           "missing": 0,
           "sourceIds": [
             "miracle-64"
-          ]
+          ],
+          "textReferenceCommit": "312b4597691e0a29cf9828a15b592757dba86949"
         }
       },
       {
@@ -1435,7 +1514,8 @@
           "missing": 0,
           "sourceIds": [
             "miracle-65"
-          ]
+          ],
+          "textReferenceCommit": "312b4597691e0a29cf9828a15b592757dba86949"
         }
       },
       {
@@ -1448,7 +1528,8 @@
           "missing": 0,
           "sourceIds": [
             "miracle-66"
-          ]
+          ],
+          "textReferenceCommit": "312b4597691e0a29cf9828a15b592757dba86949"
         }
       },
       {
@@ -1461,7 +1542,8 @@
           "missing": 0,
           "sourceIds": [
             "miracle-67"
-          ]
+          ],
+          "textReferenceCommit": "312b4597691e0a29cf9828a15b592757dba86949"
         }
       },
       {
@@ -1474,7 +1556,8 @@
           "missing": 0,
           "sourceIds": [
             "miracle-68"
-          ]
+          ],
+          "textReferenceCommit": "312b4597691e0a29cf9828a15b592757dba86949"
         }
       },
       {
@@ -1487,7 +1570,8 @@
           "missing": 0,
           "sourceIds": [
             "miracle-69"
-          ]
+          ],
+          "textReferenceCommit": "312b4597691e0a29cf9828a15b592757dba86949"
         }
       },
       {
@@ -1500,7 +1584,8 @@
           "missing": 0,
           "sourceIds": [
             "miracle-70"
-          ]
+          ],
+          "textReferenceCommit": "312b4597691e0a29cf9828a15b592757dba86949"
         }
       },
       {
@@ -1513,7 +1598,8 @@
           "missing": 0,
           "sourceIds": [
             "miracle-71"
-          ]
+          ],
+          "textReferenceCommit": "312b4597691e0a29cf9828a15b592757dba86949"
         }
       },
       {
@@ -1526,7 +1612,8 @@
           "missing": 0,
           "sourceIds": [
             "miracle-72"
-          ]
+          ],
+          "textReferenceCommit": "312b4597691e0a29cf9828a15b592757dba86949"
         }
       },
       {
@@ -1539,7 +1626,8 @@
           "missing": 0,
           "sourceIds": [
             "miracle-73"
-          ]
+          ],
+          "textReferenceCommit": "312b4597691e0a29cf9828a15b592757dba86949"
         }
       },
       {
@@ -1552,7 +1640,8 @@
           "missing": 0,
           "sourceIds": [
             "miracle-74"
-          ]
+          ],
+          "textReferenceCommit": "312b4597691e0a29cf9828a15b592757dba86949"
         }
       },
       {
@@ -1565,7 +1654,8 @@
           "missing": 0,
           "sourceIds": [
             "miracle-75"
-          ]
+          ],
+          "textReferenceCommit": "312b4597691e0a29cf9828a15b592757dba86949"
         }
       },
       {
@@ -1578,7 +1668,8 @@
           "missing": 0,
           "sourceIds": [
             "miracle-76"
-          ]
+          ],
+          "textReferenceCommit": "312b4597691e0a29cf9828a15b592757dba86949"
         }
       },
       {
@@ -1591,7 +1682,8 @@
           "missing": 0,
           "sourceIds": [
             "miracle-77"
-          ]
+          ],
+          "textReferenceCommit": "312b4597691e0a29cf9828a15b592757dba86949"
         }
       },
       {
@@ -1604,7 +1696,8 @@
           "missing": 0,
           "sourceIds": [
             "miracle-78"
-          ]
+          ],
+          "textReferenceCommit": "312b4597691e0a29cf9828a15b592757dba86949"
         }
       },
       {
@@ -1617,7 +1710,8 @@
           "missing": 0,
           "sourceIds": [
             "miracle-79"
-          ]
+          ],
+          "textReferenceCommit": "312b4597691e0a29cf9828a15b592757dba86949"
         }
       },
       {
@@ -1630,7 +1724,8 @@
           "missing": 0,
           "sourceIds": [
             "miracle-80"
-          ]
+          ],
+          "textReferenceCommit": "312b4597691e0a29cf9828a15b592757dba86949"
         }
       },
       {
@@ -1643,7 +1738,8 @@
           "missing": 0,
           "sourceIds": [
             "miracle-81"
-          ]
+          ],
+          "textReferenceCommit": "312b4597691e0a29cf9828a15b592757dba86949"
         }
       },
       {
@@ -1656,7 +1752,8 @@
           "missing": 0,
           "sourceIds": [
             "miracle-82"
-          ]
+          ],
+          "textReferenceCommit": "312b4597691e0a29cf9828a15b592757dba86949"
         }
       },
       {
@@ -1669,7 +1766,8 @@
           "missing": 0,
           "sourceIds": [
             "miracle-83"
-          ]
+          ],
+          "textReferenceCommit": "312b4597691e0a29cf9828a15b592757dba86949"
         }
       },
       {
@@ -1682,7 +1780,8 @@
           "missing": 0,
           "sourceIds": [
             "miracle-84"
-          ]
+          ],
+          "textReferenceCommit": "312b4597691e0a29cf9828a15b592757dba86949"
         }
       },
       {
@@ -1695,7 +1794,8 @@
           "missing": 0,
           "sourceIds": [
             "miracle-85"
-          ]
+          ],
+          "textReferenceCommit": "312b4597691e0a29cf9828a15b592757dba86949"
         }
       },
       {
@@ -1708,7 +1808,8 @@
           "missing": 0,
           "sourceIds": [
             "miracle-86"
-          ]
+          ],
+          "textReferenceCommit": "312b4597691e0a29cf9828a15b592757dba86949"
         }
       },
       {
@@ -1721,7 +1822,8 @@
           "missing": 0,
           "sourceIds": [
             "miracle-87"
-          ]
+          ],
+          "textReferenceCommit": "312b4597691e0a29cf9828a15b592757dba86949"
         }
       },
       {
@@ -1734,7 +1836,8 @@
           "missing": 0,
           "sourceIds": [
             "miracle-88"
-          ]
+          ],
+          "textReferenceCommit": "312b4597691e0a29cf9828a15b592757dba86949"
         }
       },
       {
@@ -1747,7 +1850,8 @@
           "missing": 0,
           "sourceIds": [
             "miracle-89"
-          ]
+          ],
+          "textReferenceCommit": "312b4597691e0a29cf9828a15b592757dba86949"
         }
       },
       {
@@ -1760,7 +1864,8 @@
           "missing": 0,
           "sourceIds": [
             "miracle-90"
-          ]
+          ],
+          "textReferenceCommit": "312b4597691e0a29cf9828a15b592757dba86949"
         }
       },
       {
@@ -1773,7 +1878,8 @@
           "missing": 0,
           "sourceIds": [
             "miracle-91"
-          ]
+          ],
+          "textReferenceCommit": "312b4597691e0a29cf9828a15b592757dba86949"
         }
       },
       {
@@ -1786,7 +1892,8 @@
           "missing": 0,
           "sourceIds": [
             "miracle-92"
-          ]
+          ],
+          "textReferenceCommit": "312b4597691e0a29cf9828a15b592757dba86949"
         }
       },
       {
@@ -1799,7 +1906,8 @@
           "missing": 0,
           "sourceIds": [
             "miracle-93"
-          ]
+          ],
+          "textReferenceCommit": "312b4597691e0a29cf9828a15b592757dba86949"
         }
       },
       {
@@ -1812,7 +1920,8 @@
           "missing": 0,
           "sourceIds": [
             "miracle-94"
-          ]
+          ],
+          "textReferenceCommit": "312b4597691e0a29cf9828a15b592757dba86949"
         }
       },
       {
@@ -1825,7 +1934,8 @@
           "missing": 0,
           "sourceIds": [
             "miracle-95"
-          ]
+          ],
+          "textReferenceCommit": "312b4597691e0a29cf9828a15b592757dba86949"
         }
       },
       {
@@ -1838,7 +1948,8 @@
           "missing": 0,
           "sourceIds": [
             "miracle-96"
-          ]
+          ],
+          "textReferenceCommit": "312b4597691e0a29cf9828a15b592757dba86949"
         }
       },
       {
@@ -1851,7 +1962,8 @@
           "missing": 0,
           "sourceIds": [
             "miracle-97"
-          ]
+          ],
+          "textReferenceCommit": "312b4597691e0a29cf9828a15b592757dba86949"
         }
       },
       {
@@ -1864,7 +1976,8 @@
           "missing": 0,
           "sourceIds": [
             "miracle-98"
-          ]
+          ],
+          "textReferenceCommit": "312b4597691e0a29cf9828a15b592757dba86949"
         }
       },
       {
@@ -1877,7 +1990,8 @@
           "missing": 0,
           "sourceIds": [
             "miracle-99"
-          ]
+          ],
+          "textReferenceCommit": "312b4597691e0a29cf9828a15b592757dba86949"
         }
       },
       {
@@ -1890,7 +2004,8 @@
           "missing": 0,
           "sourceIds": [
             "miracle-100"
-          ]
+          ],
+          "textReferenceCommit": "312b4597691e0a29cf9828a15b592757dba86949"
         }
       },
       {
@@ -1903,7 +2018,8 @@
           "missing": 0,
           "sourceIds": [
             "miracle-101"
-          ]
+          ],
+          "textReferenceCommit": "312b4597691e0a29cf9828a15b592757dba86949"
         }
       },
       {
@@ -1916,7 +2032,8 @@
           "missing": 0,
           "sourceIds": [
             "miracle-102"
-          ]
+          ],
+          "textReferenceCommit": "312b4597691e0a29cf9828a15b592757dba86949"
         }
       },
       {
@@ -1929,7 +2046,8 @@
           "missing": 0,
           "sourceIds": [
             "miracle-103"
-          ]
+          ],
+          "textReferenceCommit": "312b4597691e0a29cf9828a15b592757dba86949"
         }
       },
       {
@@ -1942,7 +2060,8 @@
           "missing": 0,
           "sourceIds": [
             "miracle-104"
-          ]
+          ],
+          "textReferenceCommit": "312b4597691e0a29cf9828a15b592757dba86949"
         }
       },
       {
@@ -1955,7 +2074,8 @@
           "missing": 0,
           "sourceIds": [
             "miracle-105"
-          ]
+          ],
+          "textReferenceCommit": "312b4597691e0a29cf9828a15b592757dba86949"
         }
       },
       {
@@ -1968,7 +2088,8 @@
           "missing": 0,
           "sourceIds": [
             "miracle-106"
-          ]
+          ],
+          "textReferenceCommit": "312b4597691e0a29cf9828a15b592757dba86949"
         }
       },
       {
@@ -1981,7 +2102,8 @@
           "missing": 0,
           "sourceIds": [
             "miracle-107"
-          ]
+          ],
+          "textReferenceCommit": "312b4597691e0a29cf9828a15b592757dba86949"
         }
       },
       {
@@ -1994,7 +2116,8 @@
           "missing": 0,
           "sourceIds": [
             "miracle-108"
-          ]
+          ],
+          "textReferenceCommit": "312b4597691e0a29cf9828a15b592757dba86949"
         }
       },
       {
@@ -2007,7 +2130,8 @@
           "missing": 0,
           "sourceIds": [
             "miracle-109"
-          ]
+          ],
+          "textReferenceCommit": "312b4597691e0a29cf9828a15b592757dba86949"
         }
       },
       {
@@ -2020,7 +2144,8 @@
           "missing": 0,
           "sourceIds": [
             "miracle-110"
-          ]
+          ],
+          "textReferenceCommit": "312b4597691e0a29cf9828a15b592757dba86949"
         }
       },
       {
@@ -2033,7 +2158,8 @@
           "missing": 0,
           "sourceIds": [
             "miracle-111"
-          ]
+          ],
+          "textReferenceCommit": "312b4597691e0a29cf9828a15b592757dba86949"
         }
       },
       {
@@ -2046,7 +2172,8 @@
           "missing": 0,
           "sourceIds": [
             "miracle-112"
-          ]
+          ],
+          "textReferenceCommit": "312b4597691e0a29cf9828a15b592757dba86949"
         }
       },
       {
@@ -2059,7 +2186,8 @@
           "missing": 0,
           "sourceIds": [
             "miracle-113"
-          ]
+          ],
+          "textReferenceCommit": "312b4597691e0a29cf9828a15b592757dba86949"
         }
       },
       {
@@ -2072,7 +2200,8 @@
           "missing": 0,
           "sourceIds": [
             "miracle-114"
-          ]
+          ],
+          "textReferenceCommit": "312b4597691e0a29cf9828a15b592757dba86949"
         }
       },
       {
@@ -2085,7 +2214,8 @@
           "missing": 0,
           "sourceIds": [
             "miracle-116"
-          ]
+          ],
+          "textReferenceCommit": "312b4597691e0a29cf9828a15b592757dba86949"
         }
       },
       {
@@ -2098,7 +2228,8 @@
           "missing": 0,
           "sourceIds": [
             "miracle-117"
-          ]
+          ],
+          "textReferenceCommit": "312b4597691e0a29cf9828a15b592757dba86949"
         }
       },
       {
@@ -2111,7 +2242,8 @@
           "missing": 0,
           "sourceIds": [
             "miracle-119"
-          ]
+          ],
+          "textReferenceCommit": "312b4597691e0a29cf9828a15b592757dba86949"
         }
       },
       {
@@ -2124,7 +2256,8 @@
           "missing": 0,
           "sourceIds": [
             "miracle-121"
-          ]
+          ],
+          "textReferenceCommit": "312b4597691e0a29cf9828a15b592757dba86949"
         }
       },
       {
@@ -2137,7 +2270,8 @@
           "missing": 0,
           "sourceIds": [
             "miracle-122"
-          ]
+          ],
+          "textReferenceCommit": "312b4597691e0a29cf9828a15b592757dba86949"
         }
       },
       {
@@ -2150,7 +2284,8 @@
           "missing": 0,
           "sourceIds": [
             "miracle-123"
-          ]
+          ],
+          "textReferenceCommit": "312b4597691e0a29cf9828a15b592757dba86949"
         }
       },
       {
@@ -2163,7 +2298,8 @@
           "missing": 0,
           "sourceIds": [
             "miracle-124"
-          ]
+          ],
+          "textReferenceCommit": "312b4597691e0a29cf9828a15b592757dba86949"
         }
       },
       {
@@ -2176,7 +2312,8 @@
           "missing": 0,
           "sourceIds": [
             "miracle-125"
-          ]
+          ],
+          "textReferenceCommit": "312b4597691e0a29cf9828a15b592757dba86949"
         }
       },
       {
@@ -2189,7 +2326,8 @@
           "missing": 0,
           "sourceIds": [
             "miracle-127"
-          ]
+          ],
+          "textReferenceCommit": "312b4597691e0a29cf9828a15b592757dba86949"
         }
       },
       {
@@ -2202,7 +2340,8 @@
           "missing": 0,
           "sourceIds": [
             "miracle-129"
-          ]
+          ],
+          "textReferenceCommit": "312b4597691e0a29cf9828a15b592757dba86949"
         }
       },
       {
@@ -2215,7 +2354,8 @@
           "missing": 0,
           "sourceIds": [
             "miracle-130"
-          ]
+          ],
+          "textReferenceCommit": "312b4597691e0a29cf9828a15b592757dba86949"
         }
       },
       {
@@ -2228,7 +2368,8 @@
           "missing": 0,
           "sourceIds": [
             "miracle-131"
-          ]
+          ],
+          "textReferenceCommit": "312b4597691e0a29cf9828a15b592757dba86949"
         }
       },
       {
@@ -2241,7 +2382,8 @@
           "missing": 0,
           "sourceIds": [
             "miracle-132"
-          ]
+          ],
+          "textReferenceCommit": "312b4597691e0a29cf9828a15b592757dba86949"
         }
       },
       {
@@ -2254,7 +2396,8 @@
           "missing": 0,
           "sourceIds": [
             "miracle-133"
-          ]
+          ],
+          "textReferenceCommit": "312b4597691e0a29cf9828a15b592757dba86949"
         }
       },
       {
@@ -2267,7 +2410,8 @@
           "missing": 0,
           "sourceIds": [
             "miracle-134"
-          ]
+          ],
+          "textReferenceCommit": "312b4597691e0a29cf9828a15b592757dba86949"
         }
       },
       {
@@ -2280,7 +2424,8 @@
           "missing": 0,
           "sourceIds": [
             "miracle-135"
-          ]
+          ],
+          "textReferenceCommit": "312b4597691e0a29cf9828a15b592757dba86949"
         }
       },
       {
@@ -2293,7 +2438,8 @@
           "missing": 0,
           "sourceIds": [
             "miracle-136"
-          ]
+          ],
+          "textReferenceCommit": "312b4597691e0a29cf9828a15b592757dba86949"
         }
       },
       {
@@ -2306,7 +2452,8 @@
           "missing": 0,
           "sourceIds": [
             "miracle-137"
-          ]
+          ],
+          "textReferenceCommit": "312b4597691e0a29cf9828a15b592757dba86949"
         }
       },
       {
@@ -2319,7 +2466,8 @@
           "missing": 0,
           "sourceIds": [
             "miracle-138"
-          ]
+          ],
+          "textReferenceCommit": "312b4597691e0a29cf9828a15b592757dba86949"
         }
       },
       {
@@ -2332,7 +2480,8 @@
           "missing": 0,
           "sourceIds": [
             "miracle-139"
-          ]
+          ],
+          "textReferenceCommit": "312b4597691e0a29cf9828a15b592757dba86949"
         }
       },
       {
@@ -2345,7 +2494,8 @@
           "missing": 0,
           "sourceIds": [
             "miracle-140"
-          ]
+          ],
+          "textReferenceCommit": "312b4597691e0a29cf9828a15b592757dba86949"
         }
       },
       {
@@ -2358,7 +2508,8 @@
           "missing": 0,
           "sourceIds": [
             "miracle-141"
-          ]
+          ],
+          "textReferenceCommit": "312b4597691e0a29cf9828a15b592757dba86949"
         }
       },
       {
@@ -2371,7 +2522,8 @@
           "missing": 0,
           "sourceIds": [
             "miracle-142"
-          ]
+          ],
+          "textReferenceCommit": "312b4597691e0a29cf9828a15b592757dba86949"
         }
       },
       {
@@ -2384,7 +2536,8 @@
           "missing": 0,
           "sourceIds": [
             "miracle-143"
-          ]
+          ],
+          "textReferenceCommit": "312b4597691e0a29cf9828a15b592757dba86949"
         }
       },
       {
@@ -2397,7 +2550,8 @@
           "missing": 0,
           "sourceIds": [
             "miracle-144"
-          ]
+          ],
+          "textReferenceCommit": "312b4597691e0a29cf9828a15b592757dba86949"
         }
       },
       {
@@ -2410,7 +2564,8 @@
           "missing": 0,
           "sourceIds": [
             "miracle-145"
-          ]
+          ],
+          "textReferenceCommit": "312b4597691e0a29cf9828a15b592757dba86949"
         }
       },
       {
@@ -2423,7 +2578,8 @@
           "missing": 0,
           "sourceIds": [
             "miracle-146"
-          ]
+          ],
+          "textReferenceCommit": "312b4597691e0a29cf9828a15b592757dba86949"
         }
       },
       {
@@ -2436,7 +2592,8 @@
           "missing": 0,
           "sourceIds": [
             "miracle-147"
-          ]
+          ],
+          "textReferenceCommit": "312b4597691e0a29cf9828a15b592757dba86949"
         }
       },
       {
@@ -2449,7 +2606,8 @@
           "missing": 0,
           "sourceIds": [
             "miracle-148"
-          ]
+          ],
+          "textReferenceCommit": "312b4597691e0a29cf9828a15b592757dba86949"
         }
       },
       {
@@ -2462,7 +2620,8 @@
           "missing": 0,
           "sourceIds": [
             "miracle-149"
-          ]
+          ],
+          "textReferenceCommit": "312b4597691e0a29cf9828a15b592757dba86949"
         }
       },
       {
@@ -2475,7 +2634,8 @@
           "missing": 0,
           "sourceIds": [
             "miracle-150"
-          ]
+          ],
+          "textReferenceCommit": "312b4597691e0a29cf9828a15b592757dba86949"
         }
       },
       {
@@ -2488,7 +2648,8 @@
           "missing": 0,
           "sourceIds": [
             "miracle-151"
-          ]
+          ],
+          "textReferenceCommit": "312b4597691e0a29cf9828a15b592757dba86949"
         }
       },
       {
@@ -2501,7 +2662,8 @@
           "missing": 0,
           "sourceIds": [
             "miracle-152"
-          ]
+          ],
+          "textReferenceCommit": "312b4597691e0a29cf9828a15b592757dba86949"
         }
       },
       {
@@ -2514,7 +2676,8 @@
           "missing": 0,
           "sourceIds": [
             "miracle-153"
-          ]
+          ],
+          "textReferenceCommit": "312b4597691e0a29cf9828a15b592757dba86949"
         }
       },
       {
@@ -2527,7 +2690,8 @@
           "missing": 0,
           "sourceIds": [
             "miracle-154"
-          ]
+          ],
+          "textReferenceCommit": "312b4597691e0a29cf9828a15b592757dba86949"
         }
       },
       {
@@ -2540,7 +2704,8 @@
           "missing": 0,
           "sourceIds": [
             "miracle-155"
-          ]
+          ],
+          "textReferenceCommit": "312b4597691e0a29cf9828a15b592757dba86949"
         }
       },
       {
@@ -2553,7 +2718,8 @@
           "missing": 0,
           "sourceIds": [
             "miracle-156"
-          ]
+          ],
+          "textReferenceCommit": "312b4597691e0a29cf9828a15b592757dba86949"
         }
       },
       {
@@ -2566,7 +2732,8 @@
           "missing": 0,
           "sourceIds": [
             "miracle-157"
-          ]
+          ],
+          "textReferenceCommit": "312b4597691e0a29cf9828a15b592757dba86949"
         }
       },
       {
@@ -2579,7 +2746,8 @@
           "missing": 0,
           "sourceIds": [
             "miracle-158"
-          ]
+          ],
+          "textReferenceCommit": "312b4597691e0a29cf9828a15b592757dba86949"
         }
       },
       {
@@ -2592,7 +2760,8 @@
           "missing": 0,
           "sourceIds": [
             "miracle-159"
-          ]
+          ],
+          "textReferenceCommit": "312b4597691e0a29cf9828a15b592757dba86949"
         }
       },
       {
@@ -2605,7 +2774,8 @@
           "missing": 0,
           "sourceIds": [
             "miracle-160"
-          ]
+          ],
+          "textReferenceCommit": "312b4597691e0a29cf9828a15b592757dba86949"
         }
       },
       {
@@ -2618,7 +2788,8 @@
           "missing": 0,
           "sourceIds": [
             "miracle-161"
-          ]
+          ],
+          "textReferenceCommit": "312b4597691e0a29cf9828a15b592757dba86949"
         }
       },
       {
@@ -2631,7 +2802,8 @@
           "missing": 0,
           "sourceIds": [
             "miracle-162"
-          ]
+          ],
+          "textReferenceCommit": "312b4597691e0a29cf9828a15b592757dba86949"
         }
       },
       {
@@ -2644,7 +2816,8 @@
           "missing": 0,
           "sourceIds": [
             "miracle-163"
-          ]
+          ],
+          "textReferenceCommit": "312b4597691e0a29cf9828a15b592757dba86949"
         }
       },
       {
@@ -2657,7 +2830,8 @@
           "missing": 0,
           "sourceIds": [
             "miracle-164"
-          ]
+          ],
+          "textReferenceCommit": "312b4597691e0a29cf9828a15b592757dba86949"
         }
       },
       {
@@ -2670,7 +2844,8 @@
           "missing": 0,
           "sourceIds": [
             "miracle-165"
-          ]
+          ],
+          "textReferenceCommit": "312b4597691e0a29cf9828a15b592757dba86949"
         }
       },
       {
@@ -2683,7 +2858,8 @@
           "missing": 0,
           "sourceIds": [
             "miracle-166"
-          ]
+          ],
+          "textReferenceCommit": "312b4597691e0a29cf9828a15b592757dba86949"
         }
       },
       {
@@ -2696,7 +2872,8 @@
           "missing": 0,
           "sourceIds": [
             "miracle-167"
-          ]
+          ],
+          "textReferenceCommit": "312b4597691e0a29cf9828a15b592757dba86949"
         }
       },
       {
@@ -2709,7 +2886,8 @@
           "missing": 0,
           "sourceIds": [
             "miracle-168"
-          ]
+          ],
+          "textReferenceCommit": "312b4597691e0a29cf9828a15b592757dba86949"
         }
       },
       {
@@ -2722,7 +2900,8 @@
           "missing": 0,
           "sourceIds": [
             "miracle-169"
-          ]
+          ],
+          "textReferenceCommit": "312b4597691e0a29cf9828a15b592757dba86949"
         }
       },
       {
@@ -2735,7 +2914,8 @@
           "missing": 0,
           "sourceIds": [
             "miracle-170"
-          ]
+          ],
+          "textReferenceCommit": "312b4597691e0a29cf9828a15b592757dba86949"
         }
       },
       {
@@ -2748,7 +2928,8 @@
           "missing": 0,
           "sourceIds": [
             "miracle-171"
-          ]
+          ],
+          "textReferenceCommit": "312b4597691e0a29cf9828a15b592757dba86949"
         }
       },
       {
@@ -2761,7 +2942,8 @@
           "missing": 0,
           "sourceIds": [
             "miracle-175"
-          ]
+          ],
+          "textReferenceCommit": "312b4597691e0a29cf9828a15b592757dba86949"
         }
       },
       {
@@ -2774,7 +2956,8 @@
           "missing": 0,
           "sourceIds": [
             "miracle-176"
-          ]
+          ],
+          "textReferenceCommit": "312b4597691e0a29cf9828a15b592757dba86949"
         }
       },
       {
@@ -2787,7 +2970,8 @@
           "missing": 0,
           "sourceIds": [
             "miracle-178"
-          ]
+          ],
+          "textReferenceCommit": "312b4597691e0a29cf9828a15b592757dba86949"
         }
       },
       {
@@ -2800,7 +2984,8 @@
           "missing": 0,
           "sourceIds": [
             "miracle-179"
-          ]
+          ],
+          "textReferenceCommit": "312b4597691e0a29cf9828a15b592757dba86949"
         }
       },
       {
@@ -2813,7 +2998,8 @@
           "missing": 0,
           "sourceIds": [
             "miracle-180"
-          ]
+          ],
+          "textReferenceCommit": "312b4597691e0a29cf9828a15b592757dba86949"
         }
       },
       {
@@ -2826,7 +3012,8 @@
           "missing": 0,
           "sourceIds": [
             "miracle-181"
-          ]
+          ],
+          "textReferenceCommit": "312b4597691e0a29cf9828a15b592757dba86949"
         }
       },
       {
@@ -2839,7 +3026,8 @@
           "missing": 0,
           "sourceIds": [
             "miracle-182"
-          ]
+          ],
+          "textReferenceCommit": "312b4597691e0a29cf9828a15b592757dba86949"
         }
       },
       {
@@ -2852,7 +3040,8 @@
           "missing": 0,
           "sourceIds": [
             "miracle-183"
-          ]
+          ],
+          "textReferenceCommit": "312b4597691e0a29cf9828a15b592757dba86949"
         }
       },
       {
@@ -2865,7 +3054,8 @@
           "missing": 0,
           "sourceIds": [
             "miracle-184"
-          ]
+          ],
+          "textReferenceCommit": "312b4597691e0a29cf9828a15b592757dba86949"
         }
       },
       {
@@ -2878,7 +3068,8 @@
           "missing": 0,
           "sourceIds": [
             "miracle-185"
-          ]
+          ],
+          "textReferenceCommit": "312b4597691e0a29cf9828a15b592757dba86949"
         }
       },
       {
@@ -2891,7 +3082,8 @@
           "missing": 0,
           "sourceIds": [
             "miracle-186"
-          ]
+          ],
+          "textReferenceCommit": "312b4597691e0a29cf9828a15b592757dba86949"
         }
       },
       {
@@ -2904,7 +3096,8 @@
           "missing": 0,
           "sourceIds": [
             "miracle-187"
-          ]
+          ],
+          "textReferenceCommit": "312b4597691e0a29cf9828a15b592757dba86949"
         }
       },
       {
@@ -2917,7 +3110,8 @@
           "missing": 0,
           "sourceIds": [
             "miracle-188"
-          ]
+          ],
+          "textReferenceCommit": "312b4597691e0a29cf9828a15b592757dba86949"
         }
       },
       {
@@ -2930,7 +3124,8 @@
           "missing": 0,
           "sourceIds": [
             "miracle-190"
-          ]
+          ],
+          "textReferenceCommit": "312b4597691e0a29cf9828a15b592757dba86949"
         }
       },
       {
@@ -2943,7 +3138,8 @@
           "missing": 0,
           "sourceIds": [
             "miracle-192"
-          ]
+          ],
+          "textReferenceCommit": "312b4597691e0a29cf9828a15b592757dba86949"
         }
       },
       {
@@ -2956,7 +3152,8 @@
           "missing": 0,
           "sourceIds": [
             "miracle-193"
-          ]
+          ],
+          "textReferenceCommit": "312b4597691e0a29cf9828a15b592757dba86949"
         }
       },
       {
@@ -2969,7 +3166,8 @@
           "missing": 0,
           "sourceIds": [
             "miracle-194"
-          ]
+          ],
+          "textReferenceCommit": "312b4597691e0a29cf9828a15b592757dba86949"
         }
       },
       {
@@ -2982,7 +3180,8 @@
           "missing": 0,
           "sourceIds": [
             "miracle-195"
-          ]
+          ],
+          "textReferenceCommit": "312b4597691e0a29cf9828a15b592757dba86949"
         }
       },
       {
@@ -2995,7 +3194,8 @@
           "missing": 0,
           "sourceIds": [
             "miracle-196"
-          ]
+          ],
+          "textReferenceCommit": "312b4597691e0a29cf9828a15b592757dba86949"
         }
       },
       {
@@ -3008,7 +3208,8 @@
           "missing": 0,
           "sourceIds": [
             "miracle-198"
-          ]
+          ],
+          "textReferenceCommit": "312b4597691e0a29cf9828a15b592757dba86949"
         }
       },
       {
@@ -3021,7 +3222,8 @@
           "missing": 0,
           "sourceIds": [
             "miracle-199"
-          ]
+          ],
+          "textReferenceCommit": "312b4597691e0a29cf9828a15b592757dba86949"
         }
       },
       {
@@ -3034,7 +3236,8 @@
           "missing": 0,
           "sourceIds": [
             "miracle-200"
-          ]
+          ],
+          "textReferenceCommit": "312b4597691e0a29cf9828a15b592757dba86949"
         }
       },
       {
@@ -3047,7 +3250,8 @@
           "missing": 0,
           "sourceIds": [
             "miracle-201"
-          ]
+          ],
+          "textReferenceCommit": "312b4597691e0a29cf9828a15b592757dba86949"
         }
       },
       {
@@ -3060,7 +3264,8 @@
           "missing": 0,
           "sourceIds": [
             "miracle-202"
-          ]
+          ],
+          "textReferenceCommit": "312b4597691e0a29cf9828a15b592757dba86949"
         }
       },
       {
@@ -3073,7 +3278,8 @@
           "missing": 0,
           "sourceIds": [
             "miracle-203"
-          ]
+          ],
+          "textReferenceCommit": "312b4597691e0a29cf9828a15b592757dba86949"
         }
       },
       {
@@ -3086,7 +3292,8 @@
           "missing": 0,
           "sourceIds": [
             "miracle-204"
-          ]
+          ],
+          "textReferenceCommit": "312b4597691e0a29cf9828a15b592757dba86949"
         }
       },
       {
@@ -3099,7 +3306,8 @@
           "missing": 0,
           "sourceIds": [
             "miracle-205"
-          ]
+          ],
+          "textReferenceCommit": "312b4597691e0a29cf9828a15b592757dba86949"
         }
       },
       {
@@ -3112,7 +3320,8 @@
           "missing": 0,
           "sourceIds": [
             "miracle-206"
-          ]
+          ],
+          "textReferenceCommit": "312b4597691e0a29cf9828a15b592757dba86949"
         }
       },
       {
@@ -3125,7 +3334,8 @@
           "missing": 0,
           "sourceIds": [
             "miracle-207"
-          ]
+          ],
+          "textReferenceCommit": "312b4597691e0a29cf9828a15b592757dba86949"
         }
       },
       {
@@ -3138,7 +3348,8 @@
           "missing": 0,
           "sourceIds": [
             "miracle-208"
-          ]
+          ],
+          "textReferenceCommit": "312b4597691e0a29cf9828a15b592757dba86949"
         }
       },
       {
@@ -3151,7 +3362,8 @@
           "missing": 0,
           "sourceIds": [
             "miracle-211"
-          ]
+          ],
+          "textReferenceCommit": "312b4597691e0a29cf9828a15b592757dba86949"
         }
       },
       {
@@ -3164,7 +3376,8 @@
           "missing": 0,
           "sourceIds": [
             "miracle-213"
-          ]
+          ],
+          "textReferenceCommit": "312b4597691e0a29cf9828a15b592757dba86949"
         }
       },
       {
@@ -3177,7 +3390,8 @@
           "missing": 0,
           "sourceIds": [
             "miracle-214"
-          ]
+          ],
+          "textReferenceCommit": "312b4597691e0a29cf9828a15b592757dba86949"
         }
       },
       {
@@ -3190,7 +3404,8 @@
           "missing": 0,
           "sourceIds": [
             "miracle-215"
-          ]
+          ],
+          "textReferenceCommit": "312b4597691e0a29cf9828a15b592757dba86949"
         }
       },
       {
@@ -3203,7 +3418,8 @@
           "missing": 0,
           "sourceIds": [
             "miracle-216"
-          ]
+          ],
+          "textReferenceCommit": "312b4597691e0a29cf9828a15b592757dba86949"
         }
       },
       {
@@ -3216,7 +3432,8 @@
           "missing": 0,
           "sourceIds": [
             "miracle-218"
-          ]
+          ],
+          "textReferenceCommit": "312b4597691e0a29cf9828a15b592757dba86949"
         }
       },
       {
@@ -3229,7 +3446,8 @@
           "missing": 0,
           "sourceIds": [
             "miracle-219"
-          ]
+          ],
+          "textReferenceCommit": "312b4597691e0a29cf9828a15b592757dba86949"
         }
       },
       {
@@ -3242,7 +3460,8 @@
           "missing": 0,
           "sourceIds": [
             "miracle-220"
-          ]
+          ],
+          "textReferenceCommit": "312b4597691e0a29cf9828a15b592757dba86949"
         }
       },
       {
@@ -3255,7 +3474,8 @@
           "missing": 0,
           "sourceIds": [
             "miracle-221"
-          ]
+          ],
+          "textReferenceCommit": "312b4597691e0a29cf9828a15b592757dba86949"
         }
       },
       {
@@ -3268,7 +3488,8 @@
           "missing": 0,
           "sourceIds": [
             "miracle-222"
-          ]
+          ],
+          "textReferenceCommit": "312b4597691e0a29cf9828a15b592757dba86949"
         }
       },
       {
@@ -3281,7 +3502,8 @@
           "missing": 0,
           "sourceIds": [
             "miracle-223"
-          ]
+          ],
+          "textReferenceCommit": "312b4597691e0a29cf9828a15b592757dba86949"
         }
       },
       {
@@ -3294,7 +3516,8 @@
           "missing": 0,
           "sourceIds": [
             "miracle-224"
-          ]
+          ],
+          "textReferenceCommit": "312b4597691e0a29cf9828a15b592757dba86949"
         }
       },
       {
@@ -3307,7 +3530,8 @@
           "missing": 0,
           "sourceIds": [
             "miracle-225"
-          ]
+          ],
+          "textReferenceCommit": "312b4597691e0a29cf9828a15b592757dba86949"
         }
       },
       {
@@ -3320,7 +3544,8 @@
           "missing": 0,
           "sourceIds": [
             "miracle-226"
-          ]
+          ],
+          "textReferenceCommit": "312b4597691e0a29cf9828a15b592757dba86949"
         }
       },
       {
@@ -3333,7 +3558,8 @@
           "missing": 0,
           "sourceIds": [
             "miracle-227"
-          ]
+          ],
+          "textReferenceCommit": "312b4597691e0a29cf9828a15b592757dba86949"
         }
       },
       {
@@ -3346,7 +3572,8 @@
           "missing": 0,
           "sourceIds": [
             "miracle-228"
-          ]
+          ],
+          "textReferenceCommit": "312b4597691e0a29cf9828a15b592757dba86949"
         }
       },
       {
@@ -3359,7 +3586,8 @@
           "missing": 0,
           "sourceIds": [
             "miracle-229"
-          ]
+          ],
+          "textReferenceCommit": "312b4597691e0a29cf9828a15b592757dba86949"
         }
       },
       {
@@ -3372,7 +3600,8 @@
           "missing": 0,
           "sourceIds": [
             "miracle-230"
-          ]
+          ],
+          "textReferenceCommit": "312b4597691e0a29cf9828a15b592757dba86949"
         }
       },
       {
@@ -3385,7 +3614,8 @@
           "missing": 0,
           "sourceIds": [
             "miracle-231"
-          ]
+          ],
+          "textReferenceCommit": "312b4597691e0a29cf9828a15b592757dba86949"
         }
       },
       {
@@ -3398,7 +3628,8 @@
           "missing": 0,
           "sourceIds": [
             "miracle-232"
-          ]
+          ],
+          "textReferenceCommit": "312b4597691e0a29cf9828a15b592757dba86949"
         }
       },
       {
@@ -3411,7 +3642,8 @@
           "missing": 0,
           "sourceIds": [
             "miracle-233"
-          ]
+          ],
+          "textReferenceCommit": "312b4597691e0a29cf9828a15b592757dba86949"
         }
       },
       {
@@ -3424,7 +3656,8 @@
           "missing": 0,
           "sourceIds": [
             "miracle-234"
-          ]
+          ],
+          "textReferenceCommit": "312b4597691e0a29cf9828a15b592757dba86949"
         }
       },
       {
@@ -3437,7 +3670,8 @@
           "missing": 0,
           "sourceIds": [
             "miracle-235"
-          ]
+          ],
+          "textReferenceCommit": "312b4597691e0a29cf9828a15b592757dba86949"
         }
       },
       {
@@ -3450,7 +3684,8 @@
           "missing": 0,
           "sourceIds": [
             "miracle-236"
-          ]
+          ],
+          "textReferenceCommit": "312b4597691e0a29cf9828a15b592757dba86949"
         }
       },
       {
@@ -3463,7 +3698,8 @@
           "missing": 0,
           "sourceIds": [
             "miracle-237"
-          ]
+          ],
+          "textReferenceCommit": "312b4597691e0a29cf9828a15b592757dba86949"
         }
       },
       {
@@ -3476,7 +3712,8 @@
           "missing": 0,
           "sourceIds": [
             "miracle-238"
-          ]
+          ],
+          "textReferenceCommit": "312b4597691e0a29cf9828a15b592757dba86949"
         }
       },
       {
@@ -3489,7 +3726,8 @@
           "missing": 0,
           "sourceIds": [
             "miracle-239"
-          ]
+          ],
+          "textReferenceCommit": "312b4597691e0a29cf9828a15b592757dba86949"
         }
       },
       {
@@ -3502,7 +3740,8 @@
           "missing": 0,
           "sourceIds": [
             "miracle-240"
-          ]
+          ],
+          "textReferenceCommit": "312b4597691e0a29cf9828a15b592757dba86949"
         }
       },
       {
@@ -3515,7 +3754,8 @@
           "missing": 0,
           "sourceIds": [
             "miracle-241"
-          ]
+          ],
+          "textReferenceCommit": "312b4597691e0a29cf9828a15b592757dba86949"
         }
       },
       {
@@ -3528,7 +3768,8 @@
           "missing": 0,
           "sourceIds": [
             "miracle-242"
-          ]
+          ],
+          "textReferenceCommit": "312b4597691e0a29cf9828a15b592757dba86949"
         }
       },
       {
@@ -3541,7 +3782,8 @@
           "missing": 0,
           "sourceIds": [
             "miracle-243"
-          ]
+          ],
+          "textReferenceCommit": "312b4597691e0a29cf9828a15b592757dba86949"
         }
       },
       {
@@ -3554,7 +3796,8 @@
           "missing": 0,
           "sourceIds": [
             "miracle-244"
-          ]
+          ],
+          "textReferenceCommit": "312b4597691e0a29cf9828a15b592757dba86949"
         }
       },
       {
@@ -3567,7 +3810,8 @@
           "missing": 0,
           "sourceIds": [
             "miracle-245"
-          ]
+          ],
+          "textReferenceCommit": "312b4597691e0a29cf9828a15b592757dba86949"
         }
       },
       {
@@ -3580,7 +3824,8 @@
           "missing": 0,
           "sourceIds": [
             "miracle-246"
-          ]
+          ],
+          "textReferenceCommit": "312b4597691e0a29cf9828a15b592757dba86949"
         }
       },
       {
@@ -3593,7 +3838,8 @@
           "missing": 0,
           "sourceIds": [
             "miracle-247"
-          ]
+          ],
+          "textReferenceCommit": "312b4597691e0a29cf9828a15b592757dba86949"
         }
       },
       {
@@ -3606,7 +3852,8 @@
           "missing": 0,
           "sourceIds": [
             "miracle-248"
-          ]
+          ],
+          "textReferenceCommit": "312b4597691e0a29cf9828a15b592757dba86949"
         }
       },
       {
@@ -3619,7 +3866,8 @@
           "missing": 0,
           "sourceIds": [
             "miracle-249"
-          ]
+          ],
+          "textReferenceCommit": "312b4597691e0a29cf9828a15b592757dba86949"
         }
       },
       {
@@ -3632,7 +3880,8 @@
           "missing": 0,
           "sourceIds": [
             "miracle-250"
-          ]
+          ],
+          "textReferenceCommit": "312b4597691e0a29cf9828a15b592757dba86949"
         }
       },
       {
@@ -3645,7 +3894,8 @@
           "missing": 0,
           "sourceIds": [
             "miracle-251"
-          ]
+          ],
+          "textReferenceCommit": "312b4597691e0a29cf9828a15b592757dba86949"
         }
       },
       {
@@ -3658,7 +3908,8 @@
           "missing": 0,
           "sourceIds": [
             "miracle-252"
-          ]
+          ],
+          "textReferenceCommit": "312b4597691e0a29cf9828a15b592757dba86949"
         }
       },
       {
@@ -3671,7 +3922,8 @@
           "missing": 0,
           "sourceIds": [
             "miracle-262"
-          ]
+          ],
+          "textReferenceCommit": "312b4597691e0a29cf9828a15b592757dba86949"
         }
       },
       {
@@ -3684,7 +3936,8 @@
           "missing": 0,
           "sourceIds": [
             "miracle-263"
-          ]
+          ],
+          "textReferenceCommit": "312b4597691e0a29cf9828a15b592757dba86949"
         }
       },
       {
@@ -3697,7 +3950,8 @@
           "missing": 0,
           "sourceIds": [
             "miracle-264"
-          ]
+          ],
+          "textReferenceCommit": "312b4597691e0a29cf9828a15b592757dba86949"
         }
       },
       {
@@ -3710,7 +3964,8 @@
           "missing": 0,
           "sourceIds": [
             "miracle-265"
-          ]
+          ],
+          "textReferenceCommit": "312b4597691e0a29cf9828a15b592757dba86949"
         }
       },
       {
@@ -3723,7 +3978,8 @@
           "missing": 0,
           "sourceIds": [
             "miracle-266"
-          ]
+          ],
+          "textReferenceCommit": "312b4597691e0a29cf9828a15b592757dba86949"
         }
       },
       {
@@ -3736,7 +3992,8 @@
           "missing": 0,
           "sourceIds": [
             "miracle-267"
-          ]
+          ],
+          "textReferenceCommit": "312b4597691e0a29cf9828a15b592757dba86949"
         }
       },
       {
@@ -3749,7 +4006,8 @@
           "missing": 0,
           "sourceIds": [
             "miracle-268"
-          ]
+          ],
+          "textReferenceCommit": "312b4597691e0a29cf9828a15b592757dba86949"
         }
       },
       {
@@ -3762,7 +4020,8 @@
           "missing": 0,
           "sourceIds": [
             "miracle-269"
-          ]
+          ],
+          "textReferenceCommit": "312b4597691e0a29cf9828a15b592757dba86949"
         }
       },
       {
@@ -3775,7 +4034,8 @@
           "missing": 0,
           "sourceIds": [
             "miracle-270"
-          ]
+          ],
+          "textReferenceCommit": "312b4597691e0a29cf9828a15b592757dba86949"
         }
       },
       {
@@ -3788,7 +4048,8 @@
           "missing": 0,
           "sourceIds": [
             "miracle-271"
-          ]
+          ],
+          "textReferenceCommit": "312b4597691e0a29cf9828a15b592757dba86949"
         }
       },
       {
@@ -3801,7 +4062,8 @@
           "missing": 0,
           "sourceIds": [
             "miracle-272"
-          ]
+          ],
+          "textReferenceCommit": "312b4597691e0a29cf9828a15b592757dba86949"
         }
       },
       {
@@ -3814,7 +4076,8 @@
           "missing": 0,
           "sourceIds": [
             "miracle-273"
-          ]
+          ],
+          "textReferenceCommit": "312b4597691e0a29cf9828a15b592757dba86949"
         }
       },
       {
@@ -3827,7 +4090,8 @@
           "missing": 0,
           "sourceIds": [
             "miracle-274"
-          ]
+          ],
+          "textReferenceCommit": "312b4597691e0a29cf9828a15b592757dba86949"
         }
       },
       {
@@ -3840,7 +4104,8 @@
           "missing": 0,
           "sourceIds": [
             "miracle-275"
-          ]
+          ],
+          "textReferenceCommit": "312b4597691e0a29cf9828a15b592757dba86949"
         }
       },
       {
@@ -3853,7 +4118,8 @@
           "missing": 0,
           "sourceIds": [
             "miracle-276"
-          ]
+          ],
+          "textReferenceCommit": "312b4597691e0a29cf9828a15b592757dba86949"
         }
       },
       {
@@ -3866,7 +4132,8 @@
           "missing": 0,
           "sourceIds": [
             "miracle-277"
-          ]
+          ],
+          "textReferenceCommit": "312b4597691e0a29cf9828a15b592757dba86949"
         }
       },
       {
@@ -3879,7 +4146,8 @@
           "missing": 0,
           "sourceIds": [
             "miracle-278"
-          ]
+          ],
+          "textReferenceCommit": "312b4597691e0a29cf9828a15b592757dba86949"
         }
       },
       {
@@ -3892,7 +4160,8 @@
           "missing": 0,
           "sourceIds": [
             "miracle-279"
-          ]
+          ],
+          "textReferenceCommit": "312b4597691e0a29cf9828a15b592757dba86949"
         }
       },
       {
@@ -3905,7 +4174,8 @@
           "missing": 0,
           "sourceIds": [
             "miracle-280"
-          ]
+          ],
+          "textReferenceCommit": "312b4597691e0a29cf9828a15b592757dba86949"
         }
       },
       {
@@ -3918,7 +4188,8 @@
           "missing": 0,
           "sourceIds": [
             "miracle-281"
-          ]
+          ],
+          "textReferenceCommit": "312b4597691e0a29cf9828a15b592757dba86949"
         }
       },
       {
@@ -3931,7 +4202,8 @@
           "missing": 0,
           "sourceIds": [
             "miracle-282"
-          ]
+          ],
+          "textReferenceCommit": "312b4597691e0a29cf9828a15b592757dba86949"
         }
       },
       {
@@ -3944,7 +4216,8 @@
           "missing": 0,
           "sourceIds": [
             "miracle-283"
-          ]
+          ],
+          "textReferenceCommit": "312b4597691e0a29cf9828a15b592757dba86949"
         }
       },
       {
@@ -3957,7 +4230,8 @@
           "missing": 0,
           "sourceIds": [
             "miracle-284"
-          ]
+          ],
+          "textReferenceCommit": "312b4597691e0a29cf9828a15b592757dba86949"
         }
       },
       {
@@ -3970,7 +4244,8 @@
           "missing": 0,
           "sourceIds": [
             "miracle-285"
-          ]
+          ],
+          "textReferenceCommit": "312b4597691e0a29cf9828a15b592757dba86949"
         }
       },
       {
@@ -3983,7 +4258,8 @@
           "missing": 0,
           "sourceIds": [
             "miracle-286"
-          ]
+          ],
+          "textReferenceCommit": "312b4597691e0a29cf9828a15b592757dba86949"
         }
       },
       {
@@ -3996,7 +4272,8 @@
           "missing": 0,
           "sourceIds": [
             "miracle-287"
-          ]
+          ],
+          "textReferenceCommit": "312b4597691e0a29cf9828a15b592757dba86949"
         }
       },
       {
@@ -4009,7 +4286,8 @@
           "missing": 0,
           "sourceIds": [
             "miracle-288"
-          ]
+          ],
+          "textReferenceCommit": "312b4597691e0a29cf9828a15b592757dba86949"
         }
       },
       {
@@ -4022,7 +4300,8 @@
           "missing": 0,
           "sourceIds": [
             "miracle-289"
-          ]
+          ],
+          "textReferenceCommit": "312b4597691e0a29cf9828a15b592757dba86949"
         }
       },
       {
@@ -4035,7 +4314,8 @@
           "missing": 0,
           "sourceIds": [
             "miracle-290"
-          ]
+          ],
+          "textReferenceCommit": "312b4597691e0a29cf9828a15b592757dba86949"
         }
       },
       {
@@ -4048,7 +4328,8 @@
           "missing": 0,
           "sourceIds": [
             "miracle-291"
-          ]
+          ],
+          "textReferenceCommit": "312b4597691e0a29cf9828a15b592757dba86949"
         }
       },
       {
@@ -4061,7 +4342,8 @@
           "missing": 0,
           "sourceIds": [
             "miracle-292"
-          ]
+          ],
+          "textReferenceCommit": "312b4597691e0a29cf9828a15b592757dba86949"
         }
       },
       {
@@ -4074,7 +4356,8 @@
           "missing": 0,
           "sourceIds": [
             "miracle-293"
-          ]
+          ],
+          "textReferenceCommit": "312b4597691e0a29cf9828a15b592757dba86949"
         }
       },
       {
@@ -4087,7 +4370,8 @@
           "missing": 0,
           "sourceIds": [
             "miracle-294"
-          ]
+          ],
+          "textReferenceCommit": "312b4597691e0a29cf9828a15b592757dba86949"
         }
       },
       {
@@ -4100,7 +4384,8 @@
           "missing": 0,
           "sourceIds": [
             "miracle-295"
-          ]
+          ],
+          "textReferenceCommit": "312b4597691e0a29cf9828a15b592757dba86949"
         }
       },
       {
@@ -4113,7 +4398,8 @@
           "missing": 0,
           "sourceIds": [
             "miracle-296"
-          ]
+          ],
+          "textReferenceCommit": "312b4597691e0a29cf9828a15b592757dba86949"
         }
       },
       {
@@ -4126,7 +4412,8 @@
           "missing": 0,
           "sourceIds": [
             "miracle-297"
-          ]
+          ],
+          "textReferenceCommit": "312b4597691e0a29cf9828a15b592757dba86949"
         }
       },
       {
@@ -4139,7 +4426,8 @@
           "missing": 0,
           "sourceIds": [
             "miracle-298"
-          ]
+          ],
+          "textReferenceCommit": "312b4597691e0a29cf9828a15b592757dba86949"
         }
       },
       {
@@ -4152,7 +4440,8 @@
           "missing": 0,
           "sourceIds": [
             "miracle-299"
-          ]
+          ],
+          "textReferenceCommit": "312b4597691e0a29cf9828a15b592757dba86949"
         }
       },
       {
@@ -4165,7 +4454,8 @@
           "missing": 0,
           "sourceIds": [
             "miracle-300"
-          ]
+          ],
+          "textReferenceCommit": "312b4597691e0a29cf9828a15b592757dba86949"
         }
       },
       {
@@ -4178,7 +4468,8 @@
           "missing": 0,
           "sourceIds": [
             "miracle-301"
-          ]
+          ],
+          "textReferenceCommit": "312b4597691e0a29cf9828a15b592757dba86949"
         }
       }
     ]

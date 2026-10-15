@@ -25,7 +25,13 @@ export interface Chapter {
   aliases?: string[];
   contentNote?: string;
   blocks: TextBlock[];
-  content?: { file: string; rows: number; missing: number; sourceIds: string[] };
+  content?: {
+    file: string;
+    rows: number;
+    missing: number;
+    sourceIds: string[];
+    textReferenceCommit?: string;
+  };
 }
 
 export interface ArchiveEntry {

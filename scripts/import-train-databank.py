@@ -13,6 +13,12 @@ EXPECTED = {
     'TextMapKR_1.json': '80eee947e1dc31577209e39d841ad2eb127541e0',
     'NounAtlasChangeInfo.json': '263c21d468db03252487ba8ce8429f32fbdc381f',
 }
+if len(sys.argv) > 2:
+    manifest = json.loads(Path(sys.argv[2]).read_bytes())
+    if manifest['schema'] != 'hsr-upstream-plan.v1':
+        raise ValueError('Unsupported upstream manifest')
+    COMMIT = manifest['commit']
+    EXPECTED = {Path(row['path']).name: row['sha'] for row in manifest['files']}
 evidence = {}
 
 
@@ -26,8 +32,9 @@ def read(name):
 
 
 texts = {}
-for index in range(2):
-    texts.update(read(f'TextMapKR_{index}.json'))
+for name in EXPECTED:
+    if re.fullmatch(r'TextMapKR(?:_\d+)?\.json', name):
+        texts.update(read(name))
 rows = read('NounAtlas.json')
 changes = read('NounAtlasChangeInfo.json')
 parents = {target: change['NounID'] for change in changes for target in change['ChangeNounIDList']}

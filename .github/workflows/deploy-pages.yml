@@ -34,6 +34,23 @@ jobs:
           version: 11.25.0
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
+      - name: Set up Python
+        uses: actions/setup-python@v6
+        with:
+          python-version: '3.12'
+      - name: Resolve latest released text source
+        id: upstream
+        run: node scripts/update-content.mjs --plan
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+      - name: Cache verified source blobs
+        uses: actions/cache@v4
+        with:
+          path: .cache/upstream-content/blobs
+          key: hsr-upstream-v1-${{ steps.upstream.outputs.commit }}
+          restore-keys: hsr-upstream-v1-
+      - name: Refresh connected Korean content
+        run: node scripts/update-content.mjs --apply
       - name: Test archive behavior
         run: pnpm test
       - name: Refresh official YouTube video

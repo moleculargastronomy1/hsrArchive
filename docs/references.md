@@ -76,6 +76,8 @@
 
 ## 열차 자료실 원문 입력
 
+기존 고정 입력 아래에 최신 릴리스 원문 자동 갱신을 추가했다. 현재 적용 버전·커밋·입력 해시는 배포된 `content-update.json`에 기록하며, 실행 흐름과 범위는 [automatic-content-updates.md](automatic-content-updates.md)를 따른다. paimooon `translate.html`의 파일 발견·병합 원리는 참고하고 사이트용 검증·변환 코드는 독립적으로 작성했다.
+
 - 에이언즈·고유 명사·파벌: `DimbreathBot/TurnBasedGameData`의 고정 커밋 `724b139d8c9c32d12552eb95745a4fee72bfe48b`에 있는 `ExcelOutput/NounAtlas.json`, `ExcelOutput/NounAtlasChangeInfo.json`, `TextMap/TextMapKR_0.json`, `TextMap/TextMapKR_1.json`.
 - [자료실 항목 표](https://github.com/DimbreathBot/TurnBasedGameData/blob/724b139d8c9c32d12552eb95745a4fee72bfe48b/ExcelOutput/NounAtlas.json)의 제목·본문 해시와 정렬 순서를 대조하고, 한국어 입력은 Git blob 해시로 검증한다. 원본 전체 한국어 맵과 설정 표는 `.cache/train-databank`에만 보관한다.
 - 입력을 직접 비교해 100개 원문과 91개 메뉴가 모두 연결됨을 확인했다. 사이트 화면의 기준은 LimBooks로 유지하며, 자료실 전용 원문을 시뮬레이션 우주 연구 기록과 구분한다. 이 작업은 게임 바이너리 추출기를 새로 실행한 것이 아니다.

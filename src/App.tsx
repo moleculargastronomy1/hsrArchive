@@ -28,6 +28,7 @@ import OfficialVideo from './components/OfficialVideo';
 import DialogueBrowser from './components/DialogueBrowser';
 import CategoryIcon from './components/CategoryIcon';
 import CodexReader from './components/CodexReader';
+import ContentUpdateStatus from './components/ContentUpdateStatus';
 import starRailLogo from '../docs/reference-images/스타레일 로고.png';
 
 const worldName = (id: World) => worlds.find((world) => world.id === id)!.label;
@@ -606,6 +607,7 @@ export default function App() {
             않은 자료는 제외했습니다. 자료의 참조 순서는 실제 플레이 순서와 다를 수 있으며, 모든
             분기·컷신을 수록했다고 보장하지 않습니다.
           </p>
+          <ContentUpdateStatus />
           <h2>내 서재와 읽기 설정</h2>
           <p>
             북마크, 마지막으로 읽은 장, 읽기 위치, 화면 테마와 글자 크기는 현재 브라우저에

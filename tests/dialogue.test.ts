@@ -94,7 +94,8 @@ test('Astropolis additions preserve verified dialogue and label the introduction
   const intro = additions[2];
   assert.equal(intro.contentNote, '챕터 소개문 수록 · 대사 본문 미수록');
   const payload = JSON.parse(fs.readFileSync(`public/${intro.content!.file}`, 'utf8'));
-  assert.equal(payload.referenceCommit, '312b4597691e0a29cf9828a15b592757dba86949');
+  const source = JSON.parse(fs.readFileSync('src/data/astropolis-intro.json', 'utf8'));
+  assert.equal(payload.referenceCommit, source.commit);
   assert.equal(payload.rows.length, 1);
   assert.equal(payload.rows[0].type, 'narration');
   assert.ok(payload.rows[0].text.includes('현인의 피'));
@@ -107,6 +108,22 @@ test('official video feed validates IDs, decodes titles and sorts by publication
   assert.equal(videos[1].title, 'A & B');
   assert.throws(() => parseVideos(xml.replace('abcdefghijk', 'bad')));
   assert.throws(() => parseVideos('<feed/>'));
+});
+
+test('published automatic update receipt agrees with the actual content and source revision', () => {
+  const receipt = JSON.parse(fs.readFileSync('public/content-update.json', 'utf8'));
+  const search = JSON.parse(fs.readFileSync('public/content/search-index.json', 'utf8'));
+  const train = JSON.parse(fs.readFileSync('src/data/train-databank.json', 'utf8'));
+  assert.equal(receipt.schema, 'hsr-content-update.v1');
+  assert.equal(receipt.commit, train.commit);
+  assert.equal(receipt.rows, search.rows.length);
+  assert.equal(receipt.verifiedTextRows + receipt.retainedTextRows, receipt.rows);
+  assert.ok(receipt.verifiedTextRows > 0);
+  assert.equal(receipt.intervalHours, 6);
+  assert.ok(!Number.isNaN(Date.parse(receipt.checkedAt)));
+  for (const entry of archive)
+    for (const chapter of entry.chapters)
+      assert.equal(chapter.content!.textReferenceCommit, receipt.commit);
 });
 
 test('all seven requested archive collections publish nonempty source text and deduplicated monster variants', () => {
@@ -139,9 +156,13 @@ test('all seven requested archive collections publish nonempty source text and d
 
 test('train archive uses NounAtlas text and SortID order, with story updates kept as variants', () => {
   const [aeons, terms, factions] = archive.filter((entry) => entry.category === 'codex');
+  const train = JSON.parse(fs.readFileSync('src/data/train-databank.json', 'utf8'));
   assert.deepEqual(
     [aeons.chapters.length, terms.chapters.length, factions.chapters.length],
-    [16, 40, 35],
+    train.groups.map(
+      (group: { documents: { title: string }[] }) =>
+        new Set(group.documents.map((doc) => doc.title)).size,
+    ),
   );
   assert.deepEqual(
     aeons.chapters.slice(0, 5).map((chapter) => chapter.title),
@@ -167,7 +188,7 @@ test('train archive uses NounAtlas text and SortID order, with story updates kep
     assert.equal(entry.chapters[0].intro, true);
     for (const chapter of entry.chapters) {
       const payload = JSON.parse(fs.readFileSync(`public/${chapter.content!.file}`, 'utf8'));
-      assert.equal(payload.referenceCommit, '724b139d8c9c32d12552eb95745a4fee72bfe48b');
+      assert.equal(payload.referenceCommit, train.commit);
       assert.ok(payload.rows.every((row: DialogueRow) => row.source?.startsWith('NounAtlas:')));
       assert.equal(payload.rows[0].variant, '기본 기록');
     }
@@ -177,7 +198,7 @@ test('train archive uses NounAtlas text and SortID order, with story updates kep
   assert.ok(!intro.rows[0].text.includes('지식학회'));
   const nanook = aeons.chapters.find((chapter) => chapter.id === 'noun-atlas-102')!;
   const updated = JSON.parse(fs.readFileSync(`public/${nanook.content!.file}`, 'utf8'));
-  assert.equal(updated.rows.length, 2);
+  assert.ok(updated.rows.length >= 2);
   assert.notEqual(updated.rows[0].text, updated.rows[1].text);
   const qlipoth = aeons.chapters.find((chapter) => chapter.id === 'noun-atlas-107')!;
   assert.ok(qlipoth.aliases?.includes('aeon-1'));

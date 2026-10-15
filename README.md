@@ -4,7 +4,7 @@
 
 ## 실행
 
-Node.js 22.13 이상과 pnpm 11.25.0을 사용합니다.
+Node.js 22.13 이상과 pnpm 11.25.0을 사용합니다. 원문 갱신과 검증에는 Python 3.10 이상이 필요합니다. Python 실행 파일이 PATH에 없으면 `HSR_PYTHON`에 실행 파일 경로를 지정합니다.
 
 ```sh
 pnpm install
@@ -26,6 +26,14 @@ pnpm preview
 사이트 주소: https://moleculargastronomy1.github.io/hsrArchive/
 
 `.github/workflows/deploy-pages.yml`이 `main` push, 수동 실행, 6시간 간격으로 테스트·빌드 후 GitHub Pages에 배포합니다. 공식 유튜브 피드를 확인해 최신 일반 영상 정보를 갱신하며, 피드 장애 때는 마지막으로 확인한 정보를 유지합니다. 게시 시점과 확인 시점을 위젯에 표시합니다. Pages의 배포 소스는 **GitHub Actions**입니다.
+
+같은 배포 작업에서 DimbreathBot의 `main` 릴리스와 한국어 파일 목록을 조회하고 연결된 원문을 자동 갱신합니다. 하나의 커밋에 고정한 입력을 Git blob 해시로 검증한 뒤 대사 ID·64비트 텍스트 해시로 연결합니다. 자료실 세 분류와 연결된 대사·설정 기록·소개문을 갱신하며, 새 임무의 귀속과 읽기 순서는 자동 추정하지 않습니다. 검증 실패 시 배포를 중단해 마지막 정상 사이트가 유지됩니다. 사이트 안내에서 적용 자료 버전과 최근 확인 시간을 볼 수 있습니다. [자동 갱신의 범위와 실행 방법](docs/automatic-content-updates.md).
+
+```sh
+pnpm update:content
+pnpm test
+pnpm build
+```
 
 배포에는 `dist/` 빌드 산출물만 업로드하며, 의존성 폴더와 로컬 캐시는 저장소에 커밋하지 않습니다. `package.json`의 `private: true`는 npm 패키지 실수 배포를 방지하는 설정으로, 웹사이트나 GitHub 저장소의 공개 여부와는 별개입니다.
 

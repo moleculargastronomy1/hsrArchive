@@ -255,9 +255,12 @@ export const archive: ArchiveEntry[] = [
       source: {
         kind: 'extracted',
         version:
-          entry.id === 'paradise-records'
-            ? '한국어 자료 a66ec9c · 제7막 소개문 312b459'
-            : '한국어 고정 자료 a66ec9c',
+          (entry.id === 'paradise-records'
+            ? '한국어 자료 a66ec9c · 제7막 소개문'
+            : '한국어 고정 자료 a66ec9c') +
+          (contentIndex[`${entry.id}/${entry.chapters[0].id}`]?.textReferenceCommit
+            ? ` · 원문 갱신 ${contentIndex[`${entry.id}/${entry.chapters[0].id}`].textReferenceCommit!.slice(0, 7)}`
+            : ''),
         sourceIds: entry.chapters.flatMap(
           (chapter) => contentIndex[`${entry.id}/${chapter.id}`]?.sourceIds ?? [],
         ),

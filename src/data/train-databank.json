@@ -1,7 +1,7 @@
 {
   "schema": "hsr-train-databank.v1",
   "repository": "DimbreathBot/TurnBasedGameData",
-  "commit": "724b139d8c9c32d12552eb95745a4fee72bfe48b",
+  "commit": "312b4597691e0a29cf9828a15b592757dba86949",
   "files": {
     "TextMapKR_0.json": {
       "gitBlob": "4c4adcf4ed86c48ebb407442801f3b3dd396eb19",
