@@ -25,7 +25,7 @@ export const worlds: { id: World; label: string; short: string; english: string 
   },
 ];
 
-// Trailblaze arc labels and titles are supplied by the user. Chapter bodies remain
+// Trailblaze arc labels, titles and introductions are supplied by the user. Chapter bodies remain
 // original interface fixtures, not extracted game dialogue.
 function demoChapter(id: string, title: string, subject: string): Chapter {
   return {
@@ -80,7 +80,7 @@ export const archive: ArchiveEntry[] = [
     title: '오늘은 어제의 내일',
     subtitle: '프롤로그 — 더 블루',
     arcLabel: '프롤로그 — 더 블루',
-    description: '더 블루에서 시작되는 개척의 첫 번째 여정.',
+    description: '시스템 시간 23시 44분 59초, 한 낯선 여성이 우주정거장 「헤르타」에 나타났다',
     category: 'trailblaze',
     world: 'space-station',
     order: 1,
@@ -98,7 +98,8 @@ export const archive: ArchiveEntry[] = [
     title: '시들어가는 겨울밤',
     subtitle: '제1장 — 야릴로-Ⅵ',
     arcLabel: '제1장 — 야릴로-Ⅵ',
-    description: '눈으로 덮인 별, 야릴로-Ⅵ로 이어지는 여정.',
+    description:
+      '「탐사」, 「이해」, 「수립」, 「연결」——이것이 무명객들이 줄곧 지켜온 「개척」의 길이다. 열차팀의 새로운 멤버가 된 당신의 첫 번째 목적지는 야릴로-Ⅵ, 얼음과 눈으로 뒤덮인 행성이다……',
     category: 'trailblaze',
     world: 'jarilo',
     order: 2,
@@ -115,7 +116,8 @@ export const archive: ArchiveEntry[] = [
     title: '바람 따라 즐기는 선경',
     subtitle: '제2장 — 선주 「나부」',
     arcLabel: '제2장 — 선주 「나부」',
-    description: '별바다를 건너 선주 「나부」에서 펼쳐지는 여정.',
+    description:
+      '「......목적지를 변경해줬으면 해」 뜻밖의 방문객이 말했다. 은하열차에서 멀지 않은 곳에 선주 연맹의 「나부」가 정박해 있다……',
     category: 'trailblaze',
     world: 'luofu',
     order: 3,
@@ -132,7 +134,8 @@ export const archive: ArchiveEntry[] = [
     title: '음향과 분노',
     subtitle: '제3장 — 페나코니',
     arcLabel: '제3장 — 페나코니',
-    description: '꿈의 세계, 페나코니에서 이어지는 여정.',
+    description:
+      '「꿈의 땅」 페나코니, 수많은 꿈을 좇는 여행객들이 꿈에 그리는 향락주의의 천국——「시계공」의 축제에 참여할 준비가 되었는가?',
     category: 'trailblaze',
     world: 'penacony',
     order: 4,
@@ -149,7 +152,8 @@ export const archive: ArchiveEntry[] = [
     title: '불을 쫓는 낙목의 영웅기',
     subtitle: '제4장 — 앰포리어스',
     arcLabel: '제4장 — 앰포리어스',
-    description: '앰포리어스에 새겨지는 새로운 개척의 기록.',
+    description:
+      '「영원의 땅」 앰포리어스, 세 가지 운명의 길이 얽혀 있는 개척되지 않은 땅. 운명의 소용돌이는 작은 배 한 척의 도래를 기다리고 있다……',
     category: 'trailblaze',
     world: 'amphoreus',
     order: 5,
@@ -163,7 +167,8 @@ export const archive: ArchiveEntry[] = [
     title: '낙원에 오신 걸 환영합니다',
     subtitle: '제5장 — 이상 낙원 / 아스트로폴리스',
     arcLabel: '제5장 — 이상 낙원 / 아스트로폴리스',
-    description: '이상 낙원과 아스트로폴리스를 잇는 개척의 여정.',
+    description:
+      '어느새 빠져든 그림 속 낙원에서 공중의 신좌는 미소 지으며, 신위를 다투는 알현자들이 가면을 쓴 채 모두를 기쁘게 하길 기다린다. 겁화가 은하를 태우는 가운데, 신은 자리를 비우고 환락을 갈망하는 이들에게…「신이 되는 1분」이라는 상을 남겼다.',
     category: 'trailblaze',
     world: 'paradise-astropolis',
     order: 6,

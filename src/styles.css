@@ -614,6 +614,8 @@ button {
   word-break: keep-all;
 }
 .entry-card {
+  display: flex;
+  flex-direction: column;
   border: 1px solid var(--line);
   border-radius: 6px;
   overflow: hidden;
@@ -627,6 +629,7 @@ button {
   border-color: #a6b09a;
 }
 .card-art {
+  flex-shrink: 0;
   height: 140px;
   position: relative;
   display: block;
@@ -680,6 +683,9 @@ button {
   padding: 3px 6px;
 }
 .card-body {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
   padding: 16px 15px 9px;
 }
 .card-eyebrow {
@@ -703,6 +709,7 @@ button {
   opacity: 1;
 }
 .card-body > p {
+  margin-bottom: 14px;
   font-size: 10px;
   color: var(--muted);
   line-height: 1.9;
@@ -714,7 +721,7 @@ button {
   align-items: center;
   justify-content: space-between;
   border-top: 1px solid var(--line);
-  margin-top: 14px;
+  margin-top: auto;
   padding-top: 6px;
 }
 .card-footer > span {
