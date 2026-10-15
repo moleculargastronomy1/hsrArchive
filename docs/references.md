@@ -11,8 +11,9 @@
 | hsrArchive | 실제 개발·배포할 스타레일 아카이브 | `E:\hsrArchive` |
 | LimBooks | 사이트 기능, 화면 구성, 탐색과 읽기 흐름의 기준 | `E:\references\LimBooks` |
 | paimooon.github.io | 스타레일 텍스트 추출 도구로만 사용 | `E:\references\paimooon.github.io` |
+| starrail-quests 설정집 | 스타레일 자료 분류, 설정·기록 간 연결과 읽기 구성의 보조 참고 | `E:\references\starrail-quests` |
 
-두 참고 저장소는 hsrArchive의 형제 폴더 아래에 별도로 clone했다. 원본 파일과 원본 Git 이력은 hsrArchive 커밋·배포에 포함되지 않는다. 다른 컴퓨터에서는 아래 URL로 다시 clone하고 이 문서의 커밋을 기준으로 확인한다.
+세 참고 저장소는 hsrArchive의 형제 폴더 아래에 별도로 clone했다. 원본 파일과 원본 Git 이력은 hsrArchive 커밋·배포에 포함되지 않는다. 다른 컴퓨터에서는 아래 URL로 다시 clone하고 이 문서의 커밋을 기준으로 확인한다.
 
 ## LimBooks — 사이트 기능 참고
 
@@ -34,6 +35,19 @@
 | 원본 데이터 구조 | `src/data/`, `src/story/`, `public/` |
 
 먼저 실제 동작과 데이터 의존성을 확인해 기능 목록을 작성한다. 림버스 고유 분류는 스타레일에 맞는 분류로 대응시키며, 음성 등 추가 자료가 필요한 기능은 실제 자료 확보 여부와 함께 검토한다. 이 목록은 초기 분석 출발점이며 원본 전체 기능 목록은 아니다.
+
+## starrail-quests 설정집 — 스타레일 자료 구성 참고
+
+- 지정 페이지: [설정집 · 연결해서 읽기](https://mizan0515.github.io/starrail-quests/%EC%84%A4%EC%A0%95%EC%A7%91.html)
+- 원본 저장소: https://github.com/mizan0515/starrail-quests
+- 로컬 위치: `E:\references\starrail-quests`
+- 브랜치: `main`
+- 참고 커밋: `a66ec9c36e3321ce4ea9e62b58e9326634628dce`
+- 버전 링크: https://github.com/mizan0515/starrail-quests/tree/a66ec9c36e3321ce4ea9e62b58e9326634628dce
+- 확인일: 2026-10-16 (Asia/Seoul). 공개 페이지는 HTTP 200으로 접근했고, 지역·인물별 항목과 설정·기록을 연결해 읽는 구성을 확인했다. 공개 페이지의 배포 커밋과 로컬 참고 커밋의 일치 여부는 확인하지 않았다.
+- 참고 범위: 스타레일 자료 분류, 설정·기록의 연결, 관련 문서로 이동하는 탐색과 읽기 구성.
+- 사이트 전체 기능의 기준은 LimBooks, 텍스트 추출 도구는 paimooon.github.io로 유지한다. 이 자료는 스타레일에 맞는 콘텐츠 구성을 보조 참고한다.
+- 최초 복제는 `--depth 1`로 최신 커밋만 내려받았다. 과거 이력 분석이 필요하면 별도로 가져온다.
 
 ## paimooon.github.io — 텍스트 추출 전용
 
@@ -62,6 +76,7 @@ PowerShell 예시:
 ```powershell
 git clone https://github.com/noita0130/LimBooks.git E:\references\LimBooks
 git clone https://github.com/paimooon/paimooon.github.io.git E:\references\paimooon.github.io
+git clone --depth 1 https://github.com/mizan0515/starrail-quests.git E:\references\starrail-quests
 ```
 
 최신 브랜치는 위 참고 커밋과 다를 수 있다. 기록된 버전과 비교하려면 다음처럼 조회한다.
@@ -69,6 +84,7 @@ git clone https://github.com/paimooon/paimooon.github.io.git E:\references\paimo
 ```powershell
 git -C E:\references\LimBooks diff 8b2dfe65f29c40213a7dc1a0549ec9f887040381 HEAD --stat
 git -C E:\references\paimooon.github.io diff 36eca4736eecfc84d5f2053865068e4426b17186 HEAD --stat
+git -C E:\references\starrail-quests diff a66ec9c36e3321ce4ea9e62b58e9326634628dce HEAD --stat
 ```
 
 ## 참고 원본 업데이트
@@ -78,10 +94,13 @@ git -C E:\references\paimooon.github.io diff 36eca4736eecfc84d5f2053865068e4426b
 ```powershell
 git -C E:\references\LimBooks status --short
 git -C E:\references\paimooon.github.io status --short
+git -C E:\references\starrail-quests status --short
 git -C E:\references\LimBooks pull --ff-only
 git -C E:\references\paimooon.github.io pull --ff-only
+git -C E:\references\starrail-quests pull --ff-only
 git -C E:\references\LimBooks rev-parse HEAD
 git -C E:\references\paimooon.github.io rev-parse HEAD
+git -C E:\references\starrail-quests rev-parse HEAD
 ```
 
 검토 후 이 문서의 기록일, 참고 커밋, 버전 링크와 변경된 기능 설명을 갱신한다. 원본 소스·에셋을 실제 프로젝트로 가져올 때는 해당 자료의 재사용 조건을 확인한다.

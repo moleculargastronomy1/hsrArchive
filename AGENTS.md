@@ -3,11 +3,12 @@
 ## 프로젝트 목표
 - 붕괴: 스타레일 텍스트를 탐색하고 읽을 수 있는 공개 아카이브 사이트를 개발한다.
 - 사이트 기능은 LimBooks를 기준으로 분석하고, 스타레일 자료 구조에 맞게 구현한다.
+- 스타레일 자료 분류와 설정·기록 간 연결 방식은 mizan0515의 starrail-quests 설정집을 보조 참고한다.
 - paimooon.github.io는 텍스트 추출용으로만 사용한다. 사이트 화면이나 기능의 기준으로 사용하지 않는다.
 
 ## 참고 자료
 - 아카이브 화면·탐색·읽기 기능이나 텍스트 추출 작업을 할 때 `docs/references.md`를 읽는다.
-- 로컬 참고 원본: `../references/LimBooks`, `../references/paimooon.github.io` (기본 위치 `E:\references`).
+- 로컬 참고 원본: `../references/LimBooks`, `../references/paimooon.github.io`, `../references/starrail-quests` (기본 위치 `E:\references`).
 - 참고한 버전은 `docs/references.md`의 커밋으로 확인한다. 원본을 업데이트하면 기록도 갱신한다.
 - 참고 저장소의 원본과 Git 이력은 이 프로젝트 저장소에 넣지 않는다. 원본 코드·에셋을 재사용할 때는 해당 자료의 재사용 조건을 확인한다.
 
