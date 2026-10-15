@@ -204,6 +204,9 @@ export default function App() {
     )
     .sort((a, b) => b[1].updatedAt - a[1].updatedAt);
   const lastEntry = recent[0] && archive.find((item) => item.id === recent[0][0]);
+  const lastChapter = lastEntry?.chapters.find(
+    (ch) => ch.id === recent[0][1].chapterId || ch.aliases?.includes(recent[0][1].chapterId),
+  );
   const cards = (entries: ArchiveEntry[]) => (
     <div
       className={`entry-grid${entries.length && entries.every((item) => item.category === 'trailblaze') ? ' trailblaze-grid' : ''}`}
@@ -306,14 +309,16 @@ export default function App() {
             </span>
             <h2>{lastEntry ? '멈췄던 이야기, 그다음 장으로' : '당신만의 여정을 모아 보세요'}</h2>
             <p>
-              {lastEntry
-                ? `${lastEntry.title} · ${lastEntry.chapters.find((ch) => ch.id === recent[0][1].chapterId)?.title}`
+              {lastEntry && lastChapter
+                ? `${lastEntry.title} · ${lastChapter.title}`
                 : '마음에 남은 이야기는 북마크에, 읽던 이야기는 읽기 기록에 보관됩니다.'}
             </p>
             <a
               className="text-link"
               href={
-                lastEntry ? href(readerPath(lastEntry.id, recent[0][1].chapterId)) : '#/library'
+                lastEntry && lastChapter
+                  ? href(readerPath(lastEntry.id, lastChapter.id))
+                  : '#/library'
               }
             >
               {lastEntry ? '이어서 읽기' : '내 서재 열기'} <ArrowRight size={15} />
@@ -438,8 +443,14 @@ export default function App() {
                     <span>
                       <strong>{item.title}</strong>
                       <small>
-                        {item.chapters.find((ch) => ch.id === progress.chapterId)?.title} ·{' '}
-                        {new Date(progress.updatedAt).toLocaleDateString('ko-KR')}
+                        {
+                          item.chapters.find(
+                            (ch) =>
+                              ch.id === progress.chapterId ||
+                              ch.aliases?.includes(progress.chapterId),
+                          )?.title
+                        }{' '}
+                        · {new Date(progress.updatedAt).toLocaleDateString('ko-KR')}
                       </small>
                     </span>
                     <span className="text-link">
@@ -483,7 +494,10 @@ export default function App() {
     );
   } else if (entry && parts.length === 2) {
     const progress = history[entry.id];
-    const resume = entry.chapters.find((ch) => ch.id === progress?.chapterId) ?? entry.chapters[0];
+    const resume =
+      entry.chapters.find(
+        (ch) => ch.id === progress?.chapterId || ch.aliases?.includes(progress?.chapterId ?? ''),
+      ) ?? entry.chapters[0];
     content = (
       <>
         <a className="back-link" href={href(`/archive?category=${entry.category}`)}>
