@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState, type FormEvent } from 'react';
+import { useCallback, useEffect, useRef, useState, type FormEvent } from 'react';
 import {
   ArrowDown,
   ArrowLeft,
@@ -10,16 +10,14 @@ import {
   ChevronRight,
   Clock3,
   Compass,
-  FileText,
   Home,
-  Library,
   Menu,
   Moon,
   Search,
   SlidersHorizontal,
   Sparkles,
   Sun,
-  Users,
+  Orbit,
   X,
 } from 'lucide-react';
 import { archive, categories, worlds } from './data/archive';
@@ -28,8 +26,10 @@ import { adjacentChapter, chapterNumber, readerPath, searchEntries } from './lib
 import { isBookmarks, isHistory, useStored, type ReadingHistory } from './lib/storage';
 import WorldArt from './components/WorldArt';
 import EntryArtwork, { hasCover } from './components/EntryArtwork';
+import OfficialVideo from './components/OfficialVideo';
+import DialogueBrowser from './components/DialogueBrowser';
 
-const categoryIcons = { trailblaze: Compass, companion: Users, readable: FileText };
+const categoryIcons = { trailblaze: Compass, simulation: Orbit };
 const worldName = (id: World) => worlds.find((world) => world.id === id)!.label;
 const categoryName = (id: Category) => categories.find((category) => category.id === id)!.label;
 const href = (path: string) => `#${path}`;
@@ -75,7 +75,9 @@ function EntryCard({
           <WorldArt world={entry.world} />
         )}
         <span className="art-index">{String(entry.order).padStart(2, '0')} / ARCHIVE</span>
-        <span className="demo-pill">예시 본문</span>
+        <span className="demo-pill">
+          {entry.source.kind === 'extracted' ? '한국어 원문' : '예시 본문'}
+        </span>
       </a>
       <div className="card-body">
         <div className="card-eyebrow">{entry.arcLabel ?? worldName(entry.world)}</div>
@@ -138,7 +140,9 @@ export default function App() {
   const entry = parts[0] === 'entry' ? archive.find((item) => item.id === parts[1]) : undefined;
   const chapter = entry?.chapters.find((item) => item.id === parts[2]);
   const isReader = Boolean(chapter);
-  const selectedCategory = categories.find((item) => item.id === params.get('category'))?.id;
+  const selectedCategory =
+    categories.find((item) => item.id === params.get('category'))?.id ??
+    (path === '/archive' ? 'trailblaze' : undefined);
   const selectedWorld = worlds.find((item) => item.id === params.get('world'))?.id;
   const toggleBookmark = (id: string) =>
     setBookmarks((previous) =>
@@ -155,7 +159,7 @@ export default function App() {
     mainRef.current?.focus({ preventScroll: true });
   }, [route]);
   useEffect(() => {
-    document.title = `${chapter?.title ?? entry?.title ?? (path === '/archive' ? (selectedCategory ? categoryName(selectedCategory) : '아카이브 탐색') : path === '/library' ? '내 서재' : path === '/about' ? '서고 안내' : '열차의 서고')} · 스타레일 아카이브`;
+    document.title = `${chapter?.title ?? entry?.title ?? (path === '/archive' ? (selectedCategory ? categoryName(selectedCategory) : '아카이브 탐색') : path === '/search' ? '대사 검색' : path === '/library' ? '내 서재' : path === '/about' ? '서고 안내' : '열차의 서고')} · 스타레일 아카이브`;
   }, [path, entry, chapter, selectedCategory]);
   useEffect(() => {
     const shortcut = (event: KeyboardEvent) => {
@@ -171,7 +175,7 @@ export default function App() {
 
   const submitSearch = (event: FormEvent) => {
     event.preventDefault();
-    window.location.hash = `/archive${search.trim() ? `?q=${encodeURIComponent(search.trim())}` : ''}`;
+    window.location.hash = `/search${search.trim() ? `?q=${encodeURIComponent(search.trim())}` : ''}`;
   };
   const recent = Object.entries(history)
     .filter(([id, progress]) =>
@@ -197,6 +201,7 @@ export default function App() {
   );
   const updateFilter = (key: string, value: string) => {
     const next = new URLSearchParams(params);
+    if (key === 'category') next.delete('world');
     value ? next.set(key, value) : next.delete(key);
     window.location.hash = `/archive${next.size ? `?${next}` : ''}`;
   };
@@ -272,32 +277,14 @@ export default function App() {
           {cards(archive.filter((item) => item.category === 'trailblaze'))}
         </section>
         <div className="home-bottom">
-          <section className="section companion-section">
-            <div className="section-heading">
-              <div>
-                <span className="eyebrow">PEOPLE ALONG THE WAY</span>
-                <h2>여정에서 만난 얼굴들</h2>
-              </div>
-              <a className="text-link" href="#/archive?category=companion">
-                더 보기 <ArrowRight size={14} />
-              </a>
-            </div>
-            <div className="companion-list">
-              {archive
-                .filter((item) => item.category === 'companion')
-                .map((item, index) => (
-                  <a href={href(readerPath(item.id))} key={item.id}>
-                    <span className={`portrait portrait-${index}`}>
-                      <Users size={25} strokeWidth={1} />
-                    </span>
-                    <span>
-                      <small>{item.subtitle}</small>
-                      <strong>{item.title}</strong>
-                    </span>
-                    <ChevronRight size={17} />
-                  </a>
-                ))}
-            </div>
+          <section className="simulation-callout">
+            <Orbit size={30} strokeWidth={1} />
+            <span className="eyebrow">SIMULATED UNIVERSE</span>
+            <h2>시뮬레이션 우주</h2>
+            <p>우주의 실험과 기물에 남겨진 기록을 읽어 보세요.</p>
+            <a className="text-link" href="#/archive?category=simulation">
+              시뮬레이션 우주 열기 <ArrowRight size={15} />
+            </a>
           </section>
           <section className="continue-panel">
             <span className="eyebrow">
@@ -322,8 +309,8 @@ export default function App() {
         <div className="demo-notice">
           <Sparkles size={17} />
           <p>
-            <strong>서고를 준비하고 있어요.</strong> 현재 표시된 {archive.length}개 자료는 기능
-            확인용 예시입니다. 실제 게임 텍스트는 추출 검증 후 연결됩니다.
+            <strong>이야기와 기록을 연결했습니다.</strong> 개척 임무와 시뮬레이션 우주의 한국어
+            원문을 읽고 검색할 수 있습니다. 자료의 범위는 서고 안내에서 확인해 주세요.
           </p>
           <a href="#/about" aria-label="예시 자료와 서고 안내">
             <ArrowRight size={17} />
@@ -341,11 +328,13 @@ export default function App() {
           description={
             selectedCategory === 'trailblaze'
               ? '프롤로그부터 제5장까지, 개척의 여정을 순서대로 만나보세요.'
-              : '별과 인물, 작은 기록을 따라 원하는 이야기를 찾아보세요.'
+              : selectedCategory === 'simulation'
+                ? '시뮬레이션 우주의 실험, 기물과 발견의 기록을 만나보세요.'
+                : '개척의 여정과 시뮬레이션 우주의 기록을 찾아보세요.'
           }
         />
         <div className="category-tabs" aria-label="자료 분류">
-          {[{ id: '', label: '전체 기록' }, ...categories].map((item) => (
+          {categories.map((item) => (
             <button
               key={item.id}
               className={(selectedCategory ?? '') === item.id ? 'active' : ''}
@@ -379,7 +368,7 @@ export default function App() {
             </select>
           </label>
           <span>
-            총 <strong>{results.length}</strong>개 기록 · 예시 본문
+            총 <strong>{results.length}</strong>개 기록
           </span>
         </div>
         {params.get('q') && (
@@ -400,6 +389,17 @@ export default function App() {
             text="다른 검색어를 입력하거나 지역과 분류 필터를 바꿔 보세요."
           />
         )}
+      </>
+    );
+  } else if (path === '/search') {
+    content = (
+      <>
+        <PageIntro
+          eyebrow="DIALOGUE SEARCH"
+          title="대사 검색"
+          description="임무명과 화자, 한국어 대사를 검색하고 앞뒤 맥락을 함께 읽어보세요."
+        />
+        <DialogueBrowser initialQuery={params.get('q') ?? ''} global />
       </>
     );
   } else if (path === '/library') {
@@ -479,7 +479,7 @@ export default function App() {
                 <span key={tag}>#{tag}</span>
               ))}
               <span>한국어</span>
-              <span>예시 본문</span>
+              <span>{entry.source.kind === 'extracted' ? '한국어 원문' : '예시 본문'}</span>
             </div>
           </div>
           {entry.category === 'trailblaze' ? (
@@ -521,7 +521,9 @@ export default function App() {
                     : ch.kind === 'adventure'
                       ? '관련 모험 임무 · '
                       : ''}
-                  예시 대사
+                  {ch.content
+                    ? `${ch.content.rows.toLocaleString('ko-KR')}줄 · 한국어 원문`
+                    : '예시 대사'}
                 </small>
               </span>
               {ch.id === progress?.chapterId ? (
@@ -568,16 +570,19 @@ export default function App() {
             열차의 서고는 붕괴: 스타레일의 텍스트를 탐색하고 읽기 위한 비공식 팬 프로젝트입니다.
             LimBooks의 분류, 챕터 탐색과 읽기 흐름을 참고해 스타레일에 맞게 새로 구현했습니다.
           </p>
-          <h2>지금은 기본 뼈대를 준비 중입니다</h2>
+          <h2>현재 수록한 자료</h2>
           <p>
-            개척 임무 목록과 하위 목차는 사용자가 제공한 프롤로그와 제1~5장의 제목 및 소개문으로
-            구성했습니다. 챕터 본문은 기능을 확인하기 위한 자체 작성 예시이며, 공식 대사가 아닙니다.
-            현재 실제 게임 챕터 텍스트와 음성은 제공하지 않습니다.
+            개척 임무 33개 목차와 시뮬레이션 우주 기록에 로컬 한국어 자료를 연결했습니다. 원문은
+            starrail-quests의 고정 자료 a66ec9c를 대조해 변환했으며, 임무 귀속과 장면 연결이
+            확인되지 않은 자료는 제외했습니다. 자료의 참조 순서는 실제 플레이 순서와 다를 수 있으며,
+            모든 분기·컷신을 수록했다고 보장하지 않습니다.
           </p>
-          <h2>앞으로 자료를 연결하는 방법</h2>
+          <h2>자료를 연결한 방법</h2>
           <p>
-            입력 자료와 추출 도구의 호환성을 확인한 후, 추출 결과를 지역·분류·챕터·대사 구조로
-            변환해 연결할 예정입니다. 자료의 출처와 버전을 함께 기록합니다.
+            붕괴 3rd 텍스트 뷰어의 검색과 주변 대사 열람 방식을 참고해 새로 구현했습니다. 붕괴 3rd
+            대사는 사용하지 않았습니다. 한국어 자료의 출처·문서 ID·해시를 기록하며 게임 원문의
+            권리는 해당 권리자에게 있습니다. 기존 예시 대사는 각 개척 임무 본문 아래 접힌 영역에
+            유지했습니다.
           </p>
           <h2>내 서재와 읽기 설정</h2>
           <p>
@@ -637,12 +642,9 @@ export default function App() {
             <Home size={18} />
             서고 홈{navActive('/') && <span className="nav-dot" />}
           </a>
-          <a
-            className={navActive('/archive') && !selectedCategory ? 'active' : ''}
-            href="#/archive"
-          >
-            <Library size={18} />
-            전체 아카이브<span className="nav-count">{archive.length}</span>
+          <a className={navActive('/search') ? 'active' : ''} href="#/search">
+            <Search size={18} />
+            대사 검색
           </a>
           <span className="nav-label nav-space">STORIES</span>
           {categories.map((item) => {
@@ -653,7 +655,7 @@ export default function App() {
             return (
               <a
                 key={item.id}
-                className={active ? 'active' : ''}
+                className={`primary-story-link ${active ? 'active' : ''}`}
                 aria-current={active ? 'page' : undefined}
                 href={href(`/archive?category=${item.id}`)}
               >
@@ -681,10 +683,8 @@ export default function App() {
             읽기 기록
           </a>
         </nav>
+        <OfficialVideo />
         <div className="sidebar-bottom">
-          <div className="orbit-decoration">
-            ✧<span>기록은 남고, 여정은 계속됩니다.</span>
-          </div>
           <a href="#/about">
             <BookOpen size={15} />
             서고 안내 <ChevronRight size={14} />
@@ -712,11 +712,13 @@ export default function App() {
                 ? categoryName(entry.category)
                 : path === '/archive'
                   ? '이야기 탐색'
-                  : path === '/library'
-                    ? '내 서재'
-                    : path === '/about'
-                      ? '서고 안내'
-                      : '서고 홈'}
+                  : path === '/search'
+                    ? '대사 검색'
+                    : path === '/library'
+                      ? '내 서재'
+                      : path === '/about'
+                        ? '서고 안내'
+                        : '서고 홈'}
             </span>
           </div>
           <form className="global-search" onSubmit={submitSearch} role="search">
@@ -755,7 +757,7 @@ export default function App() {
             비공식 스타레일 텍스트 아카이브
           </span>
           <a href="#/about">
-            개발용 예시 데이터 <ArrowRight size={12} />
+            자료 출처와 수록 범위 <ArrowRight size={12} />
           </a>
         </footer>
       </div>
@@ -807,7 +809,10 @@ function Reader({
   const previous = adjacentChapter(entry, chapterId, -1);
   const next = adjacentChapter(entry, chapterId, 1);
   const [progress, setProgress] = useState(0);
+  const [contentReady, setContentReady] = useState(!chapter.content);
+  const markReady = useCallback(() => setContentReady(true), []);
   useEffect(() => {
+    if (!contentReady) return;
     let lastScroll = initialScroll.current;
     let timer: ReturnType<typeof setTimeout> | undefined;
     const save = () =>
@@ -837,7 +842,7 @@ function Reader({
       clearTimeout(timer);
       save();
     };
-  }, [entry.id, chapterId, setHistory]);
+  }, [entry.id, chapterId, setHistory, contentReady]);
 
   return (
     <>
@@ -900,26 +905,44 @@ function Reader({
             <h1>{chapter.title}</h1>
             <p>{entry.title}</p>
             <div className="reader-demo">
-              <Sparkles size={14} /> 실제 게임 대사가 아닌 기능 확인용 예시 본문입니다.
+              <Sparkles size={14} />{' '}
+              {chapter.content
+                ? '한국어 원문 · 선택지 포함'
+                : '실제 게임 대사가 아닌 기능 확인용 예시 본문입니다.'}
             </div>
           </header>
-          <div className="text-blocks">
-            {chapter.blocks.map((block) =>
-              block.type === 'dialogue' ? (
-                <div key={block.id} className="dialogue">
-                  <span className="speaker-mark">✦</span>
-                  <div>
-                    <h2>{block.speaker}</h2>
-                    <p>{block.text}</p>
+          {chapter.content && <DialogueBrowser file={chapter.content.file} onReady={markReady} />}
+          {chapter.content && chapter.blocks.length > 0 ? (
+            <details className="demo-dialogue-details">
+              <summary>예시 대사 보기</summary>
+              <div className="text-blocks">
+                {chapter.blocks.map((block) => (
+                  <p key={block.id} className="narration">
+                    {block.speaker && <strong>{block.speaker} · </strong>}
+                    {block.text}
+                  </p>
+                ))}
+              </div>
+            </details>
+          ) : (
+            <div className="text-blocks">
+              {chapter.blocks.map((block) =>
+                block.type === 'dialogue' ? (
+                  <div key={block.id} className="dialogue">
+                    <span className="speaker-mark">✦</span>
+                    <div>
+                      <h2>{block.speaker}</h2>
+                      <p>{block.text}</p>
+                    </div>
                   </div>
-                </div>
-              ) : (
-                <p key={block.id} className="narration">
-                  {block.text}
-                </p>
-              ),
-            )}
-          </div>
+                ) : (
+                  <p key={block.id} className="narration">
+                    {block.text}
+                  </p>
+                ),
+              )}
+            </div>
+          )}
           <div className="chapter-end">
             <span />✦<span />
           </div>

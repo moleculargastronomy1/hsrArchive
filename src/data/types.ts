@@ -1,11 +1,12 @@
-export type Category = 'trailblaze' | 'companion' | 'readable';
+export type Category = 'trailblaze' | 'simulation';
 export type World =
   | 'space-station'
   | 'jarilo'
   | 'luofu'
   | 'penacony'
   | 'amphoreus'
-  | 'paradise-astropolis';
+  | 'paradise-astropolis'
+  | 'simulated-universe';
 
 export interface TextBlock {
   id: string;
@@ -20,6 +21,7 @@ export interface Chapter {
   parentId?: string;
   kind?: 'branch' | 'adventure';
   blocks: TextBlock[];
+  content?: { file: string; rows: number; missing: number; sourceIds: string[] };
 }
 
 export interface ArchiveEntry {

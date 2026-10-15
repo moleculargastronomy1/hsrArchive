@@ -1,9 +1,10 @@
 import type { ArchiveEntry, Category, Chapter, World } from './types';
+import importedContent from './imported-content.json' with { type: 'json' };
+import simulation from './simulation.json' with { type: 'json' };
 
 export const categories: { id: Category; label: string; description: string }[] = [
   { id: 'trailblaze', label: '개척 임무', description: '별을 잇는 여정, 그 중심의 이야기' },
-  { id: 'companion', label: '동행 임무', description: '여정에서 만난 이들의 또 다른 이야기' },
-  { id: 'readable', label: '읽을거리', description: '세계 곳곳에 남겨진 작은 기록들' },
+  { id: 'simulation', label: '시뮬레이션 우주', description: '실험과 발견, 우주에 남겨진 기록' },
 ];
 
 export const worlds: { id: World; label: string; short: string; english: string }[] = [
@@ -23,10 +24,16 @@ export const worlds: { id: World; label: string; short: string; english: string 
     short: '이상 낙원 / 아스트로폴리스',
     english: 'PARADISE / ASTROPOLIS',
   },
+  {
+    id: 'simulated-universe',
+    label: '시뮬레이션 우주',
+    short: '시뮬레이션 우주',
+    english: 'SIMULATED UNIVERSE',
+  },
 ];
 
-// Trailblaze arc labels, titles, introductions and chapter lists are supplied by the user. Bodies remain
-// original interface fixtures, not extracted game dialogue.
+// User-supplied trailblaze chapter metadata. The original demo blocks are preserved separately
+// from the imported game dialogue attached below.
 function demoChapter(id: string, title: string, subject: string): Chapter {
   return {
     id,
@@ -84,7 +91,7 @@ function subChapter(
   return { ...demoChapter(id, title, subject), parentId, kind };
 }
 
-export const archive: ArchiveEntry[] = [
+const originalEntries: ArchiveEntry[] = [
   {
     id: 'station-departure',
     title: '오늘은 어제의 내일',
@@ -227,56 +234,25 @@ export const archive: ArchiveEntry[] = [
       ),
     ],
   },
-  {
-    id: 'march-records',
-    title: '사진에 담긴 하루',
-    subtitle: 'Mar. 7th · 인물 기록 예시',
-    description: '인물별 동행 임무와 관련 기록을 연결하기 위한 예시입니다.',
-    category: 'companion',
-    world: 'space-station',
-    order: 7,
-    language: 'ko-KR',
-    tags: ['Mar. 7th', '은하열차'],
-    source: { kind: 'demo', note: '실제 동행 임무 제목·대사가 아닌 인터페이스 예시' },
-    chapters: [demoChapter('album', '사진첩을 펼치며', '인물별 기록')],
-  },
-  {
-    id: 'dan-heng-records',
-    title: '고요한 자료실',
-    subtitle: '단항 · 인물 기록 예시',
-    description: '인물의 이야기와 관련 자료를 함께 읽기 위한 예시입니다.',
-    category: 'companion',
-    world: 'luofu',
-    order: 8,
-    language: 'ko-KR',
-    tags: ['단항', '은하열차'],
-    source: { kind: 'demo', note: '실제 동행 임무 제목·대사가 아닌 인터페이스 예시' },
-    chapters: [demoChapter('records', '자료실의 기록', '인물별 이야기')],
-  },
-  {
-    id: 'express-notes',
-    title: '열차 안의 작은 메모',
-    subtitle: '서적 · 읽을거리 예시',
-    description: '서적, 편지, 메모 같은 수집형 텍스트를 보관하는 예시입니다.',
-    category: 'readable',
-    world: 'space-station',
-    order: 9,
-    language: 'ko-KR',
-    tags: ['메모', '은하열차'],
-    source: { kind: 'demo', note: '실제 수집 서적이 아닌 인터페이스 예시' },
-    chapters: [demoChapter('memo', '첫 번째 메모', '수집형 텍스트')],
-  },
-  {
-    id: 'belobog-notes',
-    title: '도시의 오래된 편지',
-    subtitle: '편지 · 읽을거리 예시',
-    description: '지역별로 발견한 기록을 분류하기 위한 예시입니다.',
-    category: 'readable',
-    world: 'jarilo',
-    order: 10,
-    language: 'ko-KR',
-    tags: ['편지', '벨로보그'],
-    source: { kind: 'demo', note: '실제 수집 서적이 아닌 인터페이스 예시' },
-    chapters: [demoChapter('letter', '남겨진 편지', '지역별 기록')],
-  },
+];
+
+const contentIndex = importedContent as Record<string, NonNullable<Chapter['content']>>;
+export const archive: ArchiveEntry[] = [
+  ...originalEntries.map(
+    (entry): ArchiveEntry => ({
+      ...entry,
+      source: {
+        kind: 'extracted',
+        version: '한국어 고정 자료 a66ec9c',
+        sourceIds: entry.chapters.flatMap(
+          (chapter) => contentIndex[`${entry.id}/${chapter.id}`]?.sourceIds ?? [],
+        ),
+      },
+      chapters: entry.chapters.map((chapter) => ({
+        ...chapter,
+        content: contentIndex[`${entry.id}/${chapter.id}`],
+      })),
+    }),
+  ),
+  ...(simulation as ArchiveEntry[]),
 ];

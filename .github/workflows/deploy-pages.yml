@@ -4,6 +4,8 @@ on:
   push:
     branches: [main]
   workflow_dispatch:
+  schedule:
+    - cron: '15 */6 * * *'
 
 permissions:
   contents: read
@@ -34,6 +36,8 @@ jobs:
         run: pnpm install --frozen-lockfile
       - name: Test archive behavior
         run: pnpm test
+      - name: Refresh official YouTube video
+        run: node scripts/update-official-videos.mjs
       - name: Build static site
         run: pnpm build
       - name: Configure Pages

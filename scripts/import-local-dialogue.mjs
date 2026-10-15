@@ -1,0 +1,249 @@
+import fs from 'node:fs';
+import path from 'node:path';
+import crypto from 'node:crypto';
+import { archive } from '../src/data/archive.ts';
+
+const sourceRoot = path.resolve(process.argv[2] ?? '.cache/starrail-source');
+const referenceRoot = path.resolve(process.argv[3] ?? '../references/starrail-quests');
+const commit = 'a66ec9c36e3321ce4ea9e62b58e9326634628dce';
+const read = (file) => JSON.parse(fs.readFileSync(file, 'utf8'));
+const catalog = read(path.join(sourceRoot, 'data/catalog.json'));
+if (!Array.isArray(catalog)) throw new Error('Unsupported catalog format');
+const supplements = read(path.join(referenceRoot, 'data/mission-dialogue-supplements.json'));
+const deep = read(path.join(referenceRoot, 'data/deep-timeline-dialogue.json'));
+if (
+  supplements.schema !== 'starrail-mission-dialogue-supplements.v1' ||
+  deep.schema !== 'starrail-deep-timeline-dialogue.v1'
+) {
+  throw new Error(`Unsupported dialogue schemas: ${supplements.schema}, ${deep.schema}`);
+}
+const normalize = (text) => text.normalize('NFKC').replace(/[\s·•≪≫]/g, '');
+const titleOf = (title) => title.replace(/^(?:제\d+막|개척 후문|종말 임무|모험 임무):\s*/, '');
+const plain = (text) =>
+  text
+    .replace(/<\/?(?:color|size|b|i|s|u|unbreak)(?:=[^>]*)?>/gi, '')
+    .replace(/\*{0,2}\{NICKNAME\}\*{0,2}/g, '[개척자]')
+    .replace(/\u00a0/g, ' ');
+const deepByMission = new Map();
+for (const scene of deep.scenes) {
+  if (scene.ownerStatus !== 'ONE_EXPLICIT_OWNER' || scene.owners.length !== 1) continue;
+  const id = scene.owners[0].canonicalMission ?? scene.owners[0].mission;
+  if (!deepByMission.has(id)) deepByMission.set(id, []);
+  deepByMission.get(id).push(scene);
+}
+const output = path.resolve('public/content');
+fs.mkdirSync(output, { recursive: true });
+const metadata = {};
+const searchRows = [];
+const sourceFiles = {};
+let unverifiedScenes = 0;
+
+function convert(entryId, chapterId, documents) {
+  const rows = [];
+  let missing = 0;
+  for (const meta of documents) {
+    const file = path.join(sourceRoot, `data/documents/${meta.id}.json`);
+    const bytes = fs.readFileSync(file);
+    sourceFiles[meta.id] = crypto.createHash('sha256').update(bytes).digest('hex');
+    const doc = JSON.parse(bytes);
+    if (doc.id !== meta.id || !Array.isArray(doc.sections))
+      throw new Error(`Invalid document: ${meta.id}`);
+    const seen = new Set();
+    const add = (raw, scene, origin) => {
+      if (typeof raw.text !== 'string' || !raw.text.trim()) {
+        missing++;
+        return;
+      }
+      if (raw.talk_id === 999999999) return;
+      const text = plain(raw.text);
+      const key = raw.talk_id ? `${raw.talk_id}:${raw.label ?? ''}` : `${scene}:${text}`;
+      if (seen.has(key)) return;
+      seen.add(key);
+      rows.push({
+        id: `${entryId}-${chapterId}-${meta.id}-${rows.length}`,
+        entryId,
+        chapterId,
+        missionId: meta.id,
+        mission: plain(meta.title),
+        scene: plain(scene),
+        type: raw.label === '선택지' ? 'choice' : raw.speaker ? 'dialogue' : 'narration',
+        speaker: plain(raw.speaker ?? ''),
+        text,
+        talkId: raw.talk_id ?? null,
+        source: origin,
+      });
+    };
+    for (const section of doc.sections) {
+      // Unknown scene mappings are not silently presented as verified story content.
+      if (doc.category === '퀘스트' && section.mapping !== 'LOCAL_ID_ORDER_MATCH') {
+        unverifiedScenes++;
+        continue;
+      }
+      for (const row of section.rows ?? [])
+        add(row, section.title || meta.title, section.source || doc.source);
+    }
+    for (const scene of supplements.missions[meta.id] ?? []) {
+      if (scene.mapping !== 'EXACT_PUBLIC_STRUCTURE_REFERENCE_TO_PRESERVED_LOCAL_TALK') continue;
+      if (
+        !(scene.ownership ?? []).some(
+          (owner) => `quest-${owner.canonicalMissionId ?? owner.missionId}` === meta.id,
+        )
+      )
+        continue;
+      for (const row of scene.rows ?? []) add(row, meta.title, scene.source);
+    }
+    for (const scene of deepByMission.get(meta.id) ?? []) {
+      for (const row of scene.rows) {
+        const join = deep.joins[String(row.talkId)];
+        if (!join?.raw) {
+          missing++;
+          continue;
+        }
+        add(
+          {
+            talk_id: row.talkId,
+            label: /CHOICE|OPTION/.test(row.role) ? '선택지' : '대사',
+            speaker: join.speakerRaw,
+            text: join.raw,
+          },
+          scene.title || meta.title,
+          scene.source,
+        );
+      }
+    }
+  }
+  const file = `content/${entryId}--${chapterId}.json`;
+  fs.writeFileSync(
+    path.join('public', file),
+    JSON.stringify({
+      schema: 'hsr-dialogue.v1',
+      entryId,
+      chapterId,
+      referenceCommit: commit,
+      sourceIds: documents.map((doc) => doc.id),
+      missing,
+      orderNote:
+        '자료의 참조 순서입니다. 선택지와 분기는 모두 수록하며 실제 플레이 순서와 다를 수 있습니다.',
+      rows,
+    }),
+  );
+  const record = { file, rows: rows.length, missing, sourceIds: documents.map((doc) => doc.id) };
+  metadata[`${entryId}/${chapterId}`] = record;
+  searchRows.push(...rows);
+  return record;
+}
+
+for (const entry of archive.filter((item) => item.category === 'trailblaze')) {
+  for (const chapter of entry.chapters) {
+    const wanted = normalize(titleOf(chapter.title));
+    const docs = catalog
+      .filter((doc) =>
+        chapter.kind === 'adventure'
+          ? doc.category === '퀘스트' && normalize(doc.title) === wanted
+          : doc.category === '퀘스트' &&
+            ['개척 임무', '개척 후문', '종말 임무'].includes(doc.kind) &&
+            normalize(doc.chapter ?? '') === wanted,
+      )
+      .sort((a, b) => Number(a.rank) - Number(b.rank) || a.id.localeCompare(b.id));
+    if (!docs.length)
+      throw new Error(`No exact source chapter match: ${entry.id}/${chapter.title}`);
+    const result = convert(entry.id, chapter.id, docs);
+    console.log(
+      `${entry.id}/${chapter.id}: ${docs.length} missions, ${result.rows} rows, ${result.missing} unavailable`,
+    );
+  }
+}
+const simulationGroups = [
+  [
+    'simulated-universe',
+    '시뮬레이션 우주',
+    '헤르타의 실험과 시뮬레이션 우주에 남겨진 대화.',
+    (doc) => doc.category === '퀘스트' && /^시뮬레이션 우주/.test(doc.title),
+  ],
+  [
+    'swarm-disaster',
+    '곤충 떼 재난',
+    '곤충 떼 재난의 실험과 진행 기록.',
+    (doc) => doc.category === '퀘스트' && /^곤충 떼 재난/.test(doc.title),
+  ],
+  [
+    'gold-and-gears',
+    '황금과 기계',
+    '황금과 기계에서 이어지는 실험의 기록.',
+    (doc) => doc.category === '퀘스트' && /^황금과 기계/.test(doc.title),
+  ],
+  [
+    'divergent-universe',
+    '차분화 우주',
+    '차분화 우주의 실험에 관한 대화.',
+    (doc) => doc.category === '퀘스트' && /^차분화 우주/.test(doc.title),
+  ],
+  [
+    'curios',
+    '기물 기록',
+    '시뮬레이션 우주에서 발견하는 기물의 이야기.',
+    (doc) => doc.category === '시뮬레이션 우주 설정',
+  ],
+];
+const simulation = simulationGroups.map(([id, title, description, select], index) => {
+  const docs = catalog
+    .filter(select)
+    .sort(
+      (a, b) =>
+        Number(a.rank) - Number(b.rank) || a.id.localeCompare(b.id, 'en', { numeric: true }),
+    );
+  return {
+    id,
+    title,
+    description,
+    subtitle: '시뮬레이션 우주',
+    category: 'simulation',
+    world: 'simulated-universe',
+    order: index + 7,
+    language: 'ko-KR',
+    tags: [title, '시뮬레이션 우주'],
+    source: {
+      kind: 'extracted',
+      version: `한국어 고정 자료 ${commit.slice(0, 7)}`,
+      sourceIds: docs.map((doc) => doc.id),
+    },
+    chapters: docs.map((doc) => ({
+      id: doc.id,
+      title: doc.title,
+      blocks: [],
+      content: convert(id, doc.id, [doc]),
+    })),
+  };
+});
+fs.writeFileSync('src/data/imported-content.json', JSON.stringify(metadata, null, 2) + '\n');
+fs.writeFileSync('src/data/simulation.json', JSON.stringify(simulation, null, 2) + '\n');
+fs.writeFileSync(
+  'public/content/search-index.json',
+  JSON.stringify({
+    schema: 'hsr-dialogue.v1',
+    referenceCommit: commit,
+    rows: searchRows.map(({ missionId, talkId, source, ...row }) => ({
+      ...row,
+      source: crypto.createHash('sha256').update(source).digest('hex').slice(0, 16),
+    })),
+  }),
+);
+fs.writeFileSync(
+  'docs/content-provenance.json',
+  JSON.stringify(
+    {
+      reference: 'mizan0515/starrail-quests',
+      commit,
+      sourceFiles,
+      rows: searchRows.length,
+      chapters: Object.keys(metadata).length,
+      skippedUnverifiedScenes: unverifiedScenes,
+      note: '한국어 텍스트를 현지 파일에서 변환. 임무 귀속이 명시된 장면만 연결. 게임 원문의 권리는 해당 권리자에게 있습니다.',
+    },
+    null,
+    2,
+  ) + '\n',
+);
+console.log(
+  `Imported ${searchRows.length} rows; ${unverifiedScenes} unverified scene mappings excluded.`,
+);

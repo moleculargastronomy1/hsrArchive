@@ -30,7 +30,7 @@ const entries: ArchiveEntry[] = [
     title: '설원',
     subtitle: '도시',
     description: '눈의 기록',
-    category: 'readable',
+    category: 'simulation',
     world: 'jarilo',
     order: 2,
     language: 'ko-KR',
@@ -52,10 +52,10 @@ test('search combines terms and category/world filters', () => {
   assert.equal(searchEntries(entries, '').length, 2);
   assert.equal(searchEntries(entries, '없는 내용').length, 0);
   assert.deepEqual(
-    searchEntries(entries, '기록', 'readable', 'jarilo').map((item) => item.id),
+    searchEntries(entries, '기록', 'simulation', 'jarilo').map((item) => item.id),
     ['snow'],
   );
-  assert.equal(searchEntries(entries, '', 'readable', 'space-station').length, 0);
+  assert.equal(searchEntries(entries, '', 'simulation', 'space-station').length, 0);
 });
 test('chapter navigation stops at boundaries and rejects unknown chapters', () => {
   assert.equal(adjacentChapter(entries[0], 'first', -1), undefined);

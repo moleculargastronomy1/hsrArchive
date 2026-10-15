@@ -86,6 +86,20 @@ export default function WorldArt({ world, hero = false }: { world: World; hero?:
           <path d="m237 37 4 10 10 4-10 4-4 10-4-10-10-4 10-4Z" fill="currentColor" />
         </g>
       )}
+      {world === 'simulated-universe' && (
+        <g stroke="currentColor">
+          <circle cx="238" cy="120" r="53" fill="currentColor" fillOpacity=".08" />
+          <ellipse cx="238" cy="120" rx="93" ry="30" transform="rotate(-30 238 120)" />
+          <ellipse cx="238" cy="120" rx="93" ry="30" transform="rotate(40 238 120)" />
+          <circle cx="164" cy="166" r="7" fill="currentColor" />
+          <circle cx="310" cy="167" r="5" fill="currentColor" />
+          <path
+            d="m238 93 8 19 19 8-19 8-8 19-8-19-19-8 19-8Z"
+            fill="currentColor"
+            fillOpacity=".25"
+          />
+        </g>
+      )}
     </svg>
   );
 }
