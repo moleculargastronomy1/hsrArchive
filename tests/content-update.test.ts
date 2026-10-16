@@ -52,7 +52,7 @@ test('upstream discovery pins all file lists to one release commit and uses the 
   const plan = await resolveUpstream(api);
   assert.equal(plan.commit, sha);
   assert.equal(plan.version, 'OSPRODWin4.6.0_TEST');
-  assert.equal(plan.files.length, 8);
+  assert.equal(plan.files.length, 4 + REQUIRED_TABLES.length);
   assert.ok(requested.includes(`contents/TextMap?ref=${sha}`));
   assert.ok(!requested.some((endpoint) => endpoint.includes('contents/ExcelOutput')));
   await assert.rejects(

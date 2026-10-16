@@ -8,7 +8,7 @@ import {
   Search,
   X,
 } from 'lucide-react';
-import { archive } from '../data/archive';
+import { archive, categories } from '../data/archive';
 import { readerPath } from '../lib/archive';
 import { isDialogueRows, nearbyDialogue, type DialogueRow } from '../lib/dialogue';
 import { useStored } from '../lib/storage';
@@ -195,7 +195,7 @@ export default function DialogueBrowser({
   return (
     <section
       className={`dialogue-browser ${global ? 'global-dialogue-browser' : ''}`}
-      aria-label={global ? '전체 대사 검색' : '한국어 본문'}
+      aria-label={global ? '전체 원문 검색' : '한국어 본문'}
     >
       {controlledLanguages === undefined && (
         <LanguageComparisonControls languages={languages} onChange={setLanguages} />
@@ -203,8 +203,10 @@ export default function DialogueBrowser({
       <form className="dialogue-search" onSubmit={submit}>
         <Search size={17} />
         <input
-          aria-label={global ? '대사 검색어' : '이 장에서 검색'}
-          placeholder={global ? '임무명, 화자, 대사를 검색해 보세요' : '이 장에서 화자나 대사 검색'}
+          aria-label={global ? '원문 검색어' : '이 장에서 검색'}
+          placeholder={
+            global ? '임무명, 서적명, 화자, 원문을 검색해 보세요' : '이 장에서 화자나 대사 검색'
+          }
           value={draft}
           onChange={(event) => setDraft(event.target.value)}
         />
@@ -214,21 +216,18 @@ export default function DialogueBrowser({
       </form>
       {global && (
         <div className="dialogue-scopes" aria-label="대사 검색 범위">
-          {[
-            ['all', '전체'],
-            ['trailblaze', '개척 임무'],
-            ['simulation', '시뮬레이션 우주'],
-            ['codex', '아카이브'],
-          ].map(([id, label]) => (
-            <button
-              key={id}
-              className={scope === id ? 'active' : ''}
-              aria-pressed={scope === id}
-              onClick={() => setScope(id)}
-            >
-              {label}
-            </button>
-          ))}
+          {[['all', '전체'], ...categories.map((category) => [category.id, category.label])].map(
+            ([id, label]) => (
+              <button
+                key={id}
+                className={scope === id ? 'active' : ''}
+                aria-pressed={scope === id}
+                onClick={() => setScope(id)}
+              >
+                {label}
+              </button>
+            ),
+          )}
         </div>
       )}
       <p className="dialogue-help">
@@ -238,7 +237,7 @@ export default function DialogueBrowser({
       {loading ? (
         <div className="dialogue-status" role="status">
           <BookOpen size={22} />
-          <p>한국어 대사를 불러오는 중입니다…</p>
+          <p>한국어 원문을 불러오는 중입니다…</p>
         </div>
       ) : error ? (
         <div className="dialogue-status" role="alert">
@@ -287,7 +286,13 @@ export default function DialogueBrowser({
                     key={row.id}
                   >
                     <div className="dialogue-row-meta">
-                      <span>{row.type === 'choice' ? '선택지' : row.speaker || '장면 설명'}</span>
+                      <span>
+                        {entry?.category === 'books'
+                          ? '서적 원문'
+                          : row.type === 'choice'
+                            ? '선택지'
+                            : row.speaker || '장면 설명'}
+                      </span>
                       <small>{row.mission}</small>
                       {global && (
                         <a href={`#${readerPath(row.entryId, row.chapterId)}`}>
@@ -376,7 +381,9 @@ export default function DialogueBrowser({
             <span className="eyebrow">DIALOGUE CONTEXT</span>
             <h2 id="context-heading">
               <MessageSquareText size={19} />
-              앞뒤 대사
+              {selectedRow && entries.get(selectedRow.entryId)?.category === 'books'
+                ? '서적 원문'
+                : '앞뒤 대사'}
             </h2>
             <p>
               {selectedRow?.mission} · {selectedRow?.scene}
@@ -392,7 +399,13 @@ export default function DialogueBrowser({
               key={row.id}
               className={`context-row ${row.id === selectedRow?.id ? 'context-selected' : ''}`}
             >
-              <strong>{row.type === 'choice' ? '선택지' : row.speaker || '장면 설명'}</strong>
+              <strong>
+                {entries.get(row.entryId)?.category === 'books'
+                  ? row.scene
+                  : row.type === 'choice'
+                    ? '선택지'
+                    : row.speaker || '장면 설명'}
+              </strong>
               <div
                 className={languages.length ? 'comparison-columns' : undefined}
                 style={columnStyle}
@@ -418,7 +431,11 @@ export default function DialogueBrowser({
             </div>
           ))}
         </div>
-        <footer>같은 장면 안에서 최대 앞뒤 20줄을 표시합니다.</footer>
+        <footer>
+          {selectedRow && entries.get(selectedRow.entryId)?.category === 'books'
+            ? '서적 원문은 선택한 권 단위로 표시합니다.'
+            : '같은 장면 안에서 최대 앞뒤 20줄을 표시합니다.'}
+        </footer>
       </dialog>
     </section>
   );

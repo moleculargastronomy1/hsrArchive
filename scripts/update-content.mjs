@@ -43,7 +43,7 @@ if (mode === '--plan') {
   await Promise.all(
     plan.files.map(async (file) => {
       if (
-        !/^(TextMap\/TextMap(?:KR|EN|CHS|JP)(?:_\d+)?|ExcelOutput\/(?:NounAtlas|NounAtlasChangeInfo|TalkSentenceConfig|MissionChapterConfig))\.json$/.test(
+        !/^(TextMap\/TextMap(?:KR|EN|CHS|JP)(?:_\d+)?|ExcelOutput\/(?:NounAtlas|NounAtlasChangeInfo|TalkSentenceConfig|MissionChapterConfig|BookSeriesConfig|BookSeriesWorld|LocalbookConfig))\.json$/.test(
           file.path,
         ) ||
         !/^[a-f0-9]{40}$/.test(file.sha)
@@ -95,6 +95,7 @@ if (mode === '--plan') {
     });
   run('import-train-databank.py', [raw, planFile]);
   run('import-astropolis-intro.py', [raw, planFile]);
+  run('import-books.py', [raw, planFile]);
   run('project-upstream-content.py', [root, raw, planFile], stage);
   run('import-localizations.py', [stage, raw, planFile]);
   const receipt = JSON.parse(await fs.readFile(path.join(stage, 'receipt.json'), 'utf8'));
@@ -102,10 +103,14 @@ if (mode === '--plan') {
     await fs.readFile(path.join(stage, '.cache/localization-receipt.json'), 'utf8'),
   );
   receipt.files.push(...localizations.files);
+  const books = JSON.parse(
+    await fs.readFile(path.join(stage, '.cache/books-receipt.json'), 'utf8'),
+  );
+  receipt.files.push(...books.files);
   // The projector validates every payload and metadata reference before any publication.
   for (const file of receipt.files) {
     if (
-      !/^(?:src\/data\/(?:codex|simulation|imported-content|train-databank|astropolis-intro)\.json|public\/content-update\.json|public\/content\/[A-Za-z0-9_-]+\.json|public\/content\/locales\/(?:manifest|(?:en|zh-CN|ja)\/[A-Za-z0-9_-]+)\.json)$/.test(
+      !/^(?:src\/data\/(?:codex|simulation|imported-content|train-databank|astropolis-intro|books)\.json|public\/(?:content-update|books-provenance)\.json|public\/content\/[A-Za-z0-9_-]+\.json|public\/content\/locales\/(?:manifest|(?:en|zh-CN|ja)\/[A-Za-z0-9_-]+)\.json)$/.test(
         file,
       )
     )
@@ -122,7 +127,9 @@ if (mode === '--plan') {
     if (previous && previous.toString('utf8').trimEnd() === bytes.toString('utf8').trimEnd())
       continue;
     await fs.mkdir(path.dirname(destination), { recursive: true });
-    await fs.writeFile(destination, bytes);
+    const temporary = destination + '.tmp';
+    await fs.writeFile(temporary, bytes);
+    await fs.rename(temporary, destination);
   }
   console.log(`Verified and applied ${plan.version}: ${receipt.rows} rows`);
 }

@@ -1,4 +1,4 @@
-export type Category = 'trailblaze' | 'simulation' | 'codex';
+export type Category = 'trailblaze' | 'simulation' | 'codex' | 'books';
 export type World =
   | 'space-station'
   | 'jarilo'
@@ -19,6 +19,8 @@ export interface TextBlock {
 export interface Chapter {
   id: string;
   title: string;
+  group?: string;
+  collection?: 'bookshelf' | 'document';
   parentId?: string;
   kind?: 'branch' | 'adventure';
   intro?: boolean;

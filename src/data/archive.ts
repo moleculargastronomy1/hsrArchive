@@ -2,11 +2,13 @@ import type { ArchiveEntry, Category, Chapter, World } from './types';
 import importedContent from './imported-content.json' with { type: 'json' };
 import simulation from './simulation.json' with { type: 'json' };
 import codex from './codex.json' with { type: 'json' };
+import books from './books.json' with { type: 'json' };
 
 export const categories: { id: Category; label: string; description: string }[] = [
   { id: 'trailblaze', label: '개척 임무', description: '별들 사이에서 해답을 찾는 여정' },
   { id: 'simulation', label: '시뮬레이션 우주', description: '실험과 발견, 우주에 남겨진 기록' },
   { id: 'codex', label: '아카이브', description: '인물과 존재, 별바다의 지식과 기록' },
+  { id: 'books', label: '서적', description: '여정에서 만난 책과 편지, 남겨진 문서' },
 ];
 
 export const worlds: { id: World; label: string; short: string; english: string }[] = [
@@ -273,4 +275,5 @@ export const archive: ArchiveEntry[] = [
   ),
   ...(simulation as ArchiveEntry[]),
   ...(codex as ArchiveEntry[]),
+  ...(books as ArchiveEntry[]),
 ];

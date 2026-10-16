@@ -1,4 +1,5 @@
 import {
+  Fragment,
   useEffect,
   useMemo,
   useState,
@@ -40,6 +41,8 @@ export default function CodexReader({
     entry.chapters.find((chapter) => chapter.intro) ??
     entry.chapters[0];
   const [query, setQuery] = useState('');
+  const [collection, setCollection] = useState('all');
+  const isBooks = entry.category === 'books';
   const [payload, setPayload] = useState<{ file: string; rows: DialogueRow[] }>();
   const [error, setError] = useState('');
   const [retry, setRetry] = useState(0);
@@ -47,10 +50,14 @@ export default function CodexReader({
   const file = selected.content!.file;
   const list = useMemo(
     () =>
-      entry.chapters.filter((chapter) =>
-        chapter.title.toLocaleLowerCase().includes(query.trim().toLocaleLowerCase()),
+      entry.chapters.filter(
+        (chapter) =>
+          (collection === 'all' || chapter.collection === collection) &&
+          `${chapter.group ?? ''} ${chapter.title}`
+            .toLocaleLowerCase()
+            .includes(query.trim().toLocaleLowerCase()),
       ),
-    [entry, query],
+    [entry, query, collection],
   );
   const ready = payload?.file === file;
   const records = ready ? payload!.rows : [];
@@ -90,8 +97,8 @@ export default function CodexReader({
 
   return (
     <>
-      <a className="back-link" href="#/archive?category=codex">
-        <ArrowLeft size={15} /> 아카이브 목록
+      <a className="back-link" href={`#/archive?category=${entry.category}`}>
+        <ArrowLeft size={15} /> {isBooks ? '서적' : '아카이브'} 목록
       </a>
       {hasCover(entry.world, entry.id) && (
         <div className="codex-cover">
@@ -100,7 +107,7 @@ export default function CodexReader({
       )}
       <div className="codex-heading">
         <div>
-          <span className="eyebrow">GALACTIC ARCHIVE</span>
+          <span className="eyebrow">{isBooks ? 'BOOKSHELF' : 'GALACTIC ARCHIVE'}</span>
           <h1>{entry.title}</h1>
           <p>{entry.description}</p>
         </div>
@@ -115,26 +122,46 @@ export default function CodexReader({
             <Search size={16} />
             <input
               aria-label={`${entry.title} 항목 검색`}
-              placeholder="항목 이름 검색"
+              placeholder={isBooks ? '서적·시리즈 이름 검색' : '항목 이름 검색'}
               value={query}
               onChange={(event) => setQuery(event.target.value)}
             />
           </label>
+          {isBooks && (
+            <label className="book-collection-filter">
+              <span>서적 분류</span>
+              <select
+                aria-label="서적 분류"
+                value={collection}
+                onChange={(event) => setCollection(event.target.value)}
+              >
+                <option value="all">모든 서적·문서</option>
+                <option value="bookshelf">게임 내 책장 수록</option>
+                <option value="document">기타 문서</option>
+              </select>
+            </label>
+          )}
           <p>
             {list.length.toLocaleString('ko-KR')} / {entry.chapters.length.toLocaleString('ko-KR')}
             개 항목
           </p>
           <nav>
-            {list.map((chapter) => (
-              <a
-                key={chapter.id}
-                href={`#${readerPath(entry.id, chapter.id)}`}
-                className={selected.id === chapter.id ? 'active' : ''}
-                aria-current={selected.id === chapter.id ? 'page' : undefined}
-              >
-                {chapter.title}
-                <ChevronRight size={14} />
-              </a>
+            {list.map((chapter, index) => (
+              <Fragment key={chapter.id}>
+                {isBooks &&
+                  chapter.group !== list[index - 1]?.group &&
+                  (chapter.group !== chapter.title || chapter.group === list[index + 1]?.group) && (
+                    <p className="book-series-title">{chapter.group}</p>
+                  )}
+                <a
+                  href={`#${readerPath(entry.id, chapter.id)}`}
+                  className={selected.id === chapter.id ? 'active' : ''}
+                  aria-current={selected.id === chapter.id ? 'page' : undefined}
+                >
+                  {chapter.title}
+                  <ChevronRight size={14} />
+                </a>
+              </Fragment>
             ))}
             {!list.length && <p className="codex-no-results">일치하는 항목이 없습니다.</p>}
           </nav>
@@ -142,7 +169,7 @@ export default function CodexReader({
         <article className="codex-article" style={{ fontSize }} aria-labelledby="codex-title">
           <header>
             <div>
-              <span className="eyebrow">{entry.title}</span>
+              <span className="eyebrow">{isBooks ? selected.group : entry.title}</span>
               <h2 id="codex-title">{selected.title}</h2>
             </div>
             <div className="codex-font-controls" aria-label="읽기 글자 크기">
@@ -168,6 +195,19 @@ export default function CodexReader({
             languages={languages}
             onChange={setLanguages}
           />
+          {isBooks && (
+            <p className="book-reading-note">
+              {selected.collection === 'bookshelf'
+                ? '게임 내 책장 수록 서적'
+                : '기타 문서 · 게임 내 책장 미등록'}
+              {selected.contentNote?.includes('삽화') && (
+                <>
+                  <br />
+                  이미지가 포함된 서적의 텍스트 원문입니다. 삽화는 수록하지 않습니다.
+                </>
+              )}
+            </p>
+          )}
           {entry.id === 'codex-aeons' && (
             <AeonIllustration chapterId={selected.id} title={selected.title} />
           )}
@@ -233,7 +273,7 @@ export default function CodexReader({
             </div>
           )}
           <footer>
-            한국어 원문 · {entry.source.kind === 'extracted' ? entry.source.version : '예시'}
+            한국어 원문 · {isBooks ? '인게임 서적' : entry.source.kind === 'extracted' ? entry.source.version : '예시'}
             <br />
             게임 원문의 권리는 해당 권리자에게 있습니다.
           </footer>

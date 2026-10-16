@@ -40,7 +40,7 @@ test('dialogue schema rejects malformed rows before rendering', () => {
 test('published metadata resolves to matching Korean payloads and unique global row IDs', () => {
   assert.deepEqual(
     categories.map((category) => category.id),
-    ['trailblaze', 'simulation', 'codex'],
+    ['trailblaze', 'simulation', 'codex', 'books'],
   );
   const search = JSON.parse(fs.readFileSync('public/content/search-index.json', 'utf8'));
   assert.ok(isDialogueRows(search.rows));

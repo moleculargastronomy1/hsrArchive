@@ -26,7 +26,7 @@ def row_hashes(row, talks, bindings, nouns, chapters):
     chapter = re.fullmatch(r'ExcelOutput/MissionChapterConfig.json:(\d+)/ChapterDesc', row.get('source', ''))
     if chapter:
         return chapters.get(int(chapter[1]), {}).get('ChapterDesc', {}).get('Hash'), None
-    return bindings.get(row['id']), None
+    return row.get('textHash', bindings.get(row['id'])), None
 
 
 def localize_row(row, hashes, korean, texts, language):

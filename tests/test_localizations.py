@@ -32,6 +32,7 @@ class LocalizationTest(unittest.TestCase):
         row['source'] = 'ExcelOutput/MissionChapterConfig.json:105009/ChapterDesc'
         self.assertEqual(localizations.row_hashes(row, {}, {}, {}, {105009: {'ChapterDesc': {'Hash': 456}}}), (456, None))
         self.assertEqual(localizations.row_hashes({'id': 'row'}, {}, {'row': '9876543210987654321'}, {}, {}), ('9876543210987654321', None))
+        self.assertEqual(localizations.row_hashes({'id': 'book', 'textHash': '18446744073709551615'}, {}, {}, {}, {}), ('18446744073709551615', None))
 
 
 if __name__ == '__main__':

@@ -37,9 +37,9 @@
       "sha256": "f81cf26a5f9e043a364e738ad12ab535defeae3e30db3a28028810ecd35bc278"
     }
   },
-  "rows": 58598,
-  "verifiedTextRows": 58274,
+  "rows": 59719,
+  "verifiedTextRows": 59395,
   "changedTextRows": 0,
   "retainedTextRows": 324,
-  "scope": "Exact TalkSentence/hash joins and NounAtlas. Unlinked text is retained. New story ownership is not inferred."
+  "scope": "Exact TalkSentence/hash joins, NounAtlas and LocalbookConfig books. Unlinked text is retained. New story ownership is not inferred."
 }

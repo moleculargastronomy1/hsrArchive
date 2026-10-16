@@ -6,6 +6,9 @@ export const REQUIRED_TABLES = [
   'NounAtlasChangeInfo.json',
   'TalkSentenceConfig.json',
   'MissionChapterConfig.json',
+  'BookSeriesConfig.json',
+  'BookSeriesWorld.json',
+  'LocalbookConfig.json',
 ];
 
 export function gitBlob(bytes) {

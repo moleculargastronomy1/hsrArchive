@@ -15,7 +15,7 @@ def plain(value):
 def refresh_row(row, talks, texts, bindings):
     # Talk identity and the original branch/scene structure are separate from localized text.
     record = talks.get(row.get('talkId')) if row.get('talkId') else None
-    text_hash = record.get('TalkSentenceText', {}).get('Hash') if record else bindings.get(row['id'])
+    text_hash = record.get('TalkSentenceText', {}).get('Hash') if record else row.get('textHash', bindings.get(row['id']))
     if text_hash is None or not isinstance(texts.get(str(text_hash)), str) or not texts[str(text_hash)].strip():
         return dict(row), False
     result = dict(row)
@@ -133,6 +133,7 @@ def project(root, raw, manifest_path):
     codex = read('src/data/codex.json')
     metadata = read('src/data/imported-content.json')
     simulation = read('src/data/simulation.json')
+    books = read('src/data/books.json')
     payloads = {}
     verified = changed = retained = 0
 
@@ -182,6 +183,14 @@ def project(root, raw, manifest_path):
     specs = [(key.split('/')[0], key.split('/')[1], value) for key, value in metadata.items()]
     specs.extend((entry['id'], chapter['id'], chapter['content'])
                  for entry in simulation + codex for chapter in entry['chapters'])
+    for entry in books:
+        for chapter in entry['chapters']:
+            content = chapter['content']
+            file = safe_payload(content['file'])
+            payloads[file] = read(file)
+            validate_payload(payloads[file], entry['id'], chapter['id'])
+            specs.append((entry['id'], chapter['id'], content))
+            verified += len(payloads[file]['rows'])
     for entry_id, chapter_id, content in specs:
         file = safe_payload(content['file'])
         if file in payloads:
@@ -240,7 +249,7 @@ def project(root, raw, manifest_path):
     for entry in simulation + codex:
         if not entry['id'].startswith(('codex-aeons', 'codex-terms', 'codex-factions')):
             entry['source']['version'] = entry['source']['version'].split(' · 원문 갱신')[0] + ' · 원문 갱신 ' + commit[:7]
-    for file, data in [('codex', codex), ('simulation', simulation), ('imported-content', metadata),
+    for file, data in [('codex', codex), ('simulation', simulation), ('books', books), ('imported-content', metadata),
                        ('train-databank', train), ('astropolis-intro', introductions)]:
         write('src/data/' + file + '.json', data, True)
     write('public/content-update.json', {
@@ -250,7 +259,7 @@ def project(root, raw, manifest_path):
         'intervalHours': 6, 'files': evidence,
         'rows': len(all_rows), 'verifiedTextRows': verified, 'changedTextRows': changed,
         'retainedTextRows': retained,
-        'scope': 'Exact TalkSentence/hash joins and NounAtlas. Unlinked text is retained. New story ownership is not inferred.',
+        'scope': 'Exact TalkSentence/hash joins, NounAtlas and LocalbookConfig books. Unlinked text is retained. New story ownership is not inferred.',
     }, True)
     write('receipt.json', {'files': sorted(publications), 'rows': len(all_rows)}, True)
     print(json.dumps({'verified': verified, 'changed': changed, 'retained': retained, 'rows': len(all_rows)}))

@@ -1,0 +1,38 @@
+{
+  "schema": "hsr-books-provenance.v1",
+  "repository": "DimbreathBot/TurnBasedGameData",
+  "commit": "312b4597691e0a29cf9828a15b592757dba86949",
+  "version": "OSPRODWin4.6.0_D16728363_A16704710_L16700845",
+  "files": {
+    "TextMapKR_0.json": {
+      "gitBlob": "4c4adcf4ed86c48ebb407442801f3b3dd396eb19",
+      "sha256": "2a996609124fd7ab215cbacae43eee098578c6d7cc4c10186bb12d5dfc8fc941"
+    },
+    "TextMapKR_1.json": {
+      "gitBlob": "80eee947e1dc31577209e39d841ad2eb127541e0",
+      "sha256": "ceef6b210ebd57f955b26bffa2995487b18627cfd5a30c3b770de803c07d92b8"
+    },
+    "BookSeriesConfig.json": {
+      "gitBlob": "cf0be9988b2cb3e4f89d8137ffb53372d505e4ab",
+      "sha256": "1aee7099dad635074328091eaba870ab40df9166e84e30cf3fed0f100e9c36eb"
+    },
+    "LocalbookConfig.json": {
+      "gitBlob": "d7cf6a0ba9a95fe5db200ed4a155edb315900bf2",
+      "sha256": "8d6d8a22e6517049b85d16bec977e4f2eb064b0c4ec65efffe3a7b4aad9d2dcf"
+    },
+    "BookSeriesWorld.json": {
+      "gitBlob": "fdac4c7eb2df880f0d950d98e8b1dfd6d97aa372",
+      "sha256": "2691ec22db4f736dc1fb92d210b52f14606d3fa789ae30a87e9b9464be1958fa"
+    }
+  },
+  "coverage": {
+    "books": 1121,
+    "series": 828,
+    "regions": 6,
+    "bookshelf": 894,
+    "documents": 227,
+    "booksWithImages": 25
+  },
+  "scope": "All exact LocalbookConfig text, including documents outside the in-game bookshelf. Images excluded.",
+  "copyright": "Game text © HoYoverse. Data source: DimbreathBot/TurnBasedGameData."
+}

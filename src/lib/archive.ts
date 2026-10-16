@@ -18,6 +18,7 @@ export function searchEntries(
       ...entry.tags,
       ...entry.chapters.flatMap((chapter) => [
         chapter.title,
+        chapter.group ?? '',
         ...chapter.blocks.flatMap((block) => [block.speaker ?? '', block.text]),
       ]),
     ]

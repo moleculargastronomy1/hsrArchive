@@ -137,7 +137,7 @@ export default function App() {
   const chapter = entry?.chapters.find(
     (item) => item.id === parts[2] || item.aliases?.includes(parts[2]),
   );
-  const isReader = Boolean(chapter) && entry?.category !== 'codex';
+  const isReader = Boolean(chapter) && entry?.category !== 'codex' && entry?.category !== 'books';
   const selectedCategory =
     categories.find((item) => item.id === params.get('category'))?.id ??
     (path === '/archive' ? 'trailblaze' : undefined);
@@ -165,7 +165,7 @@ export default function App() {
           ? categoryName(selectedCategory)
           : '아카이브 탐색'
         : path === '/search'
-          ? '대사 검색'
+          ? '원문 검색'
           : path === '/library'
             ? '내 서재'
             : path === '/about'
@@ -346,7 +346,9 @@ export default function App() {
               ? '프롤로그부터 제5장까지, 개척의 여정을 순서대로 만나보세요.'
               : selectedCategory === 'simulation'
                 ? '시뮬레이션 우주의 실험, 기물과 발견의 기록을 만나보세요.'
-                : '광추부터 파벌까지, 별바다에 남겨진 지식과 기록을 찾아보세요.'
+                : selectedCategory === 'books'
+                  ? '지역별로 정리한 인게임 서적과 편지, 문서를 시리즈·권 순서로 읽어보세요.'
+                  : '광추부터 파벌까지, 별바다에 남겨진 지식과 기록을 찾아보세요.'
           }
         />
         <div className="category-tabs" aria-label="자료 분류">
@@ -412,8 +414,8 @@ export default function App() {
       <>
         <PageIntro
           eyebrow="DIALOGUE SEARCH"
-          title="대사 검색"
-          description="임무명과 화자, 한국어 대사를 검색하고 앞뒤 맥락을 함께 읽어보세요."
+          title="원문 검색"
+          description="임무명과 서적명, 화자와 한국어 원문을 검색하고 맥락을 함께 읽어보세요."
         />
         <DialogueBrowser initialQuery={params.get('q') ?? ''} global />
       </>
@@ -484,7 +486,7 @@ export default function App() {
       </>
     );
   } else if (
-    entry?.category === 'codex' &&
+    (entry?.category === 'codex' || entry?.category === 'books') &&
     (parts.length === 2 || (chapter && parts.length === 3))
   ) {
     content = (
@@ -612,6 +614,13 @@ export default function App() {
             분기·컷신을 수록했다고 보장하지 않습니다.
           </p>
           <ContentUpdateStatus />
+          <h2>인게임 서적</h2>
+          <p>
+            왼쪽 ‘서적’에서 지역을 선택해 책과 편지, 문서를 읽을 수 있습니다. 시리즈·권 순서로
+            정리했으며, 게임 내 책장 수록 여부로 분류할 수 있습니다. 제목 검색, 전체 원문 검색과
+            영·중·일 원문 비교를 지원합니다. 이미지가 포함된 서적은 텍스트 원문을 제공하며, 실제
+            수집·해금 상태를 나타내지 않습니다.
+          </p>
           <h2>여러 언어의 원문 비교</h2>
           <p>
             읽기 화면의 ‘언어 추가’에서 영어·중국어(간체)·일본어를 선택하면 한국어와 동시에 비교할
@@ -689,7 +698,7 @@ export default function App() {
           </a>
           <a className={navActive('/search') ? 'active' : ''} href="#/search">
             <Search size={18} />
-            대사 검색
+            원문 검색
           </a>
           <span className="nav-label nav-space">STORIES</span>
           {categories.map((item) => {
@@ -706,10 +715,13 @@ export default function App() {
                   <CategoryIcon category={item.id} />
                   {item.label}
                 </a>
-                {item.id === 'codex' && active && (
-                  <div className="codex-submenu" aria-label="아카이브 분류">
+                {(item.id === 'codex' || item.id === 'books') && active && (
+                  <div
+                    className="codex-submenu"
+                    aria-label={item.id === 'books' ? '서적 지역' : '아카이브 분류'}
+                  >
                     {archive
-                      .filter((record) => record.category === 'codex')
+                      .filter((record) => record.category === item.id)
                       .map((record) => (
                         <a
                           key={record.id}
@@ -773,7 +785,7 @@ export default function App() {
                 : path === '/archive'
                   ? '이야기 탐색'
                   : path === '/search'
-                    ? '대사 검색'
+                    ? '원문 검색'
                     : path === '/library'
                       ? '내 서재'
                       : path === '/about'
