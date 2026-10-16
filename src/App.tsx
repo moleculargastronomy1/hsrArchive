@@ -779,11 +779,10 @@ export default function App() {
           <button
             className="icon-button theme-button"
             onClick={() => setTheme(theme === 'light' ? 'dark' : 'light')}
-            aria-pressed={theme === 'dark'}
             title={theme === 'light' ? '다크 모드로 전환' : '라이트 모드로 전환'}
           >
             <img src={theme === 'light' ? nightIcon : dayIcon} alt="" width={24} height={24} />
-            <span>다크모드</span>
+            <span>{theme === 'light' ? '다크모드' : '라이트모드'}</span>
           </button>
         </header>
         <main
