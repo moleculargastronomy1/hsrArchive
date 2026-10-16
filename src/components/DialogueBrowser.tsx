@@ -16,6 +16,7 @@ import { useComparisonLanguages, useLocalizations } from '../hooks/useComparison
 import { LanguageComparisonControls, LocalizedPassage } from './LanguageComparison';
 import type { ComparisonLanguage } from '../lib/localization';
 import GameText from './GameText';
+import VideoVerificationNote from './VideoVerificationNote';
 import { searchableGameText } from '../lib/game-text';
 
 export default function DialogueBrowser({
@@ -301,11 +302,6 @@ export default function DialogueBrowser({
                             : row.speaker || '장면 설명'}
                       </span>
                       <small>{row.bwikiMission ?? row.mission}</small>
-                      {row.flowStatus && (
-                        <small className={`flow-label ${row.flowStatus}`}>
-                          {row.flowStatus === 'verified' ? '장면 연결 확인' : '순서·연결 확인 필요'}
-                        </small>
-                      )}
                       {row.flowBoundary && <small>후속 대사 확인 필요</small>}
                       {row.bwikiPage && row.bwikiRevision && (
                         <a
@@ -409,11 +405,6 @@ export default function DialogueBrowser({
         <details className="dialogue-verification-details">
           <summary>검증 현황 및 출처</summary>
           <p className="dialogue-flow-summary">
-            장면 연결 확인 {flowSummary.verified.toLocaleString('ko-KR')}줄 · 확인 필요{' '}
-            {flowSummary.review.toLocaleString('ko-KR')}줄
-            <span>
-              장면 사이의 전체 진행 순서는 검증 중입니다. 다른 선택의 응답도 함께 수록합니다.
-            </span>
             {(flowSummary.wiki > 0 || flowSummary.cached > 0) && (
               <span>
                 BWIKI 대조 {flowSummary.wiki.toLocaleString('ko-KR')}줄 · 이전 대조 유지{' '}
@@ -437,6 +428,7 @@ export default function DialogueBrowser({
                 . 정리 정보를 한국어 자료에 맞춰 재구성했습니다.
               </span>
             )}
+            <VideoVerificationNote file={file} />
           </p>
         </details>
       )}

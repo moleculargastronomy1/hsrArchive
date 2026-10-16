@@ -20,6 +20,7 @@ export interface Chapter {
   id: string;
   upstreamChapterId?: number;
   upstreamManaged?: boolean;
+  bwikiManaged?: boolean;
   title: string;
   group?: string;
   collection?: 'bookshelf' | 'document';

@@ -164,6 +164,13 @@ class TrailblazeTest(unittest.TestCase):
                                ('astropolis-intro', {'commit': manifest['commit'], 'files': {}, 'documents': []})]:
                 trailblaze.write(root, f'src/data/{name}.json', data)
             trailblaze.write(root, '.cache/trailblaze-receipt.json', {'payloads': files})
+            # Refresh an already published intro+body after a databank group was
+            # rebuilt. The chapter lookup must not be replaced by that group's list.
+            trailblaze.write(root, '.cache/trailblaze-receipt.json', {'payloads': []})
+            trailblaze.write(root, 'src/data/codex.json', [{'id': 'codex-terms', 'chapters': [],
+                                                         'source': {'kind': 'extracted', 'version': 'fixture'}}])
+            trailblaze.write(root, 'src/data/train-databank.json', {'commit': manifest['commit'], 'files': {},
+                'groups': [{'id': 'terms', 'description': 'fixture', 'documents': []}]})
             trailblaze.write(root, 'public/content/search-index.json', {'referenceCommit': 'a' * 40, 'sourceReferences': [], 'rows': []})
             previous_directory = Path.cwd()
             try:

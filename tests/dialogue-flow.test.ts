@@ -82,7 +82,11 @@ test('published flow links stay inside the verified scene and uncertain row posi
     const byId = new Map(rows.map((item) => [item.id, item]));
     assert.deepEqual(new Set(payload.referenceOrder), new Set(byId.keys()));
     rows.forEach((item, index) => {
-      if (item.flowStatus === 'review' && !['matched', 'cached'].includes(item.bwikiStatus ?? '')) {
+      if (
+        item.flowStatus === 'review' &&
+        !['matched', 'cached'].includes(item.bwikiStatus ?? '') &&
+        item.videoStatus !== 'caption-matched'
+      ) {
         assert.equal(item.id, payload.referenceOrder[index]);
         assert.equal(item.nextIds, undefined);
       }

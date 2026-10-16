@@ -51,6 +51,13 @@ jobs:
           restore-keys: |
             hsr-upstream-v2-
             hsr-upstream-v1-
+      - name: Restore derived video review progress
+        uses: actions/cache@v4
+        with:
+          path: public/video-order-provenance.json
+          key: hsr-video-review-v1-${{ github.run_id }}-${{ github.run_attempt }}
+          restore-keys: |
+            hsr-video-review-v1-
       - name: Refresh Korean content, books and comparison languages
         run: node scripts/update-content.mjs --apply
         env:

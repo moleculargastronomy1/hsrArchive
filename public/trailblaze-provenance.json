@@ -159,7 +159,7 @@
     {
       "chapterId": 105009,
       "title": "달 뜨기 전, 괴수와 춤을",
-      "status": "pending",
+      "status": "bwiki-partial",
       "issues": [
         "1054600: 임무 구조 미제공",
         "1054601: 임무 구조 미제공",
@@ -181,7 +181,10 @@
         1054607,
         1054608,
         1054609
-      ]
+      ],
+      "rawStatus": "pending",
+      "bwikiRows": 1387,
+      "bwikiAudit": "bwiki-provenance.json"
     },
     {
       "chapterId": 101101,

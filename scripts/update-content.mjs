@@ -182,6 +182,7 @@ if (mode === '--plan') {
   await prepareDialogueFlow(root, stage, plan.commit, api, blobs);
   run('restore-dialogue-flow.py', [stage, path.join(stage, '.cache/dialogue-flow/manifest.json')]);
   run('bwiki-dialogue.py', [stage, raw, planFile, '--discover']);
+  run('import-bwiki-chapters.py', [stage, raw, planFile, '--discover']);
   await fetchBwiki(stage, path.join(cache, 'bwiki'));
   run('bwiki-dialogue.py', [
     stage,
@@ -190,6 +191,17 @@ if (mode === '--plan') {
     path.join(stage, '.cache/bwiki/manifest.json'),
     root,
   ]);
+  run('import-bwiki-chapters.py', [
+    stage,
+    raw,
+    planFile,
+    path.join(stage, '.cache/bwiki/manifest.json'),
+    root,
+  ]);
+  execFileSync(process.execPath, [path.join(root, 'scripts/verify-video-order.mjs'), stage, root], {
+    cwd: root,
+    stdio: 'inherit',
+  });
   run('import-localizations.py', [stage, raw, planFile]);
   const receipt = JSON.parse(await fs.readFile(path.join(stage, 'receipt.json'), 'utf8'));
   const localizations = JSON.parse(
@@ -207,7 +219,7 @@ if (mode === '--plan') {
   // The projector validates every payload and metadata reference before any publication.
   for (const file of receipt.files) {
     if (
-      !/^(?:src\/data\/(?:codex|simulation|imported-content|train-databank|astropolis-intro|books|trailblaze)\.json|public\/(?:content-update|books-provenance|trailblaze-provenance|dialogue-flow-provenance|bwiki-provenance)\.json|public\/content\/[A-Za-z0-9_-]+\.json|public\/content\/locales\/(?:manifest|(?:en|zh-CN|ja)\/[A-Za-z0-9_-]+)\.json)$/.test(
+      !/^(?:src\/data\/(?:codex|simulation|imported-content|train-databank|astropolis-intro|books|trailblaze)\.json|public\/(?:content-update|books-provenance|trailblaze-provenance|dialogue-flow-provenance|bwiki-provenance|video-order-provenance|video-review-summary)\.json|public\/content\/[A-Za-z0-9_-]+\.json|public\/content\/locales\/(?:manifest|(?:en|zh-CN|ja)\/[A-Za-z0-9_-]+)\.json)$/.test(
         file,
       )
     )
@@ -226,7 +238,20 @@ if (mode === '--plan') {
     await fs.mkdir(path.dirname(destination), { recursive: true });
     const temporary = destination + '.tmp';
     await fs.writeFile(temporary, bytes);
-    await fs.rename(temporary, destination);
+    for (let attempt = 0; ; attempt++) {
+      try {
+        await fs.rename(temporary, destination);
+        break;
+      } catch (error) {
+        if (
+          process.platform !== 'win32' ||
+          !['EPERM', 'EBUSY', 'EACCES'].includes(error.code) ||
+          attempt >= 4
+        )
+          throw error;
+        await new Promise((resolve) => setTimeout(resolve, 250 * (attempt + 1)));
+      }
+    }
   }
   console.log(`Verified and applied ${plan.version}: ${receipt.rows} rows`);
 }

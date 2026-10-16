@@ -641,10 +641,17 @@
   },
   "paradise-records/before-moonrise": {
     "file": "content/paradise-records--before-moonrise.json",
-    "rows": 1,
+    "rows": 1388,
     "missing": 0,
     "sourceIds": [
-      "chapter-intro-105009"
+      "chapter-intro-105009",
+      "quest-1054602",
+      "quest-1054603",
+      "quest-1054604",
+      "quest-1054608",
+      "quest-1054607",
+      "quest-1054600",
+      "quest-1054601"
     ],
     "textReferenceCommit": "312b4597691e0a29cf9828a15b592757dba86949"
   }

@@ -115,7 +115,7 @@ def project(root, raw, manifest_path):
     talks = index_talk_rows(talk_rows)
     chapter_rows = read_raw('MissionChapterConfig.json')
     latest_chapter = latest_trailblaze_chapter(chapter_rows, texts)
-    chapters = {row['ID']: row for row in chapter_rows if row.get('ID')}
+    chapter_lookup = {row['ID']: row for row in chapter_rows if row.get('ID')}
 
     def read(file):
         return json.loads((stage / file).read_bytes())
@@ -219,7 +219,7 @@ def project(root, raw, manifest_path):
         else:
             updated_rows, unresolved = [], []
             for row in payload['rows']:
-                result, matched = refresh_row(row, talks, texts, bindings, chapters)
+                result, matched = refresh_row(row, talks, texts, bindings, chapter_lookup)
                 updated_rows.append(result)
                 verified += int(matched)
                 changed += int(matched and (result['text'] != row['text'] or result['speaker'] != row['speaker']))

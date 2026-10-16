@@ -98,7 +98,11 @@ test('Astropolis additions preserve verified dialogue and label the introduction
   assert.equal(payload.textReferenceCommit ?? payload.referenceCommit, source.commit);
   assert.equal(payload.rows[0].type, 'narration');
   assert.ok(payload.rows[0].text.includes('현인의 피'));
-  if (intro.upstreamManaged && payload.rows.length > 1) {
+  if (intro.bwikiManaged) {
+    assert.ok(payload.rows.length > 1000);
+    assert.equal(intro.contentNote, 'BWIKI 순서·선택지 대조 본문 수록 · 일부 구간 확인 필요');
+    assert.ok(payload.rows.some((row: DialogueRow) => row.type === 'choice'));
+  } else if (intro.upstreamManaged && payload.rows.length > 1) {
     assert.ok(
       ['공개 임무 구조의 대사·선택지 수록', '이전 검증 본문 수록 · 최신 장면 연결 대기'].includes(
         intro.contentNote!,

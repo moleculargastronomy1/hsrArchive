@@ -211,7 +211,7 @@ def comparable(value):
                     value[index - 1].isdigit() and value[index + 1].isdigit()))
 
 
-def parse_body(value):
+def parse_body(value, fragmented=False):
     """Return independent sections. Optional/folded conversations never join the main path."""
     segments, current = [], []
 
@@ -249,9 +249,11 @@ def parse_body(value):
         options = []
         for number in numbers:
             body = fields.get(f'剧情{number}', '')
-            parsed = parse_body(body)
+            parsed = parse_body(body, fragmented)
             if len(parsed) > 1:
-                raise Unresolved('응답 안의 독립 장면 확인 필요')
+                if not fragmented:
+                    raise Unresolved('응답 안의 독립 장면 확인 필요')
+                parsed = [[{'kind': 'separated', 'segments': parsed}]]
             icon = fields.get(f'图标{number}', '继续')
             if icon not in ['继续', '对话', '退出']:
                 raise Unresolved('미지원 선택지 동작')
@@ -265,7 +267,8 @@ def parse_body(value):
     buffer = ''
     for is_template, data in templates(value):
         name = template_parts(data)[0] if is_template else ''
-        if is_template and name not in ['剧情选项', '折叠', '事件']:
+        structural = ['剧情选项', '折叠', '事件'] + (['#tag:tabber'] if fragmented else [])
+        if is_template and name not in structural:
             buffer += '{{' + data + '}}'
             continue
         if not is_template:
@@ -273,7 +276,21 @@ def parse_body(value):
             continue
         consume(buffer)
         buffer = ''
-        if name == '事件':
+        if name == '#tag:tabber':
+            flush()
+            args = template_parts(data)[1:]
+            if len(args) != 1:
+                segments.append([{'kind': 'unsupported'}])
+                continue
+            tabs = split_tabs(args[0])
+            for tab in tabs:
+                label, separator, body = tab.partition('=')
+                if not separator or not label.strip():
+                    segments.append([{'kind': 'unsupported'}])
+                else:
+                    segments.extend(parse_body(body, fragmented))
+            flush()
+        elif name == '事件':
             try:
                 args = template_parts(data)[1:]
                 if len(args) == 3 and args[0] == '星神':
@@ -294,19 +311,39 @@ def parse_body(value):
             flush()
             _, fields = template(data)
             if fields.get('标题') not in ['前情提要', '剧情梗概']:
-                segments.extend(parse_body(fields.get('内容', '')))
+                segments.extend(parse_body(fields.get('内容', ''), fragmented))
             flush()
     consume(buffer)
     flush()
     return segments
 
-def story_segments(content):
+def split_tabs(value):
+    parts, start, position, depth = [], 0, 0, 0
+    while position < len(value):
+        delimiter = next((item for item in ['{{!}}-{{!}}', '|-|'] if value.startswith(item, position)), None)
+        if depth == 0 and delimiter:
+            parts.append(value[start:position])
+            position += len(delimiter)
+            start = position
+        elif value.startswith('{{', position):
+            depth += 1
+            position += 2
+        elif value.startswith('}}', position):
+            depth -= 1
+            position += 2
+        else:
+            position += 1
+    parts.append(value[start:])
+    return parts
+
+
+def story_segments(content, fragmented=False):
     match = re.search(r'^==\s*(?:剧情内容|任务剧情)\s*==\s*$', content, flags=re.M)
     if not match:
         raise Unresolved('지원하는 임무 대사 구역 없음')
     body = content[match.end():]
     stop = re.search(r'^==[^=].*?==\s*$', body, flags=re.M)
-    return parse_body(body[:stop.start()] if stop else body)
+    return parse_body(body[:stop.start()] if stop else body, fragmented)
 
 
 def validate_mission_page(content, title):

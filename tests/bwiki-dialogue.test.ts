@@ -165,7 +165,8 @@ test('published BWIKI evidence preserves uncertain positions and chapter/mission
     const byId = new Map(rows.map((row) => [row.id, row]));
     assert.deepEqual(new Set(payload.bwikiBaseOrder), new Set(byId.keys()));
     rows.forEach((row, index) => {
-      if (row.bwikiStatus === 'review') assert.equal(row.id, payload.bwikiBaseOrder[index]);
+      if (row.bwikiStatus === 'review' && row.videoStatus !== 'caption-matched')
+        assert.equal(row.id, payload.bwikiBaseOrder[index]);
       for (const id of row.bwikiNextIds ?? []) {
         const next = byId.get(id)!;
         assert.ok(next);

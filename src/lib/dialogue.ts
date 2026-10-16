@@ -22,6 +22,7 @@ export interface DialogueRow {
   bwikiRevision?: number;
   bwikiMissionId?: string;
   bwikiMission?: string;
+  videoStatus?: 'caption-matched';
 }
 
 export function isDialogueRows(value: unknown): value is DialogueRow[] {
@@ -44,7 +45,8 @@ export function isDialogueRows(value: unknown): value is DialogueRow[] {
         (row.bwikiScene === undefined || typeof row.bwikiScene === 'string') &&
         (row.bwikiPage === undefined || typeof row.bwikiPage === 'string') &&
         (row.bwikiMissionId === undefined ||
-          (typeof row.bwikiMissionId === 'string' && /^quest-\d+$/.test(row.bwikiMissionId))) &&
+          (typeof row.bwikiMissionId === 'string' &&
+            /^(?:quest|bwiki-page)-\d+$/.test(row.bwikiMissionId))) &&
         (row.bwikiMission === undefined || typeof row.bwikiMission === 'string') &&
         (row.bwikiRevision === undefined ||
           (Number.isSafeInteger(row.bwikiRevision) && row.bwikiRevision > 0)) &&

@@ -2202,7 +2202,7 @@
     ],
     "source": {
       "kind": "extracted",
-      "version": "한국어 자료 a66ec9c · 제7막 소개문 · 원문 갱신 312b459",
+      "version": "한국어 자료 a66ec9c · BWIKI 본문 대조 · 원문 갱신 312b459",
       "sourceIds": [
         "quest-1054008",
         "quest-1054002",
@@ -2270,7 +2270,14 @@
         "quest-1054524",
         "quest-1054527",
         "quest-1054528",
-        "chapter-intro-105009"
+        "chapter-intro-105009",
+        "quest-1054602",
+        "quest-1054603",
+        "quest-1054604",
+        "quest-1054608",
+        "quest-1054607",
+        "quest-1054600",
+        "quest-1054601"
       ]
     },
     "chapters": [
@@ -2635,18 +2642,27 @@
       {
         "id": "before-moonrise",
         "title": "제7막: 달 뜨기 전, 괴수와 춤을",
-        "contentNote": "챕터 소개문 수록 · 대사 본문 미수록",
+        "contentNote": "BWIKI 순서·선택지 대조 본문 수록 · 일부 구간 확인 필요",
         "blocks": [],
         "content": {
           "file": "content/paradise-records--before-moonrise.json",
-          "rows": 1,
+          "rows": 1388,
           "missing": 0,
           "sourceIds": [
-            "chapter-intro-105009"
+            "chapter-intro-105009",
+            "quest-1054602",
+            "quest-1054603",
+            "quest-1054604",
+            "quest-1054608",
+            "quest-1054607",
+            "quest-1054600",
+            "quest-1054601"
           ],
           "textReferenceCommit": "312b4597691e0a29cf9828a15b592757dba86949"
         },
-        "upstreamChapterId": 105009
+        "upstreamChapterId": 105009,
+        "bwikiManaged": true,
+        "upstreamManaged": true
       }
     ]
   }
