@@ -99,8 +99,10 @@ export async function probeWiki(
   previous,
   fetcher = fetch,
   pause = (ms) => new Promise((resolve) => setTimeout(resolve, ms)),
+  observations,
 ) {
-  let unavailable = false;
+  let unavailable = false,
+    changed = false;
   for (let start = 0; start < previous.length; start += 20) {
     if (start) await pause(1000);
     const batch = previous.slice(start, start + 20);
@@ -150,11 +152,39 @@ export async function probeWiki(
         unavailable = true;
         continue;
       }
-      if (revision !== item.revision || (revision > 0 && canonical !== item.canonical))
-        return 'changed';
+      observations?.push({ title: item.title, canonical, revision });
+      if (revision !== item.revision || (revision > 0 && canonical !== item.canonical)) {
+        if (!observations) return 'changed';
+        changed = true;
+      }
     }
   }
-  return unavailable || !previous.length ? 'unavailable' : 'unchanged';
+  return changed ? 'changed' : unavailable || !previous.length ? 'unavailable' : 'unchanged';
+}
+
+export async function observeUnfetchedWiki(snapshot, manifest, fetcher = fetch, pause) {
+  const unavailable = new Set(
+    manifest.pages.filter((item) => item.status === 'unavailable').map((item) => item.title),
+  );
+  const pending = snapshot.wiki.filter((item) => unavailable.has(item.title));
+  if (!pending.length) return snapshot;
+  const observations = [];
+  await probeWiki(pending, fetcher, pause, observations);
+  const byTitle = new Map(observations.map((item) => [item.title, item]));
+  return {
+    ...snapshot,
+    wiki: snapshot.wiki.map((item) => {
+      const observed = byTitle.get(item.title);
+      // Observing a revision prevents repeated heavy processing. It does not
+      // promote dialogue verification or claim that its content was fetched.
+      return observed
+        ? {
+            ...observed,
+            processedRevision: 'processedRevision' in item ? item.processedRevision : item.revision,
+          }
+        : item;
+    }),
+  };
 }
 
 export async function checkSources(

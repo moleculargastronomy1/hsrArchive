@@ -8,6 +8,7 @@ import {
   probeWiki,
   readPublishedSnapshot,
   validSnapshot,
+  observeUnfetchedWiki,
 } from '../scripts/content-change.mjs';
 import { sha256 } from '../scripts/video-order.mjs';
 import { CHANNEL_ID } from '../scripts/youtube-feed.mjs';
@@ -173,4 +174,24 @@ test('only absent initial state bootstraps a build; unreadable published state w
   );
   await assert.rejects(readPublishedSnapshot(async () => new Response('', { status: 503 })));
   await assert.rejects(readPublishedSnapshot(async () => json({ schema: 'wrong' })));
+});
+
+test('metadata-only observations stop repeated processing without promoting the fetched content revision', async () => {
+  const prior = snapshot();
+  const manifest = { pages: [{ title: '별', status: 'unavailable' }] };
+  const current = async () =>
+    json({ query: { pages: [{ title: '별', ns: 0, revisions: [{ revid: 8 }] }] } });
+  const observed = await observeUnfetchedWiki(prior, manifest, current);
+  assert.equal(observed.wiki[0].revision, 8);
+  assert.equal(observed.wiki[0].processedRevision, 7);
+  assert.equal(prior.wiki[0].revision, 7);
+  assert.equal(await probeWiki(observed.wiki, current), 'unchanged');
+  const again = await observeUnfetchedWiki(observed, manifest, current);
+  assert.equal(again.wiki[0].processedRevision, 7);
+  const restricted = await observeUnfetchedWiki(
+    prior,
+    manifest,
+    async () => new Response('', { status: 403 }),
+  );
+  assert.equal(restricted.wiki[0].revision, 7);
 });

@@ -1,6 +1,11 @@
 import fs from 'node:fs/promises';
 import path from 'node:path';
-import { checkSources, makeSnapshot, readPublishedSnapshot } from './content-change.mjs';
+import {
+  checkSources,
+  makeSnapshot,
+  observeUnfetchedWiki,
+  readPublishedSnapshot,
+} from './content-change.mjs';
 
 const read = async (file) => JSON.parse(await fs.readFile(file, 'utf8'));
 const config = await read('editorial/video-verification-sources.json');
@@ -8,15 +13,17 @@ const mode = process.argv[2];
 if (config.schema !== 'hsr-video-sources.v1') throw new Error('Invalid watch configuration');
 if (mode === '--record') {
   const previous = await readPublishedSnapshot().catch(() => undefined);
-  const snapshot = makeSnapshot({
+  const manifest = await read('.cache/upstream-content/stage/.cache/bwiki/manifest.json');
+  let snapshot = makeSnapshot({
     update: await read('public/content-update.json'),
     wiki: await read('public/bwiki-provenance.json'),
-    manifest: await read('.cache/upstream-content/stage/.cache/bwiki/manifest.json'),
+    manifest,
     video: await read('public/video-order-provenance.json'),
     official: await read('public/official-videos.json'),
     config,
     previous,
   });
+  snapshot = await observeUnfetchedWiki(snapshot, manifest);
   // It becomes the next baseline only if this build is successfully deployed.
   await fs.writeFile('public/content-watch.json.tmp', JSON.stringify(snapshot));
   await fs.rename('public/content-watch.json.tmp', 'public/content-watch.json');
