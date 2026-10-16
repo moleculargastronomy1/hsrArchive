@@ -1,33 +1,7 @@
-import { useEffect, useState } from 'react';
-
-interface Status {
-  schema: string;
-  version: string;
-  commit: string;
-  checkedAt: string;
-}
+import useContentUpdateStatus from '../hooks/useContentUpdateStatus';
 
 export default function ContentUpdateStatus() {
-  const [status, setStatus] = useState<Status>();
-  useEffect(() => {
-    const controller = new AbortController();
-    fetch(`${import.meta.env.BASE_URL}content-update.json`, { signal: controller.signal })
-      .then((response) => {
-        if (!response.ok) throw new Error('Update status unavailable');
-        return response.json();
-      })
-      .then((data) => {
-        if (
-          data.schema === 'hsr-content-update.v1' &&
-          typeof data.version === 'string' &&
-          /^[a-f0-9]{40}$/.test(data.commit) &&
-          !Number.isNaN(Date.parse(data.checkedAt))
-        )
-          setStatus(data);
-      })
-      .catch(() => {});
-    return () => controller.abort();
-  }, []);
+  const status = useContentUpdateStatus();
   return (
     <section>
       <h2>원문 자동 갱신</h2>

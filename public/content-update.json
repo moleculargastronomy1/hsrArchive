@@ -3,7 +3,13 @@
   "repository": "DimbreathBot/TurnBasedGameData",
   "commit": "312b4597691e0a29cf9828a15b592757dba86949",
   "version": "OSPRODWin4.6.0_D16728363_A16704710_L16700845",
-  "checkedAt": "2026-10-15T22:29:54.716Z",
+  "checkedAt": "2026-10-16T07:46:37.499Z",
+  "latestTrailblaze": {
+    "id": 105009,
+    "chapter": 5,
+    "act": 7,
+    "title": "달 뜨기 전, 괴수와 춤을"
+  },
   "intervalHours": 6,
   "files": {
     "TextMapKR_0.json": {
@@ -18,6 +24,10 @@
       "gitBlob": "522b747a5f48546829f17cf3a364ccd642b10fcf",
       "sha256": "db75cb1e7adb6de861a816eb41bfd2da5d3c159efc5163c8bb38217a90a12479"
     },
+    "MissionChapterConfig.json": {
+      "gitBlob": "3131ed0c02242aa69978f3daa0e6a2f2a8df363b",
+      "sha256": "a266987091690891ff495be0bedd0760d447840571adfba5a7d51524ad7be1ec"
+    },
     "NounAtlas.json": {
       "gitBlob": "94e9cbdaf840e8bccbe229b923e7ab48d752a7e8",
       "sha256": "099ae20b50beed0ff83c141926809437c51bb65cacc941b14afd2ef752a416ce"
@@ -25,10 +35,6 @@
     "NounAtlasChangeInfo.json": {
       "gitBlob": "263c21d468db03252487ba8ce8429f32fbdc381f",
       "sha256": "f81cf26a5f9e043a364e738ad12ab535defeae3e30db3a28028810ecd35bc278"
-    },
-    "MissionChapterConfig.json": {
-      "gitBlob": "3131ed0c02242aa69978f3daa0e6a2f2a8df363b",
-      "sha256": "a266987091690891ff495be0bedd0760d447840571adfba5a7d51524ad7be1ec"
     }
   },
   "rows": 58598,

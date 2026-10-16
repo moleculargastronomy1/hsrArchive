@@ -55,6 +55,26 @@ class ProjectionTest(unittest.TestCase):
             with self.assertRaises(ValueError):
                 projection.index_talk_rows(rows)
 
+    def test_latest_notice_follows_numbered_main_story_not_afterwords_or_table_order(self):
+        def chapter(id, sequence_hash, title_hash, chapter_type='Normal'):
+            return {'ID': id, 'ChapterType': chapter_type,
+                    'ChapterSequence': {'Hash': sequence_hash}, 'ChapterName': {'Hash': title_hash}}
+        texts = {'1': '제5막•제7장', '2': '달\u00a0뜨기 전, 괴수와 춤을',
+                 '3': '제4막•제8장', '4': '이전 장', '5': '제5막•후문3',
+                 '6': '후문', '7': '제6막•제1장', '8': '<color=#fff>새로운 여정</color>'}
+        rows = [chapter(105009, 1, 2), chapter(104010, 3, 4), chapter(105010, 5, 6), {}]
+        expected = {'id': 105009, 'chapter': 5, 'act': 7, 'title': '달 뜨기 전, 괴수와 춤을'}
+        self.assertEqual(projection.latest_trailblaze_chapter(rows, texts), expected)
+        rows.append(chapter(999999, 7, 8, 'Activity'))
+        self.assertEqual(projection.latest_trailblaze_chapter(rows, texts), expected)
+        rows.insert(0, chapter(106001, 7, 8))
+        self.assertEqual(projection.latest_trailblaze_chapter(rows, texts),
+                         {'id': 106001, 'chapter': 6, 'act': 1, 'title': '새로운 여정'})
+        with self.assertRaises(ValueError):
+            projection.latest_trailblaze_chapter(rows, {**texts, '8': ''})
+        with self.assertRaises(ValueError):
+            projection.latest_trailblaze_chapter([], texts)
+
 
 if __name__ == '__main__':
     unittest.main()

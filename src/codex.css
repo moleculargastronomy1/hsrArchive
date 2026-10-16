@@ -68,6 +68,22 @@
   max-width: none;
   padding-top: 24px;
 }
+.hero-notice {
+  margin-top: 28px;
+  padding-top: 16px;
+  border-top: 1px solid #d8bf7c38;
+}
+.hero-notice h3 {
+  margin: 0 0 8px;
+  color: #e2ca89;
+  font-size: 13px;
+  font-weight: 600;
+}
+.hero-notice p {
+  margin: 4px 0 0;
+  line-height: 1.8;
+  overflow-wrap: anywhere;
+}
 .hero h2 {
   font-size: clamp(28px, 2.65vw, 42px);
   font-weight: 600;

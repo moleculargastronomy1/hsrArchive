@@ -4,7 +4,7 @@ import simulation from './simulation.json' with { type: 'json' };
 import codex from './codex.json' with { type: 'json' };
 
 export const categories: { id: Category; label: string; description: string }[] = [
-  { id: 'trailblaze', label: '개척 임무', description: '별을 잇는 여정, 그 중심의 이야기' },
+  { id: 'trailblaze', label: '개척 임무', description: '별들 사이에서 해답을 찾는 여정' },
   { id: 'simulation', label: '시뮬레이션 우주', description: '실험과 발견, 우주에 남겨진 기록' },
   { id: 'codex', label: '아카이브', description: '인물과 존재, 별바다의 지식과 기록' },
 ];

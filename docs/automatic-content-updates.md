@@ -26,6 +26,12 @@ paimooon의 [translate.html](https://github.com/paimooon/paimooon.github.io/blob
 
 `public/content-update.json`은 적용 커밋·릴리스 버전·확인 시각·입력 해시·정확히 연결한 행 수·기존 원문을 유지한 행 수를 공개한다. 각 payload는 원래 구조 출처를 보존하며 `textReferenceCommit`과 `retainedTextRowIds`를 통해 갱신 범위를 구분한다. `docs/content-provenance.json`은 최초 변환 자료의 고정 감사 기록이며 자동 갱신 기록은 별도다. 사이트 안내에서 버전과 확인 시각을 표시한다.
 
+메인 공지사항의 날짜는 `아카이브 업데이트 : YYYY.MM.DD`로 표시한다. LimBooks에서 확인한 공지 날짜와 내용의 구분을 참고하되, 이 사이트는 소스 수정 사항을 배포할 때 날짜를 자동 생성한다. `pnpm build`가 `scripts/update-site-status.mjs`를 실행하여 현재 Git 커밋과 커밋 시각을 `public/site-update.json`에 기록한다. 화면은 한국 시간 날짜를 표시한다. 새 수정 커밋이 배포되면 날짜가 바뀌며, 같은 소스의 예약 재빌드나 자료 재확인만으로는 날짜가 바뀌지 않는다. 게임 출시일이나 원본 자료의 확인 시각과 구분한다.
+
+`latestTrailblaze`는 검증된 `MissionChapterConfig`와 같은 커밋의 한국어 TextMap에서 매번 생성한다. 번호가 있는 정규 개척 임무 중 가장 뒤의 장·막을 선택하고 후문·종말·이벤트는 제외한다. 원본의 `제5막•제7장` 표기는 사이트의 장·막 체계에 맞춰 `5장 7막`으로 표시한다. 새 버전에 새 정규 장이 있으면 제목과 번호도 자동으로 바뀐다. 이 공지는 릴리스 자료의 최신 임무를 안내하며, 해당 임무의 대사 본문 수록 여부와는 별개다.
+
+화면은 빌드에 포함된 기록을 즉시 표시하고, 열 때마다 공개 갱신 파일을 캐시 재검증하여 읽는다. 파일 조회가 실패하거나 형식이 잘못되면 빌드에 포함된 기록을 유지한다.
+
 ## 로컬 실행
 
 Node.js 22.13 이상, Python 3.10 이상이 필요하다. Python 경로는 `HSR_PYTHON`으로 지정할 수 있다.

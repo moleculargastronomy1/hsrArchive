@@ -29,6 +29,7 @@ import DialogueBrowser from './components/DialogueBrowser';
 import CategoryIcon from './components/CategoryIcon';
 import CodexReader from './components/CodexReader';
 import ContentUpdateStatus from './components/ContentUpdateStatus';
+import HomeNotice from './components/HomeNotice';
 import starRailLogo from '../docs/reference-images/스타레일 로고.png';
 
 const worldName = (id: World) => worlds.find((world) => world.id === id)!.label;
@@ -249,6 +250,7 @@ export default function App() {
             <a className="button gold" href="#/archive?category=trailblaze">
               이야기 둘러보기 <ArrowRight size={17} />
             </a>
+            <HomeNotice />
           </div>
           <WorldArt world="space-station" hero />
           <div className="hero-media">

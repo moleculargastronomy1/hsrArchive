@@ -50,6 +50,27 @@ def index_talk_rows(rows):
     return result
 
 
+def latest_trailblaze_chapter(rows, texts):
+    candidates = []
+    for row in rows:
+        if row.get('ChapterType') != 'Normal':
+            continue
+        sequence = plain(texts.get(str(row.get('ChapterSequence', {}).get('Hash')), ''))
+        # The game's sequence labels use act/chapter in the reverse order of this archive.
+        match = re.fullmatch(r'제(\d+)막\s*[•·]\s*제(\d+)장', sequence)
+        if match:
+            chapter, act = map(int, match.groups())
+            if chapter > 0 and act > 0:
+                candidates.append((chapter, act, row))
+    if not candidates:
+        raise ValueError('No numbered Trailblaze chapter in release snapshot')
+    chapter, act, row = max(candidates, key=lambda item: item[:2])
+    title = plain(texts.get(str(row.get('ChapterName', {}).get('Hash')), '')).strip()
+    if not title:
+        raise ValueError('Latest Trailblaze chapter has no Korean title')
+    return {'id': row['ID'], 'chapter': chapter, 'act': act, 'title': title}
+
+
 def validate_payload(payload, entry_id, chapter_id):
     if payload.get('schema') != 'hsr-dialogue.v1' or not isinstance(payload.get('rows'), list):
         raise ValueError('Invalid dialogue payload')
@@ -87,6 +108,7 @@ def project(root, raw, manifest_path):
                 texts[key] = value
     talk_rows = read_raw('TalkSentenceConfig.json')
     talks = index_talk_rows(talk_rows)
+    latest_chapter = latest_trailblaze_chapter(read_raw('MissionChapterConfig.json'), texts)
 
     def read(file):
         return json.loads((stage / file).read_bytes())
@@ -224,6 +246,7 @@ def project(root, raw, manifest_path):
     write('public/content-update.json', {
         'schema': 'hsr-content-update.v1', 'repository': manifest['repository'],
         'commit': commit, 'version': manifest['version'], 'checkedAt': manifest['checkedAt'],
+        'latestTrailblaze': latest_chapter,
         'intervalHours': 6, 'files': evidence,
         'rows': len(all_rows), 'verifiedTextRows': verified, 'changedTextRows': changed,
         'retainedTextRows': retained,
