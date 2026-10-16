@@ -67,16 +67,6 @@ export default function OfficialVideo({ className = '' }: { className?: string }
           <a className="video-title" href={snapshot.video.url} target="_blank" rel="noreferrer">
             {snapshot.video.title}
           </a>
-          <p>
-            {new Date(snapshot.video.published).toLocaleDateString('ko-KR', {
-              timeZone: 'Asia/Seoul',
-            })}{' '}
-            업로드
-          </p>
-          <small>
-            {new Date(snapshot.checkedAt).toLocaleDateString('ko-KR', { timeZone: 'Asia/Seoul' })}{' '}
-            확인 · 6시간마다 갱신
-          </small>
         </>
       ) : (
         <a

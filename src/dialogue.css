@@ -108,14 +108,6 @@
   line-height: 1.8;
   margin-top: 10px;
 }
-.official-video > p,
-.official-video > small {
-  font-size: 8px;
-  color: #94a39a;
-  margin-top: 5px;
-  display: block;
-  line-height: 1.8;
-}
 .video-fallback {
   display: flex;
   align-items: center;

@@ -286,7 +286,7 @@ export default function App() {
           <div className="section-heading">
             <div>
               <span className="eyebrow">FOLLOW THE JOURNEY</span>
-              <h2>별을 따라, 이야기 속으로</h2>
+              <h2>뭇별로 향하는 궤도</h2>
             </div>
             <a className="text-link" href="#/archive?category=trailblaze">
               개척 임무 전체 보기 <ArrowRight size={15} />
