@@ -47,6 +47,20 @@ test('BWIKI navigation is distinct from game execution verification', () => {
     choiceDialogue(rows, 0).map((row) => row.id),
     ['choice'],
   );
+  rows[2].bwikiScene = 'wiki';
+  rows[0].bwikiMissionId = 'quest-11';
+  rows[2].bwikiMissionId = 'quest-11';
+  rows[2].mission = 'misattributed source mission';
+  assert.deepEqual(
+    choiceDialogue(rows, 0).map((row) => row.id),
+    ['choice', 'reply'],
+  );
+  rows[2].bwikiMissionId = 'quest-22';
+  assert.deepEqual(
+    choiceDialogue(rows, 0).map((row) => row.id),
+    ['choice'],
+  );
+  assert.equal(isDialogueRows([{ ...rows[0], bwikiMissionId: ['quest-11'] }]), false);
 });
 
 test('BWIKI access restrictions stop further requests and produce explicit unavailable results', async () => {
@@ -156,7 +170,7 @@ test('published BWIKI evidence preserves uncertain positions and chapter/mission
         const next = byId.get(id)!;
         assert.ok(next);
         assert.equal(next.bwikiScene, row.bwikiScene);
-        assert.equal(next.mission, row.mission);
+        assert.equal(next.bwikiMissionId, row.bwikiMissionId);
       }
     });
     for (const chunk of chunks as {
@@ -170,4 +184,23 @@ test('published BWIKI evidence preserves uncertain positions and chapter/mission
       }
     }
   }
+});
+
+test('reported prologue, Luofu and simulation anchors follow BWIKI story order', () => {
+  const load = (file: string) => JSON.parse(fs.readFileSync(`public/content/${file}.json`, 'utf8'));
+  const position = (payload: { rows: { talkId: number }[] }, id: number) => {
+    const index = payload.rows.findIndex((row) => row.talkId === id);
+    assert.ok(index >= 0, `Missing dialogue ${id}`);
+    return index;
+  };
+  const station = load('station-departure--arrival');
+  assert.equal(station.rows[0].talkId, 200010201);
+  assert.ok(position(station, 200010201) < position(station, 200010719));
+  const luofu = load('luofu-records--harbor');
+  assert.ok(position(luofu, 100001701) < position(luofu, 100001702));
+  assert.ok(position(luofu, 100001701) < position(luofu, 100002118));
+  const simulation = load('simulated-universe--quest-4030001');
+  assert.ok(position(simulation, 403011501) < position(simulation, 403011401));
+  const paradise = load('paradise-records--laughter');
+  assert.ok(position(paradise, 152120001) < position(paradise, 152120005));
 });

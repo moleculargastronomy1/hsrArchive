@@ -389,13 +389,13 @@
   color: var(--muted);
   border-top: 1px solid var(--line);
 }
-.demo-dialogue-details {
+.dialogue-verification-details {
   margin-top: 32px;
   border-top: 1px solid var(--line);
   font-size: 12px;
   color: var(--muted);
 }
-.demo-dialogue-details summary {
+.dialogue-verification-details summary {
   padding: 18px 0;
   cursor: pointer;
 }

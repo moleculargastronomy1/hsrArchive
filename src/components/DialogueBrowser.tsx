@@ -95,7 +95,7 @@ export default function DialogueBrowser({
   const searchIndex = useMemo(
     () =>
       rows.map((row) =>
-        `${row.mission} ${row.scene} ${row.speaker} ${searchableGameText(row.text)}`.toLocaleLowerCase(),
+        `${row.bwikiMission ?? row.mission} ${row.scene} ${row.speaker} ${searchableGameText(row.text)}`.toLocaleLowerCase(),
       ),
     [rows],
   );
@@ -300,7 +300,7 @@ export default function DialogueBrowser({
                             ? '선택지'
                             : row.speaker || '장면 설명'}
                       </span>
-                      <small>{row.mission}</small>
+                      <small>{row.bwikiMission ?? row.mission}</small>
                       {row.flowStatus && (
                         <small className={`flow-label ${row.flowStatus}`}>
                           {row.flowStatus === 'verified' ? '장면 연결 확인' : '순서·연결 확인 필요'}
@@ -406,36 +406,39 @@ export default function DialogueBrowser({
         </>
       )}
       {!loading && !error && (flowSummary.verified > 0 || flowSummary.review > 0) && (
-        <p className="dialogue-flow-summary">
-          장면 연결 확인 {flowSummary.verified.toLocaleString('ko-KR')}줄 · 확인 필요{' '}
-          {flowSummary.review.toLocaleString('ko-KR')}줄
-          <span>
-            장면 사이의 전체 진행 순서는 검증 중입니다. 다른 선택의 응답도 함께 수록합니다.
-          </span>
-          {(flowSummary.wiki > 0 || flowSummary.cached > 0) && (
+        <details className="dialogue-verification-details">
+          <summary>검증 현황 및 출처</summary>
+          <p className="dialogue-flow-summary">
+            장면 연결 확인 {flowSummary.verified.toLocaleString('ko-KR')}줄 · 확인 필요{' '}
+            {flowSummary.review.toLocaleString('ko-KR')}줄
             <span>
-              BWIKI 대조 {flowSummary.wiki.toLocaleString('ko-KR')}줄 · 이전 대조 유지{' '}
-              {flowSummary.cached.toLocaleString('ko-KR')}줄
+              장면 사이의 전체 진행 순서는 검증 중입니다. 다른 선택의 응답도 함께 수록합니다.
             </span>
-          )}
-          {rows.some((row) => row.bwikiStatus) && (
-            <span>
-              순서·분기 참고:{' '}
-              <a href="https://wiki.biligame.com/sr/开拓任务" target="_blank" rel="noreferrer">
-                BWIKI 기여자
-              </a>{' '}
-              ·{' '}
-              <a
-                href="https://creativecommons.org/licenses/by-nc-sa/4.0/"
-                target="_blank"
-                rel="noreferrer"
-              >
-                CC BY-NC-SA 4.0
-              </a>
-              . 정리 정보를 한국어 자료에 맞춰 재구성했습니다.
-            </span>
-          )}
-        </p>
+            {(flowSummary.wiki > 0 || flowSummary.cached > 0) && (
+              <span>
+                BWIKI 대조 {flowSummary.wiki.toLocaleString('ko-KR')}줄 · 이전 대조 유지{' '}
+                {flowSummary.cached.toLocaleString('ko-KR')}줄
+              </span>
+            )}
+            {rows.some((row) => row.bwikiStatus) && (
+              <span>
+                순서·분기 참고:{' '}
+                <a href="https://wiki.biligame.com/sr/开拓任务" target="_blank" rel="noreferrer">
+                  BWIKI 기여자
+                </a>{' '}
+                ·{' '}
+                <a
+                  href="https://creativecommons.org/licenses/by-nc-sa/4.0/"
+                  target="_blank"
+                  rel="noreferrer"
+                >
+                  CC BY-NC-SA 4.0
+                </a>
+                . 정리 정보를 한국어 자료에 맞춰 재구성했습니다.
+              </span>
+            )}
+          </p>
+        </details>
       )}
       <dialog
         className="context-dialog"
@@ -458,7 +461,8 @@ export default function DialogueBrowser({
                   : '앞뒤 대사'}
             </h2>
             <p>
-              {selectedRow?.mission} · {selectedRow?.scene}
+              {selectedRow?.bwikiMission ?? selectedRow?.mission}
+              {!selectedWiki && <> · {selectedRow?.scene}</>}
             </p>
           </div>
           <button className="icon-button" aria-label="앞뒤 대사 닫기" onClick={closeDialog}>

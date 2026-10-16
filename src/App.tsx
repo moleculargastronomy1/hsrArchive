@@ -1019,19 +1019,7 @@ function Reader({
               languages={languages}
             />
           )}
-          {chapter.content && chapter.blocks.length > 0 ? (
-            <details className="demo-dialogue-details">
-              <summary>예시 대사 보기</summary>
-              <div className="text-blocks">
-                {chapter.blocks.map((block) => (
-                  <p key={block.id} className="narration">
-                    {block.speaker && <strong>{block.speaker} · </strong>}
-                    <GameText text={block.text} />
-                  </p>
-                ))}
-              </div>
-            </details>
-          ) : (
+          {!chapter.content && (
             <div className="text-blocks">
               {chapter.blocks.map((block) =>
                 block.type === 'dialogue' ? (

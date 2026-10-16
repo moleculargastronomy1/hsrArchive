@@ -20,6 +20,8 @@ export interface DialogueRow {
   bwikiReplyToIds?: string[];
   bwikiPage?: string;
   bwikiRevision?: number;
+  bwikiMissionId?: string;
+  bwikiMission?: string;
 }
 
 export function isDialogueRows(value: unknown): value is DialogueRow[] {
@@ -41,6 +43,9 @@ export function isDialogueRows(value: unknown): value is DialogueRow[] {
           ['matched', 'cached', 'review'].includes(row.bwikiStatus)) &&
         (row.bwikiScene === undefined || typeof row.bwikiScene === 'string') &&
         (row.bwikiPage === undefined || typeof row.bwikiPage === 'string') &&
+        (row.bwikiMissionId === undefined ||
+          (typeof row.bwikiMissionId === 'string' && /^quest-\d+$/.test(row.bwikiMissionId))) &&
+        (row.bwikiMission === undefined || typeof row.bwikiMission === 'string') &&
         (row.bwikiRevision === undefined ||
           (Number.isSafeInteger(row.bwikiRevision) && row.bwikiRevision > 0)) &&
         ['nextIds', 'replyToIds', 'bwikiNextIds', 'bwikiReplyToIds'].every(
@@ -55,12 +60,17 @@ export function isDialogueRows(value: unknown): value is DialogueRow[] {
 export function nearbyDialogue(rows: DialogueRow[], index: number, radius = 20) {
   const selected = rows[index];
   if (!selected) return [];
+  const wiki = ['matched', 'cached'].includes(selected.bwikiStatus ?? '') && !!selected.bwikiScene;
   const sameScene = (row: DialogueRow) =>
     row.entryId === selected.entryId &&
     row.chapterId === selected.chapterId &&
-    row.mission === selected.mission &&
-    row.scene === selected.scene &&
-    row.source === selected.source;
+    (wiki
+      ? ['matched', 'cached'].includes(row.bwikiStatus ?? '') &&
+        row.bwikiScene === selected.bwikiScene &&
+        (row.bwikiMissionId ?? row.mission) === (selected.bwikiMissionId ?? selected.mission)
+      : row.mission === selected.mission &&
+        row.scene === selected.scene &&
+        row.source === selected.source);
   let start = index;
   let end = index;
   while (start > 0 && index - start < radius && sameScene(rows[start - 1])) start--;
@@ -98,7 +108,9 @@ export function choiceDialogue(rows: DialogueRow[], index: number, limit = 41) {
         : next.flowStatus !== 'verified' || next.flowScene !== selected.flowScene) ||
       next.entryId !== selected.entryId ||
       next.chapterId !== selected.chapterId ||
-      next.mission !== selected.mission
+      (wiki
+        ? (next.bwikiMissionId ?? next.mission) !== (selected.bwikiMissionId ?? selected.mission)
+        : next.mission !== selected.mission)
     )
       break;
     result.push(next);
