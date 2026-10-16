@@ -193,7 +193,7 @@ export default function CodexReader({
                 <section key={row.id}>
                   {row.scene !== selected.title &&
                     row.scene !== displayedRows[index - 1]?.scene && <h3>{row.scene}</h3>}
-                  <p>{row.text}</p>
+                  <p>{row.text.replace(/<\/?align(?:=[^>]*)?>/gi, '')}</p>
                 </section>
               ))}
             </div>
