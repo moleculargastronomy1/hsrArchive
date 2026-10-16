@@ -288,6 +288,11 @@ export default function DialogueBrowser({
               {visible.map((index) => {
                 const row = rows[index];
                 const entry = entries.get(row.entryId);
+                const orderUnverified =
+                  (row.flowStatus === 'review' || row.bwikiStatus === 'review') &&
+                  row.flowStatus !== 'verified' &&
+                  !['matched', 'cached'].includes(row.bwikiStatus ?? '') &&
+                  row.videoStatus !== 'caption-matched';
                 return (
                   <div
                     className={`dialogue-row ${row.type === 'choice' ? 'choice-row' : ''} ${languages.length ? 'comparing' : ''}`}
@@ -302,6 +307,7 @@ export default function DialogueBrowser({
                             : row.speaker || '장면 설명'}
                       </span>
                       <small>{row.bwikiMission ?? row.mission}</small>
+                      {orderUnverified && <small>(순서 미확인)</small>}
                       {row.flowBoundary && <small>후속 대사 확인 필요</small>}
                       {(row.bwikiReplyToIds ?? row.replyToIds)
                         ?.map((id) => byId.get(id))

@@ -69,6 +69,7 @@ __pycache__/
 # Logs, temporary files, and local databases
 *.log
 *.tsbuildinfo
+/public/content-watch.json
 logs/
 tmp/
 temp/

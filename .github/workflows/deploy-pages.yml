@@ -4,6 +4,11 @@ on:
   push:
     branches: [main]
   workflow_dispatch:
+    inputs:
+      detect_changes:
+        description: '새 자료가 있을 때만 갱신'
+        type: boolean
+        default: false
   schedule:
     - cron: '15 */6 * * *'
 
@@ -15,7 +20,31 @@ concurrency:
   cancel-in-progress: false
 
 jobs:
+  check:
+    runs-on: ubuntu-latest
+    outputs:
+      changed: ${{ steps.watch.outputs.changed }}
+    steps:
+      - name: Check out source
+        uses: actions/checkout@v6
+        with:
+          sparse-checkout: |
+            scripts
+            editorial
+      - name: Set up Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version: '22'
+          package-manager-cache: false
+      - name: Check source metadata before processing
+        id: watch
+        run: node scripts/check-content-changes.mjs "${CHECK_MODE}"
+        env:
+          CHECK_MODE: ${{ (github.event_name == 'schedule' || inputs.detect_changes) && '--check' || '--force' }}
+          GITHUB_TOKEN: ${{ github.token }}
   build:
+    needs: check
+    if: needs.check.outputs.changed == 'true'
     runs-on: ubuntu-latest
     permissions:
       contents: read
@@ -67,7 +96,9 @@ jobs:
       - name: Refresh official YouTube video
         run: node scripts/update-official-videos.mjs
       - name: Build static site
-        run: pnpm build
+        run: |
+          node scripts/check-content-changes.mjs --record
+          pnpm build
       - name: Configure Pages
         uses: actions/configure-pages@v5
       - name: Upload built site
