@@ -314,7 +314,25 @@ button {
   color: var(--accent);
 }
 .theme-button {
-  width: 28px;
+  width: 52px;
+  height: 52px;
+  flex-direction: column;
+  gap: 3px;
+  padding: 4px;
+  color: var(--text);
+  font-size: 10px;
+  line-height: 1.4;
+  white-space: nowrap;
+}
+.theme-button img {
+  display: block;
+  object-fit: contain;
+  filter: brightness(0);
+  opacity: 0.8;
+}
+:root[data-theme='dark'] .theme-button img {
+  filter: none;
+  opacity: 1;
 }
 .mobile-menu {
   display: none;
@@ -1580,9 +1598,6 @@ button {
   .global-search > button {
     display: flex;
     padding: 0;
-  }
-  .theme-button {
-    width: 30px;
   }
   .main-content {
     padding: 28px 23px;

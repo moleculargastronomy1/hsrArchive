@@ -11,11 +11,9 @@ import {
   Clock3,
   Home,
   Menu,
-  Moon,
   Search,
   SlidersHorizontal,
   Sparkles,
-  Sun,
   X,
 } from 'lucide-react';
 import { archive, categories, worlds } from './data/archive';
@@ -31,6 +29,8 @@ import CodexReader from './components/CodexReader';
 import ContentUpdateStatus from './components/ContentUpdateStatus';
 import HomeNotice from './components/HomeNotice';
 import starRailLogo from '../docs/reference-images/스타레일 로고.png';
+import dayIcon from '../docs/reference-images/darkmodeicon/DAY.webp';
+import nightIcon from '../docs/reference-images/darkmodeicon/Night.webp';
 
 const worldName = (id: World) => worlds.find((world) => world.id === id)!.label;
 const categoryName = (id: Category) => categories.find((category) => category.id === id)!.label;
@@ -779,9 +779,11 @@ export default function App() {
           <button
             className="icon-button theme-button"
             onClick={() => setTheme(theme === 'light' ? 'dark' : 'light')}
-            aria-label={theme === 'light' ? '다크 모드로 전환' : '라이트 모드로 전환'}
+            aria-pressed={theme === 'dark'}
+            title={theme === 'light' ? '다크 모드로 전환' : '라이트 모드로 전환'}
           >
-            {theme === 'light' ? <Moon size={18} /> : <Sun size={18} />}
+            <img src={theme === 'light' ? nightIcon : dayIcon} alt="" width={24} height={24} />
+            <span>다크모드</span>
           </button>
         </header>
         <main
