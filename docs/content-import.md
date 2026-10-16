@@ -1,11 +1,10 @@
 # 한국어 본문 연결과 검증
 
-## 입력과 참고 방식
+## 입력 형식
 
-- 입력: 사용자의 로컬 `E:\references\starrail-quests`, 커밋 `a66ec9c36e3321ce4ea9e62b58e9326634628dce`.
+- 입력: 로컬 한국어 자료, 고정 커밋 `a66ec9c36e3321ce4ea9e62b58e9326634628dce`.
 - 고정 `dataset/manifest.json`의 조각·전체 압축·파일 SHA-256 검증을 통과한 JSON을 `.cache/starrail-source`로 복원했다. 참고 원본은 수정하지 않았다.
 - 지원 입력은 이 스냅샷의 `catalog.json`, 임무 문서 JSON, `starrail-mission-dialogue-supplements.v1`, `starrail-deep-timeline-dialogue.v1`, `starrail-handbook-originals.v1`과 자료실 전용 `hsr-train-databank.v1`이다. 다른 스키마는 오류로 중단한다.
-- `hk3rdtextkrserch`의 부분 문자열 검색, 50건 표시, 최대 41줄 주변 대사 열람 방식을 참고해 새로 작성했다. 참고 코드·붕괴 3rd 원문·엑셀은 복사하지 않았다.
 
 ## 변환 규칙과 수록 범위
 
@@ -35,14 +34,13 @@ STORIES 아래 아카이브 메뉴에서 7개 분류로 이동할 수 있다. �
 
 ## 재생성
 
-참고 원본을 기록된 커밋에 준비한 뒤 프로젝트 루트에서 실행한다. Python·Node 실행 파일은 설치 환경에 맞게 선택한다.
+기록된 커밋의 복원된 자료를 `.cache/starrail-source`에 준비한다. 부가 입력의 `public/handbook-originals.json`과 `editorial/handbook-originals-manifest.json`은 `.cache/starrail-input` 아래에 같은 상대 경로로 준비한다. 부가 입력 폴더는 변환 명령의 두 번째 인수로도 지정할 수 있다. Python·Node 실행 파일은 설치 환경에 맞게 선택한다.
 
 ```powershell
-python ../references/starrail-quests/tools/restore_dataset.py --bundle ../references/starrail-quests/dataset --target .cache/starrail-source
 node scripts/fetch-train-databank.mjs
 python scripts/import-train-databank.py
 python scripts/import-astropolis-intro.py .cache/astro-source
-node --experimental-strip-types scripts/import-local-dialogue.mjs .cache/starrail-source ../references/starrail-quests
+node --experimental-strip-types scripts/import-local-dialogue.mjs .cache/starrail-source .cache/starrail-input
 pnpm test
 pnpm build
 ```
@@ -52,6 +50,8 @@ pnpm build
 ## 릴리스 원문 자동 갱신
 
 최초 고정 자료의 임무·장면 연결을 유지하면서 최신 한국어 문자열을 반영하는 [자동 갱신](automatic-content-updates.md)을 배포 작업에 연결했다. 이 문서의 고정 입력·초기 변환 기록과 자동 갱신의 적용 버전은 구분한다. `public/content-update.json`에서 현재 적용한 커밋과 수록 범위를 확인할 수 있다.
+
+신규 개척 임무는 `scripts/import-trailblaze.py`가 한국어 제목과 공식 챕터 ID, `MainMission.ChapterID`, 정확한 임무 디렉터리의 명시적 대사 참조로 연결한다. 숫자 접두사나 문장 유사도로 귀속을 만들지 않는다. 현재 제7막은 구조가 없어 소개문을 유지한다. 새 입력의 해시·수록 상태·누락 사유는 `public/trailblaze-provenance.json`에 기록한다. 지원 스키마와 제목 검색 실행 방법은 위 자동 갱신 문서를 따른다.
 
 ## 다국어 비교 원문
 

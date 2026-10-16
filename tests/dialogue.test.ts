@@ -67,15 +67,16 @@ test('published metadata resolves to matching Korean payloads and unique global 
       total += payload.rows.length;
     }
   assert.equal(total, search.rows.length);
-  assert.equal(
+  assert.ok(
     archive.filter((entry) => entry.category === 'trailblaze').flatMap((entry) => entry.chapters)
-      .length,
-    36,
+      .length >= 36,
   );
 });
 test('Astropolis additions preserve verified dialogue and label the introduction-only chapter', () => {
   const entry = archive.find((item) => item.id === 'paradise-records')!;
-  const additions = entry.chapters.slice(-3);
+  const additions = ['celestial-gambit', 'penniless-billionaire', 'before-moonrise'].map(
+    (id) => entry.chapters.find((chapter) => chapter.id === id)!,
+  );
   assert.deepEqual(
     additions.map((chapter) => chapter.title),
     [
@@ -92,13 +93,22 @@ test('Astropolis additions preserve verified dialogue and label the introduction
     assert.ok(payload.sourceIds.every((id: string) => id.startsWith('quest-10545')));
   }
   const intro = additions[2];
-  assert.equal(intro.contentNote, '챕터 소개문 수록 · 대사 본문 미수록');
   const payload = JSON.parse(fs.readFileSync(`public/${intro.content!.file}`, 'utf8'));
   const source = JSON.parse(fs.readFileSync('src/data/astropolis-intro.json', 'utf8'));
-  assert.equal(payload.referenceCommit, source.commit);
-  assert.equal(payload.rows.length, 1);
+  assert.equal(payload.textReferenceCommit ?? payload.referenceCommit, source.commit);
   assert.equal(payload.rows[0].type, 'narration');
   assert.ok(payload.rows[0].text.includes('현인의 피'));
+  if (intro.upstreamManaged && payload.rows.length > 1) {
+    assert.ok(
+      ['공개 임무 구조의 대사·선택지 수록', '이전 검증 본문 수록 · 최신 장면 연결 대기'].includes(
+        intro.contentNote!,
+      ),
+    );
+    assert.ok(payload.sourceIds.some((id: string) => id.startsWith('quest-')));
+  } else {
+    assert.equal(intro.contentNote, '챕터 소개문 수록 · 대사 본문 미수록');
+    assert.equal(payload.rows.length, 1);
+  }
 });
 
 test('official video feed validates IDs, decodes titles and sorts by publication date', () => {

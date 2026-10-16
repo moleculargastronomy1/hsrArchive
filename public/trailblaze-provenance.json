@@ -1,0 +1,199 @@
+{
+  "schema": "hsr-trailblaze-provenance.v1",
+  "repository": "DimbreathBot/TurnBasedGameData",
+  "commit": "312b4597691e0a29cf9828a15b592757dba86949",
+  "version": "OSPRODWin4.6.0_D16728363_A16704710_L16700845",
+  "files": {
+    "TextMapKR_0.json": {
+      "gitBlob": "4c4adcf4ed86c48ebb407442801f3b3dd396eb19",
+      "sha256": "2a996609124fd7ab215cbacae43eee098578c6d7cc4c10186bb12d5dfc8fc941"
+    },
+    "TextMapKR_1.json": {
+      "gitBlob": "80eee947e1dc31577209e39d841ad2eb127541e0",
+      "sha256": "ceef6b210ebd57f955b26bffa2995487b18627cfd5a30c3b770de803c07d92b8"
+    },
+    "MissionChapterConfig.json": {
+      "gitBlob": "3131ed0c02242aa69978f3daa0e6a2f2a8df363b",
+      "sha256": "a266987091690891ff495be0bedd0760d447840571adfba5a7d51524ad7be1ec"
+    },
+    "MainMission.json": {
+      "gitBlob": "255406dd60de8d13fa6e40303e769b74c13b41ba",
+      "sha256": "7d2fc8212d52119c47c3e1cf847f43bc9df74126a5f8290061cc5f61f0b8b967"
+    },
+    "TalkSentenceConfig.json": {
+      "gitBlob": "522b747a5f48546829f17cf3a364ccd642b10fcf",
+      "sha256": "db75cb1e7adb6de861a816eb41bfd2da5d3c159efc5163c8bb38217a90a12479"
+    }
+  },
+  "chapters": [
+    {
+      "chapterId": 100001,
+      "title": "오늘은 어제의 내일",
+      "status": "preserved"
+    },
+    {
+      "chapterId": 101001,
+      "title": "시들어가는 겨울밤",
+      "status": "preserved"
+    },
+    {
+      "chapterId": 101002,
+      "title": "동트는 태양 아래",
+      "status": "preserved"
+    },
+    {
+      "chapterId": 102001,
+      "title": "바람 따라 즐기는 선경",
+      "status": "preserved"
+    },
+    {
+      "chapterId": 102002,
+      "title": "구름에 가려진 탑",
+      "status": "preserved"
+    },
+    {
+      "chapterId": 102003,
+      "title": "재앙이 지나간 자리",
+      "status": "preserved"
+    },
+    {
+      "chapterId": 103001,
+      "title": "음향과 분노",
+      "status": "preserved"
+    },
+    {
+      "chapterId": 103002,
+      "title": "비둘기 속의 고양이",
+      "status": "preserved"
+    },
+    {
+      "chapterId": 103003,
+      "title": "우리들의 시대에",
+      "status": "preserved"
+    },
+    {
+      "chapterId": 103004,
+      "title": "안녕, 페나코니",
+      "status": "preserved"
+    },
+    {
+      "chapterId": 103006,
+      "title": "여덟째 날에 오르는 여정",
+      "status": "preserved"
+    },
+    {
+      "chapterId": 104001,
+      "title": "불을 쫓는 낙목의 영웅기",
+      "status": "preserved"
+    },
+    {
+      "chapterId": 104002,
+      "title": "문의 시작, 왕좌의 종말",
+      "status": "preserved"
+    },
+    {
+      "chapterId": 104003,
+      "title": "안식의 땅의 꽃밭을 지나",
+      "status": "preserved"
+    },
+    {
+      "chapterId": 104004,
+      "title": "여명이 틀 무렵의 추락",
+      "status": "preserved"
+    },
+    {
+      "chapterId": 104005,
+      "title": "태양이 파멸로 향하기에",
+      "status": "preserved"
+    },
+    {
+      "chapterId": 104007,
+      "title": "영웅은 죽기 전에",
+      "status": "preserved"
+    },
+    {
+      "chapterId": 104008,
+      "title": "긴 밤 속에 다시 대지로",
+      "status": "preserved"
+    },
+    {
+      "chapterId": 104010,
+      "title": "어제의 내일이 되어",
+      "status": "preserved"
+    },
+    {
+      "chapterId": 104009,
+      "title": "기억은 꿈의 오프닝",
+      "status": "preserved"
+    },
+    {
+      "chapterId": 105001,
+      "title": "낙원에 오신 걸 환영합니다",
+      "status": "preserved"
+    },
+    {
+      "chapterId": 105002,
+      "title": "새벽에 바치는 폭주",
+      "status": "preserved"
+    },
+    {
+      "chapterId": 105003,
+      "title": "그리하여, 웃음소리는 멈추지 않으리",
+      "status": "preserved"
+    },
+    {
+      "chapterId": 105004,
+      "title": "산 자의 망천에 잠겨",
+      "status": "preserved"
+    },
+    {
+      "chapterId": 105005,
+      "title": "적막이 깃든 순간, 울리는 경적",
+      "status": "preserved"
+    },
+    {
+      "chapterId": 105008,
+      "title": "천성에 던진 승부수",
+      "status": "preserved"
+    },
+    {
+      "chapterId": 105009,
+      "title": "달 뜨기 전, 괴수와 춤을",
+      "status": "pending",
+      "issues": [
+        "1054600: 임무 구조 미제공",
+        "1054601: 임무 구조 미제공",
+        "1054602: 임무 구조 미제공",
+        "1054603: 임무 구조 미제공",
+        "1054604: 임무 구조 미제공",
+        "1054605: 임무 구조 미제공",
+        "1054607: 임무 구조 미제공",
+        "1054608: 임무 구조 미제공",
+        "1054609: 임무 구조 미제공"
+      ],
+      "missionIds": [
+        1054600,
+        1054601,
+        1054602,
+        1054603,
+        1054604,
+        1054605,
+        1054607,
+        1054608,
+        1054609
+      ]
+    },
+    {
+      "chapterId": 101101,
+      "title": "겨울꿈에서 깨어난 순간",
+      "status": "preserved"
+    },
+    {
+      "chapterId": 600011,
+      "title": "인간과 신의 면류관",
+      "status": "preserved"
+    }
+  ],
+  "scope": "Exact title/ChapterID/owned structure/TalkSentence joins. Missing or unsupported structures remain pending.",
+  "copyright": "Game text © HoYoverse. Data source: DimbreathBot/TurnBasedGameData."
+}

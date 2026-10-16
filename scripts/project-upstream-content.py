@@ -12,14 +12,19 @@ def plain(value):
     return re.sub(r'\*{0,2}\{NICKNAME\}\*{0,2}', '[개척자]', value)
 
 
-def refresh_row(row, talks, texts, bindings):
+def refresh_row(row, talks, texts, bindings, chapters=None):
     # Talk identity and the original branch/scene structure are separate from localized text.
     record = talks.get(row.get('talkId')) if row.get('talkId') else None
     text_hash = record.get('TalkSentenceText', {}).get('Hash') if record else row.get('textHash', bindings.get(row['id']))
+    introduction = re.fullmatch(r'ExcelOutput/MissionChapterConfig.json:(\d+)/ChapterDesc', row.get('source', ''))
+    if introduction and chapters is not None:
+        text_hash = chapters.get(int(introduction[1]), {}).get('ChapterDesc', {}).get('Hash')
     if text_hash is None or not isinstance(texts.get(str(text_hash)), str) or not texts[str(text_hash)].strip():
         return dict(row), False
     result = dict(row)
     result['text'] = plain(texts[str(text_hash)])
+    if introduction and chapters is not None:
+        result['textHash'] = str(text_hash)
     if record:
         speaker_hash = record.get('TextmapTalkSentenceName', {}).get('Hash')
         if speaker_hash and isinstance(texts.get(str(speaker_hash)), str):
@@ -108,7 +113,9 @@ def project(root, raw, manifest_path):
                 texts[key] = value
     talk_rows = read_raw('TalkSentenceConfig.json')
     talks = index_talk_rows(talk_rows)
-    latest_chapter = latest_trailblaze_chapter(read_raw('MissionChapterConfig.json'), texts)
+    chapter_rows = read_raw('MissionChapterConfig.json')
+    latest_chapter = latest_trailblaze_chapter(chapter_rows, texts)
+    chapters = {row['ID']: row for row in chapter_rows if row.get('ID')}
 
     def read(file):
         return json.loads((stage / file).read_bytes())
@@ -136,6 +143,13 @@ def project(root, raw, manifest_path):
     books = read('src/data/books.json')
     payloads = {}
     verified = changed = retained = 0
+    trailblaze_receipt = read('.cache/trailblaze-receipt.json')
+    for file in trailblaze_receipt['payloads']:
+        if not file.startswith('public/'):
+            raise ValueError('Invalid Trailblaze publication')
+        safe_payload(file.removeprefix('public/'))
+        payloads[file] = read(file)
+        verified += len(payloads[file]['rows'])
 
     for group in train['groups']:
         entry = next(item for item in codex if item['id'] == 'codex-' + group['id'])
@@ -197,7 +211,7 @@ def project(root, raw, manifest_path):
             continue
         payload = json.loads((root / file).read_bytes())
         validate_payload(payload, entry_id, chapter_id)
-        if entry_id == 'paradise-records' and chapter_id == 'before-moonrise':
+        if entry_id == 'paradise-records' and chapter_id == 'before-moonrise' and len(payload['rows']) == 1:
             doc = introductions['documents'][0]
             payload['rows'][0]['text'] = doc['sections'][0]['rows'][0]['text']
             payload['referenceCommit'] = commit
@@ -205,7 +219,7 @@ def project(root, raw, manifest_path):
         else:
             updated_rows, unresolved = [], []
             for row in payload['rows']:
-                result, matched = refresh_row(row, talks, texts, bindings)
+                result, matched = refresh_row(row, talks, texts, bindings, chapters)
                 updated_rows.append(result)
                 verified += int(matched)
                 changed += int(matched and (result['text'] != row['text'] or result['speaker'] != row['speaker']))
@@ -259,7 +273,7 @@ def project(root, raw, manifest_path):
         'intervalHours': 6, 'files': evidence,
         'rows': len(all_rows), 'verifiedTextRows': verified, 'changedTextRows': changed,
         'retainedTextRows': retained,
-        'scope': 'Exact TalkSentence/hash joins, NounAtlas and LocalbookConfig books. Unlinked text is retained. New story ownership is not inferred.',
+        'scope': 'Exact TalkSentence/hash joins, NounAtlas, LocalbookConfig and verified new Trailblaze structures. Unlinked text is retained. New story ownership is not inferred.',
     }, True)
     write('receipt.json', {'files': sorted(publications), 'rows': len(all_rows)}, True)
     print(json.dumps({'verified': verified, 'changed': changed, 'retained': retained, 'rows': len(all_rows)}))

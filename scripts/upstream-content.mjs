@@ -6,6 +6,7 @@ export const REQUIRED_TABLES = [
   'NounAtlasChangeInfo.json',
   'TalkSentenceConfig.json',
   'MissionChapterConfig.json',
+  'MainMission.json',
   'BookSeriesConfig.json',
   'BookSeriesWorld.json',
   'LocalbookConfig.json',

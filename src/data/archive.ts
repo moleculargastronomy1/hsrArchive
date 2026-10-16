@@ -3,6 +3,7 @@ import importedContent from './imported-content.json' with { type: 'json' };
 import simulation from './simulation.json' with { type: 'json' };
 import codex from './codex.json' with { type: 'json' };
 import books from './books.json' with { type: 'json' };
+import trailblaze from './trailblaze.json' with { type: 'json' };
 
 export const categories: { id: Category; label: string; description: string }[] = [
   { id: 'trailblaze', label: '개척 임무', description: '별들 사이에서 해답을 찾는 여정' },
@@ -251,15 +252,17 @@ const originalEntries: ArchiveEntry[] = [
 
 const contentIndex = importedContent as Record<string, NonNullable<Chapter['content']>>;
 export const archive: ArchiveEntry[] = [
-  ...originalEntries.map(
+  ...(trailblaze.length ? (trailblaze as ArchiveEntry[]) : originalEntries).map(
     (entry): ArchiveEntry => ({
       ...entry,
       source: {
         kind: 'extracted',
         version:
-          (entry.id === 'paradise-records'
-            ? '한국어 자료 a66ec9c · 제7막 소개문'
-            : '한국어 고정 자료 a66ec9c') +
+          (trailblaze.length && entry.source.kind === 'extracted'
+            ? entry.source.version.split(' · 원문 갱신')[0]
+            : entry.id === 'paradise-records'
+              ? '한국어 자료 a66ec9c · 제7막 소개문'
+              : '한국어 고정 자료 a66ec9c') +
           (contentIndex[`${entry.id}/${entry.chapters[0].id}`]?.textReferenceCommit
             ? ` · 원문 갱신 ${contentIndex[`${entry.id}/${entry.chapters[0].id}`].textReferenceCommit!.slice(0, 7)}`
             : ''),

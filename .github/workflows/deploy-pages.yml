@@ -51,6 +51,8 @@ jobs:
           restore-keys: hsr-upstream-v1-
       - name: Refresh Korean content, books and comparison languages
         run: node scripts/update-content.mjs --apply
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
       - name: Test archive behavior
         run: pnpm test
       - name: Refresh official YouTube video

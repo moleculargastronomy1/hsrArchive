@@ -1,0 +1,2653 @@
+[
+  {
+    "id": "station-departure",
+    "title": "오늘은 어제의 내일",
+    "subtitle": "프롤로그 — 더 블루",
+    "arcLabel": "프롤로그 — 더 블루",
+    "description": "시스템 시간 23시 44분 59초, 한 낯선 여성이 우주정거장 「헤르타」에 나타났다",
+    "category": "trailblaze",
+    "world": "space-station",
+    "order": 1,
+    "language": "ko-KR",
+    "tags": [
+      "프롤로그",
+      "더 블루",
+      "우주정거장"
+    ],
+    "source": {
+      "kind": "extracted",
+      "version": "한국어 고정 자료 a66ec9c · 원문 갱신 312b459",
+      "sourceIds": [
+        "quest-1000101",
+        "quest-4030001",
+        "quest-1000201",
+        "quest-1000300",
+        "quest-1000400",
+        "quest-1000402",
+        "quest-1010001",
+        "quest-2000902",
+        "quest-2000903",
+        "quest-2001001",
+        "quest-2000901",
+        "quest-2001002"
+      ]
+    },
+    "chapters": [
+      {
+        "id": "arrival",
+        "title": "제1막: 오늘은 어제의 내일",
+        "blocks": [
+          {
+            "id": "arrival-notice",
+            "type": "narration",
+            "text": "이 본문은 읽기 화면을 확인하기 위한 예시입니다. 실제 게임 대사나 공식 스토리가 아닙니다."
+          },
+          {
+            "id": "arrival-intro",
+            "type": "narration",
+            "text": "우주정거장에 관한 기록이 이곳에 정리됩니다. 추출한 텍스트를 연결하면 장면의 순서에 따라 이야기를 읽을 수 있습니다."
+          },
+          {
+            "id": "arrival-dialogue-1",
+            "type": "dialogue",
+            "speaker": "안내자 · 예시",
+            "text": "서고에 오신 것을 환영합니다. 왼쪽 목차에서 원하는 장을 선택해 보세요."
+          },
+          {
+            "id": "arrival-dialogue-2",
+            "type": "dialogue",
+            "speaker": "독자 · 예시",
+            "text": "이어서 읽을 수 있도록 이 기록을 남겨 둘 수 있나요?"
+          },
+          {
+            "id": "arrival-dialogue-3",
+            "type": "dialogue",
+            "speaker": "안내자 · 예시",
+            "text": "북마크를 누르면 내 서재에 보관됩니다. 마지막으로 읽은 장과 스크롤 위치도 이 브라우저에 저장됩니다."
+          },
+          {
+            "id": "arrival-note",
+            "type": "narration",
+            "text": "장면 설명과 인물의 대사는 서로 다른 형식으로 표시됩니다. 글자 크기와 화면 테마를 조절하여 편안한 환경에서 읽어 보세요."
+          },
+          {
+            "id": "arrival-end",
+            "type": "narration",
+            "text": "이 장의 예시 기록은 여기까지입니다. 아래의 다음 장 버튼을 통해 이어지는 기록으로 이동할 수 있습니다."
+          }
+        ],
+        "content": {
+          "file": "content/station-departure--arrival.json",
+          "rows": 1195,
+          "missing": 0,
+          "sourceIds": [
+            "quest-1000101",
+            "quest-4030001",
+            "quest-1000201",
+            "quest-1000300",
+            "quest-1000400",
+            "quest-1000402",
+            "quest-1010001"
+          ],
+          "textReferenceCommit": "312b4597691e0a29cf9828a15b592757dba86949"
+        },
+        "upstreamChapterId": 100001
+      },
+      {
+        "id": "platform",
+        "title": "개척 후문: 인간과 신의 면류관",
+        "blocks": [
+          {
+            "id": "platform-notice",
+            "type": "narration",
+            "text": "이 본문은 읽기 화면을 확인하기 위한 예시입니다. 실제 게임 대사나 공식 스토리가 아닙니다."
+          },
+          {
+            "id": "platform-intro",
+            "type": "narration",
+            "text": "우주정거장에 관한 기록이 이곳에 정리됩니다. 추출한 텍스트를 연결하면 장면의 순서에 따라 이야기를 읽을 수 있습니다."
+          },
+          {
+            "id": "platform-dialogue-1",
+            "type": "dialogue",
+            "speaker": "안내자 · 예시",
+            "text": "서고에 오신 것을 환영합니다. 왼쪽 목차에서 원하는 장을 선택해 보세요."
+          },
+          {
+            "id": "platform-dialogue-2",
+            "type": "dialogue",
+            "speaker": "독자 · 예시",
+            "text": "이어서 읽을 수 있도록 이 기록을 남겨 둘 수 있나요?"
+          },
+          {
+            "id": "platform-dialogue-3",
+            "type": "dialogue",
+            "speaker": "안내자 · 예시",
+            "text": "북마크를 누르면 내 서재에 보관됩니다. 마지막으로 읽은 장과 스크롤 위치도 이 브라우저에 저장됩니다."
+          },
+          {
+            "id": "platform-note",
+            "type": "narration",
+            "text": "장면 설명과 인물의 대사는 서로 다른 형식으로 표시됩니다. 글자 크기와 화면 테마를 조절하여 편안한 환경에서 읽어 보세요."
+          },
+          {
+            "id": "platform-end",
+            "type": "narration",
+            "text": "이 장의 예시 기록은 여기까지입니다. 아래의 다음 장 버튼을 통해 이어지는 기록으로 이동할 수 있습니다."
+          }
+        ],
+        "content": {
+          "file": "content/station-departure--platform.json",
+          "rows": 835,
+          "missing": 0,
+          "sourceIds": [
+            "quest-2000902",
+            "quest-2000903",
+            "quest-2001001",
+            "quest-2000901",
+            "quest-2001002"
+          ],
+          "textReferenceCommit": "312b4597691e0a29cf9828a15b592757dba86949"
+        },
+        "upstreamChapterId": 600011
+      }
+    ]
+  },
+  {
+    "id": "jarilo-records",
+    "title": "시들어가는 겨울밤",
+    "subtitle": "제1장 — 야릴로-Ⅵ",
+    "arcLabel": "제1장 — 야릴로-Ⅵ",
+    "description": "「탐사」, 「이해」, 「수립」, 「연결」——이것이 무명객들이 줄곧 지켜온 「개척」의 길이다. 열차팀의 새로운 멤버가 된 당신의 첫 번째 목적지는 야릴로-Ⅵ, 얼음과 눈으로 뒤덮인 행성이다……",
+    "category": "trailblaze",
+    "world": "jarilo",
+    "order": 2,
+    "language": "ko-KR",
+    "tags": [
+      "야릴로-VI",
+      "야릴로-Ⅵ",
+      "벨로보그",
+      "설원"
+    ],
+    "source": {
+      "kind": "extracted",
+      "version": "한국어 고정 자료 a66ec9c · 원문 갱신 312b459",
+      "sourceIds": [
+        "quest-1010002",
+        "quest-1010101",
+        "quest-1010201",
+        "quest-1010203",
+        "quest-1010301",
+        "quest-1010303",
+        "quest-1010401",
+        "quest-1010402",
+        "quest-1010403",
+        "quest-1010501",
+        "quest-1010601",
+        "quest-1010700",
+        "quest-1010801",
+        "quest-1010901",
+        "quest-1011001",
+        "quest-1011002",
+        "quest-1011101",
+        "quest-1011102",
+        "quest-1011201",
+        "quest-1011301",
+        "quest-1011400",
+        "quest-1011401",
+        "quest-1011402",
+        "quest-1011403",
+        "quest-1011501",
+        "quest-1011502",
+        "quest-1011503",
+        "quest-2010201",
+        "quest-2010202",
+        "quest-2010204",
+        "quest-2010205",
+        "quest-2010206",
+        "quest-2010203"
+      ]
+    },
+    "chapters": [
+      {
+        "id": "snowfield",
+        "title": "제1막: 시들어가는 겨울밤",
+        "blocks": [
+          {
+            "id": "snowfield-notice",
+            "type": "narration",
+            "text": "이 본문은 읽기 화면을 확인하기 위한 예시입니다. 실제 게임 대사나 공식 스토리가 아닙니다."
+          },
+          {
+            "id": "snowfield-intro",
+            "type": "narration",
+            "text": "야릴로-Ⅵ에 관한 기록이 이곳에 정리됩니다. 추출한 텍스트를 연결하면 장면의 순서에 따라 이야기를 읽을 수 있습니다."
+          },
+          {
+            "id": "snowfield-dialogue-1",
+            "type": "dialogue",
+            "speaker": "안내자 · 예시",
+            "text": "서고에 오신 것을 환영합니다. 왼쪽 목차에서 원하는 장을 선택해 보세요."
+          },
+          {
+            "id": "snowfield-dialogue-2",
+            "type": "dialogue",
+            "speaker": "독자 · 예시",
+            "text": "이어서 읽을 수 있도록 이 기록을 남겨 둘 수 있나요?"
+          },
+          {
+            "id": "snowfield-dialogue-3",
+            "type": "dialogue",
+            "speaker": "안내자 · 예시",
+            "text": "북마크를 누르면 내 서재에 보관됩니다. 마지막으로 읽은 장과 스크롤 위치도 이 브라우저에 저장됩니다."
+          },
+          {
+            "id": "snowfield-note",
+            "type": "narration",
+            "text": "장면 설명과 인물의 대사는 서로 다른 형식으로 표시됩니다. 글자 크기와 화면 테마를 조절하여 편안한 환경에서 읽어 보세요."
+          },
+          {
+            "id": "snowfield-end",
+            "type": "narration",
+            "text": "이 장의 예시 기록은 여기까지입니다. 아래의 다음 장 버튼을 통해 이어지는 기록으로 이동할 수 있습니다."
+          }
+        ],
+        "content": {
+          "file": "content/jarilo-records--snowfield.json",
+          "rows": 2477,
+          "missing": 0,
+          "sourceIds": [
+            "quest-1010002",
+            "quest-1010101",
+            "quest-1010201",
+            "quest-1010203",
+            "quest-1010301",
+            "quest-1010303",
+            "quest-1010401",
+            "quest-1010402",
+            "quest-1010403",
+            "quest-1010501",
+            "quest-1010601",
+            "quest-1010700",
+            "quest-1010801",
+            "quest-1010901",
+            "quest-1011001"
+          ],
+          "textReferenceCommit": "312b4597691e0a29cf9828a15b592757dba86949"
+        },
+        "upstreamChapterId": 101001
+      },
+      {
+        "id": "city",
+        "title": "제2막: 동트는 태양 아래",
+        "blocks": [
+          {
+            "id": "city-notice",
+            "type": "narration",
+            "text": "이 본문은 읽기 화면을 확인하기 위한 예시입니다. 실제 게임 대사나 공식 스토리가 아닙니다."
+          },
+          {
+            "id": "city-intro",
+            "type": "narration",
+            "text": "야릴로-Ⅵ에 관한 기록이 이곳에 정리됩니다. 추출한 텍스트를 연결하면 장면의 순서에 따라 이야기를 읽을 수 있습니다."
+          },
+          {
+            "id": "city-dialogue-1",
+            "type": "dialogue",
+            "speaker": "안내자 · 예시",
+            "text": "서고에 오신 것을 환영합니다. 왼쪽 목차에서 원하는 장을 선택해 보세요."
+          },
+          {
+            "id": "city-dialogue-2",
+            "type": "dialogue",
+            "speaker": "독자 · 예시",
+            "text": "이어서 읽을 수 있도록 이 기록을 남겨 둘 수 있나요?"
+          },
+          {
+            "id": "city-dialogue-3",
+            "type": "dialogue",
+            "speaker": "안내자 · 예시",
+            "text": "북마크를 누르면 내 서재에 보관됩니다. 마지막으로 읽은 장과 스크롤 위치도 이 브라우저에 저장됩니다."
+          },
+          {
+            "id": "city-note",
+            "type": "narration",
+            "text": "장면 설명과 인물의 대사는 서로 다른 형식으로 표시됩니다. 글자 크기와 화면 테마를 조절하여 편안한 환경에서 읽어 보세요."
+          },
+          {
+            "id": "city-end",
+            "type": "narration",
+            "text": "이 장의 예시 기록은 여기까지입니다. 아래의 다음 장 버튼을 통해 이어지는 기록으로 이동할 수 있습니다."
+          }
+        ],
+        "content": {
+          "file": "content/jarilo-records--city.json",
+          "rows": 1456,
+          "missing": 0,
+          "sourceIds": [
+            "quest-1011002",
+            "quest-1011101",
+            "quest-1011102",
+            "quest-1011201",
+            "quest-1011301",
+            "quest-1011400",
+            "quest-1011401",
+            "quest-1011402",
+            "quest-1011403",
+            "quest-1011501",
+            "quest-1011502",
+            "quest-1011503"
+          ],
+          "textReferenceCommit": "312b4597691e0a29cf9828a15b592757dba86949"
+        },
+        "upstreamChapterId": 101002
+      },
+      {
+        "id": "winter-dream",
+        "title": "개척 후문: 겨울꿈에서 깨어난 순간",
+        "blocks": [
+          {
+            "id": "winter-dream-notice",
+            "type": "narration",
+            "text": "이 본문은 읽기 화면을 확인하기 위한 예시입니다. 실제 게임 대사나 공식 스토리가 아닙니다."
+          },
+          {
+            "id": "winter-dream-intro",
+            "type": "narration",
+            "text": "야릴로-Ⅵ에 관한 기록이 이곳에 정리됩니다. 추출한 텍스트를 연결하면 장면의 순서에 따라 이야기를 읽을 수 있습니다."
+          },
+          {
+            "id": "winter-dream-dialogue-1",
+            "type": "dialogue",
+            "speaker": "안내자 · 예시",
+            "text": "서고에 오신 것을 환영합니다. 왼쪽 목차에서 원하는 장을 선택해 보세요."
+          },
+          {
+            "id": "winter-dream-dialogue-2",
+            "type": "dialogue",
+            "speaker": "독자 · 예시",
+            "text": "이어서 읽을 수 있도록 이 기록을 남겨 둘 수 있나요?"
+          },
+          {
+            "id": "winter-dream-dialogue-3",
+            "type": "dialogue",
+            "speaker": "안내자 · 예시",
+            "text": "북마크를 누르면 내 서재에 보관됩니다. 마지막으로 읽은 장과 스크롤 위치도 이 브라우저에 저장됩니다."
+          },
+          {
+            "id": "winter-dream-note",
+            "type": "narration",
+            "text": "장면 설명과 인물의 대사는 서로 다른 형식으로 표시됩니다. 글자 크기와 화면 테마를 조절하여 편안한 환경에서 읽어 보세요."
+          },
+          {
+            "id": "winter-dream-end",
+            "type": "narration",
+            "text": "이 장의 예시 기록은 여기까지입니다. 아래의 다음 장 버튼을 통해 이어지는 기록으로 이동할 수 있습니다."
+          }
+        ],
+        "content": {
+          "file": "content/jarilo-records--winter-dream.json",
+          "rows": 1069,
+          "missing": 0,
+          "sourceIds": [
+            "quest-2010201",
+            "quest-2010202",
+            "quest-2010204",
+            "quest-2010205",
+            "quest-2010206",
+            "quest-2010203"
+          ],
+          "textReferenceCommit": "312b4597691e0a29cf9828a15b592757dba86949"
+        },
+        "upstreamChapterId": 101101
+      }
+    ]
+  },
+  {
+    "id": "luofu-records",
+    "title": "바람 따라 즐기는 선경",
+    "subtitle": "제2장 — 선주 「나부」",
+    "arcLabel": "제2장 — 선주 「나부」",
+    "description": "「......목적지를 변경해줬으면 해」 뜻밖의 방문객이 말했다. 은하열차에서 멀지 않은 곳에 선주 연맹의 「나부」가 정박해 있다……",
+    "category": "trailblaze",
+    "world": "luofu",
+    "order": 3,
+    "language": "ko-KR",
+    "tags": [
+      "선주",
+      "나부"
+    ],
+    "source": {
+      "kind": "extracted",
+      "version": "한국어 고정 자료 a66ec9c · 원문 갱신 312b459",
+      "sourceIds": [
+        "quest-1020101",
+        "quest-1020201",
+        "quest-1020301",
+        "quest-1020400",
+        "quest-1020401",
+        "quest-1020501",
+        "quest-1020601",
+        "quest-1020702",
+        "quest-1020801",
+        "quest-1020901",
+        "quest-1021001",
+        "quest-1021101",
+        "quest-1021201",
+        "quest-1021301",
+        "quest-1021401",
+        "quest-1021501",
+        "quest-1021601",
+        "quest-1021702",
+        "quest-2021701",
+        "quest-2021702",
+        "quest-2021704",
+        "quest-8015111",
+        "quest-8015112",
+        "quest-8015113",
+        "quest-8015114",
+        "quest-8015123",
+        "quest-8015191",
+        "quest-8015101",
+        "quest-8015192",
+        "quest-8015102",
+        "quest-8015193",
+        "quest-8015103",
+        "quest-8015194",
+        "quest-8015104",
+        "quest-2022001",
+        "quest-2022005",
+        "quest-2022007",
+        "quest-2022008",
+        "quest-2022003",
+        "quest-2022004",
+        "quest-2022006",
+        "quest-2022101",
+        "quest-2022102",
+        "quest-2022103",
+        "quest-2022105",
+        "quest-2022201",
+        "quest-2022202",
+        "quest-2022203",
+        "quest-2022204",
+        "quest-2022205",
+        "quest-2022206",
+        "quest-2022301",
+        "quest-2022302",
+        "quest-2022306",
+        "quest-2022309",
+        "quest-2022303",
+        "quest-2022304",
+        "quest-2022305",
+        "quest-2022307",
+        "quest-2022308"
+      ]
+    },
+    "chapters": [
+      {
+        "id": "harbor",
+        "title": "제1막: 바람 따라 즐기는 선경",
+        "blocks": [
+          {
+            "id": "harbor-notice",
+            "type": "narration",
+            "text": "이 본문은 읽기 화면을 확인하기 위한 예시입니다. 실제 게임 대사나 공식 스토리가 아닙니다."
+          },
+          {
+            "id": "harbor-intro",
+            "type": "narration",
+            "text": "선주 「나부」에 관한 기록이 이곳에 정리됩니다. 추출한 텍스트를 연결하면 장면의 순서에 따라 이야기를 읽을 수 있습니다."
+          },
+          {
+            "id": "harbor-dialogue-1",
+            "type": "dialogue",
+            "speaker": "안내자 · 예시",
+            "text": "서고에 오신 것을 환영합니다. 왼쪽 목차에서 원하는 장을 선택해 보세요."
+          },
+          {
+            "id": "harbor-dialogue-2",
+            "type": "dialogue",
+            "speaker": "독자 · 예시",
+            "text": "이어서 읽을 수 있도록 이 기록을 남겨 둘 수 있나요?"
+          },
+          {
+            "id": "harbor-dialogue-3",
+            "type": "dialogue",
+            "speaker": "안내자 · 예시",
+            "text": "북마크를 누르면 내 서재에 보관됩니다. 마지막으로 읽은 장과 스크롤 위치도 이 브라우저에 저장됩니다."
+          },
+          {
+            "id": "harbor-note",
+            "type": "narration",
+            "text": "장면 설명과 인물의 대사는 서로 다른 형식으로 표시됩니다. 글자 크기와 화면 테마를 조절하여 편안한 환경에서 읽어 보세요."
+          },
+          {
+            "id": "harbor-end",
+            "type": "narration",
+            "text": "이 장의 예시 기록은 여기까지입니다. 아래의 다음 장 버튼을 통해 이어지는 기록으로 이동할 수 있습니다."
+          }
+        ],
+        "content": {
+          "file": "content/luofu-records--harbor.json",
+          "rows": 2048,
+          "missing": 0,
+          "sourceIds": [
+            "quest-1020101",
+            "quest-1020201",
+            "quest-1020301",
+            "quest-1020400",
+            "quest-1020401",
+            "quest-1020501",
+            "quest-1020601",
+            "quest-1020702",
+            "quest-1020801",
+            "quest-1020901",
+            "quest-1021001",
+            "quest-1021101"
+          ],
+          "textReferenceCommit": "312b4597691e0a29cf9828a15b592757dba86949"
+        },
+        "upstreamChapterId": 102001
+      },
+      {
+        "id": "clouds",
+        "title": "제2막: 구름에 가려진 탑",
+        "blocks": [
+          {
+            "id": "clouds-notice",
+            "type": "narration",
+            "text": "이 본문은 읽기 화면을 확인하기 위한 예시입니다. 실제 게임 대사나 공식 스토리가 아닙니다."
+          },
+          {
+            "id": "clouds-intro",
+            "type": "narration",
+            "text": "선주 「나부」에 관한 기록이 이곳에 정리됩니다. 추출한 텍스트를 연결하면 장면의 순서에 따라 이야기를 읽을 수 있습니다."
+          },
+          {
+            "id": "clouds-dialogue-1",
+            "type": "dialogue",
+            "speaker": "안내자 · 예시",
+            "text": "서고에 오신 것을 환영합니다. 왼쪽 목차에서 원하는 장을 선택해 보세요."
+          },
+          {
+            "id": "clouds-dialogue-2",
+            "type": "dialogue",
+            "speaker": "독자 · 예시",
+            "text": "이어서 읽을 수 있도록 이 기록을 남겨 둘 수 있나요?"
+          },
+          {
+            "id": "clouds-dialogue-3",
+            "type": "dialogue",
+            "speaker": "안내자 · 예시",
+            "text": "북마크를 누르면 내 서재에 보관됩니다. 마지막으로 읽은 장과 스크롤 위치도 이 브라우저에 저장됩니다."
+          },
+          {
+            "id": "clouds-note",
+            "type": "narration",
+            "text": "장면 설명과 인물의 대사는 서로 다른 형식으로 표시됩니다. 글자 크기와 화면 테마를 조절하여 편안한 환경에서 읽어 보세요."
+          },
+          {
+            "id": "clouds-end",
+            "type": "narration",
+            "text": "이 장의 예시 기록은 여기까지입니다. 아래의 다음 장 버튼을 통해 이어지는 기록으로 이동할 수 있습니다."
+          }
+        ],
+        "content": {
+          "file": "content/luofu-records--clouds.json",
+          "rows": 651,
+          "missing": 0,
+          "sourceIds": [
+            "quest-1021201",
+            "quest-1021301",
+            "quest-1021401",
+            "quest-1021501",
+            "quest-1021601"
+          ],
+          "textReferenceCommit": "312b4597691e0a29cf9828a15b592757dba86949"
+        },
+        "upstreamChapterId": 102002
+      },
+      {
+        "id": "aftermath",
+        "title": "제3막: 재앙이 지나간 자리",
+        "blocks": [
+          {
+            "id": "aftermath-notice",
+            "type": "narration",
+            "text": "이 본문은 읽기 화면을 확인하기 위한 예시입니다. 실제 게임 대사나 공식 스토리가 아닙니다."
+          },
+          {
+            "id": "aftermath-intro",
+            "type": "narration",
+            "text": "선주 「나부」에 관한 기록이 이곳에 정리됩니다. 추출한 텍스트를 연결하면 장면의 순서에 따라 이야기를 읽을 수 있습니다."
+          },
+          {
+            "id": "aftermath-dialogue-1",
+            "type": "dialogue",
+            "speaker": "안내자 · 예시",
+            "text": "서고에 오신 것을 환영합니다. 왼쪽 목차에서 원하는 장을 선택해 보세요."
+          },
+          {
+            "id": "aftermath-dialogue-2",
+            "type": "dialogue",
+            "speaker": "독자 · 예시",
+            "text": "이어서 읽을 수 있도록 이 기록을 남겨 둘 수 있나요?"
+          },
+          {
+            "id": "aftermath-dialogue-3",
+            "type": "dialogue",
+            "speaker": "안내자 · 예시",
+            "text": "북마크를 누르면 내 서재에 보관됩니다. 마지막으로 읽은 장과 스크롤 위치도 이 브라우저에 저장됩니다."
+          },
+          {
+            "id": "aftermath-note",
+            "type": "narration",
+            "text": "장면 설명과 인물의 대사는 서로 다른 형식으로 표시됩니다. 글자 크기와 화면 테마를 조절하여 편안한 환경에서 읽어 보세요."
+          },
+          {
+            "id": "aftermath-end",
+            "type": "narration",
+            "text": "이 장의 예시 기록은 여기까지입니다. 아래의 다음 장 버튼을 통해 이어지는 기록으로 이동할 수 있습니다."
+          }
+        ],
+        "content": {
+          "file": "content/luofu-records--aftermath.json",
+          "rows": 471,
+          "missing": 0,
+          "sourceIds": [
+            "quest-1021702"
+          ],
+          "textReferenceCommit": "312b4597691e0a29cf9828a15b592757dba86949"
+        },
+        "upstreamChapterId": 102003
+      },
+      {
+        "id": "foxian-tale",
+        "title": "개척 후문: 호재지이",
+        "blocks": [
+          {
+            "id": "foxian-tale-notice",
+            "type": "narration",
+            "text": "이 본문은 읽기 화면을 확인하기 위한 예시입니다. 실제 게임 대사나 공식 스토리가 아닙니다."
+          },
+          {
+            "id": "foxian-tale-intro",
+            "type": "narration",
+            "text": "선주 「나부」에 관한 기록이 이곳에 정리됩니다. 추출한 텍스트를 연결하면 장면의 순서에 따라 이야기를 읽을 수 있습니다."
+          },
+          {
+            "id": "foxian-tale-dialogue-1",
+            "type": "dialogue",
+            "speaker": "안내자 · 예시",
+            "text": "서고에 오신 것을 환영합니다. 왼쪽 목차에서 원하는 장을 선택해 보세요."
+          },
+          {
+            "id": "foxian-tale-dialogue-2",
+            "type": "dialogue",
+            "speaker": "독자 · 예시",
+            "text": "이어서 읽을 수 있도록 이 기록을 남겨 둘 수 있나요?"
+          },
+          {
+            "id": "foxian-tale-dialogue-3",
+            "type": "dialogue",
+            "speaker": "안내자 · 예시",
+            "text": "북마크를 누르면 내 서재에 보관됩니다. 마지막으로 읽은 장과 스크롤 위치도 이 브라우저에 저장됩니다."
+          },
+          {
+            "id": "foxian-tale-note",
+            "type": "narration",
+            "text": "장면 설명과 인물의 대사는 서로 다른 형식으로 표시됩니다. 글자 크기와 화면 테마를 조절하여 편안한 환경에서 읽어 보세요."
+          },
+          {
+            "id": "foxian-tale-end",
+            "type": "narration",
+            "text": "이 장의 예시 기록은 여기까지입니다. 아래의 다음 장 버튼을 통해 이어지는 기록으로 이동할 수 있습니다."
+          }
+        ],
+        "content": {
+          "file": "content/luofu-records--foxian-tale.json",
+          "rows": 1976,
+          "missing": 0,
+          "sourceIds": [
+            "quest-2021701",
+            "quest-2021702",
+            "quest-2021704",
+            "quest-8015111",
+            "quest-8015112",
+            "quest-8015113",
+            "quest-8015114",
+            "quest-8015123",
+            "quest-8015191",
+            "quest-8015101",
+            "quest-8015192",
+            "quest-8015102",
+            "quest-8015193",
+            "quest-8015103",
+            "quest-8015194",
+            "quest-8015104"
+          ],
+          "textReferenceCommit": "312b4597691e0a29cf9828a15b592757dba86949"
+        }
+      },
+      {
+        "id": "swords-upper",
+        "title": "개척 후문: 청천 위 교차하는 칼끝·상",
+        "blocks": [
+          {
+            "id": "swords-upper-notice",
+            "type": "narration",
+            "text": "이 본문은 읽기 화면을 확인하기 위한 예시입니다. 실제 게임 대사나 공식 스토리가 아닙니다."
+          },
+          {
+            "id": "swords-upper-intro",
+            "type": "narration",
+            "text": "선주 「나부」에 관한 기록이 이곳에 정리됩니다. 추출한 텍스트를 연결하면 장면의 순서에 따라 이야기를 읽을 수 있습니다."
+          },
+          {
+            "id": "swords-upper-dialogue-1",
+            "type": "dialogue",
+            "speaker": "안내자 · 예시",
+            "text": "서고에 오신 것을 환영합니다. 왼쪽 목차에서 원하는 장을 선택해 보세요."
+          },
+          {
+            "id": "swords-upper-dialogue-2",
+            "type": "dialogue",
+            "speaker": "독자 · 예시",
+            "text": "이어서 읽을 수 있도록 이 기록을 남겨 둘 수 있나요?"
+          },
+          {
+            "id": "swords-upper-dialogue-3",
+            "type": "dialogue",
+            "speaker": "안내자 · 예시",
+            "text": "북마크를 누르면 내 서재에 보관됩니다. 마지막으로 읽은 장과 스크롤 위치도 이 브라우저에 저장됩니다."
+          },
+          {
+            "id": "swords-upper-note",
+            "type": "narration",
+            "text": "장면 설명과 인물의 대사는 서로 다른 형식으로 표시됩니다. 글자 크기와 화면 테마를 조절하여 편안한 환경에서 읽어 보세요."
+          },
+          {
+            "id": "swords-upper-end",
+            "type": "narration",
+            "text": "이 장의 예시 기록은 여기까지입니다. 아래의 다음 장 버튼을 통해 이어지는 기록으로 이동할 수 있습니다."
+          }
+        ],
+        "content": {
+          "file": "content/luofu-records--swords-upper.json",
+          "rows": 1495,
+          "missing": 0,
+          "sourceIds": [
+            "quest-2022001",
+            "quest-2022005",
+            "quest-2022007",
+            "quest-2022008",
+            "quest-2022003",
+            "quest-2022004",
+            "quest-2022006",
+            "quest-2022101",
+            "quest-2022102",
+            "quest-2022103",
+            "quest-2022105"
+          ],
+          "textReferenceCommit": "312b4597691e0a29cf9828a15b592757dba86949"
+        }
+      },
+      {
+        "id": "swords-lower",
+        "title": "개척 후문: 청천 위 교차하는 칼끝·하",
+        "blocks": [
+          {
+            "id": "swords-lower-notice",
+            "type": "narration",
+            "text": "이 본문은 읽기 화면을 확인하기 위한 예시입니다. 실제 게임 대사나 공식 스토리가 아닙니다."
+          },
+          {
+            "id": "swords-lower-intro",
+            "type": "narration",
+            "text": "선주 「나부」에 관한 기록이 이곳에 정리됩니다. 추출한 텍스트를 연결하면 장면의 순서에 따라 이야기를 읽을 수 있습니다."
+          },
+          {
+            "id": "swords-lower-dialogue-1",
+            "type": "dialogue",
+            "speaker": "안내자 · 예시",
+            "text": "서고에 오신 것을 환영합니다. 왼쪽 목차에서 원하는 장을 선택해 보세요."
+          },
+          {
+            "id": "swords-lower-dialogue-2",
+            "type": "dialogue",
+            "speaker": "독자 · 예시",
+            "text": "이어서 읽을 수 있도록 이 기록을 남겨 둘 수 있나요?"
+          },
+          {
+            "id": "swords-lower-dialogue-3",
+            "type": "dialogue",
+            "speaker": "안내자 · 예시",
+            "text": "북마크를 누르면 내 서재에 보관됩니다. 마지막으로 읽은 장과 스크롤 위치도 이 브라우저에 저장됩니다."
+          },
+          {
+            "id": "swords-lower-note",
+            "type": "narration",
+            "text": "장면 설명과 인물의 대사는 서로 다른 형식으로 표시됩니다. 글자 크기와 화면 테마를 조절하여 편안한 환경에서 읽어 보세요."
+          },
+          {
+            "id": "swords-lower-end",
+            "type": "narration",
+            "text": "이 장의 예시 기록은 여기까지입니다. 아래의 다음 장 버튼을 통해 이어지는 기록으로 이동할 수 있습니다."
+          }
+        ],
+        "content": {
+          "file": "content/luofu-records--swords-lower.json",
+          "rows": 1137,
+          "missing": 0,
+          "sourceIds": [
+            "quest-2022201",
+            "quest-2022202",
+            "quest-2022203",
+            "quest-2022204",
+            "quest-2022205",
+            "quest-2022206",
+            "quest-2022301",
+            "quest-2022302",
+            "quest-2022306",
+            "quest-2022309",
+            "quest-2022303",
+            "quest-2022304",
+            "quest-2022305",
+            "quest-2022307",
+            "quest-2022308"
+          ],
+          "textReferenceCommit": "312b4597691e0a29cf9828a15b592757dba86949"
+        }
+      }
+    ]
+  },
+  {
+    "id": "penacony-records",
+    "title": "음향과 분노",
+    "subtitle": "제3장 — 페나코니",
+    "arcLabel": "제3장 — 페나코니",
+    "description": "「꿈의 땅」 페나코니, 수많은 꿈을 좇는 여행객들이 꿈에 그리는 향락주의의 천국——「시계공」의 축제에 참여할 준비가 되었는가?",
+    "category": "trailblaze",
+    "world": "penacony",
+    "order": 4,
+    "language": "ko-KR",
+    "tags": [
+      "꿈",
+      "페나코니"
+    ],
+    "source": {
+      "kind": "extracted",
+      "version": "한국어 고정 자료 a66ec9c · 원문 갱신 312b459",
+      "sourceIds": [
+        "quest-1030101",
+        "quest-1030102",
+        "quest-1030201",
+        "quest-1030202",
+        "quest-1030301",
+        "quest-1030302",
+        "quest-1030303",
+        "quest-1030304",
+        "quest-1030401",
+        "quest-1030501",
+        "quest-1030601",
+        "quest-1030701",
+        "quest-1030901",
+        "quest-1031001",
+        "quest-1031101",
+        "quest-1031201",
+        "quest-1031401",
+        "quest-1031501",
+        "quest-1031601",
+        "quest-1031701",
+        "quest-1031801",
+        "quest-1032301",
+        "quest-1032302",
+        "quest-1032401",
+        "quest-1032501",
+        "quest-1032602",
+        "quest-1032601",
+        "quest-1032701",
+        "quest-1032801",
+        "quest-1032802",
+        "quest-1032901",
+        "quest-1033001",
+        "quest-1033101",
+        "quest-1033102",
+        "quest-1034101",
+        "quest-1034103",
+        "quest-1034104",
+        "quest-1034105",
+        "quest-1034107",
+        "quest-1034108",
+        "quest-1034109",
+        "quest-1034201",
+        "quest-1034202",
+        "quest-1034203",
+        "quest-1034204",
+        "quest-1034205",
+        "quest-1034206",
+        "quest-1034207",
+        "quest-1034208",
+        "quest-1034209",
+        "quest-1034210",
+        "quest-1034211",
+        "quest-1034212",
+        "quest-1036001",
+        "quest-1036002",
+        "quest-1036003",
+        "quest-1036004",
+        "quest-1036102",
+        "quest-1036104",
+        "quest-1036105",
+        "quest-1036106",
+        "quest-1040531",
+        "quest-1040536",
+        "quest-1040537",
+        "quest-1040532",
+        "quest-1040551",
+        "quest-1040533",
+        "quest-1040552",
+        "quest-1040535",
+        "quest-1040553",
+        "quest-1040538",
+        "quest-1040554",
+        "quest-1040539",
+        "quest-1033800",
+        "quest-1033801",
+        "quest-1033802",
+        "quest-1033803",
+        "quest-1033804",
+        "quest-1033805",
+        "quest-1033806",
+        "quest-1033807",
+        "quest-1033808",
+        "quest-1033809",
+        "quest-1033810",
+        "quest-1033811"
+      ]
+    },
+    "chapters": [
+      {
+        "id": "invitation",
+        "title": "제1막: 음향과 분노",
+        "blocks": [
+          {
+            "id": "invitation-notice",
+            "type": "narration",
+            "text": "이 본문은 읽기 화면을 확인하기 위한 예시입니다. 실제 게임 대사나 공식 스토리가 아닙니다."
+          },
+          {
+            "id": "invitation-intro",
+            "type": "narration",
+            "text": "페나코니에 관한 기록이 이곳에 정리됩니다. 추출한 텍스트를 연결하면 장면의 순서에 따라 이야기를 읽을 수 있습니다."
+          },
+          {
+            "id": "invitation-dialogue-1",
+            "type": "dialogue",
+            "speaker": "안내자 · 예시",
+            "text": "서고에 오신 것을 환영합니다. 왼쪽 목차에서 원하는 장을 선택해 보세요."
+          },
+          {
+            "id": "invitation-dialogue-2",
+            "type": "dialogue",
+            "speaker": "독자 · 예시",
+            "text": "이어서 읽을 수 있도록 이 기록을 남겨 둘 수 있나요?"
+          },
+          {
+            "id": "invitation-dialogue-3",
+            "type": "dialogue",
+            "speaker": "안내자 · 예시",
+            "text": "북마크를 누르면 내 서재에 보관됩니다. 마지막으로 읽은 장과 스크롤 위치도 이 브라우저에 저장됩니다."
+          },
+          {
+            "id": "invitation-note",
+            "type": "narration",
+            "text": "장면 설명과 인물의 대사는 서로 다른 형식으로 표시됩니다. 글자 크기와 화면 테마를 조절하여 편안한 환경에서 읽어 보세요."
+          },
+          {
+            "id": "invitation-end",
+            "type": "narration",
+            "text": "이 장의 예시 기록은 여기까지입니다. 아래의 다음 장 버튼을 통해 이어지는 기록으로 이동할 수 있습니다."
+          }
+        ],
+        "content": {
+          "file": "content/penacony-records--invitation.json",
+          "rows": 2223,
+          "missing": 0,
+          "sourceIds": [
+            "quest-1030101",
+            "quest-1030102",
+            "quest-1030201",
+            "quest-1030202",
+            "quest-1030301",
+            "quest-1030302",
+            "quest-1030303",
+            "quest-1030304",
+            "quest-1030401",
+            "quest-1030501",
+            "quest-1030601",
+            "quest-1030701"
+          ],
+          "textReferenceCommit": "312b4597691e0a29cf9828a15b592757dba86949"
+        },
+        "upstreamChapterId": 103001
+      },
+      {
+        "id": "dream",
+        "title": "제2막: 비둘기 속의 고양이",
+        "blocks": [
+          {
+            "id": "dream-notice",
+            "type": "narration",
+            "text": "이 본문은 읽기 화면을 확인하기 위한 예시입니다. 실제 게임 대사나 공식 스토리가 아닙니다."
+          },
+          {
+            "id": "dream-intro",
+            "type": "narration",
+            "text": "페나코니에 관한 기록이 이곳에 정리됩니다. 추출한 텍스트를 연결하면 장면의 순서에 따라 이야기를 읽을 수 있습니다."
+          },
+          {
+            "id": "dream-dialogue-1",
+            "type": "dialogue",
+            "speaker": "안내자 · 예시",
+            "text": "서고에 오신 것을 환영합니다. 왼쪽 목차에서 원하는 장을 선택해 보세요."
+          },
+          {
+            "id": "dream-dialogue-2",
+            "type": "dialogue",
+            "speaker": "독자 · 예시",
+            "text": "이어서 읽을 수 있도록 이 기록을 남겨 둘 수 있나요?"
+          },
+          {
+            "id": "dream-dialogue-3",
+            "type": "dialogue",
+            "speaker": "안내자 · 예시",
+            "text": "북마크를 누르면 내 서재에 보관됩니다. 마지막으로 읽은 장과 스크롤 위치도 이 브라우저에 저장됩니다."
+          },
+          {
+            "id": "dream-note",
+            "type": "narration",
+            "text": "장면 설명과 인물의 대사는 서로 다른 형식으로 표시됩니다. 글자 크기와 화면 테마를 조절하여 편안한 환경에서 읽어 보세요."
+          },
+          {
+            "id": "dream-end",
+            "type": "narration",
+            "text": "이 장의 예시 기록은 여기까지입니다. 아래의 다음 장 버튼을 통해 이어지는 기록으로 이동할 수 있습니다."
+          }
+        ],
+        "content": {
+          "file": "content/penacony-records--dream.json",
+          "rows": 1728,
+          "missing": 0,
+          "sourceIds": [
+            "quest-1030901",
+            "quest-1031001",
+            "quest-1031101",
+            "quest-1031201",
+            "quest-1031401",
+            "quest-1031501",
+            "quest-1031601",
+            "quest-1031701",
+            "quest-1031801"
+          ],
+          "textReferenceCommit": "312b4597691e0a29cf9828a15b592757dba86949"
+        },
+        "upstreamChapterId": 103002
+      },
+      {
+        "id": "our-time",
+        "title": "제3막: 우리들의 시대에",
+        "blocks": [
+          {
+            "id": "our-time-notice",
+            "type": "narration",
+            "text": "이 본문은 읽기 화면을 확인하기 위한 예시입니다. 실제 게임 대사나 공식 스토리가 아닙니다."
+          },
+          {
+            "id": "our-time-intro",
+            "type": "narration",
+            "text": "페나코니에 관한 기록이 이곳에 정리됩니다. 추출한 텍스트를 연결하면 장면의 순서에 따라 이야기를 읽을 수 있습니다."
+          },
+          {
+            "id": "our-time-dialogue-1",
+            "type": "dialogue",
+            "speaker": "안내자 · 예시",
+            "text": "서고에 오신 것을 환영합니다. 왼쪽 목차에서 원하는 장을 선택해 보세요."
+          },
+          {
+            "id": "our-time-dialogue-2",
+            "type": "dialogue",
+            "speaker": "독자 · 예시",
+            "text": "이어서 읽을 수 있도록 이 기록을 남겨 둘 수 있나요?"
+          },
+          {
+            "id": "our-time-dialogue-3",
+            "type": "dialogue",
+            "speaker": "안내자 · 예시",
+            "text": "북마크를 누르면 내 서재에 보관됩니다. 마지막으로 읽은 장과 스크롤 위치도 이 브라우저에 저장됩니다."
+          },
+          {
+            "id": "our-time-note",
+            "type": "narration",
+            "text": "장면 설명과 인물의 대사는 서로 다른 형식으로 표시됩니다. 글자 크기와 화면 테마를 조절하여 편안한 환경에서 읽어 보세요."
+          },
+          {
+            "id": "our-time-end",
+            "type": "narration",
+            "text": "이 장의 예시 기록은 여기까지입니다. 아래의 다음 장 버튼을 통해 이어지는 기록으로 이동할 수 있습니다."
+          }
+        ],
+        "content": {
+          "file": "content/penacony-records--our-time.json",
+          "rows": 2277,
+          "missing": 0,
+          "sourceIds": [
+            "quest-1032301",
+            "quest-1032302",
+            "quest-1032401",
+            "quest-1032501",
+            "quest-1032602",
+            "quest-1032601",
+            "quest-1032701",
+            "quest-1032801",
+            "quest-1032802",
+            "quest-1032901",
+            "quest-1033001",
+            "quest-1033101",
+            "quest-1033102"
+          ],
+          "textReferenceCommit": "312b4597691e0a29cf9828a15b592757dba86949"
+        },
+        "upstreamChapterId": 103003
+      },
+      {
+        "id": "farewell",
+        "title": "제4막: 안녕, 페나코니",
+        "blocks": [
+          {
+            "id": "farewell-notice",
+            "type": "narration",
+            "text": "이 본문은 읽기 화면을 확인하기 위한 예시입니다. 실제 게임 대사나 공식 스토리가 아닙니다."
+          },
+          {
+            "id": "farewell-intro",
+            "type": "narration",
+            "text": "페나코니에 관한 기록이 이곳에 정리됩니다. 추출한 텍스트를 연결하면 장면의 순서에 따라 이야기를 읽을 수 있습니다."
+          },
+          {
+            "id": "farewell-dialogue-1",
+            "type": "dialogue",
+            "speaker": "안내자 · 예시",
+            "text": "서고에 오신 것을 환영합니다. 왼쪽 목차에서 원하는 장을 선택해 보세요."
+          },
+          {
+            "id": "farewell-dialogue-2",
+            "type": "dialogue",
+            "speaker": "독자 · 예시",
+            "text": "이어서 읽을 수 있도록 이 기록을 남겨 둘 수 있나요?"
+          },
+          {
+            "id": "farewell-dialogue-3",
+            "type": "dialogue",
+            "speaker": "안내자 · 예시",
+            "text": "북마크를 누르면 내 서재에 보관됩니다. 마지막으로 읽은 장과 스크롤 위치도 이 브라우저에 저장됩니다."
+          },
+          {
+            "id": "farewell-note",
+            "type": "narration",
+            "text": "장면 설명과 인물의 대사는 서로 다른 형식으로 표시됩니다. 글자 크기와 화면 테마를 조절하여 편안한 환경에서 읽어 보세요."
+          },
+          {
+            "id": "farewell-end",
+            "type": "narration",
+            "text": "이 장의 예시 기록은 여기까지입니다. 아래의 다음 장 버튼을 통해 이어지는 기록으로 이동할 수 있습니다."
+          }
+        ],
+        "content": {
+          "file": "content/penacony-records--farewell.json",
+          "rows": 880,
+          "missing": 0,
+          "sourceIds": [
+            "quest-1034101",
+            "quest-1034103",
+            "quest-1034104",
+            "quest-1034105",
+            "quest-1034107",
+            "quest-1034108",
+            "quest-1034109"
+          ],
+          "textReferenceCommit": "312b4597691e0a29cf9828a15b592757dba86949"
+        },
+        "upstreamChapterId": 103004
+      },
+      {
+        "id": "nana-outrage",
+        "title": "개척 후문: 나나웃레이지·인의(忍義) 없는 전쟁",
+        "blocks": [
+          {
+            "id": "nana-outrage-notice",
+            "type": "narration",
+            "text": "이 본문은 읽기 화면을 확인하기 위한 예시입니다. 실제 게임 대사나 공식 스토리가 아닙니다."
+          },
+          {
+            "id": "nana-outrage-intro",
+            "type": "narration",
+            "text": "페나코니에 관한 기록이 이곳에 정리됩니다. 추출한 텍스트를 연결하면 장면의 순서에 따라 이야기를 읽을 수 있습니다."
+          },
+          {
+            "id": "nana-outrage-dialogue-1",
+            "type": "dialogue",
+            "speaker": "안내자 · 예시",
+            "text": "서고에 오신 것을 환영합니다. 왼쪽 목차에서 원하는 장을 선택해 보세요."
+          },
+          {
+            "id": "nana-outrage-dialogue-2",
+            "type": "dialogue",
+            "speaker": "독자 · 예시",
+            "text": "이어서 읽을 수 있도록 이 기록을 남겨 둘 수 있나요?"
+          },
+          {
+            "id": "nana-outrage-dialogue-3",
+            "type": "dialogue",
+            "speaker": "안내자 · 예시",
+            "text": "북마크를 누르면 내 서재에 보관됩니다. 마지막으로 읽은 장과 스크롤 위치도 이 브라우저에 저장됩니다."
+          },
+          {
+            "id": "nana-outrage-note",
+            "type": "narration",
+            "text": "장면 설명과 인물의 대사는 서로 다른 형식으로 표시됩니다. 글자 크기와 화면 테마를 조절하여 편안한 환경에서 읽어 보세요."
+          },
+          {
+            "id": "nana-outrage-end",
+            "type": "narration",
+            "text": "이 장의 예시 기록은 여기까지입니다. 아래의 다음 장 버튼을 통해 이어지는 기록으로 이동할 수 있습니다."
+          }
+        ],
+        "content": {
+          "file": "content/penacony-records--nana-outrage.json",
+          "rows": 1969,
+          "missing": 0,
+          "sourceIds": [
+            "quest-1034201",
+            "quest-1034202",
+            "quest-1034203",
+            "quest-1034204",
+            "quest-1034205",
+            "quest-1034206",
+            "quest-1034207",
+            "quest-1034208",
+            "quest-1034209",
+            "quest-1034210",
+            "quest-1034211",
+            "quest-1034212"
+          ],
+          "textReferenceCommit": "312b4597691e0a29cf9828a15b592757dba86949"
+        }
+      },
+      {
+        "id": "eighth-day",
+        "title": "제5막: 여덟째 날에 오르는 여정",
+        "blocks": [
+          {
+            "id": "eighth-day-notice",
+            "type": "narration",
+            "text": "이 본문은 읽기 화면을 확인하기 위한 예시입니다. 실제 게임 대사나 공식 스토리가 아닙니다."
+          },
+          {
+            "id": "eighth-day-intro",
+            "type": "narration",
+            "text": "페나코니에 관한 기록이 이곳에 정리됩니다. 추출한 텍스트를 연결하면 장면의 순서에 따라 이야기를 읽을 수 있습니다."
+          },
+          {
+            "id": "eighth-day-dialogue-1",
+            "type": "dialogue",
+            "speaker": "안내자 · 예시",
+            "text": "서고에 오신 것을 환영합니다. 왼쪽 목차에서 원하는 장을 선택해 보세요."
+          },
+          {
+            "id": "eighth-day-dialogue-2",
+            "type": "dialogue",
+            "speaker": "독자 · 예시",
+            "text": "이어서 읽을 수 있도록 이 기록을 남겨 둘 수 있나요?"
+          },
+          {
+            "id": "eighth-day-dialogue-3",
+            "type": "dialogue",
+            "speaker": "안내자 · 예시",
+            "text": "북마크를 누르면 내 서재에 보관됩니다. 마지막으로 읽은 장과 스크롤 위치도 이 브라우저에 저장됩니다."
+          },
+          {
+            "id": "eighth-day-note",
+            "type": "narration",
+            "text": "장면 설명과 인물의 대사는 서로 다른 형식으로 표시됩니다. 글자 크기와 화면 테마를 조절하여 편안한 환경에서 읽어 보세요."
+          },
+          {
+            "id": "eighth-day-end",
+            "type": "narration",
+            "text": "이 장의 예시 기록은 여기까지입니다. 아래의 다음 장 버튼을 통해 이어지는 기록으로 이동할 수 있습니다."
+          }
+        ],
+        "content": {
+          "file": "content/penacony-records--eighth-day.json",
+          "rows": 867,
+          "missing": 0,
+          "sourceIds": [
+            "quest-1036001",
+            "quest-1036002",
+            "quest-1036003",
+            "quest-1036004",
+            "quest-1036102",
+            "quest-1036104",
+            "quest-1036105",
+            "quest-1036106"
+          ],
+          "textReferenceCommit": "312b4597691e0a29cf9828a15b592757dba86949"
+        },
+        "upstreamChapterId": 103006
+      },
+      {
+        "id": "dream-grail",
+        "title": "개척 후문: 좋은꿈과 성배",
+        "blocks": [
+          {
+            "id": "dream-grail-notice",
+            "type": "narration",
+            "text": "이 본문은 읽기 화면을 확인하기 위한 예시입니다. 실제 게임 대사나 공식 스토리가 아닙니다."
+          },
+          {
+            "id": "dream-grail-intro",
+            "type": "narration",
+            "text": "페나코니에 관한 기록이 이곳에 정리됩니다. 추출한 텍스트를 연결하면 장면의 순서에 따라 이야기를 읽을 수 있습니다."
+          },
+          {
+            "id": "dream-grail-dialogue-1",
+            "type": "dialogue",
+            "speaker": "안내자 · 예시",
+            "text": "서고에 오신 것을 환영합니다. 왼쪽 목차에서 원하는 장을 선택해 보세요."
+          },
+          {
+            "id": "dream-grail-dialogue-2",
+            "type": "dialogue",
+            "speaker": "독자 · 예시",
+            "text": "이어서 읽을 수 있도록 이 기록을 남겨 둘 수 있나요?"
+          },
+          {
+            "id": "dream-grail-dialogue-3",
+            "type": "dialogue",
+            "speaker": "안내자 · 예시",
+            "text": "북마크를 누르면 내 서재에 보관됩니다. 마지막으로 읽은 장과 스크롤 위치도 이 브라우저에 저장됩니다."
+          },
+          {
+            "id": "dream-grail-note",
+            "type": "narration",
+            "text": "장면 설명과 인물의 대사는 서로 다른 형식으로 표시됩니다. 글자 크기와 화면 테마를 조절하여 편안한 환경에서 읽어 보세요."
+          },
+          {
+            "id": "dream-grail-end",
+            "type": "narration",
+            "text": "이 장의 예시 기록은 여기까지입니다. 아래의 다음 장 버튼을 통해 이어지는 기록으로 이동할 수 있습니다."
+          }
+        ],
+        "content": {
+          "file": "content/penacony-records--dream-grail.json",
+          "rows": 1386,
+          "missing": 0,
+          "sourceIds": [
+            "quest-1040531",
+            "quest-1040536",
+            "quest-1040537",
+            "quest-1040532",
+            "quest-1040551",
+            "quest-1040533",
+            "quest-1040552",
+            "quest-1040535",
+            "quest-1040553",
+            "quest-1040538",
+            "quest-1040554",
+            "quest-1040539"
+          ],
+          "textReferenceCommit": "312b4597691e0a29cf9828a15b592757dba86949"
+        }
+      },
+      {
+        "id": "memories-opening",
+        "title": "종말 임무: 기억은 꿈의 오프닝",
+        "blocks": [
+          {
+            "id": "memories-opening-notice",
+            "type": "narration",
+            "text": "이 본문은 읽기 화면을 확인하기 위한 예시입니다. 실제 게임 대사나 공식 스토리가 아닙니다."
+          },
+          {
+            "id": "memories-opening-intro",
+            "type": "narration",
+            "text": "페나코니에 관한 기록이 이곳에 정리됩니다. 추출한 텍스트를 연결하면 장면의 순서에 따라 이야기를 읽을 수 있습니다."
+          },
+          {
+            "id": "memories-opening-dialogue-1",
+            "type": "dialogue",
+            "speaker": "안내자 · 예시",
+            "text": "서고에 오신 것을 환영합니다. 왼쪽 목차에서 원하는 장을 선택해 보세요."
+          },
+          {
+            "id": "memories-opening-dialogue-2",
+            "type": "dialogue",
+            "speaker": "독자 · 예시",
+            "text": "이어서 읽을 수 있도록 이 기록을 남겨 둘 수 있나요?"
+          },
+          {
+            "id": "memories-opening-dialogue-3",
+            "type": "dialogue",
+            "speaker": "안내자 · 예시",
+            "text": "북마크를 누르면 내 서재에 보관됩니다. 마지막으로 읽은 장과 스크롤 위치도 이 브라우저에 저장됩니다."
+          },
+          {
+            "id": "memories-opening-note",
+            "type": "narration",
+            "text": "장면 설명과 인물의 대사는 서로 다른 형식으로 표시됩니다. 글자 크기와 화면 테마를 조절하여 편안한 환경에서 읽어 보세요."
+          },
+          {
+            "id": "memories-opening-end",
+            "type": "narration",
+            "text": "이 장의 예시 기록은 여기까지입니다. 아래의 다음 장 버튼을 통해 이어지는 기록으로 이동할 수 있습니다."
+          }
+        ],
+        "content": {
+          "file": "content/penacony-records--memories-opening.json",
+          "rows": 1758,
+          "missing": 0,
+          "sourceIds": [
+            "quest-1033800",
+            "quest-1033801",
+            "quest-1033802",
+            "quest-1033803",
+            "quest-1033804",
+            "quest-1033805",
+            "quest-1033806",
+            "quest-1033807",
+            "quest-1033808",
+            "quest-1033809",
+            "quest-1033810",
+            "quest-1033811"
+          ],
+          "textReferenceCommit": "312b4597691e0a29cf9828a15b592757dba86949"
+        },
+        "upstreamChapterId": 104009
+      }
+    ]
+  },
+  {
+    "id": "amphoreus-records",
+    "title": "불을 쫓는 낙목의 영웅기",
+    "subtitle": "제4장 — 앰포리어스",
+    "arcLabel": "제4장 — 앰포리어스",
+    "description": "「영원의 땅」 앰포리어스, 세 가지 운명의 길이 얽혀 있는 개척되지 않은 땅. 운명의 소용돌이는 작은 배 한 척의 도래를 기다리고 있다……",
+    "category": "trailblaze",
+    "world": "amphoreus",
+    "order": 5,
+    "language": "ko-KR",
+    "tags": [
+      "제4장",
+      "앰포리어스"
+    ],
+    "source": {
+      "kind": "extracted",
+      "version": "한국어 고정 자료 a66ec9c · 원문 갱신 312b459",
+      "sourceIds": [
+        "quest-1040101",
+        "quest-1040102",
+        "quest-1040103",
+        "quest-1040104",
+        "quest-1040105",
+        "quest-1040107",
+        "quest-1040106",
+        "quest-1040108",
+        "quest-1040112",
+        "quest-1040109",
+        "quest-1040113",
+        "quest-1040115",
+        "quest-1040118",
+        "quest-1040201",
+        "quest-1040202",
+        "quest-1040203",
+        "quest-1040204",
+        "quest-1040206",
+        "quest-1040205",
+        "quest-1040207",
+        "quest-1040208",
+        "quest-1040209",
+        "quest-1040210",
+        "quest-1040211",
+        "quest-1040212",
+        "quest-1040213",
+        "quest-1040301",
+        "quest-1040302",
+        "quest-1040303",
+        "quest-1040304",
+        "quest-1040305",
+        "quest-1040306",
+        "quest-1040307",
+        "quest-1040308",
+        "quest-1040309",
+        "quest-1040310",
+        "quest-1040311",
+        "quest-1040316",
+        "quest-1040317",
+        "quest-1040319",
+        "quest-1040401",
+        "quest-1040402",
+        "quest-1040403",
+        "quest-1040404",
+        "quest-1040405",
+        "quest-1040406",
+        "quest-1040407",
+        "quest-1040408",
+        "quest-1040409",
+        "quest-1040411",
+        "quest-1040412",
+        "quest-1040413",
+        "quest-1040414",
+        "quest-1040415",
+        "quest-1040501",
+        "quest-1040502",
+        "quest-1040503",
+        "quest-1040504",
+        "quest-1040505",
+        "quest-1040506",
+        "quest-1040601",
+        "quest-1040602",
+        "quest-1040603",
+        "quest-1040604",
+        "quest-1040605",
+        "quest-1040606",
+        "quest-1040607",
+        "quest-1040608",
+        "quest-1040609",
+        "quest-1040610",
+        "quest-1040611",
+        "quest-1040612",
+        "quest-1040613",
+        "quest-1040614",
+        "quest-1040616",
+        "quest-1043650",
+        "quest-1043651",
+        "quest-1043653",
+        "quest-1043654",
+        "quest-1043661",
+        "quest-1043662",
+        "quest-1043671",
+        "quest-1043673",
+        "quest-1043664",
+        "quest-1043665",
+        "quest-1043660",
+        "quest-1043674",
+        "quest-1043677",
+        "quest-1043700",
+        "quest-1043701",
+        "quest-1043702",
+        "quest-1043703",
+        "quest-1043704",
+        "quest-1043706",
+        "quest-1043707",
+        "quest-1043708",
+        "quest-1043709",
+        "quest-1043710",
+        "quest-1043711",
+        "quest-1043712",
+        "quest-1043713",
+        "quest-1043714",
+        "quest-1043715",
+        "quest-2043701"
+      ]
+    },
+    "chapters": [
+      {
+        "id": "journey",
+        "title": "제1막: 불을 쫓는 낙목의 영웅기",
+        "blocks": [
+          {
+            "id": "journey-notice",
+            "type": "narration",
+            "text": "이 본문은 읽기 화면을 확인하기 위한 예시입니다. 실제 게임 대사나 공식 스토리가 아닙니다."
+          },
+          {
+            "id": "journey-intro",
+            "type": "narration",
+            "text": "앰포리어스에 관한 기록이 이곳에 정리됩니다. 추출한 텍스트를 연결하면 장면의 순서에 따라 이야기를 읽을 수 있습니다."
+          },
+          {
+            "id": "journey-dialogue-1",
+            "type": "dialogue",
+            "speaker": "안내자 · 예시",
+            "text": "서고에 오신 것을 환영합니다. 왼쪽 목차에서 원하는 장을 선택해 보세요."
+          },
+          {
+            "id": "journey-dialogue-2",
+            "type": "dialogue",
+            "speaker": "독자 · 예시",
+            "text": "이어서 읽을 수 있도록 이 기록을 남겨 둘 수 있나요?"
+          },
+          {
+            "id": "journey-dialogue-3",
+            "type": "dialogue",
+            "speaker": "안내자 · 예시",
+            "text": "북마크를 누르면 내 서재에 보관됩니다. 마지막으로 읽은 장과 스크롤 위치도 이 브라우저에 저장됩니다."
+          },
+          {
+            "id": "journey-note",
+            "type": "narration",
+            "text": "장면 설명과 인물의 대사는 서로 다른 형식으로 표시됩니다. 글자 크기와 화면 테마를 조절하여 편안한 환경에서 읽어 보세요."
+          },
+          {
+            "id": "journey-end",
+            "type": "narration",
+            "text": "이 장의 예시 기록은 여기까지입니다. 아래의 다음 장 버튼을 통해 이어지는 기록으로 이동할 수 있습니다."
+          }
+        ],
+        "content": {
+          "file": "content/amphoreus-records--journey.json",
+          "rows": 3296,
+          "missing": 0,
+          "sourceIds": [
+            "quest-1040101",
+            "quest-1040102",
+            "quest-1040103",
+            "quest-1040104",
+            "quest-1040105",
+            "quest-1040107",
+            "quest-1040106",
+            "quest-1040108",
+            "quest-1040112",
+            "quest-1040109",
+            "quest-1040113",
+            "quest-1040115",
+            "quest-1040118"
+          ],
+          "textReferenceCommit": "312b4597691e0a29cf9828a15b592757dba86949"
+        },
+        "upstreamChapterId": 104001
+      },
+      {
+        "id": "gate-throne",
+        "title": "제2막: 문의 시작, 왕좌의 종말",
+        "blocks": [
+          {
+            "id": "gate-throne-notice",
+            "type": "narration",
+            "text": "이 본문은 읽기 화면을 확인하기 위한 예시입니다. 실제 게임 대사나 공식 스토리가 아닙니다."
+          },
+          {
+            "id": "gate-throne-intro",
+            "type": "narration",
+            "text": "앰포리어스에 관한 기록이 이곳에 정리됩니다. 추출한 텍스트를 연결하면 장면의 순서에 따라 이야기를 읽을 수 있습니다."
+          },
+          {
+            "id": "gate-throne-dialogue-1",
+            "type": "dialogue",
+            "speaker": "안내자 · 예시",
+            "text": "서고에 오신 것을 환영합니다. 왼쪽 목차에서 원하는 장을 선택해 보세요."
+          },
+          {
+            "id": "gate-throne-dialogue-2",
+            "type": "dialogue",
+            "speaker": "독자 · 예시",
+            "text": "이어서 읽을 수 있도록 이 기록을 남겨 둘 수 있나요?"
+          },
+          {
+            "id": "gate-throne-dialogue-3",
+            "type": "dialogue",
+            "speaker": "안내자 · 예시",
+            "text": "북마크를 누르면 내 서재에 보관됩니다. 마지막으로 읽은 장과 스크롤 위치도 이 브라우저에 저장됩니다."
+          },
+          {
+            "id": "gate-throne-note",
+            "type": "narration",
+            "text": "장면 설명과 인물의 대사는 서로 다른 형식으로 표시됩니다. 글자 크기와 화면 테마를 조절하여 편안한 환경에서 읽어 보세요."
+          },
+          {
+            "id": "gate-throne-end",
+            "type": "narration",
+            "text": "이 장의 예시 기록은 여기까지입니다. 아래의 다음 장 버튼을 통해 이어지는 기록으로 이동할 수 있습니다."
+          }
+        ],
+        "content": {
+          "file": "content/amphoreus-records--gate-throne.json",
+          "rows": 2439,
+          "missing": 0,
+          "sourceIds": [
+            "quest-1040201",
+            "quest-1040202",
+            "quest-1040203",
+            "quest-1040204",
+            "quest-1040206",
+            "quest-1040205",
+            "quest-1040207",
+            "quest-1040208",
+            "quest-1040209",
+            "quest-1040210",
+            "quest-1040211",
+            "quest-1040212",
+            "quest-1040213"
+          ],
+          "textReferenceCommit": "312b4597691e0a29cf9828a15b592757dba86949"
+        },
+        "upstreamChapterId": 104002
+      },
+      {
+        "id": "flowers",
+        "title": "제3막: 안식의 땅의 꽃밭을 지나",
+        "blocks": [
+          {
+            "id": "flowers-notice",
+            "type": "narration",
+            "text": "이 본문은 읽기 화면을 확인하기 위한 예시입니다. 실제 게임 대사나 공식 스토리가 아닙니다."
+          },
+          {
+            "id": "flowers-intro",
+            "type": "narration",
+            "text": "앰포리어스에 관한 기록이 이곳에 정리됩니다. 추출한 텍스트를 연결하면 장면의 순서에 따라 이야기를 읽을 수 있습니다."
+          },
+          {
+            "id": "flowers-dialogue-1",
+            "type": "dialogue",
+            "speaker": "안내자 · 예시",
+            "text": "서고에 오신 것을 환영합니다. 왼쪽 목차에서 원하는 장을 선택해 보세요."
+          },
+          {
+            "id": "flowers-dialogue-2",
+            "type": "dialogue",
+            "speaker": "독자 · 예시",
+            "text": "이어서 읽을 수 있도록 이 기록을 남겨 둘 수 있나요?"
+          },
+          {
+            "id": "flowers-dialogue-3",
+            "type": "dialogue",
+            "speaker": "안내자 · 예시",
+            "text": "북마크를 누르면 내 서재에 보관됩니다. 마지막으로 읽은 장과 스크롤 위치도 이 브라우저에 저장됩니다."
+          },
+          {
+            "id": "flowers-note",
+            "type": "narration",
+            "text": "장면 설명과 인물의 대사는 서로 다른 형식으로 표시됩니다. 글자 크기와 화면 테마를 조절하여 편안한 환경에서 읽어 보세요."
+          },
+          {
+            "id": "flowers-end",
+            "type": "narration",
+            "text": "이 장의 예시 기록은 여기까지입니다. 아래의 다음 장 버튼을 통해 이어지는 기록으로 이동할 수 있습니다."
+          }
+        ],
+        "content": {
+          "file": "content/amphoreus-records--flowers.json",
+          "rows": 2508,
+          "missing": 0,
+          "sourceIds": [
+            "quest-1040301",
+            "quest-1040302",
+            "quest-1040303",
+            "quest-1040304",
+            "quest-1040305",
+            "quest-1040306",
+            "quest-1040307",
+            "quest-1040308",
+            "quest-1040309",
+            "quest-1040310",
+            "quest-1040311",
+            "quest-1040316",
+            "quest-1040317",
+            "quest-1040319"
+          ],
+          "textReferenceCommit": "312b4597691e0a29cf9828a15b592757dba86949"
+        },
+        "upstreamChapterId": 104003
+      },
+      {
+        "id": "dawn-fall",
+        "title": "제4막: 여명이 틀 무렵의 추락",
+        "blocks": [
+          {
+            "id": "dawn-fall-notice",
+            "type": "narration",
+            "text": "이 본문은 읽기 화면을 확인하기 위한 예시입니다. 실제 게임 대사나 공식 스토리가 아닙니다."
+          },
+          {
+            "id": "dawn-fall-intro",
+            "type": "narration",
+            "text": "앰포리어스에 관한 기록이 이곳에 정리됩니다. 추출한 텍스트를 연결하면 장면의 순서에 따라 이야기를 읽을 수 있습니다."
+          },
+          {
+            "id": "dawn-fall-dialogue-1",
+            "type": "dialogue",
+            "speaker": "안내자 · 예시",
+            "text": "서고에 오신 것을 환영합니다. 왼쪽 목차에서 원하는 장을 선택해 보세요."
+          },
+          {
+            "id": "dawn-fall-dialogue-2",
+            "type": "dialogue",
+            "speaker": "독자 · 예시",
+            "text": "이어서 읽을 수 있도록 이 기록을 남겨 둘 수 있나요?"
+          },
+          {
+            "id": "dawn-fall-dialogue-3",
+            "type": "dialogue",
+            "speaker": "안내자 · 예시",
+            "text": "북마크를 누르면 내 서재에 보관됩니다. 마지막으로 읽은 장과 스크롤 위치도 이 브라우저에 저장됩니다."
+          },
+          {
+            "id": "dawn-fall-note",
+            "type": "narration",
+            "text": "장면 설명과 인물의 대사는 서로 다른 형식으로 표시됩니다. 글자 크기와 화면 테마를 조절하여 편안한 환경에서 읽어 보세요."
+          },
+          {
+            "id": "dawn-fall-end",
+            "type": "narration",
+            "text": "이 장의 예시 기록은 여기까지입니다. 아래의 다음 장 버튼을 통해 이어지는 기록으로 이동할 수 있습니다."
+          }
+        ],
+        "content": {
+          "file": "content/amphoreus-records--dawn-fall.json",
+          "rows": 2548,
+          "missing": 0,
+          "sourceIds": [
+            "quest-1040401",
+            "quest-1040402",
+            "quest-1040403",
+            "quest-1040404",
+            "quest-1040405",
+            "quest-1040406",
+            "quest-1040407",
+            "quest-1040408",
+            "quest-1040409",
+            "quest-1040411",
+            "quest-1040412",
+            "quest-1040413",
+            "quest-1040414",
+            "quest-1040415"
+          ],
+          "textReferenceCommit": "312b4597691e0a29cf9828a15b592757dba86949"
+        },
+        "upstreamChapterId": 104004
+      },
+      {
+        "id": "sun-destruction",
+        "title": "제5막: 태양이 파멸로 향하기에",
+        "blocks": [
+          {
+            "id": "sun-destruction-notice",
+            "type": "narration",
+            "text": "이 본문은 읽기 화면을 확인하기 위한 예시입니다. 실제 게임 대사나 공식 스토리가 아닙니다."
+          },
+          {
+            "id": "sun-destruction-intro",
+            "type": "narration",
+            "text": "앰포리어스에 관한 기록이 이곳에 정리됩니다. 추출한 텍스트를 연결하면 장면의 순서에 따라 이야기를 읽을 수 있습니다."
+          },
+          {
+            "id": "sun-destruction-dialogue-1",
+            "type": "dialogue",
+            "speaker": "안내자 · 예시",
+            "text": "서고에 오신 것을 환영합니다. 왼쪽 목차에서 원하는 장을 선택해 보세요."
+          },
+          {
+            "id": "sun-destruction-dialogue-2",
+            "type": "dialogue",
+            "speaker": "독자 · 예시",
+            "text": "이어서 읽을 수 있도록 이 기록을 남겨 둘 수 있나요?"
+          },
+          {
+            "id": "sun-destruction-dialogue-3",
+            "type": "dialogue",
+            "speaker": "안내자 · 예시",
+            "text": "북마크를 누르면 내 서재에 보관됩니다. 마지막으로 읽은 장과 스크롤 위치도 이 브라우저에 저장됩니다."
+          },
+          {
+            "id": "sun-destruction-note",
+            "type": "narration",
+            "text": "장면 설명과 인물의 대사는 서로 다른 형식으로 표시됩니다. 글자 크기와 화면 테마를 조절하여 편안한 환경에서 읽어 보세요."
+          },
+          {
+            "id": "sun-destruction-end",
+            "type": "narration",
+            "text": "이 장의 예시 기록은 여기까지입니다. 아래의 다음 장 버튼을 통해 이어지는 기록으로 이동할 수 있습니다."
+          }
+        ],
+        "content": {
+          "file": "content/amphoreus-records--sun-destruction.json",
+          "rows": 1471,
+          "missing": 0,
+          "sourceIds": [
+            "quest-1040501",
+            "quest-1040502",
+            "quest-1040503",
+            "quest-1040504",
+            "quest-1040505",
+            "quest-1040506"
+          ],
+          "textReferenceCommit": "312b4597691e0a29cf9828a15b592757dba86949"
+        },
+        "upstreamChapterId": 104005
+      },
+      {
+        "id": "before-heroes-die",
+        "title": "제6막: 영웅은 죽기 전에",
+        "blocks": [
+          {
+            "id": "before-heroes-die-notice",
+            "type": "narration",
+            "text": "이 본문은 읽기 화면을 확인하기 위한 예시입니다. 실제 게임 대사나 공식 스토리가 아닙니다."
+          },
+          {
+            "id": "before-heroes-die-intro",
+            "type": "narration",
+            "text": "앰포리어스에 관한 기록이 이곳에 정리됩니다. 추출한 텍스트를 연결하면 장면의 순서에 따라 이야기를 읽을 수 있습니다."
+          },
+          {
+            "id": "before-heroes-die-dialogue-1",
+            "type": "dialogue",
+            "speaker": "안내자 · 예시",
+            "text": "서고에 오신 것을 환영합니다. 왼쪽 목차에서 원하는 장을 선택해 보세요."
+          },
+          {
+            "id": "before-heroes-die-dialogue-2",
+            "type": "dialogue",
+            "speaker": "독자 · 예시",
+            "text": "이어서 읽을 수 있도록 이 기록을 남겨 둘 수 있나요?"
+          },
+          {
+            "id": "before-heroes-die-dialogue-3",
+            "type": "dialogue",
+            "speaker": "안내자 · 예시",
+            "text": "북마크를 누르면 내 서재에 보관됩니다. 마지막으로 읽은 장과 스크롤 위치도 이 브라우저에 저장됩니다."
+          },
+          {
+            "id": "before-heroes-die-note",
+            "type": "narration",
+            "text": "장면 설명과 인물의 대사는 서로 다른 형식으로 표시됩니다. 글자 크기와 화면 테마를 조절하여 편안한 환경에서 읽어 보세요."
+          },
+          {
+            "id": "before-heroes-die-end",
+            "type": "narration",
+            "text": "이 장의 예시 기록은 여기까지입니다. 아래의 다음 장 버튼을 통해 이어지는 기록으로 이동할 수 있습니다."
+          }
+        ],
+        "content": {
+          "file": "content/amphoreus-records--before-heroes-die.json",
+          "rows": 2004,
+          "missing": 0,
+          "sourceIds": [
+            "quest-1040601",
+            "quest-1040602",
+            "quest-1040603",
+            "quest-1040604",
+            "quest-1040605",
+            "quest-1040606",
+            "quest-1040607",
+            "quest-1040608",
+            "quest-1040609",
+            "quest-1040610",
+            "quest-1040611",
+            "quest-1040612",
+            "quest-1040613",
+            "quest-1040614",
+            "quest-1040616"
+          ],
+          "textReferenceCommit": "312b4597691e0a29cf9828a15b592757dba86949"
+        },
+        "upstreamChapterId": 104007
+      },
+      {
+        "id": "long-night",
+        "title": "제7막: 긴 밤 속에 다시 대지로",
+        "blocks": [
+          {
+            "id": "long-night-notice",
+            "type": "narration",
+            "text": "이 본문은 읽기 화면을 확인하기 위한 예시입니다. 실제 게임 대사나 공식 스토리가 아닙니다."
+          },
+          {
+            "id": "long-night-intro",
+            "type": "narration",
+            "text": "앰포리어스에 관한 기록이 이곳에 정리됩니다. 추출한 텍스트를 연결하면 장면의 순서에 따라 이야기를 읽을 수 있습니다."
+          },
+          {
+            "id": "long-night-dialogue-1",
+            "type": "dialogue",
+            "speaker": "안내자 · 예시",
+            "text": "서고에 오신 것을 환영합니다. 왼쪽 목차에서 원하는 장을 선택해 보세요."
+          },
+          {
+            "id": "long-night-dialogue-2",
+            "type": "dialogue",
+            "speaker": "독자 · 예시",
+            "text": "이어서 읽을 수 있도록 이 기록을 남겨 둘 수 있나요?"
+          },
+          {
+            "id": "long-night-dialogue-3",
+            "type": "dialogue",
+            "speaker": "안내자 · 예시",
+            "text": "북마크를 누르면 내 서재에 보관됩니다. 마지막으로 읽은 장과 스크롤 위치도 이 브라우저에 저장됩니다."
+          },
+          {
+            "id": "long-night-note",
+            "type": "narration",
+            "text": "장면 설명과 인물의 대사는 서로 다른 형식으로 표시됩니다. 글자 크기와 화면 테마를 조절하여 편안한 환경에서 읽어 보세요."
+          },
+          {
+            "id": "long-night-end",
+            "type": "narration",
+            "text": "이 장의 예시 기록은 여기까지입니다. 아래의 다음 장 버튼을 통해 이어지는 기록으로 이동할 수 있습니다."
+          }
+        ],
+        "content": {
+          "file": "content/amphoreus-records--long-night.json",
+          "rows": 1564,
+          "missing": 0,
+          "sourceIds": [
+            "quest-1043650",
+            "quest-1043651",
+            "quest-1043653",
+            "quest-1043654",
+            "quest-1043661",
+            "quest-1043662",
+            "quest-1043671",
+            "quest-1043673",
+            "quest-1043664",
+            "quest-1043665",
+            "quest-1043660",
+            "quest-1043674",
+            "quest-1043677"
+          ],
+          "textReferenceCommit": "312b4597691e0a29cf9828a15b592757dba86949"
+        },
+        "upstreamChapterId": 104008
+      },
+      {
+        "id": "yesterdays-tomorrow",
+        "title": "제8막: 어제의 내일이 되어",
+        "blocks": [
+          {
+            "id": "yesterdays-tomorrow-notice",
+            "type": "narration",
+            "text": "이 본문은 읽기 화면을 확인하기 위한 예시입니다. 실제 게임 대사나 공식 스토리가 아닙니다."
+          },
+          {
+            "id": "yesterdays-tomorrow-intro",
+            "type": "narration",
+            "text": "앰포리어스에 관한 기록이 이곳에 정리됩니다. 추출한 텍스트를 연결하면 장면의 순서에 따라 이야기를 읽을 수 있습니다."
+          },
+          {
+            "id": "yesterdays-tomorrow-dialogue-1",
+            "type": "dialogue",
+            "speaker": "안내자 · 예시",
+            "text": "서고에 오신 것을 환영합니다. 왼쪽 목차에서 원하는 장을 선택해 보세요."
+          },
+          {
+            "id": "yesterdays-tomorrow-dialogue-2",
+            "type": "dialogue",
+            "speaker": "독자 · 예시",
+            "text": "이어서 읽을 수 있도록 이 기록을 남겨 둘 수 있나요?"
+          },
+          {
+            "id": "yesterdays-tomorrow-dialogue-3",
+            "type": "dialogue",
+            "speaker": "안내자 · 예시",
+            "text": "북마크를 누르면 내 서재에 보관됩니다. 마지막으로 읽은 장과 스크롤 위치도 이 브라우저에 저장됩니다."
+          },
+          {
+            "id": "yesterdays-tomorrow-note",
+            "type": "narration",
+            "text": "장면 설명과 인물의 대사는 서로 다른 형식으로 표시됩니다. 글자 크기와 화면 테마를 조절하여 편안한 환경에서 읽어 보세요."
+          },
+          {
+            "id": "yesterdays-tomorrow-end",
+            "type": "narration",
+            "text": "이 장의 예시 기록은 여기까지입니다. 아래의 다음 장 버튼을 통해 이어지는 기록으로 이동할 수 있습니다."
+          }
+        ],
+        "content": {
+          "file": "content/amphoreus-records--yesterdays-tomorrow.json",
+          "rows": 1576,
+          "missing": 0,
+          "sourceIds": [
+            "quest-1043700",
+            "quest-1043701",
+            "quest-1043702",
+            "quest-1043703",
+            "quest-1043704",
+            "quest-1043706",
+            "quest-1043707",
+            "quest-1043708",
+            "quest-1043709",
+            "quest-1043710",
+            "quest-1043711",
+            "quest-1043712",
+            "quest-1043713",
+            "quest-1043714",
+            "quest-1043715"
+          ],
+          "textReferenceCommit": "312b4597691e0a29cf9828a15b592757dba86949"
+        },
+        "upstreamChapterId": 104010
+      },
+      {
+        "id": "as-i-write",
+        "title": "모험 임무: 내가 쓰는 대로",
+        "blocks": [
+          {
+            "id": "as-i-write-notice",
+            "type": "narration",
+            "text": "이 본문은 읽기 화면을 확인하기 위한 예시입니다. 실제 게임 대사나 공식 스토리가 아닙니다."
+          },
+          {
+            "id": "as-i-write-intro",
+            "type": "narration",
+            "text": "앰포리어스에 관한 기록이 이곳에 정리됩니다. 추출한 텍스트를 연결하면 장면의 순서에 따라 이야기를 읽을 수 있습니다."
+          },
+          {
+            "id": "as-i-write-dialogue-1",
+            "type": "dialogue",
+            "speaker": "안내자 · 예시",
+            "text": "서고에 오신 것을 환영합니다. 왼쪽 목차에서 원하는 장을 선택해 보세요."
+          },
+          {
+            "id": "as-i-write-dialogue-2",
+            "type": "dialogue",
+            "speaker": "독자 · 예시",
+            "text": "이어서 읽을 수 있도록 이 기록을 남겨 둘 수 있나요?"
+          },
+          {
+            "id": "as-i-write-dialogue-3",
+            "type": "dialogue",
+            "speaker": "안내자 · 예시",
+            "text": "북마크를 누르면 내 서재에 보관됩니다. 마지막으로 읽은 장과 스크롤 위치도 이 브라우저에 저장됩니다."
+          },
+          {
+            "id": "as-i-write-note",
+            "type": "narration",
+            "text": "장면 설명과 인물의 대사는 서로 다른 형식으로 표시됩니다. 글자 크기와 화면 테마를 조절하여 편안한 환경에서 읽어 보세요."
+          },
+          {
+            "id": "as-i-write-end",
+            "type": "narration",
+            "text": "이 장의 예시 기록은 여기까지입니다. 아래의 다음 장 버튼을 통해 이어지는 기록으로 이동할 수 있습니다."
+          }
+        ],
+        "parentId": "yesterdays-tomorrow",
+        "kind": "adventure",
+        "content": {
+          "file": "content/amphoreus-records--as-i-write.json",
+          "rows": 336,
+          "missing": 0,
+          "sourceIds": [
+            "quest-2043701"
+          ],
+          "textReferenceCommit": "312b4597691e0a29cf9828a15b592757dba86949"
+        }
+      }
+    ]
+  },
+  {
+    "id": "paradise-records",
+    "title": "낙원에 오신 걸 환영합니다",
+    "subtitle": "제5장 — 이상 낙원 / 아스트로폴리스",
+    "arcLabel": "제5장 — 이상 낙원 / 아스트로폴리스",
+    "description": "어느새 빠져든 그림 속 낙원에서 공중의 신좌는 미소 지으며, 신위를 다투는 알현자들이 가면을 쓴 채 모두를 기쁘게 하길 기다린다. 겁화가 은하를 태우는 가운데, 신은 자리를 비우고 환락을 갈망하는 이들에게…「신이 되는 1분」이라는 상을 남겼다.",
+    "category": "trailblaze",
+    "world": "paradise-astropolis",
+    "order": 6,
+    "language": "ko-KR",
+    "tags": [
+      "제5장",
+      "이상 낙원",
+      "아스트로폴리스"
+    ],
+    "source": {
+      "kind": "extracted",
+      "version": "한국어 자료 a66ec9c · 제7막 소개문 · 원문 갱신 312b459",
+      "sourceIds": [
+        "quest-1054008",
+        "quest-1054002",
+        "quest-1054004",
+        "quest-1054005",
+        "quest-1054009",
+        "quest-1054010",
+        "quest-1054000",
+        "quest-1054001",
+        "quest-1054006",
+        "quest-1054007",
+        "quest-1054011",
+        "quest-1054102",
+        "quest-1054103",
+        "quest-1054100",
+        "quest-1054106",
+        "quest-1054105",
+        "quest-1054101",
+        "quest-1054111",
+        "quest-1054110",
+        "quest-1054112",
+        "quest-1054200",
+        "quest-1054201",
+        "quest-1054202",
+        "quest-1054203",
+        "quest-1054204",
+        "quest-1054205",
+        "quest-1054206",
+        "quest-1054207",
+        "quest-1054208",
+        "quest-1054209",
+        "quest-1054210",
+        "quest-1054211",
+        "quest-1054212",
+        "quest-1054302",
+        "quest-1054300",
+        "quest-1054301",
+        "quest-1054304",
+        "quest-1054305",
+        "quest-1054306",
+        "quest-1054303",
+        "quest-1054307",
+        "quest-1054308",
+        "quest-1054309",
+        "quest-1054310",
+        "quest-1054410",
+        "quest-1054411",
+        "quest-1054413",
+        "quest-1054412",
+        "quest-1054417",
+        "quest-1054418",
+        "quest-1054419",
+        "quest-1054500",
+        "quest-1054501",
+        "quest-1054502",
+        "quest-1054503",
+        "quest-1054504",
+        "quest-1054506",
+        "quest-1054521",
+        "quest-1054525",
+        "quest-1054526",
+        "quest-1054520",
+        "quest-1054522",
+        "quest-1054523",
+        "quest-1054524",
+        "quest-1054527",
+        "quest-1054528",
+        "chapter-intro-105009"
+      ]
+    },
+    "chapters": [
+      {
+        "id": "paradise",
+        "title": "제1막: 낙원에 오신 걸 환영합니다",
+        "blocks": [
+          {
+            "id": "paradise-notice",
+            "type": "narration",
+            "text": "이 본문은 읽기 화면을 확인하기 위한 예시입니다. 실제 게임 대사나 공식 스토리가 아닙니다."
+          },
+          {
+            "id": "paradise-intro",
+            "type": "narration",
+            "text": "이상 낙원 / 아스트로폴리스에 관한 기록이 이곳에 정리됩니다. 추출한 텍스트를 연결하면 장면의 순서에 따라 이야기를 읽을 수 있습니다."
+          },
+          {
+            "id": "paradise-dialogue-1",
+            "type": "dialogue",
+            "speaker": "안내자 · 예시",
+            "text": "서고에 오신 것을 환영합니다. 왼쪽 목차에서 원하는 장을 선택해 보세요."
+          },
+          {
+            "id": "paradise-dialogue-2",
+            "type": "dialogue",
+            "speaker": "독자 · 예시",
+            "text": "이어서 읽을 수 있도록 이 기록을 남겨 둘 수 있나요?"
+          },
+          {
+            "id": "paradise-dialogue-3",
+            "type": "dialogue",
+            "speaker": "안내자 · 예시",
+            "text": "북마크를 누르면 내 서재에 보관됩니다. 마지막으로 읽은 장과 스크롤 위치도 이 브라우저에 저장됩니다."
+          },
+          {
+            "id": "paradise-note",
+            "type": "narration",
+            "text": "장면 설명과 인물의 대사는 서로 다른 형식으로 표시됩니다. 글자 크기와 화면 테마를 조절하여 편안한 환경에서 읽어 보세요."
+          },
+          {
+            "id": "paradise-end",
+            "type": "narration",
+            "text": "이 장의 예시 기록은 여기까지입니다. 아래의 다음 장 버튼을 통해 이어지는 기록으로 이동할 수 있습니다."
+          }
+        ],
+        "content": {
+          "file": "content/paradise-records--paradise.json",
+          "rows": 2447,
+          "missing": 0,
+          "sourceIds": [
+            "quest-1054008",
+            "quest-1054002",
+            "quest-1054004",
+            "quest-1054005",
+            "quest-1054009",
+            "quest-1054010",
+            "quest-1054000",
+            "quest-1054001",
+            "quest-1054006",
+            "quest-1054007",
+            "quest-1054011"
+          ],
+          "textReferenceCommit": "312b4597691e0a29cf9828a15b592757dba86949"
+        },
+        "upstreamChapterId": 105001
+      },
+      {
+        "id": "astropolis",
+        "title": "제2막: 새벽에 바치는 폭주",
+        "blocks": [
+          {
+            "id": "astropolis-notice",
+            "type": "narration",
+            "text": "이 본문은 읽기 화면을 확인하기 위한 예시입니다. 실제 게임 대사나 공식 스토리가 아닙니다."
+          },
+          {
+            "id": "astropolis-intro",
+            "type": "narration",
+            "text": "이상 낙원 / 아스트로폴리스에 관한 기록이 이곳에 정리됩니다. 추출한 텍스트를 연결하면 장면의 순서에 따라 이야기를 읽을 수 있습니다."
+          },
+          {
+            "id": "astropolis-dialogue-1",
+            "type": "dialogue",
+            "speaker": "안내자 · 예시",
+            "text": "서고에 오신 것을 환영합니다. 왼쪽 목차에서 원하는 장을 선택해 보세요."
+          },
+          {
+            "id": "astropolis-dialogue-2",
+            "type": "dialogue",
+            "speaker": "독자 · 예시",
+            "text": "이어서 읽을 수 있도록 이 기록을 남겨 둘 수 있나요?"
+          },
+          {
+            "id": "astropolis-dialogue-3",
+            "type": "dialogue",
+            "speaker": "안내자 · 예시",
+            "text": "북마크를 누르면 내 서재에 보관됩니다. 마지막으로 읽은 장과 스크롤 위치도 이 브라우저에 저장됩니다."
+          },
+          {
+            "id": "astropolis-note",
+            "type": "narration",
+            "text": "장면 설명과 인물의 대사는 서로 다른 형식으로 표시됩니다. 글자 크기와 화면 테마를 조절하여 편안한 환경에서 읽어 보세요."
+          },
+          {
+            "id": "astropolis-end",
+            "type": "narration",
+            "text": "이 장의 예시 기록은 여기까지입니다. 아래의 다음 장 버튼을 통해 이어지는 기록으로 이동할 수 있습니다."
+          }
+        ],
+        "content": {
+          "file": "content/paradise-records--astropolis.json",
+          "rows": 1994,
+          "missing": 0,
+          "sourceIds": [
+            "quest-1054102",
+            "quest-1054103",
+            "quest-1054100",
+            "quest-1054106",
+            "quest-1054105",
+            "quest-1054101",
+            "quest-1054111",
+            "quest-1054110",
+            "quest-1054112"
+          ],
+          "textReferenceCommit": "312b4597691e0a29cf9828a15b592757dba86949"
+        },
+        "upstreamChapterId": 105002
+      },
+      {
+        "id": "laughter",
+        "title": "제3막: 그리하여, 웃음소리는 멈추지 않으리",
+        "blocks": [
+          {
+            "id": "laughter-notice",
+            "type": "narration",
+            "text": "이 본문은 읽기 화면을 확인하기 위한 예시입니다. 실제 게임 대사나 공식 스토리가 아닙니다."
+          },
+          {
+            "id": "laughter-intro",
+            "type": "narration",
+            "text": "이상 낙원 / 아스트로폴리스에 관한 기록이 이곳에 정리됩니다. 추출한 텍스트를 연결하면 장면의 순서에 따라 이야기를 읽을 수 있습니다."
+          },
+          {
+            "id": "laughter-dialogue-1",
+            "type": "dialogue",
+            "speaker": "안내자 · 예시",
+            "text": "서고에 오신 것을 환영합니다. 왼쪽 목차에서 원하는 장을 선택해 보세요."
+          },
+          {
+            "id": "laughter-dialogue-2",
+            "type": "dialogue",
+            "speaker": "독자 · 예시",
+            "text": "이어서 읽을 수 있도록 이 기록을 남겨 둘 수 있나요?"
+          },
+          {
+            "id": "laughter-dialogue-3",
+            "type": "dialogue",
+            "speaker": "안내자 · 예시",
+            "text": "북마크를 누르면 내 서재에 보관됩니다. 마지막으로 읽은 장과 스크롤 위치도 이 브라우저에 저장됩니다."
+          },
+          {
+            "id": "laughter-note",
+            "type": "narration",
+            "text": "장면 설명과 인물의 대사는 서로 다른 형식으로 표시됩니다. 글자 크기와 화면 테마를 조절하여 편안한 환경에서 읽어 보세요."
+          },
+          {
+            "id": "laughter-end",
+            "type": "narration",
+            "text": "이 장의 예시 기록은 여기까지입니다. 아래의 다음 장 버튼을 통해 이어지는 기록으로 이동할 수 있습니다."
+          }
+        ],
+        "content": {
+          "file": "content/paradise-records--laughter.json",
+          "rows": 1433,
+          "missing": 0,
+          "sourceIds": [
+            "quest-1054200",
+            "quest-1054201",
+            "quest-1054202",
+            "quest-1054203",
+            "quest-1054204",
+            "quest-1054205",
+            "quest-1054206",
+            "quest-1054207",
+            "quest-1054208",
+            "quest-1054209",
+            "quest-1054210",
+            "quest-1054211",
+            "quest-1054212"
+          ],
+          "textReferenceCommit": "312b4597691e0a29cf9828a15b592757dba86949"
+        },
+        "upstreamChapterId": 105003
+      },
+      {
+        "id": "river-of-oblivion",
+        "title": "제4막: 산 자의 망천에 잠겨",
+        "blocks": [
+          {
+            "id": "river-of-oblivion-notice",
+            "type": "narration",
+            "text": "이 본문은 읽기 화면을 확인하기 위한 예시입니다. 실제 게임 대사나 공식 스토리가 아닙니다."
+          },
+          {
+            "id": "river-of-oblivion-intro",
+            "type": "narration",
+            "text": "이상 낙원 / 아스트로폴리스에 관한 기록이 이곳에 정리됩니다. 추출한 텍스트를 연결하면 장면의 순서에 따라 이야기를 읽을 수 있습니다."
+          },
+          {
+            "id": "river-of-oblivion-dialogue-1",
+            "type": "dialogue",
+            "speaker": "안내자 · 예시",
+            "text": "서고에 오신 것을 환영합니다. 왼쪽 목차에서 원하는 장을 선택해 보세요."
+          },
+          {
+            "id": "river-of-oblivion-dialogue-2",
+            "type": "dialogue",
+            "speaker": "독자 · 예시",
+            "text": "이어서 읽을 수 있도록 이 기록을 남겨 둘 수 있나요?"
+          },
+          {
+            "id": "river-of-oblivion-dialogue-3",
+            "type": "dialogue",
+            "speaker": "안내자 · 예시",
+            "text": "북마크를 누르면 내 서재에 보관됩니다. 마지막으로 읽은 장과 스크롤 위치도 이 브라우저에 저장됩니다."
+          },
+          {
+            "id": "river-of-oblivion-note",
+            "type": "narration",
+            "text": "장면 설명과 인물의 대사는 서로 다른 형식으로 표시됩니다. 글자 크기와 화면 테마를 조절하여 편안한 환경에서 읽어 보세요."
+          },
+          {
+            "id": "river-of-oblivion-end",
+            "type": "narration",
+            "text": "이 장의 예시 기록은 여기까지입니다. 아래의 다음 장 버튼을 통해 이어지는 기록으로 이동할 수 있습니다."
+          }
+        ],
+        "content": {
+          "file": "content/paradise-records--river-of-oblivion.json",
+          "rows": 1271,
+          "missing": 0,
+          "sourceIds": [
+            "quest-1054302",
+            "quest-1054300",
+            "quest-1054301",
+            "quest-1054304",
+            "quest-1054305",
+            "quest-1054306",
+            "quest-1054303",
+            "quest-1054307",
+            "quest-1054308",
+            "quest-1054309",
+            "quest-1054310"
+          ],
+          "textReferenceCommit": "312b4597691e0a29cf9828a15b592757dba86949"
+        },
+        "upstreamChapterId": 105004
+      },
+      {
+        "id": "silent-horn",
+        "title": "제5막: 적막이 깃든 순간, 울리는 경적",
+        "blocks": [
+          {
+            "id": "silent-horn-notice",
+            "type": "narration",
+            "text": "이 본문은 읽기 화면을 확인하기 위한 예시입니다. 실제 게임 대사나 공식 스토리가 아닙니다."
+          },
+          {
+            "id": "silent-horn-intro",
+            "type": "narration",
+            "text": "이상 낙원 / 아스트로폴리스에 관한 기록이 이곳에 정리됩니다. 추출한 텍스트를 연결하면 장면의 순서에 따라 이야기를 읽을 수 있습니다."
+          },
+          {
+            "id": "silent-horn-dialogue-1",
+            "type": "dialogue",
+            "speaker": "안내자 · 예시",
+            "text": "서고에 오신 것을 환영합니다. 왼쪽 목차에서 원하는 장을 선택해 보세요."
+          },
+          {
+            "id": "silent-horn-dialogue-2",
+            "type": "dialogue",
+            "speaker": "독자 · 예시",
+            "text": "이어서 읽을 수 있도록 이 기록을 남겨 둘 수 있나요?"
+          },
+          {
+            "id": "silent-horn-dialogue-3",
+            "type": "dialogue",
+            "speaker": "안내자 · 예시",
+            "text": "북마크를 누르면 내 서재에 보관됩니다. 마지막으로 읽은 장과 스크롤 위치도 이 브라우저에 저장됩니다."
+          },
+          {
+            "id": "silent-horn-note",
+            "type": "narration",
+            "text": "장면 설명과 인물의 대사는 서로 다른 형식으로 표시됩니다. 글자 크기와 화면 테마를 조절하여 편안한 환경에서 읽어 보세요."
+          },
+          {
+            "id": "silent-horn-end",
+            "type": "narration",
+            "text": "이 장의 예시 기록은 여기까지입니다. 아래의 다음 장 버튼을 통해 이어지는 기록으로 이동할 수 있습니다."
+          }
+        ],
+        "content": {
+          "file": "content/paradise-records--silent-horn.json",
+          "rows": 1237,
+          "missing": 0,
+          "sourceIds": [
+            "quest-1054410",
+            "quest-1054411",
+            "quest-1054413",
+            "quest-1054412",
+            "quest-1054417",
+            "quest-1054418",
+            "quest-1054419"
+          ],
+          "textReferenceCommit": "312b4597691e0a29cf9828a15b592757dba86949"
+        },
+        "upstreamChapterId": 105005
+      },
+      {
+        "id": "celestial-gambit",
+        "title": "제6막: 천성에 던진 승부수",
+        "blocks": [],
+        "content": {
+          "file": "content/paradise-records--celestial-gambit.json",
+          "rows": 1051,
+          "missing": 0,
+          "sourceIds": [
+            "quest-1054500",
+            "quest-1054501",
+            "quest-1054502",
+            "quest-1054503",
+            "quest-1054504",
+            "quest-1054506"
+          ],
+          "textReferenceCommit": "312b4597691e0a29cf9828a15b592757dba86949"
+        },
+        "upstreamChapterId": 105008
+      },
+      {
+        "id": "penniless-billionaire",
+        "title": "개척 후문: 무일푼 재벌 프로젝트",
+        "blocks": [],
+        "content": {
+          "file": "content/paradise-records--penniless-billionaire.json",
+          "rows": 1120,
+          "missing": 0,
+          "sourceIds": [
+            "quest-1054521",
+            "quest-1054525",
+            "quest-1054526",
+            "quest-1054520",
+            "quest-1054522",
+            "quest-1054523",
+            "quest-1054524",
+            "quest-1054527",
+            "quest-1054528"
+          ],
+          "textReferenceCommit": "312b4597691e0a29cf9828a15b592757dba86949"
+        }
+      },
+      {
+        "id": "before-moonrise",
+        "title": "제7막: 달 뜨기 전, 괴수와 춤을",
+        "contentNote": "챕터 소개문 수록 · 대사 본문 미수록",
+        "blocks": [],
+        "content": {
+          "file": "content/paradise-records--before-moonrise.json",
+          "rows": 1,
+          "missing": 0,
+          "sourceIds": [
+            "chapter-intro-105009"
+          ],
+          "textReferenceCommit": "312b4597691e0a29cf9828a15b592757dba86949"
+        },
+        "upstreamChapterId": 105009
+      }
+    ]
+  }
+]

@@ -44,7 +44,8 @@ def text(field):
 
 
 title = text('ChapterName')
-assert title == '달 뜨기 전, 괴수와 춤을'
+if not title:
+    raise ValueError('Missing chapter title')
 source = 'ExcelOutput/MissionChapterConfig.json:105009/ChapterDesc'
 document = {
     'id': 'chapter-intro-105009', 'title': title,

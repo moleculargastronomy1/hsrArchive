@@ -4,7 +4,7 @@ import crypto from 'node:crypto';
 import { archive } from '../src/data/archive.ts';
 
 const sourceRoot = path.resolve(process.argv[2] ?? '.cache/starrail-source');
-const referenceRoot = path.resolve(process.argv[3] ?? '../references/starrail-quests');
+const referenceRoot = path.resolve(process.argv[3] ?? '.cache/starrail-input');
 const commit = 'a66ec9c36e3321ce4ea9e62b58e9326634628dce';
 const digest = (bytes) => crypto.createHash('sha256').update(bytes).digest('hex');
 const read = (file) => JSON.parse(fs.readFileSync(file, 'utf8'));
@@ -381,7 +381,7 @@ fs.writeFileSync(
     schema: 'hsr-dialogue.v1',
     referenceCommit: commit,
     sourceReferences: [
-      { repository: 'mizan0515/starrail-quests', commit },
+      { commit },
       { repository: trainDatabank.repository, commit: trainDatabank.commit },
       { repository: chapterIntros.repository, commit: chapterIntros.commit },
     ],
@@ -395,7 +395,6 @@ fs.writeFileSync(
   'docs/content-provenance.json',
   JSON.stringify(
     {
-      reference: 'mizan0515/starrail-quests',
       commit,
       sourceFiles,
       supplementalFiles: {

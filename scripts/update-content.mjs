@@ -1,9 +1,8 @@
-// Uses the file-discovery approach observed in paimooon's translate.html;
-// conversion and publication are implemented independently for this archive.
 import fs from 'node:fs/promises';
 import path from 'node:path';
 import { execFileSync } from 'node:child_process';
 import { REPOSITORY, resolveUpstream, gitBlob } from './upstream-content.mjs';
+import { isMissionStructurePath, resolveMissionStructures } from './trailblaze-structures.mjs';
 
 const root = process.cwd();
 const cache = path.resolve('.cache/upstream-content');
@@ -20,8 +19,20 @@ async function api(endpoint) {
   return response.json();
 }
 await fs.mkdir(cache, { recursive: true });
-const mode = process.argv[2];
-if (mode && !['--plan', '--apply'].includes(mode)) throw new Error('Unknown content update mode');
+let mode, title;
+const args = process.argv.slice(2);
+for (let index = 0; index < args.length; index++) {
+  const argument = args[index];
+  if (['--plan', '--apply'].includes(argument) && !mode) mode = argument;
+  else if (
+    argument === '--title' &&
+    !title &&
+    args[index + 1]?.trim() &&
+    !args[index + 1].startsWith('--')
+  )
+    title = args[++index].trim();
+  else throw new Error('Unknown content update argument: ' + argument);
+}
 const plan =
   mode === '--apply' ? JSON.parse(await fs.readFile(planFile, 'utf8')) : await resolveUpstream(api);
 if (
@@ -30,6 +41,7 @@ if (
   !/^[a-f0-9]{40}$/.test(plan.commit)
 )
   throw new Error('Invalid upstream plan');
+if (title) plan.trailblazeTitle = title;
 if (mode !== '--apply') await fs.writeFile(planFile, JSON.stringify(plan, null, 2) + '\n');
 if (mode === '--plan') {
   if (process.env.GITHUB_OUTPUT)
@@ -43,7 +55,7 @@ if (mode === '--plan') {
   await Promise.all(
     plan.files.map(async (file) => {
       if (
-        !/^(TextMap\/TextMap(?:KR|EN|CHS|JP)(?:_\d+)?|ExcelOutput\/(?:NounAtlas|NounAtlasChangeInfo|TalkSentenceConfig|MissionChapterConfig|BookSeriesConfig|BookSeriesWorld|LocalbookConfig))\.json$/.test(
+        !/^(TextMap\/TextMap(?:KR|EN|CHS|JP)(?:_\d+)?|ExcelOutput\/(?:NounAtlas|NounAtlasChangeInfo|TalkSentenceConfig|MissionChapterConfig|MainMission|BookSeriesConfig|BookSeriesWorld|LocalbookConfig))\.json$/.test(
           file.path,
         ) ||
         !/^[a-f0-9]{40}$/.test(file.sha)
@@ -77,8 +89,13 @@ if (mode === '--plan') {
     }),
   );
   const stage = path.join(cache, 'stage');
+  // Check the absolute scratch path before clearing stale localization inputs.
+  if (!path.isAbsolute(stage) || path.relative(cache, stage) !== 'stage')
+    throw new Error('Unsafe content staging directory');
+  await fs.rm(stage, { recursive: true, force: true });
   await fs.mkdir(path.join(stage, 'src/data'), { recursive: true });
   await fs.mkdir(path.join(stage, 'public/content'), { recursive: true });
+  await fs.mkdir(path.join(stage, '.cache'), { recursive: true });
   for (const name of [
     'codex.json',
     'simulation.json',
@@ -93,9 +110,69 @@ if (mode === '--plan') {
       stdio: 'inherit',
       env: { ...process.env, PYTHONUTF8: '1' },
     });
+  const catalog = path.join(stage, '.cache/trailblaze-catalog.json');
+  execFileSync(
+    process.execPath,
+    [
+      '--experimental-strip-types',
+      path.join(root, 'scripts/export-trailblaze-catalog.mjs'),
+      catalog,
+    ],
+    { cwd: root },
+  );
+  const trailblazeArgs = [
+    stage,
+    raw,
+    planFile,
+    ...(plan.trailblazeTitle ? ['--title', plan.trailblazeTitle] : []),
+  ];
+  run('import-trailblaze.py', [...trailblazeArgs, '--discover']);
+  const missionPlan = JSON.parse(
+    await fs.readFile(path.join(stage, '.cache/trailblaze-plan.json'), 'utf8'),
+  );
+  if (missionPlan.commit !== plan.commit) throw new Error('Mixed mission structure plan');
+  const structures = await resolveMissionStructures(api, plan.commit, missionPlan.missionIds);
+  // Limit download concurrency. Preserve paths rather than flattening colliding filenames.
+  for (const file of structures) {
+    if (!isMissionStructurePath(file.path)) throw new Error('Invalid mission structure path');
+    let bytes = await fs.readFile(path.join(blobs, file.sha)).catch((error) => {
+      if (error.code !== 'ENOENT') throw error;
+    });
+    if (!bytes || gitBlob(bytes) !== file.sha) {
+      const response = await fetch(
+        `https://raw.githubusercontent.com/${REPOSITORY}/${plan.commit}/${file.path}`,
+        { signal: AbortSignal.timeout(120000) },
+      );
+      if (!response.ok) throw new Error(`Mission structure HTTP ${response.status}: ${file.path}`);
+      bytes = Buffer.from(await response.arrayBuffer());
+    }
+    if (gitBlob(bytes) !== file.sha) throw new Error('Mission structure Git blob mismatch');
+    await fs.writeFile(path.join(blobs, file.sha), bytes);
+    const target = path.join(stage, '.cache/structures', file.path);
+    await fs.mkdir(path.dirname(target), { recursive: true });
+    await fs.writeFile(target, bytes);
+  }
+  await fs.writeFile(
+    path.join(stage, '.cache/trailblaze-structures.json'),
+    JSON.stringify({ commit: plan.commit, files: structures }),
+  );
+  // Existing introductions can be promoted without changing their saved row IDs.
+  for (const entry of JSON.parse(await fs.readFile(catalog, 'utf8')))
+    for (const chapter of entry.chapters) {
+      if (
+        !chapter.content ||
+        !/^[A-Za-z0-9_-]+$/.test(entry.id) ||
+        !/^[A-Za-z0-9_-]+$/.test(chapter.id)
+      )
+        throw new Error('Invalid existing Trailblaze route');
+      const file = `content/${entry.id}--${chapter.id}.json`;
+      if (chapter.content.file !== file) throw new Error('Mismatched Trailblaze payload path');
+      await fs.copyFile(path.join(root, 'public', file), path.join(stage, 'public', file));
+    }
   run('import-train-databank.py', [raw, planFile]);
   run('import-astropolis-intro.py', [raw, planFile]);
   run('import-books.py', [raw, planFile]);
+  run('import-trailblaze.py', trailblazeArgs);
   run('project-upstream-content.py', [root, raw, planFile], stage);
   run('import-localizations.py', [stage, raw, planFile]);
   const receipt = JSON.parse(await fs.readFile(path.join(stage, 'receipt.json'), 'utf8'));
@@ -107,10 +184,14 @@ if (mode === '--plan') {
     await fs.readFile(path.join(stage, '.cache/books-receipt.json'), 'utf8'),
   );
   receipt.files.push(...books.files);
+  const trailblaze = JSON.parse(
+    await fs.readFile(path.join(stage, '.cache/trailblaze-receipt.json'), 'utf8'),
+  );
+  receipt.files.push(...trailblaze.files);
   // The projector validates every payload and metadata reference before any publication.
   for (const file of receipt.files) {
     if (
-      !/^(?:src\/data\/(?:codex|simulation|imported-content|train-databank|astropolis-intro|books)\.json|public\/(?:content-update|books-provenance)\.json|public\/content\/[A-Za-z0-9_-]+\.json|public\/content\/locales\/(?:manifest|(?:en|zh-CN|ja)\/[A-Za-z0-9_-]+)\.json)$/.test(
+      !/^(?:src\/data\/(?:codex|simulation|imported-content|train-databank|astropolis-intro|books|trailblaze)\.json|public\/(?:content-update|books-provenance|trailblaze-provenance)\.json|public\/content\/[A-Za-z0-9_-]+\.json|public\/content\/locales\/(?:manifest|(?:en|zh-CN|ja)\/[A-Za-z0-9_-]+)\.json)$/.test(
         file,
       )
     )

@@ -37,6 +37,16 @@ class ProjectionTest(unittest.TestCase):
         self.assertTrue(matched)
         self.assertEqual(updated['text'], '갱신 본문')
 
+    def test_auto_discovered_introductions_follow_changed_chapter_hashes(self):
+        row = {**self.row, 'talkId': None, 'type': 'narration', 'textHash': '1',
+               'source': 'ExcelOutput/MissionChapterConfig.json:900/ChapterDesc'}
+        updated, matched = projection.refresh_row(row, {}, {'2': '새 소개문'}, {},
+                                                   {900: {'ChapterDesc': {'Hash': 2}}})
+        self.assertTrue(matched)
+        self.assertEqual(updated['text'], '새 소개문')
+        self.assertEqual(updated['textHash'], '2')
+        self.assertEqual(updated['id'], row['id'])
+
     def test_invalid_publication_is_rejected(self):
         for path in ['../secret.json', 'content/../../secret.json', '/content/entry.json']:
             with self.assertRaises(ValueError):

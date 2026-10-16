@@ -273,9 +273,9 @@ export default function CodexReader({
             </div>
           )}
           <footer>
-            한국어 원문 · {isBooks ? '인게임 서적' : entry.source.kind === 'extracted' ? entry.source.version : '예시'}
+            한국어 원문 · {isBooks ? '인게임 서적' : '열차 자료실'}
             <br />
-            게임 원문의 권리는 해당 권리자에게 있습니다.
+            게임 원문의 권리는 HoYoverse에게 있습니다.
           </footer>
         </article>
       </div>
