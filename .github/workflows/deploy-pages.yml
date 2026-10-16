@@ -47,8 +47,10 @@ jobs:
         uses: actions/cache@v4
         with:
           path: .cache/upstream-content/blobs
-          key: hsr-upstream-v1-${{ steps.upstream.outputs.commit }}
-          restore-keys: hsr-upstream-v1-
+          key: hsr-upstream-v2-${{ steps.upstream.outputs.commit }}
+          restore-keys: |
+            hsr-upstream-v2-
+            hsr-upstream-v1-
       - name: Refresh Korean content, books and comparison languages
         run: node scripts/update-content.mjs --apply
         env:

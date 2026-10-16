@@ -3,6 +3,7 @@ import path from 'node:path';
 import { execFileSync } from 'node:child_process';
 import { REPOSITORY, resolveUpstream, gitBlob } from './upstream-content.mjs';
 import { isMissionStructurePath, resolveMissionStructures } from './trailblaze-structures.mjs';
+import { prepareDialogueFlow } from './dialogue-flow.mjs';
 
 const root = process.cwd();
 const cache = path.resolve('.cache/upstream-content');
@@ -174,6 +175,8 @@ if (mode === '--plan') {
   run('import-books.py', [raw, planFile]);
   run('import-trailblaze.py', trailblazeArgs);
   run('project-upstream-content.py', [root, raw, planFile], stage);
+  await prepareDialogueFlow(root, stage, plan.commit, api, blobs);
+  run('restore-dialogue-flow.py', [stage, path.join(stage, '.cache/dialogue-flow/manifest.json')]);
   run('import-localizations.py', [stage, raw, planFile]);
   const receipt = JSON.parse(await fs.readFile(path.join(stage, 'receipt.json'), 'utf8'));
   const localizations = JSON.parse(
@@ -191,7 +194,7 @@ if (mode === '--plan') {
   // The projector validates every payload and metadata reference before any publication.
   for (const file of receipt.files) {
     if (
-      !/^(?:src\/data\/(?:codex|simulation|imported-content|train-databank|astropolis-intro|books|trailblaze)\.json|public\/(?:content-update|books-provenance|trailblaze-provenance)\.json|public\/content\/[A-Za-z0-9_-]+\.json|public\/content\/locales\/(?:manifest|(?:en|zh-CN|ja)\/[A-Za-z0-9_-]+)\.json)$/.test(
+      !/^(?:src\/data\/(?:codex|simulation|imported-content|train-databank|astropolis-intro|books|trailblaze)\.json|public\/(?:content-update|books-provenance|trailblaze-provenance|dialogue-flow-provenance)\.json|public\/content\/[A-Za-z0-9_-]+\.json|public\/content\/locales\/(?:manifest|(?:en|zh-CN|ja)\/[A-Za-z0-9_-]+)\.json)$/.test(
         file,
       )
     )

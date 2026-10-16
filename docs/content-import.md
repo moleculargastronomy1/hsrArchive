@@ -32,6 +32,16 @@ STORIES 아래 아카이브 메뉴에서 7개 분류로 이동할 수 있다. �
 
 자료의 참조 순서는 실제 플레이 순서와 다를 수 있다. 현재 게임 설치 버전을 재추출한 것이 아니며 모든 컷신·분기·변경 대사의 수록을 보장하지 않는다. 연결이 확인되지 않은 장면을 임의로 채우거나 붕괴 3rd 대사로 대체하지 않았다. 기존 개척 임무 예시 대사는 별도 접힌 영역에 유지했다.
 
+### 확인된 장면 연결 복원
+
+`scripts/dialogue-flow.mjs`가 현재 적용한 동일 릴리스 커밋에서 기존 임무 행이 명시적으로 참조하는 `Config/Level/Mission`, `Story/Mission`, `Story/Discussion/Mission`의 JSON만 조회한다. Git tree가 잘렸으면 게시를 중단하고, 모든 입력 Git blob을 검증한다. 원본은 제외된 `.cache/upstream-content/blobs`에만 저장한다.
+
+`scripts/restore-dialogue-flow.py`는 지원하는 직접 대화 목록과 실제 `TriggerCustomString` → `WaitCustomString` 연결을 맞춘다. 마커의 숫자나 대사 ID의 크기, 파일명·문장 유사도로 연결하지 않는다. 시작점이 하나이고 모든 분기가 연결되는 비순환 장면만 사용한다. 완전히 수록된 장면은 해당 장면의 기존 행 위치 안에서만 순서를 복원하며, 공통 후속 대사는 모든 선행 분기 뒤에 배치한다. 여러 선택의 응답은 화면에서 각각 어떤 선택지의 응답인지 표시한다. 장면 사이의 실제 플레이 순서는 아직 검증한 것으로 간주하지 않는다.
+
+타임라인·조건부 실행·반복·충돌은 기존 순서를 유지하고 `flowStatus: review`로 남긴다. 구조는 명확하나 수록 대사가 부족한 장면은 기존 행의 명시적 연결만 제공하며 재정렬하지 않는다. 누락 경계는 `flowBoundary`와 누락 대사 ID로 기록하고, 이후 문장을 추정하거나 임의로 채우지 않는다. 모든 기존 대사 ID·본문·화자·종류와 행 개수를 보존하며, `referenceOrder`로 원래 배열을 보관해 다음 갱신에서 연결 근거가 사라지면 복원 전 순서로 되돌린다.
+
+확인된 선택지를 누르면 해당 응답과 공통 후속 대사만 최대 41줄 표시하고 다음 선택지나 미확인 경계에서 멈춘다. 원문 검색과 다국어 비교는 같은 행 ID를 사용한다. 검증한 입력의 Git blob·SHA-256, 복원 수와 확인 대상·사유는 `public/dialogue-flow-provenance.json`에 기록한다. 이상 낙원 제3막 28페이지의 `quest-1054212` 타임라인 구간은 실행 원문이 없어 확인 대상으로 유지한다.
+
 ## 재생성
 
 기록된 커밋의 복원된 자료를 `.cache/starrail-source`에 준비한다. 부가 입력의 `public/handbook-originals.json`과 `editorial/handbook-originals-manifest.json`은 `.cache/starrail-input` 아래에 같은 상대 경로로 준비한다. 부가 입력 폴더는 변환 명령의 두 번째 인수로도 지정할 수 있다. Python·Node 실행 파일은 설치 환경에 맞게 선택한다.

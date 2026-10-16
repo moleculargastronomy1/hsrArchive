@@ -245,6 +245,30 @@
 .choice-row {
   background: var(--soft);
 }
+.dialogue-flow-summary {
+  color: var(--muted);
+  font-size: 11px;
+  line-height: 1.8;
+  margin: 12px 0;
+}
+.dialogue-flow-summary > span {
+  display: block;
+}
+.dialogue-row-meta .flow-label.verified {
+  color: var(--accent);
+}
+.flow-reply-link {
+  display: block;
+  padding: 0;
+  margin-top: 8px;
+  color: var(--accent);
+  font-size: 10px;
+  line-height: 1.7;
+  text-align: left;
+  overflow-wrap: anywhere;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
 .dialogue-browser mark {
   color: var(--text);
   background: #dfca8070;

@@ -10,7 +10,7 @@ import {
 } from 'lucide-react';
 import { archive, categories } from '../data/archive';
 import { readerPath } from '../lib/archive';
-import { isDialogueRows, nearbyDialogue, type DialogueRow } from '../lib/dialogue';
+import { choiceDialogue, isDialogueRows, nearbyDialogue, type DialogueRow } from '../lib/dialogue';
 import { useStored } from '../lib/storage';
 import { useComparisonLanguages, useLocalizations } from '../hooks/useComparison';
 import { LanguageComparisonControls, LocalizedPassage } from './LanguageComparison';
@@ -180,8 +180,25 @@ export default function DialogueBrowser({
     if (Number.isInteger(next) && next >= 1 && next <= totalPages) changePage(next);
   };
   const visible = matches.slice((page - 1) * pageSize, page * pageSize);
-  const context = selected === undefined ? [] : nearbyDialogue(rows, selected);
   const selectedRow = selected === undefined ? undefined : rows[selected];
+  const linkedChoice = selectedRow?.type === 'choice' && selectedRow.flowStatus === 'verified';
+  const context = useMemo(
+    () =>
+      selected === undefined
+        ? []
+        : linkedChoice
+          ? choiceDialogue(rows, selected)
+          : nearbyDialogue(rows, selected),
+    [rows, selected, linkedChoice],
+  );
+  const byId = useMemo(() => new Map(rows.map((row) => [row.id, row])), [rows]);
+  const flowSummary = useMemo(
+    () => ({
+      verified: rows.filter((row) => row.flowStatus === 'verified').length,
+      review: rows.filter((row) => row.flowStatus === 'review').length,
+    }),
+    [rows],
+  );
   const translations = useLocalizations(
     [...visible.map((index) => rows[index]), ...context],
     languages,
@@ -231,9 +248,18 @@ export default function DialogueBrowser({
         </div>
       )}
       <p className="dialogue-help">
-        대사를 누르면 같은 장면의 앞뒤 대사를 볼 수 있습니다. 선택지와 분기는 자료에 남은 순서대로
-        함께 표시됩니다.
+        연결이 확인된 선택지를 누르면 해당 응답과 이어지는 대사를 볼 수 있습니다. 확인이 필요한
+        구간은 기존 참조 순서를 유지합니다.
       </p>
+      {!loading && !error && (flowSummary.verified > 0 || flowSummary.review > 0) && (
+        <p className="dialogue-flow-summary">
+          장면 연결 확인 {flowSummary.verified.toLocaleString('ko-KR')}줄 · 확인 필요{' '}
+          {flowSummary.review.toLocaleString('ko-KR')}줄
+          <span>
+            장면 사이의 전체 진행 순서는 검증 중입니다. 다른 선택의 응답도 함께 수록합니다.
+          </span>
+        </p>
+      )}
       {loading ? (
         <div className="dialogue-status" role="status">
           <BookOpen size={22} />
@@ -294,6 +320,24 @@ export default function DialogueBrowser({
                             : row.speaker || '장면 설명'}
                       </span>
                       <small>{row.mission}</small>
+                      {row.flowStatus && (
+                        <small className={`flow-label ${row.flowStatus}`}>
+                          {row.flowStatus === 'verified' ? '장면 연결 확인' : '순서·연결 확인 필요'}
+                        </small>
+                      )}
+                      {row.flowBoundary && <small>후속 대사 확인 필요</small>}
+                      {row.replyToIds
+                        ?.map((id) => byId.get(id))
+                        .filter(Boolean)
+                        .map((choice) => (
+                          <button
+                            className="flow-reply-link"
+                            key={choice!.id}
+                            onClick={() => setSelected(rows.indexOf(choice!))}
+                          >
+                            “{choice!.text}”의 응답
+                          </button>
+                        ))}
                       {global && (
                         <a href={`#${readerPath(row.entryId, row.chapterId)}`}>
                           {entry?.arcLabel ?? entry?.title}
@@ -383,7 +427,9 @@ export default function DialogueBrowser({
               <MessageSquareText size={19} />
               {selectedRow && entries.get(selectedRow.entryId)?.category === 'books'
                 ? '서적 원문'
-                : '앞뒤 대사'}
+                : linkedChoice
+                  ? '선택지 응답'
+                  : '앞뒤 대사'}
             </h2>
             <p>
               {selectedRow?.mission} · {selectedRow?.scene}
@@ -394,6 +440,12 @@ export default function DialogueBrowser({
           </button>
         </header>
         <div className="context-dialog-body">
+          {selectedRow?.flowStatus === 'review' && (
+            <p className="dialogue-help">
+              이 구간은 실행 연결을 확인하지 못했습니다. 아래 내용은 기존 자료의 주변 대사이며,
+              선택지에 따른 응답을 보장하지 않습니다.
+            </p>
+          )}
           {context.map((row) => (
             <div
               key={row.id}
@@ -428,13 +480,16 @@ export default function DialogueBrowser({
                 ))}
               </div>
               {row.id === selectedRow?.id && <small>선택한 대사</small>}
+              {row.flowBoundary && <small>이후 대사는 연결 자료가 부족해 표시하지 않습니다.</small>}
             </div>
           ))}
         </div>
         <footer>
           {selectedRow && entries.get(selectedRow.entryId)?.category === 'books'
             ? '서적 원문은 선택한 권 단위로 표시합니다.'
-            : '같은 장면 안에서 최대 앞뒤 20줄을 표시합니다.'}
+            : linkedChoice
+              ? '확인된 응답과 공통 후속 대사를 최대 41줄 표시하며, 다음 선택지 앞에서 멈춥니다.'
+              : '같은 장면 안에서 최대 앞뒤 20줄을 표시합니다.'}
         </footer>
       </dialog>
     </section>
