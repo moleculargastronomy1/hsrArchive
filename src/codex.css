@@ -317,6 +317,19 @@
   font-weight: 500;
   margin: 28px 0 15px;
 }
+.aeon-illustration {
+  display: flex;
+  justify-content: center;
+  margin: 0 0 30px;
+}
+.aeon-illustration img {
+  display: block;
+  max-width: 100%;
+  width: auto;
+  height: auto;
+  max-height: 480px;
+  object-fit: contain;
+}
 .codex-passages section:first-child h3 {
   margin-top: 0;
 }

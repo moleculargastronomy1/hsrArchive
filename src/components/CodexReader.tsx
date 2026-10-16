@@ -4,6 +4,7 @@ import type { ArchiveEntry } from '../data/types';
 import { readerPath } from '../lib/archive';
 import { isDialogueRows, type DialogueRow } from '../lib/dialogue';
 import EntryArtwork, { hasCover } from './EntryArtwork';
+import AeonIllustration from './AeonIllustration';
 import type { ReadingHistory } from '../lib/storage';
 
 export default function CodexReader({
@@ -151,6 +152,9 @@ export default function CodexReader({
               </button>
             </div>
           </header>
+          {entry.id === 'codex-aeons' && (
+            <AeonIllustration chapterId={selected.id} title={selected.title} />
+          )}
           {error ? (
             <div className="dialogue-status" role="alert">
               <p>{error}</p>
