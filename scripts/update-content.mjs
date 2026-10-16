@@ -43,7 +43,7 @@ if (mode === '--plan') {
   await Promise.all(
     plan.files.map(async (file) => {
       if (
-        !/^(TextMap\/TextMapKR(?:_\d+)?|ExcelOutput\/(?:NounAtlas|NounAtlasChangeInfo|TalkSentenceConfig|MissionChapterConfig))\.json$/.test(
+        !/^(TextMap\/TextMap(?:KR|EN|CHS|JP)(?:_\d+)?|ExcelOutput\/(?:NounAtlas|NounAtlasChangeInfo|TalkSentenceConfig|MissionChapterConfig))\.json$/.test(
           file.path,
         ) ||
         !/^[a-f0-9]{40}$/.test(file.sha)
@@ -96,19 +96,33 @@ if (mode === '--plan') {
   run('import-train-databank.py', [raw, planFile]);
   run('import-astropolis-intro.py', [raw, planFile]);
   run('project-upstream-content.py', [root, raw, planFile], stage);
+  run('import-localizations.py', [stage, raw, planFile]);
   const receipt = JSON.parse(await fs.readFile(path.join(stage, 'receipt.json'), 'utf8'));
+  const localizations = JSON.parse(
+    await fs.readFile(path.join(stage, '.cache/localization-receipt.json'), 'utf8'),
+  );
+  receipt.files.push(...localizations.files);
   // The projector validates every payload and metadata reference before any publication.
   for (const file of receipt.files) {
     if (
-      !/^(?:src\/data\/(?:codex|simulation|imported-content|train-databank|astropolis-intro)\.json|public\/content-update\.json|public\/content\/[A-Za-z0-9_-]+\.json)$/.test(
+      !/^(?:src\/data\/(?:codex|simulation|imported-content|train-databank|astropolis-intro)\.json|public\/content-update\.json|public\/content\/[A-Za-z0-9_-]+\.json|public\/content\/locales\/(?:manifest|(?:en|zh-CN|ja)\/[A-Za-z0-9_-]+)\.json)$/.test(
         file,
       )
     )
       throw new Error(`Invalid publication path: ${file}`);
   }
   for (const file of receipt.files) {
-    await fs.mkdir(path.dirname(path.join(root, file)), { recursive: true });
-    await fs.copyFile(path.join(stage, file), path.join(root, file));
+    const destination = path.join(root, file);
+    const bytes = await fs.readFile(path.join(stage, file));
+    const previous = await fs.readFile(destination).catch((error) => {
+      if (error.code !== 'ENOENT') throw error;
+      return undefined;
+    });
+    // Avoid rewriting unchanged JSON, including existing final-newline preferences.
+    if (previous && previous.toString('utf8').trimEnd() === bytes.toString('utf8').trimEnd())
+      continue;
+    await fs.mkdir(path.dirname(destination), { recursive: true });
+    await fs.writeFile(destination, bytes);
   }
   console.log(`Verified and applied ${plan.version}: ${receipt.rows} rows`);
 }

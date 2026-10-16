@@ -1,4 +1,11 @@
-import { useEffect, useMemo, useState, type Dispatch, type SetStateAction } from 'react';
+import {
+  useEffect,
+  useMemo,
+  useState,
+  type CSSProperties,
+  type Dispatch,
+  type SetStateAction,
+} from 'react';
 import { ArrowLeft, Bookmark, ChevronRight, Search } from 'lucide-react';
 import type { ArchiveEntry } from '../data/types';
 import { readerPath } from '../lib/archive';
@@ -6,6 +13,8 @@ import { isDialogueRows, type DialogueRow } from '../lib/dialogue';
 import EntryArtwork, { hasCover } from './EntryArtwork';
 import AeonIllustration from './AeonIllustration';
 import type { ReadingHistory } from '../lib/storage';
+import { useComparisonLanguages, useLocalizations } from '../hooks/useComparison';
+import { LanguageComparisonControls, LocalizedPassage } from './LanguageComparison';
 
 export default function CodexReader({
   entry,
@@ -51,6 +60,8 @@ export default function CodexReader({
       ? Math.min(variantChoice.index, records.length - 1)
       : records.length - 1;
   const displayedRows = hasVariants ? [records[variantIndex]] : records;
+  const [languages, setLanguages] = useComparisonLanguages();
+  const translations = useLocalizations(displayedRows, languages);
 
   useEffect(() => {
     const controller = new AbortController();
@@ -152,6 +163,11 @@ export default function CodexReader({
               </button>
             </div>
           </header>
+          <LanguageComparisonControls
+            label="한국어 원문"
+            languages={languages}
+            onChange={setLanguages}
+          />
           {entry.id === 'codex-aeons' && (
             <AeonIllustration chapterId={selected.id} title={selected.title} />
           )}
@@ -193,7 +209,25 @@ export default function CodexReader({
                 <section key={row.id}>
                   {row.scene !== selected.title &&
                     row.scene !== displayedRows[index - 1]?.scene && <h3>{row.scene}</h3>}
-                  <p>{row.text.replace(/<\/?align(?:=[^>]*)?>/gi, '')}</p>
+                  <div
+                    className={languages.length ? 'comparison-columns codex-comparison' : undefined}
+                    style={{ '--comparison-count': languages.length + 1 } as CSSProperties}
+                  >
+                    <div className="comparison-korean" lang="ko">
+                      {languages.length > 0 && (
+                        <span className="comparison-language-label">한국어</span>
+                      )}
+                      <p>{row.text.replace(/<\/?align(?:=[^>]*)?>/gi, '')}</p>
+                    </div>
+                    {languages.map((language) => (
+                      <LocalizedPassage
+                        key={language}
+                        row={row}
+                        language={language}
+                        {...translations}
+                      />
+                    ))}
+                  </div>
                 </section>
               ))}
             </div>

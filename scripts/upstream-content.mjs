@@ -12,22 +12,25 @@ export function gitBlob(bytes) {
   return crypto.createHash('sha1').update(`blob ${bytes.length}\0`).update(bytes).digest('hex');
 }
 
-export function koreanFiles(entries) {
+export function localizedFiles(entries, language = 'KR') {
+  if (!['KR', 'EN', 'CHS', 'JP'].includes(language))
+    throw new Error('Unsupported TextMap language');
   if (!Array.isArray(entries)) throw new Error('Invalid TextMap directory');
-  const files = entries.filter(
-    (entry) => entry.type === 'file' && /^TextMapKR(?:_\d+)?\.json$/.test(entry.name),
-  );
+  const pattern = new RegExp(`^TextMap${language}(?:_\\d+)?\\.json$`);
+  const files = entries.filter((entry) => entry.type === 'file' && pattern.test(entry.name));
   if (!files.length || files.some((file) => !/^[a-f0-9]{40}$/.test(file.sha)))
-    throw new Error('Missing or invalid Korean TextMap files');
-  if (files.some((file) => file.name === 'TextMapKR.json') && files.length > 1)
-    throw new Error('Ambiguous combined and split Korean TextMap');
+    throw new Error(`Missing or invalid ${language} TextMap files`);
+  if (files.some((file) => file.name === `TextMap${language}.json`) && files.length > 1)
+    throw new Error(`Ambiguous combined and split ${language} TextMap`);
   const numbered = files
     .map((file) => Number(file.name.match(/_(\d+)/)?.[1] ?? 0))
     .sort((a, b) => a - b);
   if (numbered.some((part, index) => part !== index))
-    throw new Error('Incomplete Korean TextMap parts');
+    throw new Error(`Incomplete ${language} TextMap parts`);
   return files.sort((a, b) => a.name.localeCompare(b.name, 'en', { numeric: true }));
 }
+
+export const koreanFiles = (entries) => localizedFiles(entries, 'KR');
 
 export async function resolveUpstream(api) {
   const latest = await api('commits/main');
@@ -58,7 +61,12 @@ export async function resolveUpstream(api) {
     version: latest.commit.message.split('\n')[0],
     checkedAt: new Date().toISOString(),
     files: [
-      ...koreanFiles(textmap).map((file) => ({ path: `TextMap/${file.name}`, sha: file.sha })),
+      ...['KR', 'EN', 'CHS', 'JP'].flatMap((language) =>
+        localizedFiles(textmap, language).map((file) => ({
+          path: `TextMap/${file.name}`,
+          sha: file.sha,
+        })),
+      ),
       ...tables,
     ],
   };

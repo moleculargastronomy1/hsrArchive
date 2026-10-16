@@ -53,6 +53,20 @@ pnpm build
 
 최초 고정 자료의 임무·장면 연결을 유지하면서 최신 한국어 문자열을 반영하는 [자동 갱신](automatic-content-updates.md)을 배포 작업에 연결했다. 이 문서의 고정 입력·초기 변환 기록과 자동 갱신의 적용 버전은 구분한다. `public/content-update.json`에서 현재 적용한 커밋과 수록 범위를 확인할 수 있다.
 
+## 다국어 비교 원문
+
+한국어에 적용한 동일한 릴리스 커밋의 `TextMapEN`, `TextMapCHS`, `TextMapJP`를 사용한다. 현재 고정 커밋은 `312b4597691e0a29cf9828a15b592757dba86949`이며 입력 Git blob·SHA-256과 언어별 수록 수는 `public/content/locales/manifest.json`에 기록한다. 각 언어에서 58,274줄(선택지 4,271줄)을 연결했고 324줄은 연결 근거가 없어 미제공으로 남긴다.
+
+`scripts/import-localizations.py`는 Python 정수로 해시를 읽어 `TalkSentenceConfig`의 대사 ID, 보존한 `text-bindings.json`, `NounAtlas`의 정확한 기록 ID와 `MissionChapterConfig` 소개문을 연결한다. 같은 해시의 한국어가 실제 표시 원문과 일치할 때만 외국어를 제공한다. 순서나 유사한 문구로 추정하지 않는다. 자료실의 기본·갱신 기록은 각각의 행 ID로 보존한다. `{NICKNAME}`은 언어별 개척자 표기로 치환하며 다른 치환 토큰은 유지한다.
+
+자동 갱신이 네 언어를 함께 검증·변환한다. 로컬에서 이미 검증한 다국어 계획과 원본을 준비한 경우 다음처럼 비교 파일만 재생성할 수 있다.
+
+```powershell
+python scripts/import-localizations.py . .cache/upstream-content/raw .cache/upstream-content/plan.json
+```
+
+원본 파일 전체는 캐시에만 보관하고 사이트에 수록한 행의 변환 결과만 제공한다. [DimbreathBot/TurnBasedGameData](https://github.com/DimbreathBot/TurnBasedGameData)의 안내에서 데이터 사용 시 출처 표시 요청을 확인했다. 외부 코드는 재사용하지 않았다. 게임 원문의 권리·저작권은 HoYoverse 및 해당 권리자에게 있다.
+
 ## 공식 영상
 
 한국어 공식 채널 `UCH33CJMcI0XZUpIhWRHiUuw`의 공개 Atom 피드를 사용한다. 사용자가 지정한 `/videos` 화면에 맞춰 일반 영상 중 최신 항목을 선택하며, 일반 영상이 없는 피드에서만 Shorts를 사용한다. 6시간마다 및 소스 배포 시 확인하고, 장애 시 마지막 검증본을 유지한다. 썸네일을 누르면 공식 YouTube 임베드를 재생하며 원본 채널 링크도 제공한다. 별도의 API 키를 사용하지 않는다.

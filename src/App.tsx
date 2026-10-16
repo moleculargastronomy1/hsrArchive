@@ -24,6 +24,8 @@ import WorldArt from './components/WorldArt';
 import EntryArtwork, { hasCover } from './components/EntryArtwork';
 import OfficialVideo from './components/OfficialVideo';
 import DialogueBrowser from './components/DialogueBrowser';
+import { LanguageComparisonControls } from './components/LanguageComparison';
+import { useComparisonLanguages } from './hooks/useComparison';
 import CategoryIcon from './components/CategoryIcon';
 import CodexReader from './components/CodexReader';
 import ContentUpdateStatus from './components/ContentUpdateStatus';
@@ -610,10 +612,27 @@ export default function App() {
             분기·컷신을 수록했다고 보장하지 않습니다.
           </p>
           <ContentUpdateStatus />
+          <h2>여러 언어의 원문 비교</h2>
+          <p>
+            읽기 화면의 ‘언어 추가’에서 영어·중국어(간체)·일본어를 선택하면 한국어와 동시에 비교할
+            수 있습니다. 선택지와 자료실 갱신 기록도 같은 행에 함께 표시합니다. 연결된 원문이 없는
+            행은 별도로 안내합니다.
+          </p>
+          <p>
+            원문 데이터 출처:{' '}
+            <a
+              href="https://github.com/DimbreathBot/TurnBasedGameData"
+              target="_blank"
+              rel="noreferrer"
+            >
+              DimbreathBot/TurnBasedGameData
+            </a>
+            . 게임 원문의 권리와 저작권은 HoYoverse 및 해당 권리자에게 있습니다.
+          </p>
           <h2>내 서재와 읽기 설정</h2>
           <p>
-            북마크, 마지막으로 읽은 장, 읽기 위치, 화면 테마와 글자 크기는 현재 브라우저에
-            저장됩니다. 브라우저 데이터를 지우면 기록도 초기화됩니다.
+            북마크, 마지막으로 읽은 장, 읽기 위치, 화면 테마와 글자 크기, 비교 언어는 현재
+            브라우저에 저장됩니다. 브라우저 데이터를 지우면 기록도 초기화됩니다.
           </p>
           <div className="about-status">
             <Check size={17} /> 탐색 · 검색 · 읽기 · 북마크 사용 가능
@@ -855,6 +874,7 @@ function Reader({
   const next = adjacentChapter(entry, chapterId, 1);
   const [progress, setProgress] = useState(0);
   const [contentReady, setContentReady] = useState(!chapter.content);
+  const [languages, setLanguages] = useComparisonLanguages();
   const markReady = useCallback(() => setContentReady(true), []);
   useEffect(() => {
     if (!contentReady) return;
@@ -926,7 +946,7 @@ function Reader({
           </button>
         </div>
       </div>
-      <div className="reader-layout">
+      <div className={`reader-layout ${languages.length ? 'is-comparing' : ''}`}>
         <aside className="reader-toc" aria-label="챕터 목차">
           <span className="eyebrow">IN THIS STORY</span>
           <h2>{entry.title}</h2>
@@ -949,14 +969,26 @@ function Reader({
             </span>
             <h1>{chapter.title}</h1>
             <p>{entry.title}</p>
-            <div className="reader-demo">
-              <Sparkles size={14} />{' '}
-              {chapter.content
-                ? (chapter.contentNote ?? '한국어 원문 · 선택지 포함')
-                : '실제 게임 대사가 아닌 기능 확인용 예시 본문입니다.'}
-            </div>
+            {chapter.content ? (
+              <LanguageComparisonControls
+                label={chapter.contentNote ?? '한국어 원문 · 선택지 포함'}
+                languages={languages}
+                onChange={setLanguages}
+              />
+            ) : (
+              <div className="reader-demo">
+                <Sparkles size={14} />
+                실제 게임 대사가 아닌 기능 확인용 예시 본문입니다.
+              </div>
+            )}
           </header>
-          {chapter.content && <DialogueBrowser file={chapter.content.file} onReady={markReady} />}
+          {chapter.content && (
+            <DialogueBrowser
+              file={chapter.content.file}
+              onReady={markReady}
+              languages={languages}
+            />
+          )}
           {chapter.content && chapter.blocks.length > 0 ? (
             <details className="demo-dialogue-details">
               <summary>예시 대사 보기</summary>

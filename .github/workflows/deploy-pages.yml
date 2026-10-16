@@ -49,7 +49,7 @@ jobs:
           path: .cache/upstream-content/blobs
           key: hsr-upstream-v1-${{ steps.upstream.outputs.commit }}
           restore-keys: hsr-upstream-v1-
-      - name: Refresh connected Korean content
+      - name: Refresh Korean content and comparison languages
         run: node scripts/update-content.mjs --apply
       - name: Test archive behavior
         run: pnpm test

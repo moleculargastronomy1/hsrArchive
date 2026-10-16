@@ -5,6 +5,7 @@ import { parseContentUpdateStatus } from '../src/lib/content-update.ts';
 import {
   gitBlob,
   koreanFiles,
+  localizedFiles,
   resolveUpstream,
   REQUIRED_TABLES,
 } from '../scripts/upstream-content.mjs';
@@ -39,7 +40,11 @@ test('upstream discovery pins all file lists to one release commit and uses the 
         },
       };
     if (endpoint === `contents/TextMap?ref=${sha}`)
-      return [{ name: 'TextMapKR.json', type: 'file', sha }];
+      return ['KR', 'EN', 'CHS', 'JP'].map((language) => ({
+        name: `TextMap${language}.json`,
+        type: 'file',
+        sha,
+      }));
     if (endpoint === `git/trees/${sha}`)
       return { tree: [{ path: 'ExcelOutput', type: 'tree', sha: 'b'.repeat(40) }] };
     return { tree: REQUIRED_TABLES.map((path) => ({ path, type: 'blob', sha })) };
@@ -47,12 +52,28 @@ test('upstream discovery pins all file lists to one release commit and uses the 
   const plan = await resolveUpstream(api);
   assert.equal(plan.commit, sha);
   assert.equal(plan.version, 'OSPRODWin4.6.0_TEST');
-  assert.equal(plan.files.length, 5);
+  assert.equal(plan.files.length, 8);
   assert.ok(requested.includes(`contents/TextMap?ref=${sha}`));
   assert.ok(!requested.some((endpoint) => endpoint.includes('contents/ExcelOutput')));
   await assert.rejects(
     resolveUpstream(async () => ({ sha, commit: { message: 'unidentified update' } })),
   );
+});
+
+test('comparison language discovery requires complete, unambiguous files for each language', () => {
+  const file = (name: string) => ({ name, type: 'file', sha });
+  for (const language of ['EN', 'CHS', 'JP']) {
+    assert.equal(localizedFiles([file(`TextMap${language}.json`)], language).length, 1);
+    assert.throws(() => localizedFiles([file('TextMapKR.json')], language));
+    assert.throws(() => localizedFiles([file(`TextMap${language}_1.json`)], language));
+    assert.throws(() =>
+      localizedFiles(
+        [file(`TextMap${language}.json`), file(`TextMap${language}_0.json`)],
+        language,
+      ),
+    );
+  }
+  assert.throws(() => localizedFiles([], '../KR'));
 });
 
 test('home notice accepts release chapter metadata and rejects malformed updates', () => {

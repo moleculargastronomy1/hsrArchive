@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState, type FormEvent } from 'react';
+import { useEffect, useMemo, useRef, useState, type CSSProperties, type FormEvent } from 'react';
 import {
   ArrowLeft,
   ArrowRight,
@@ -12,6 +12,9 @@ import { archive } from '../data/archive';
 import { readerPath } from '../lib/archive';
 import { isDialogueRows, nearbyDialogue, type DialogueRow } from '../lib/dialogue';
 import { useStored } from '../lib/storage';
+import { useComparisonLanguages, useLocalizations } from '../hooks/useComparison';
+import { LanguageComparisonControls, LocalizedPassage } from './LanguageComparison';
+import type { ComparisonLanguage } from '../lib/localization';
 
 function Highlight({ text, query }: { text: string; query: string }) {
   const terms = query.trim().split(/\s+/).filter(Boolean);
@@ -38,12 +41,16 @@ export default function DialogueBrowser({
   initialQuery = '',
   global = false,
   onReady,
+  languages: controlledLanguages,
 }: {
   file?: string;
   initialQuery?: string;
   global?: boolean;
   onReady?: () => void;
+  languages?: ComparisonLanguage[];
 }) {
+  const [storedLanguages, setLanguages] = useComparisonLanguages();
+  const languages = controlledLanguages ?? storedLanguages;
   const [rows, setRows] = useState<DialogueRow[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
@@ -175,6 +182,11 @@ export default function DialogueBrowser({
   const visible = matches.slice((page - 1) * pageSize, page * pageSize);
   const context = selected === undefined ? [] : nearbyDialogue(rows, selected);
   const selectedRow = selected === undefined ? undefined : rows[selected];
+  const translations = useLocalizations(
+    [...visible.map((index) => rows[index]), ...context],
+    languages,
+  );
+  const columnStyle = { '--comparison-count': languages.length + 1 } as CSSProperties;
   const closeDialog = () => {
     dialog.current?.close();
     setSelected(undefined);
@@ -185,6 +197,9 @@ export default function DialogueBrowser({
       className={`dialogue-browser ${global ? 'global-dialogue-browser' : ''}`}
       aria-label={global ? '전체 대사 검색' : '한국어 본문'}
     >
+      {controlledLanguages === undefined && (
+        <LanguageComparisonControls languages={languages} onChange={setLanguages} />
+      )}
       <form className="dialogue-search" onSubmit={submit}>
         <Search size={17} />
         <input
@@ -268,7 +283,7 @@ export default function DialogueBrowser({
                 const entry = entries.get(row.entryId);
                 return (
                   <div
-                    className={`dialogue-row ${row.type === 'choice' ? 'choice-row' : ''}`}
+                    className={`dialogue-row ${row.type === 'choice' ? 'choice-row' : ''} ${languages.length ? 'comparing' : ''}`}
                     key={row.id}
                   >
                     <div className="dialogue-row-meta">
@@ -281,13 +296,30 @@ export default function DialogueBrowser({
                         </a>
                       )}
                     </div>
-                    <button
-                      className="dialogue-text"
-                      onClick={() => setSelected(index)}
-                      aria-haspopup="dialog"
+                    <div
+                      className={languages.length ? 'comparison-columns' : undefined}
+                      style={columnStyle}
                     >
-                      <Highlight text={row.text} query={query} />
-                    </button>
+                      <button
+                        className="dialogue-text"
+                        lang="ko"
+                        onClick={() => setSelected(index)}
+                        aria-haspopup="dialog"
+                      >
+                        {languages.length > 0 && (
+                          <span className="comparison-language-label">한국어</span>
+                        )}
+                        <Highlight text={row.text} query={query} />
+                      </button>
+                      {languages.map((language) => (
+                        <LocalizedPassage
+                          key={language}
+                          row={row}
+                          language={language}
+                          {...translations}
+                        />
+                      ))}
+                    </div>
                   </div>
                 );
               })}
@@ -361,9 +393,27 @@ export default function DialogueBrowser({
               className={`context-row ${row.id === selectedRow?.id ? 'context-selected' : ''}`}
             >
               <strong>{row.type === 'choice' ? '선택지' : row.speaker || '장면 설명'}</strong>
-              <p>
-                <Highlight text={row.text} query={query} />
-              </p>
+              <div
+                className={languages.length ? 'comparison-columns' : undefined}
+                style={columnStyle}
+              >
+                <div className="comparison-korean" lang="ko">
+                  {languages.length > 0 && (
+                    <span className="comparison-language-label">한국어</span>
+                  )}
+                  <p>
+                    <Highlight text={row.text} query={query} />
+                  </p>
+                </div>
+                {languages.map((language) => (
+                  <LocalizedPassage
+                    key={language}
+                    row={row}
+                    language={language}
+                    {...translations}
+                  />
+                ))}
+              </div>
               {row.id === selectedRow?.id && <small>선택한 대사</small>}
             </div>
           ))}

@@ -101,7 +101,7 @@ def project(root, raw, manifest_path):
 
     texts = {}
     for file in manifest['files']:
-        if file['path'].startswith('TextMap/'):
+        if re.fullmatch(r'TextMap/TextMapKR(?:_\d+)?\.json', file['path']):
             for key, value in read_raw(Path(file['path']).name).items():
                 if not isinstance(value, str) or (key in texts and texts[key] != value):
                     raise ValueError('Conflicting or invalid Korean text')
@@ -226,7 +226,7 @@ def project(root, raw, manifest_path):
         raise ValueError('Upstream did not resolve any existing content')
     old_search = json.loads((root / 'public/content/search-index.json').read_bytes())
     references = old_search['sourceReferences']
-    if not any(item['repository'] == manifest['repository'] and item['commit'] == commit for item in references):
+    if not any(item.get('repository') == manifest['repository'] and item.get('commit') == commit for item in references):
         references.append({'repository': manifest['repository'], 'commit': commit})
     search_rows = []
     for row in all_rows:
