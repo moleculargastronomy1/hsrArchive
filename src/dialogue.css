@@ -492,3 +492,14 @@
     margin-top: 24px;
   }
 }
+
+.game-ruby {
+  ruby-position: over;
+  ruby-align: center;
+  white-space: nowrap;
+}
+.game-ruby rt {
+  font-size: 0.55em;
+  font-weight: 400;
+  white-space: nowrap;
+}

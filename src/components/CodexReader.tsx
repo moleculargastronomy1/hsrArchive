@@ -1,3 +1,4 @@
+import GameText from './GameText';
 import {
   Fragment,
   useEffect,
@@ -257,7 +258,9 @@ export default function CodexReader({
                       {languages.length > 0 && (
                         <span className="comparison-language-label">한국어</span>
                       )}
-                      <p>{row.text.replace(/<\/?align(?:=[^>]*)?>/gi, '')}</p>
+                      <p>
+                        <GameText text={row.text.replace(/<\/?align(?:=[^>]*)?>/gi, '')} />
+                      </p>
                     </div>
                     {languages.map((language) => (
                       <LocalizedPassage

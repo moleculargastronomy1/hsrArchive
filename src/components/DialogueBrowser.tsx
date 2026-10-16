@@ -15,26 +15,8 @@ import { useStored } from '../lib/storage';
 import { useComparisonLanguages, useLocalizations } from '../hooks/useComparison';
 import { LanguageComparisonControls, LocalizedPassage } from './LanguageComparison';
 import type { ComparisonLanguage } from '../lib/localization';
-
-function Highlight({ text, query }: { text: string; query: string }) {
-  const terms = query.trim().split(/\s+/).filter(Boolean);
-  if (!terms.length) return <>{text}</>;
-  const escaped = terms.map((term) => term.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'));
-  const regex = new RegExp(`(${escaped.join('|')})`, 'gi');
-  return (
-    <>
-      {text
-        .split(regex)
-        .map((part, index) =>
-          terms.some((term) => term.toLocaleLowerCase() === part.toLocaleLowerCase()) ? (
-            <mark key={index}>{part}</mark>
-          ) : (
-            part
-          ),
-        )}
-    </>
-  );
-}
+import GameText from './GameText';
+import { searchableGameText } from '../lib/game-text';
 
 export default function DialogueBrowser({
   file = 'content/search-index.json',
@@ -113,7 +95,7 @@ export default function DialogueBrowser({
   const searchIndex = useMemo(
     () =>
       rows.map((row) =>
-        `${row.mission} ${row.scene} ${row.speaker} ${row.text}`.toLocaleLowerCase(),
+        `${row.mission} ${row.scene} ${row.speaker} ${searchableGameText(row.text)}`.toLocaleLowerCase(),
       ),
     [rows],
   );
@@ -259,38 +241,6 @@ export default function DialogueBrowser({
         연결이 확인된 선택지를 누르면 해당 응답과 이어지는 대사를 볼 수 있습니다. 확인이 필요한
         구간은 기존 참조 순서를 유지합니다.
       </p>
-      {!loading && !error && (flowSummary.verified > 0 || flowSummary.review > 0) && (
-        <p className="dialogue-flow-summary">
-          장면 연결 확인 {flowSummary.verified.toLocaleString('ko-KR')}줄 · 확인 필요{' '}
-          {flowSummary.review.toLocaleString('ko-KR')}줄
-          <span>
-            장면 사이의 전체 진행 순서는 검증 중입니다. 다른 선택의 응답도 함께 수록합니다.
-          </span>
-          {(flowSummary.wiki > 0 || flowSummary.cached > 0) && (
-            <span>
-              BWIKI 대조 {flowSummary.wiki.toLocaleString('ko-KR')}줄 · 이전 대조 유지{' '}
-              {flowSummary.cached.toLocaleString('ko-KR')}줄
-            </span>
-          )}
-          {rows.some((row) => row.bwikiStatus) && (
-            <span>
-              순서·분기 참고:{' '}
-              <a href="https://wiki.biligame.com/sr/开拓任务" target="_blank" rel="noreferrer">
-                BWIKI 기여자
-              </a>{' '}
-              ·{' '}
-              <a
-                href="https://creativecommons.org/licenses/by-nc-sa/4.0/"
-                target="_blank"
-                rel="noreferrer"
-              >
-                CC BY-NC-SA 4.0
-              </a>
-              . 정리 정보를 한국어 자료에 맞춰 재구성했습니다.
-            </span>
-          )}
-        </p>
-      )}
       {loading ? (
         <div className="dialogue-status" role="status">
           <BookOpen size={22} />
@@ -378,7 +328,8 @@ export default function DialogueBrowser({
                             key={choice!.id}
                             onClick={() => setSelected(rows.indexOf(choice!))}
                           >
-                            “{choice!.text}”의 응답
+                            “<GameText text={choice!.text} />
+                            ”의 응답
                           </button>
                         ))}
                       {global && (
@@ -401,7 +352,7 @@ export default function DialogueBrowser({
                         {languages.length > 0 && (
                           <span className="comparison-language-label">한국어</span>
                         )}
-                        <Highlight text={row.text} query={query} />
+                        <GameText text={row.text} query={query} />
                       </button>
                       {languages.map((language) => (
                         <LocalizedPassage
@@ -453,6 +404,38 @@ export default function DialogueBrowser({
             </button>
           </nav>
         </>
+      )}
+      {!loading && !error && (flowSummary.verified > 0 || flowSummary.review > 0) && (
+        <p className="dialogue-flow-summary">
+          장면 연결 확인 {flowSummary.verified.toLocaleString('ko-KR')}줄 · 확인 필요{' '}
+          {flowSummary.review.toLocaleString('ko-KR')}줄
+          <span>
+            장면 사이의 전체 진행 순서는 검증 중입니다. 다른 선택의 응답도 함께 수록합니다.
+          </span>
+          {(flowSummary.wiki > 0 || flowSummary.cached > 0) && (
+            <span>
+              BWIKI 대조 {flowSummary.wiki.toLocaleString('ko-KR')}줄 · 이전 대조 유지{' '}
+              {flowSummary.cached.toLocaleString('ko-KR')}줄
+            </span>
+          )}
+          {rows.some((row) => row.bwikiStatus) && (
+            <span>
+              순서·분기 참고:{' '}
+              <a href="https://wiki.biligame.com/sr/开拓任务" target="_blank" rel="noreferrer">
+                BWIKI 기여자
+              </a>{' '}
+              ·{' '}
+              <a
+                href="https://creativecommons.org/licenses/by-nc-sa/4.0/"
+                target="_blank"
+                rel="noreferrer"
+              >
+                CC BY-NC-SA 4.0
+              </a>
+              . 정리 정보를 한국어 자료에 맞춰 재구성했습니다.
+            </span>
+          )}
+        </p>
       )}
       <dialog
         className="context-dialog"
@@ -516,7 +499,7 @@ export default function DialogueBrowser({
                     <span className="comparison-language-label">한국어</span>
                   )}
                   <p>
-                    <Highlight text={row.text} query={query} />
+                    <GameText text={row.text} query={query} />
                   </p>
                 </div>
                 {languages.map((language) => (

@@ -1,3 +1,4 @@
+import GameText from './components/GameText';
 import { Fragment, useCallback, useEffect, useRef, useState, type FormEvent } from 'react';
 import {
   ArrowDown,
@@ -1025,7 +1026,7 @@ function Reader({
                 {chapter.blocks.map((block) => (
                   <p key={block.id} className="narration">
                     {block.speaker && <strong>{block.speaker} · </strong>}
-                    {block.text}
+                    <GameText text={block.text} />
                   </p>
                 ))}
               </div>
@@ -1038,12 +1039,14 @@ function Reader({
                     <span className="speaker-mark">✦</span>
                     <div>
                       <h2>{block.speaker}</h2>
-                      <p>{block.text}</p>
+                      <p>
+                        <GameText text={block.text} />
+                      </p>
                     </div>
                   </div>
                 ) : (
                   <p key={block.id} className="narration">
-                    {block.text}
+                    <GameText text={block.text} />
                   </p>
                 ),
               )}

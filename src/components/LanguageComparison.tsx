@@ -1,3 +1,4 @@
+import GameText from './GameText';
 import { useRef, type ReactNode } from 'react';
 import { Plus, Sparkles, X } from 'lucide-react';
 import {
@@ -113,7 +114,9 @@ export function LocalizedPassage({
         <>
           {localized.speaker && row.type !== 'choice' && <strong>{localized.speaker}</strong>}
           {row.type === 'choice' && <strong lang="ko">선택지</strong>}
-          <p>{localized.text}</p>
+          <p>
+            <GameText text={localized.text} />
+          </p>
         </>
       )}
     </section>
