@@ -303,18 +303,6 @@ export default function DialogueBrowser({
                       </span>
                       <small>{row.bwikiMission ?? row.mission}</small>
                       {row.flowBoundary && <small>후속 대사 확인 필요</small>}
-                      {row.bwikiPage && row.bwikiRevision && (
-                        <a
-                          className="bwiki-source"
-                          href={`https://wiki.biligame.com/sr/${encodeURIComponent(row.bwikiPage)}?oldid=${row.bwikiRevision}`}
-                          target="_blank"
-                          rel="noreferrer"
-                        >
-                          {row.bwikiStatus === 'cached'
-                            ? '이전 BWIKI 대조 · 최신 확인 대기'
-                            : 'BWIKI 대조 완료'}
-                        </a>
-                      )}
                       {(row.bwikiReplyToIds ?? row.replyToIds)
                         ?.map((id) => byId.get(id))
                         .filter(Boolean)
