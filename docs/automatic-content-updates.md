@@ -13,7 +13,8 @@
 3. `TextMapKR.json` 또는 연속된 `TextMapKR_0.json` 등의 한국어 조각과 영어(`EN`)·중국어 간체(`CHS`)·일본어(`JP`) TextMap, `NounAtlas`, `NounAtlasChangeInfo`, `TalkSentenceConfig`, `MissionChapterConfig`를 받는다. 각 언어의 전체·분할 형식을 검증하고 서로 다른 커밋의 파일을 섞지 않는다.
 4. 파일마다 Git blob SHA-1을 검증하고 내용 기반 캐시에 보관한다. Python 정수로 JSON을 파싱하여 64비트 해시 정밀도를 유지한다.
 5. 임시 출력에서 자료실 세 분류를 다시 생성하고, 기존 행을 정확한 TalkSentence ID 또는 보존된 텍스트 해시로 갱신한다. 기존 임무·장면·선택지 역할과 행 ID는 보존한다. 연결되지 않은 문장은 기존 본문을 유지한다.
-6. 한국어 갱신 후 `import-localizations.py`가 동일한 해시의 한국어가 표시 원문과 일치하는 행만 영문·중문·일문으로 연결한다. 모든 payload·메타데이터·행 ID·행 개수를 검증한 뒤 생성 결과와 전체 검색 자료·언어별 비교 파일을 반영한다. 테스트와 빌드까지 통과하면 Pages에 배포한다. 원본 다운로드·변환·테스트 중 실패가 있으면 새 배포가 실행되지 않는다.
+6. 원본 실행 구조 복원 후 `bwiki-dialogue.py --discover` → `fetch-bwiki.mjs` → `bwiki-dialogue.py`로 항상 BWIKI 순서·분기를 대조한다. 정확한 중국어 원문·화자·대사 ID와 공식 한국어가 일치하는 구간만 적용한다. 모호한 구간은 기존 자료를 유지하며, 외부 조회 실패 시 이전 파생 연결을 현재 원문과 다시 검증한다. BWIKI 접근 제한을 우회하지 않고 요청을 중단한다. 기준과 재사용 조건은 [BWIKI 순서·분기 대조](content-import.md#bwiki-순서분기-대조)를 따른다.
+7. `import-localizations.py`가 동일한 해시의 한국어가 표시 원문과 일치하는 행만 영문·중문·일문으로 연결한다. 모든 payload·메타데이터·행 ID·행 개수를 검증한 뒤 생성 결과와 전체 검색 자료·언어별 비교 파일을 반영한다. 테스트와 빌드까지 통과하면 Pages에 배포한다. 원본 다운로드·변환·테스트 중 실패가 있으면 새 배포가 실행되지 않는다.
 
 다운로드 URL은 API가 알려 준 파일의 경로와 고정 커밋으로 구성한다. `GITHUB_TOKEN`은 GitHub Actions의 공개 자료 조회에만 사용하며 파일·로그·배포물에 저장하지 않는다. 원본 JSON과 캐시는 `.cache/upstream-content`에만 둔다. 자동 실행은 저장소에 커밋하거나 쓰기 권한을 확대하지 않는다.
 

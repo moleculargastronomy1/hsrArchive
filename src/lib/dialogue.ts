@@ -14,6 +14,12 @@ export interface DialogueRow {
   flowStatus?: 'verified' | 'review';
   flowScene?: string;
   flowBoundary?: boolean;
+  bwikiStatus?: 'matched' | 'cached' | 'review';
+  bwikiScene?: string;
+  bwikiNextIds?: string[];
+  bwikiReplyToIds?: string[];
+  bwikiPage?: string;
+  bwikiRevision?: number;
 }
 
 export function isDialogueRows(value: unknown): value is DialogueRow[] {
@@ -31,7 +37,13 @@ export function isDialogueRows(value: unknown): value is DialogueRow[] {
         (row.flowStatus === undefined || ['verified', 'review'].includes(row.flowStatus)) &&
         (row.flowScene === undefined || typeof row.flowScene === 'string') &&
         (row.flowBoundary === undefined || typeof row.flowBoundary === 'boolean') &&
-        ['nextIds', 'replyToIds'].every(
+        (row.bwikiStatus === undefined ||
+          ['matched', 'cached', 'review'].includes(row.bwikiStatus)) &&
+        (row.bwikiScene === undefined || typeof row.bwikiScene === 'string') &&
+        (row.bwikiPage === undefined || typeof row.bwikiPage === 'string') &&
+        (row.bwikiRevision === undefined ||
+          (Number.isSafeInteger(row.bwikiRevision) && row.bwikiRevision > 0)) &&
+        ['nextIds', 'replyToIds', 'bwikiNextIds', 'bwikiReplyToIds'].every(
           (key) =>
             row[key] === undefined ||
             (Array.isArray(row[key]) && row[key].every((id: unknown) => typeof id === 'string')),
@@ -60,25 +72,30 @@ export function nearbyDialogue(rows: DialogueRow[], index: number, radius = 20) 
 // the next choice. Other alternatives never become part of the selected path.
 export function choiceDialogue(rows: DialogueRow[], index: number, limit = 41) {
   const selected = rows[index];
+  const wiki =
+    selected && ['matched', 'cached'].includes(selected.bwikiStatus ?? '') && !!selected.bwikiScene;
   if (
     !selected ||
     selected.type !== 'choice' ||
-    selected.flowStatus !== 'verified' ||
-    !selected.flowScene
+    (!wiki && (selected.flowStatus !== 'verified' || !selected.flowScene))
   )
     return nearbyDialogue(rows, index);
   const byId = new Map(rows.map((row) => [row.id, row]));
   const result = [selected];
   const seen = new Set([selected.id]);
   let current = selected;
-  while (result.length < limit && current.nextIds?.length === 1) {
-    const next = byId.get(current.nextIds[0]);
+  while (result.length < limit) {
+    const targets = wiki ? current.bwikiNextIds : current.nextIds;
+    if (targets?.length !== 1) break;
+    const next = byId.get(targets[0]);
     if (
       !next ||
       seen.has(next.id) ||
       next.type === 'choice' ||
-      next.flowStatus !== 'verified' ||
-      next.flowScene !== selected.flowScene ||
+      (wiki
+        ? !['matched', 'cached'].includes(next.bwikiStatus ?? '') ||
+          next.bwikiScene !== selected.bwikiScene
+        : next.flowStatus !== 'verified' || next.flowScene !== selected.flowScene) ||
       next.entryId !== selected.entryId ||
       next.chapterId !== selected.chapterId ||
       next.mission !== selected.mission

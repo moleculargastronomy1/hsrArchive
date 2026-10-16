@@ -181,7 +181,11 @@ export default function DialogueBrowser({
   };
   const visible = matches.slice((page - 1) * pageSize, page * pageSize);
   const selectedRow = selected === undefined ? undefined : rows[selected];
-  const linkedChoice = selectedRow?.type === 'choice' && selectedRow.flowStatus === 'verified';
+  const linkedChoice =
+    selectedRow?.type === 'choice' &&
+    (selectedRow.flowStatus === 'verified' ||
+      ['matched', 'cached'].includes(selectedRow.bwikiStatus ?? ''));
+  const selectedWiki = ['matched', 'cached'].includes(selectedRow?.bwikiStatus ?? '');
   const context = useMemo(
     () =>
       selected === undefined
@@ -196,6 +200,8 @@ export default function DialogueBrowser({
     () => ({
       verified: rows.filter((row) => row.flowStatus === 'verified').length,
       review: rows.filter((row) => row.flowStatus === 'review').length,
+      wiki: rows.filter((row) => row.bwikiStatus === 'matched').length,
+      cached: rows.filter((row) => row.bwikiStatus === 'cached').length,
     }),
     [rows],
   );
@@ -203,7 +209,9 @@ export default function DialogueBrowser({
     [...visible.map((index) => rows[index]), ...context],
     languages,
   );
-  const columnStyle = { '--comparison-count': languages.length + 1 } as CSSProperties;
+  const columnStyle = {
+    '--comparison-count': languages.length + 1,
+  } as CSSProperties;
   const closeDialog = () => {
     dialog.current?.close();
     setSelected(undefined);
@@ -258,6 +266,29 @@ export default function DialogueBrowser({
           <span>
             장면 사이의 전체 진행 순서는 검증 중입니다. 다른 선택의 응답도 함께 수록합니다.
           </span>
+          {(flowSummary.wiki > 0 || flowSummary.cached > 0) && (
+            <span>
+              BWIKI 대조 {flowSummary.wiki.toLocaleString('ko-KR')}줄 · 이전 대조 유지{' '}
+              {flowSummary.cached.toLocaleString('ko-KR')}줄
+            </span>
+          )}
+          {rows.some((row) => row.bwikiStatus) && (
+            <span>
+              순서·분기 참고:{' '}
+              <a href="https://wiki.biligame.com/sr/开拓任务" target="_blank" rel="noreferrer">
+                BWIKI 기여자
+              </a>{' '}
+              ·{' '}
+              <a
+                href="https://creativecommons.org/licenses/by-nc-sa/4.0/"
+                target="_blank"
+                rel="noreferrer"
+              >
+                CC BY-NC-SA 4.0
+              </a>
+              . 정리 정보를 한국어 자료에 맞춰 재구성했습니다.
+            </span>
+          )}
         </p>
       )}
       {loading ? (
@@ -326,7 +357,19 @@ export default function DialogueBrowser({
                         </small>
                       )}
                       {row.flowBoundary && <small>후속 대사 확인 필요</small>}
-                      {row.replyToIds
+                      {row.bwikiPage && row.bwikiRevision && (
+                        <a
+                          className="bwiki-source"
+                          href={`https://wiki.biligame.com/sr/${encodeURIComponent(row.bwikiPage)}?oldid=${row.bwikiRevision}`}
+                          target="_blank"
+                          rel="noreferrer"
+                        >
+                          {row.bwikiStatus === 'cached'
+                            ? '이전 BWIKI 대조 · 최신 확인 대기'
+                            : 'BWIKI 대조 완료'}
+                        </a>
+                      )}
+                      {(row.bwikiReplyToIds ?? row.replyToIds)
                         ?.map((id) => byId.get(id))
                         .filter(Boolean)
                         .map((choice) => (
@@ -440,10 +483,16 @@ export default function DialogueBrowser({
           </button>
         </header>
         <div className="context-dialog-body">
-          {selectedRow?.flowStatus === 'review' && (
+          {selectedRow?.flowStatus === 'review' && !selectedWiki && (
             <p className="dialogue-help">
               이 구간은 실행 연결을 확인하지 못했습니다. 아래 내용은 기존 자료의 주변 대사이며,
               선택지에 따른 응답을 보장하지 않습니다.
+            </p>
+          )}
+          {selectedWiki && (
+            <p className="dialogue-help">
+              BWIKI에 정리된 선택지와 응답을 공식 대사 ID로 대조한 구간입니다. 실제 플레이 영상으로
+              검증한 상태를 뜻하지 않습니다.
             </p>
           )}
           {context.map((row) => (

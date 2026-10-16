@@ -4,11 +4,15 @@ import { execFileSync } from 'node:child_process';
 import { REPOSITORY, resolveUpstream, gitBlob } from './upstream-content.mjs';
 import { isMissionStructurePath, resolveMissionStructures } from './trailblaze-structures.mjs';
 import { prepareDialogueFlow } from './dialogue-flow.mjs';
+import { fetchBwiki } from './fetch-bwiki.mjs';
 
 const root = process.cwd();
 const cache = path.resolve('.cache/upstream-content');
 const planFile = path.join(cache, 'plan.json');
-const headers = { Accept: 'application/vnd.github+json', 'X-GitHub-Api-Version': '2022-11-28' };
+const headers = {
+  Accept: 'application/vnd.github+json',
+  'X-GitHub-Api-Version': '2022-11-28',
+};
 if (process.env.GITHUB_TOKEN) headers.Authorization = `Bearer ${process.env.GITHUB_TOKEN}`;
 async function api(endpoint) {
   const response = await fetch(`https://api.github.com/repos/${REPOSITORY}/${endpoint}`, {
@@ -177,6 +181,15 @@ if (mode === '--plan') {
   run('project-upstream-content.py', [root, raw, planFile], stage);
   await prepareDialogueFlow(root, stage, plan.commit, api, blobs);
   run('restore-dialogue-flow.py', [stage, path.join(stage, '.cache/dialogue-flow/manifest.json')]);
+  run('bwiki-dialogue.py', [stage, raw, planFile, '--discover']);
+  await fetchBwiki(stage, path.join(cache, 'bwiki'));
+  run('bwiki-dialogue.py', [
+    stage,
+    raw,
+    planFile,
+    path.join(stage, '.cache/bwiki/manifest.json'),
+    root,
+  ]);
   run('import-localizations.py', [stage, raw, planFile]);
   const receipt = JSON.parse(await fs.readFile(path.join(stage, 'receipt.json'), 'utf8'));
   const localizations = JSON.parse(
@@ -194,7 +207,7 @@ if (mode === '--plan') {
   // The projector validates every payload and metadata reference before any publication.
   for (const file of receipt.files) {
     if (
-      !/^(?:src\/data\/(?:codex|simulation|imported-content|train-databank|astropolis-intro|books|trailblaze)\.json|public\/(?:content-update|books-provenance|trailblaze-provenance|dialogue-flow-provenance)\.json|public\/content\/[A-Za-z0-9_-]+\.json|public\/content\/locales\/(?:manifest|(?:en|zh-CN|ja)\/[A-Za-z0-9_-]+)\.json)$/.test(
+      !/^(?:src\/data\/(?:codex|simulation|imported-content|train-databank|astropolis-intro|books|trailblaze)\.json|public\/(?:content-update|books-provenance|trailblaze-provenance|dialogue-flow-provenance|bwiki-provenance)\.json|public\/content\/[A-Za-z0-9_-]+\.json|public\/content\/locales\/(?:manifest|(?:en|zh-CN|ja)\/[A-Za-z0-9_-]+)\.json)$/.test(
         file,
       )
     )

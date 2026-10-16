@@ -166,6 +166,8 @@ def scene_graph(document):
 
 
 def restore(payload, structures):
+    payload.pop('bwikiBaseOrder', None)
+    payload.pop('bwiki', None)
     rows = payload['rows']
     old_order = payload.get('referenceOrder', [row['id'] for row in rows])
     if len(set(old_order)) != len(old_order):
@@ -176,6 +178,8 @@ def restore(payload, structures):
     by_mission = defaultdict(list)
     for row in rows:
         for key in ['nextIds', 'replyToIds', 'flowStatus', 'flowScene', 'flowBoundary']:
+            row.pop(key, None)
+        for key in ['bwikiStatus', 'bwikiScene', 'bwikiNextIds', 'bwikiReplyToIds', 'bwikiPage', 'bwikiRevision']:
             row.pop(key, None)
         if row.get('missionId', '').startswith('quest-'):
             row['flowStatus'] = 'review'

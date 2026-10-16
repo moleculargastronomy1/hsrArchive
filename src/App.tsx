@@ -638,6 +638,23 @@ export default function App() {
             </a>
             . 게임 원문의 권리와 저작권은 HoYoverse 및 해당 권리자에게 있습니다.
           </p>
+          <p>
+            임무 순서·분기 대조에는{' '}
+            <a href="https://wiki.biligame.com/sr/开拓任务" target="_blank" rel="noreferrer">
+              BWIKI 기여자들의 정리
+            </a>
+            를 참고합니다. BWIKI 기반 정리 정보는{' '}
+            <a
+              href="https://creativecommons.org/licenses/by-nc-sa/4.0/"
+              target="_blank"
+              rel="noreferrer"
+            >
+              CC BY-NC-SA 4.0
+            </a>
+            에 따라 한국어 자료에 맞춰 재구성했습니다. 중국어 원문을 공식 대사 ID와 연결하며 한국어
+            본문을 번역으로 채우지 않습니다. 연결이 모호하거나 자료가 부족한 구간은 기존 자료를
+            유지합니다.
+          </p>
           <h2>내 서재와 읽기 설정</h2>
           <p>
             북마크, 마지막으로 읽은 장, 읽기 위치, 화면 테마와 글자 크기, 비교 언어는 현재
