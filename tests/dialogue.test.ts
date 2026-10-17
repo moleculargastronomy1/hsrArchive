@@ -2,7 +2,12 @@ import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import { archive, categories } from '../src/data/archive.ts';
-import { isDialogueRows, nearbyDialogue, type DialogueRow } from '../src/lib/dialogue.ts';
+import {
+  dialoguePage,
+  isDialogueRows,
+  nearbyDialogue,
+  type DialogueRow,
+} from '../src/lib/dialogue.ts';
 import { parseVideos, CHANNEL_ID } from '../scripts/youtube-feed.mjs';
 
 const row = (id: string, chapterId = 'first', scene = 'arrival'): DialogueRow => ({
@@ -15,6 +20,16 @@ const row = (id: string, chapterId = 'first', scene = 'arrival'): DialogueRow =>
   text: 'text',
   type: 'dialogue',
 });
+test('dialogue links locate exact IDs across page boundaries even when text is identical', () => {
+  const rows = Array.from({ length: 101 }, (_, index) => row(String(index)));
+  assert.equal(dialoguePage(rows, '0'), 1);
+  assert.equal(dialoguePage(rows, '49'), 1);
+  assert.equal(dialoguePage(rows, '50'), 2);
+  assert.equal(dialoguePage(rows, '100'), 3);
+  assert.equal(dialoguePage(rows, 'missing'), undefined);
+  assert.equal(dialoguePage([], '0'), undefined);
+});
+
 test('context never crosses a chapter or scene boundary and is bounded to 41 lines', () => {
   const data = [
     row('before', 'other'),

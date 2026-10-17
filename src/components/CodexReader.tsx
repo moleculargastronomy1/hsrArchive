@@ -3,6 +3,7 @@ import {
   Fragment,
   useEffect,
   useMemo,
+  useRef,
   useState,
   type CSSProperties,
   type Dispatch,
@@ -16,11 +17,13 @@ import EntryArtwork, { hasCover } from './EntryArtwork';
 import AeonIllustration from './AeonIllustration';
 import type { ReadingHistory } from '../lib/storage';
 import { useComparisonLanguages, useLocalizations } from '../hooks/useComparison';
+import { localizationKey } from '../lib/localization';
 import { LanguageComparisonControls, LocalizedPassage } from './LanguageComparison';
 
 export default function CodexReader({
   entry,
   chapterId,
+  targetRowId,
   fontSize,
   setFontSize,
   saved,
@@ -29,6 +32,7 @@ export default function CodexReader({
 }: {
   entry: ArchiveEntry;
   chapterId?: string;
+  targetRowId?: string;
   fontSize: number;
   setFontSize: Dispatch<SetStateAction<number>>;
   saved: boolean;
@@ -63,13 +67,30 @@ export default function CodexReader({
   const ready = payload?.file === file;
   const records = ready ? payload!.rows : [];
   const hasVariants = records.length > 0 && records.every((row) => typeof row.variant === 'string');
+  const targetIndex = records.findIndex((row) => row.id === targetRowId);
   const variantIndex =
     variantChoice?.file === file
       ? Math.min(variantChoice.index, records.length - 1)
-      : records.length - 1;
+      : targetIndex >= 0
+        ? targetIndex
+        : records.length - 1;
   const displayedRows = hasVariants ? [records[variantIndex]] : records;
   const [languages, setLanguages] = useComparisonLanguages();
   const translations = useLocalizations(displayedRows, languages);
+  const targetRow = useRef<HTMLElement>(null);
+  const targetTranslationsReady =
+    targetIndex < 0 ||
+    languages.every(
+      (language) => translations.states[localizationKey(records[targetIndex], language)],
+    );
+  useEffect(() => {
+    if (!ready || targetIndex < 0 || !targetTranslationsReady) return;
+    const frame = requestAnimationFrame(() => {
+      targetRow.current?.scrollIntoView({ block: 'start' });
+      targetRow.current?.focus({ preventScroll: true });
+    });
+    return () => cancelAnimationFrame(frame);
+  }, [ready, file, targetRowId, targetIndex, targetTranslationsReady]);
 
   useEffect(() => {
     const controller = new AbortController();
@@ -247,7 +268,13 @@ export default function CodexReader({
                 </div>
               )}
               {displayedRows.map((row, index) => (
-                <section key={row.id}>
+                <section
+                  key={row.id}
+                  className={row.id === targetRowId ? 'dialogue-target' : undefined}
+                  ref={row.id === targetRowId ? targetRow : undefined}
+                  tabIndex={row.id === targetRowId ? -1 : undefined}
+                  data-dialogue-id={row.id}
+                >
                   {row.scene !== selected.title &&
                     row.scene !== displayedRows[index - 1]?.scene && <h3>{row.scene}</h3>}
                   <div

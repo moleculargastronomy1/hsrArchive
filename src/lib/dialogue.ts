@@ -72,6 +72,11 @@ export function isDialogueRows(value: unknown): value is DialogueRow[] {
   );
 }
 
+export function dialoguePage(rows: DialogueRow[], rowId: string, pageSize = 50) {
+  const index = rows.findIndex((row) => row.id === rowId);
+  return index < 0 ? undefined : Math.floor(index / pageSize) + 1;
+}
+
 export function nearbyDialogue(rows: DialogueRow[], index: number, radius = 20) {
   const selected = rows[index];
   if (!selected) return [];

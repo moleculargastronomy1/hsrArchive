@@ -44,6 +44,7 @@ export function chapterNumber(entry: ArchiveEntry, chapterId: string): string {
   return String(roots.indexOf(chapter) + 1).padStart(2, '0');
 }
 
-export function readerPath(entryId: string, chapterId?: string) {
-  return `/entry/${encodeURIComponent(entryId)}${chapterId ? `/${encodeURIComponent(chapterId)}` : ''}`;
+export function readerPath(entryId: string, chapterId?: string, dialogueId?: string) {
+  const path = `/entry/${encodeURIComponent(entryId)}${chapterId ? `/${encodeURIComponent(chapterId)}` : ''}`;
+  return chapterId && dialogueId ? `${path}?dialogue=${encodeURIComponent(dialogueId)}` : path;
 }

@@ -492,9 +492,10 @@ export default function App() {
   ) {
     content = (
       <CodexReader
-        key={entry.id}
+        key={`${entry.id}/${params.get('dialogue') ?? ''}`}
         entry={entry}
         chapterId={chapter?.id}
+        targetRowId={params.get('dialogue') ?? undefined}
         fontSize={fontSize}
         setFontSize={setFontSize}
         saved={bookmarks.includes(entry.id)}
@@ -586,9 +587,10 @@ export default function App() {
   } else if (entry && chapter && parts.length === 3) {
     content = (
       <Reader
-        key={`${entry.id}/${chapter.id}`}
+        key={`${entry.id}/${chapter.id}/${params.get('dialogue') ?? ''}`}
         entry={entry}
         chapterId={chapter.id}
+        targetRowId={params.get('dialogue') ?? undefined}
         fontSize={fontSize}
         setFontSize={setFontSize}
         saved={bookmarks.includes(entry.id)}
@@ -880,6 +882,7 @@ function PageIntro({
 function Reader({
   entry,
   chapterId,
+  targetRowId,
   fontSize,
   setFontSize,
   saved,
@@ -889,6 +892,7 @@ function Reader({
 }: {
   entry: ArchiveEntry;
   chapterId: string;
+  targetRowId?: string;
   fontSize: number;
   setFontSize: (value: number) => void;
   saved: boolean;
@@ -898,7 +902,7 @@ function Reader({
 }) {
   const chapter = entry.chapters.find((ch) => ch.id === chapterId)!;
   const initialScroll = useRef(
-    history[entry.id]?.chapterId === chapterId ? history[entry.id].scroll : 0,
+    !targetRowId && history[entry.id]?.chapterId === chapterId ? history[entry.id].scroll : 0,
   );
   const previous = adjacentChapter(entry, chapterId, -1);
   const next = adjacentChapter(entry, chapterId, 1);
@@ -926,7 +930,7 @@ function Reader({
         }, 400);
     };
     const frame = requestAnimationFrame(() => {
-      window.scrollTo(0, initialScroll.current);
+      if (!targetRowId) window.scrollTo(0, initialScroll.current);
       track();
       save();
     });
@@ -937,7 +941,7 @@ function Reader({
       clearTimeout(timer);
       save();
     };
-  }, [entry.id, chapterId, setHistory, contentReady]);
+  }, [entry.id, chapterId, setHistory, contentReady, targetRowId]);
 
   return (
     <>
@@ -1015,6 +1019,7 @@ function Reader({
           {chapter.content && (
             <DialogueBrowser
               file={chapter.content.file}
+              targetRowId={targetRowId}
               onReady={markReady}
               languages={languages}
             />

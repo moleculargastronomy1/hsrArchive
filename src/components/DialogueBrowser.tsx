@@ -10,11 +10,17 @@ import {
 } from 'lucide-react';
 import { archive, categories } from '../data/archive';
 import { readerPath } from '../lib/archive';
-import { choiceDialogue, isDialogueRows, nearbyDialogue, type DialogueRow } from '../lib/dialogue';
+import {
+  choiceDialogue,
+  dialoguePage,
+  isDialogueRows,
+  nearbyDialogue,
+  type DialogueRow,
+} from '../lib/dialogue';
 import { useStored } from '../lib/storage';
 import { useComparisonLanguages, useLocalizations } from '../hooks/useComparison';
 import { LanguageComparisonControls, LocalizedPassage } from './LanguageComparison';
-import type { ComparisonLanguage } from '../lib/localization';
+import { localizationKey, type ComparisonLanguage } from '../lib/localization';
 import GameText from './GameText';
 import VideoVerificationNote from './VideoVerificationNote';
 import { searchableGameText } from '../lib/game-text';
@@ -24,12 +30,14 @@ export default function DialogueBrowser({
   initialQuery = '',
   global = false,
   onReady,
+  targetRowId,
   languages: controlledLanguages,
 }: {
   file?: string;
   initialQuery?: string;
   global?: boolean;
   onReady?: () => void;
+  targetRowId?: string;
   languages?: ComparisonLanguage[];
 }) {
   const [storedLanguages, setLanguages] = useComparisonLanguages();
@@ -55,6 +63,8 @@ export default function DialogueBrowser({
   const version = useRef(0);
   const dialog = useRef<HTMLDialogElement>(null);
   const tableTop = useRef<HTMLDivElement>(null);
+  const targetRow = useRef<HTMLDivElement>(null);
+  const targetFocused = useRef(false);
   const pageSize = 50;
   const entries = useMemo(() => new Map(archive.map((entry) => [entry.id, entry])), []);
 
@@ -119,12 +129,18 @@ export default function DialogueBrowser({
         await new Promise((resolve) => setTimeout(resolve, 0));
       }
       if (version.current === token) {
+        const targetPage =
+          restorePage.current && targetRowId && !query && scope === 'all'
+            ? dialoguePage(rows, targetRowId, pageSize)
+            : undefined;
         setMatches(result);
         setPage(
-          restorePage.current && !query
-            ? Math.min(savedPage, Math.max(1, Math.ceil(result.length / pageSize)))
-            : 1,
+          targetPage ??
+            (restorePage.current && !query
+              ? Math.min(savedPage, Math.max(1, Math.ceil(result.length / pageSize)))
+              : 1),
         );
+        if (targetPage !== undefined) setSavedPage(targetPage);
         restorePage.current = false;
         setSearching(false);
       }
@@ -133,7 +149,7 @@ export default function DialogueBrowser({
       clearTimeout(timer);
       version.current++;
     };
-  }, [rows, query, scope, searchIndex, entries, loading]);
+  }, [rows, query, scope, searchIndex, entries, loading, targetRowId]);
   useEffect(() => {
     if (!loading && !searching && !error && !restorePage.current) onReady?.();
   }, [loading, searching, error, onReady]);
@@ -192,6 +208,31 @@ export default function DialogueBrowser({
     [...visible.map((index) => rows[index]), ...context],
     languages,
   );
+  const targetRecord = targetRowId ? rows.find((row) => row.id === targetRowId) : undefined;
+  const targetTranslationsReady =
+    !targetRecord ||
+    languages.every((language) => translations.states[localizationKey(targetRecord, language)]);
+  useEffect(() => {
+    if (
+      loading ||
+      searching ||
+      restorePage.current ||
+      targetFocused.current ||
+      !targetTranslationsReady ||
+      !targetRow.current
+    )
+      return;
+    const frame = requestAnimationFrame(() => {
+      const row = targetRow.current;
+      if (!row) return;
+      row.scrollIntoView({
+        block: row.offsetHeight > window.innerHeight - 160 ? 'start' : 'center',
+      });
+      row.focus({ preventScroll: true });
+      targetFocused.current = true;
+    });
+    return () => cancelAnimationFrame(frame);
+  }, [loading, searching, page, targetRowId, targetTranslationsReady]);
   const columnStyle = {
     '--comparison-count': languages.length + 1,
   } as CSSProperties;
@@ -298,8 +339,11 @@ export default function DialogueBrowser({
                   !['caption-matched', 'screen-matched'].includes(row.videoStatus ?? '');
                 return (
                   <div
-                    className={`dialogue-row ${row.type === 'choice' ? 'choice-row' : ''} ${languages.length ? 'comparing' : ''}`}
+                    className={`dialogue-row ${row.type === 'choice' ? 'choice-row' : ''} ${languages.length ? 'comparing' : ''} ${row.id === targetRowId ? 'dialogue-target' : ''}`}
                     key={row.id}
+                    ref={row.id === targetRowId ? targetRow : undefined}
+                    tabIndex={row.id === targetRowId ? -1 : undefined}
+                    data-dialogue-id={row.id}
                   >
                     <div className="dialogue-row-meta">
                       <span>
@@ -326,7 +370,7 @@ export default function DialogueBrowser({
                           </button>
                         ))}
                       {global && (
-                        <a href={`#${readerPath(row.entryId, row.chapterId)}`}>
+                        <a href={`#${readerPath(row.entryId, row.chapterId, row.id)}`}>
                           {entry?.arcLabel ?? entry?.title}
                           <ArrowRight size={11} />
                         </a>
@@ -505,16 +549,15 @@ export default function DialogueBrowser({
         </div>
         <footer>
           <nav className="context-navigation" aria-label="선택한 대사로 이동">
-            <button
-              className="button secondary"
-              onClick={() =>
-                dialog.current
-                  ?.querySelector('.context-selected')
-                  ?.scrollIntoView({ block: 'center' })
-              }
-            >
-              선택한 대사로
-            </button>
+            {selectedRow && (
+              <a
+                className="button secondary"
+                href={`#${readerPath(selectedRow.entryId, selectedRow.chapterId, selectedRow.id)}`}
+                onClick={closeDialog}
+              >
+                선택한 대사로
+              </a>
+            )}
           </nav>
           <p>
             {selectedRow && entries.get(selectedRow.entryId)?.category === 'books'

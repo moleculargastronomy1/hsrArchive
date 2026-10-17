@@ -68,6 +68,9 @@ test('reader paths encode identifiers for static hash routes', () => {
   assert.equal(readerPath('station'), '/entry/station');
   assert.equal(readerPath('station', 'first'), '/entry/station/first');
   assert.equal(readerPath('a/b', 'a b'), '/entry/a%2Fb/a%20b');
+  const path = readerPath('a/b', 'a b', 'line ?한글&next=#');
+  assert.equal(path.split('?')[0], '/entry/a%2Fb/a%20b');
+  assert.equal(new URLSearchParams(path.split('?')[1]).get('dialogue'), 'line ?한글&next=#');
 });
 
 test('subchapter numbering preserves main chapter order and navigation', () => {
