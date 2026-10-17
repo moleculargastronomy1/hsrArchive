@@ -10,6 +10,7 @@ const [commit, updatedAt] = execFileSync('git', ['log', '-1', '--format=%H%n%cI'
 if (!/^[a-f0-9]{40}$/.test(commit) || Number.isNaN(Date.parse(updatedAt)))
   throw new Error('Unable to determine archive source update date');
 await fs.writeFile(
-  'public/site-update.json',
+  'public/site-update.json.tmp',
   JSON.stringify({ schema: 'hsr-site-update.v1', commit, updatedAt }, null, 2) + '\n',
 );
+await fs.rename('public/site-update.json.tmp', 'public/site-update.json');

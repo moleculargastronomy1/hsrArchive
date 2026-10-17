@@ -255,7 +255,7 @@ def build_chapter(record, payload, pages, source_text, candidates, previous_chun
                             by_id[row['id']] = row
                     chunks.append({'missionId': mission, 'mission': group['koreanTitle'], 'officialMissionIds': group['missionIds'],
                                    'page': page['pageTitle'], 'revision': page['revision'], 'segment': f'{position}.{subposition}',
-                                   'status': 'matched', 'missionStructure': structure, 'order': [row['id'] for row in matched],
+                                   'status': 'cached' if page.get('retrieval') == 'cache-pinned' else 'matched', 'missionStructure': structure, 'order': [row['id'] for row in matched],
                                    'edges': edges, 'evidence': {row['id']: evidence[row['id']] for row in matched}})
                 except bwiki.Unresolved as error:
                     review.append({'page': group['title'], 'segment': f'{position}.{subposition}', 'reason': str(error)})
@@ -284,6 +284,8 @@ def publish(root, raw, plan_path, manifest_path, previous_root):
     plan, missions, talks, chinese, korean, hashes = bwiki.inputs(raw, plan_path)
     discovery = json.loads((root / '.cache/bwiki/chapters.json').read_bytes())
     manifest = json.loads(manifest_path.read_bytes())
+    if 'targetFiles' in manifest:
+        discovery['chapters'] = [item for item in discovery['chapters'] if item['file'] in manifest['targetFiles']]
     if discovery['commit'] != plan['commit'] or manifest['commit'] != plan['commit']:
         raise ValueError('Mixed BWIKI chapter input versions')
     if not discovery['chapters']:

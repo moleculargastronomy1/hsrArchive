@@ -65,10 +65,16 @@ export function makeSnapshot({ update, wiki, manifest, video, official, config, 
     if (item.status === 'available')
       return { title: item.title, canonical: item.pageTitle, revision: item.revision };
     if (item.status === 'missing') return { title: item.title, canonical: item.title, revision: 0 };
-    return (
-      old.get(item.title) ??
-      references.get(item.title) ?? { title: item.title, canonical: item.title, revision: null }
-    );
+    const prior = old.get(item.title) ??
+      references.get(item.title) ?? { title: item.title, canonical: item.title, revision: null };
+    const observed = manifest.observations?.find((page) => page.title === item.title);
+    return observed
+      ? {
+          ...observed,
+          processedRevision:
+            'processedRevision' in prior ? prior.processedRevision : prior.revision,
+        }
+      : prior;
   });
   const result = {
     schema,
@@ -126,7 +132,7 @@ export async function probeWiki(
         throw new Error('Incomplete revisions');
     } catch {
       // Stop on restrictions; do not amplify retries across the remaining batches.
-      return 'unavailable';
+      return changed ? 'changed' : 'unavailable';
     }
     const aliases = new Map(
       [...(data.query.normalized ?? []), ...(data.query.redirects ?? [])].map((item) => [
@@ -190,7 +196,7 @@ export async function observeUnfetchedWiki(snapshot, manifest, fetcher = fetch, 
 export async function checkSources(
   previous,
   config,
-  { fetcher = fetch, headers = {}, pause } = {},
+  { fetcher = fetch, headers = {}, pause, skipWiki = false } = {},
 ) {
   if (!validSnapshot(previous))
     return { changed: true, checks: { snapshot: 'initial-deployment' } };
@@ -213,7 +219,11 @@ export async function checkSources(
     checks.upstream = 'unavailable';
   }
   if (checks.upstream === 'changed') return { changed: true, checks };
-  checks.bwiki = await probeWiki(previous.wiki, fetcher, pause);
+  checks.bwiki = skipWiki
+    ? typeof skipWiki === 'string'
+      ? skipWiki
+      : 'backoff'
+    : await probeWiki(previous.wiki, fetcher, pause);
   if (checks.bwiki === 'changed') return { changed: true, checks };
   for (const source of config.sources) {
     try {

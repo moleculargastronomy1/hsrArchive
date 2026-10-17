@@ -158,7 +158,7 @@ class BwikiDialogueTest(unittest.TestCase):
         self.assertEqual(runs[0][0]['kind'], 'unsupported')
         missing = {key: values for key, values in self.index.items() if key[1] != bwiki.comparable('左侧回应。')}
         runs = bwiki.supported_runs(copy.deepcopy(segment), missing)
-        self.assertEqual([run[0]['kind'] for run in runs], ['line', 'unsupported', 'line'])
+        self.assertEqual([run[0]['kind'] for run in runs], ['line', 'unsupported', 'unsupported', 'line', 'line'])
         malformed = self.script.replace('左侧回应。', '{{未知条件|左侧回应。}}')
         parsed = bwiki.story_segments(malformed)
         self.assertTrue(any(run[0]['kind'] == 'unsupported' for part in parsed for run in bwiki.supported_runs(part, self.index)))
@@ -241,6 +241,22 @@ class BwikiDialogueTest(unittest.TestCase):
             self.assertTrue(all(row['bwikiMissionId'] == 'bwiki-page-88' for row in result['rows']))
             self.assertEqual({row['id']: row['missionId'] for row in result['rows']}, source_ownership)
             self.assertEqual({row['id']: row['text'] for row in result['rows']}, {row['id']: row['text'] for row in self.rows})
+            prior_path = root / 'public/bwiki-provenance.json'
+            prior = json.loads(prior_path.read_bytes())
+            for chunk in prior['chapters']['content/entry--chapter.json']:
+                chunk['missionId'] = 'quest-11'
+                chunk.pop('officialMissionIds', None)
+            bwiki.write(prior_path, prior)
+            # A fresh but incomplete revision must not destroy a proven chunk.
+            partial = self.script.replace('开场。', '编辑中无法对应。')
+            wiki.write_bytes(partial.encode('utf-8'))
+            manifest['pages'][0].update(revision=6, sha256=bwiki.digest(partial))
+            bwiki.write(manifest_file, manifest)
+            bwiki.align(root, raw, plan_file, manifest_file)
+            result = json.loads((root / 'public/content/entry--chapter.json').read_bytes())
+            self.assertEqual(result['bwiki']['cachedRows'], 6)
+            self.assertEqual({row['bwikiRevision'] for row in result['rows']}, {5})
+            self.assertTrue(all(row['bwikiMissionId'] == 'bwiki-page-88' for row in result['rows']))
             manifest['pages'][0]['status'] = 'unavailable'
             bwiki.write(manifest_file, manifest)
             bwiki.align(root, raw, plan_file, manifest_file)

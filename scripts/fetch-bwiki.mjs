@@ -1,161 +1,242 @@
 import fs from 'node:fs/promises';
 import path from 'node:path';
-import crypto from 'node:crypto';
+import { hash } from './verification-state.mjs';
+import { failedPage } from './verification-retry.mjs';
+import { BWIKI_LICENSE, fetchBwikiLegacy } from './fetch-bwiki-legacy.mjs';
+export { BWIKI_LICENSE };
 
-export const BWIKI_LICENSE = {
-  name: 'CC BY-NC-SA 4.0',
-  url: 'https://creativecommons.org/licenses/by-nc-sa/4.0/',
-  attribution: '崩坏：星穹铁道 BWIKI contributors',
-};
-
-export async function fetchBwiki(stage, cache, fetcher = fetch) {
+export async function fetchBwiki(stage, cache, fetcher = fetch, options = {}) {
   const request = JSON.parse(await fs.readFile(path.join(stage, '.cache/bwiki/request.json')));
   if (request.schema !== 'hsr-bwiki-request.v1' || !/^[a-f0-9]{40}$/.test(request.commit))
     throw new Error('Invalid BWIKI request');
-  const results = [];
-  let restricted = false;
+  const now = options.now ?? Date.now(),
+    pause = options.pause ?? ((ms) => new Promise((resolve) => setTimeout(resolve, ms)));
+  const state = options.state ?? { pages: {} },
+    algorithm = options.algorithm ?? 'manual';
+  let index = {},
+    blocked = Date.parse(state.nextRequestAt ?? '') > now,
+    downloads = 0;
+  const results = [],
+    observations = [];
   await fs.mkdir(cache, { recursive: true });
-  // Batch public API requests and keep one request in flight to avoid burdening the wiki.
+  try {
+    index = JSON.parse(await fs.readFile(path.join(cache, 'index.json')));
+  } catch (error) {
+    if (error.code !== 'ENOENT') throw error;
+  }
+  for (const page of options.previousAudit?.pages ?? [])
+    if (page.status === 'available' && !index[page.title]) index[page.title] = page;
+  const failure = (item, reason, attempted = true, retryAfter) => {
+    if (attempted)
+      state.pages[item.title] = failedPage(state.pages[item.title], reason, now, retryAfter);
+    return {
+      ...item,
+      status: 'unavailable',
+      reason,
+      nextRetryAt: state.pages[item.title]?.nextRetryAt,
+    };
+  };
+  const stop = (reason, retryAfter) => {
+    blocked = true;
+    const failed = failedPage({ failures: state.requestFailures ?? 0 }, reason, now, retryAfter);
+    Object.assign(state, {
+      requestFailures: failed.failures,
+      nextRequestAt: failed.nextRetryAt,
+      lastRequestError: reason,
+    });
+  };
+  const cached = async (item) => {
+    const old = index[item.title];
+    if (!/^[a-f0-9]{64}$/.test(old?.sha256 ?? '')) return undefined;
+    const file = path.resolve(cache, old.sha256 + '.wiki');
+    try {
+      if (hash(await fs.readFile(file)) !== old.sha256) return undefined;
+    } catch {
+      return undefined;
+    }
+    return {
+      ...Object.fromEntries(
+        ['pageTitle', 'pageId', 'revision', 'timestamp', 'collectedAt', 'sha256']
+          .filter((key) => old[key] !== undefined)
+          .map((key) => [key, old[key]]),
+      ),
+      ...item,
+      status: 'available',
+      file,
+      retrieval: 'cache-pinned',
+    };
+  };
   for (let start = 0; start < request.requests.length; start += 20) {
     const batch = request.requests.slice(start, start + 20);
-    if (restricted) {
-      results.push(
-        ...batch.map((item) => ({
-          ...item,
-          status: 'unavailable',
-          reason: 'BWIKI 접근 제한 · 기존 자료 유지',
-        })),
-      );
-      continue;
-    }
-    if (start > 0) await new Promise((resolve) => setTimeout(resolve, 1000));
-    let response;
-    try {
-      const parameters = {
-        action: 'query',
-        prop: 'revisions',
-        rvprop: 'ids|timestamp|content',
-        rvslots: 'main',
-        redirects: '1',
-        titles: batch.map((item) => item.title).join('|'),
-        format: 'json',
-        formatversion: '2',
-        maxlag: '5',
-      };
-      const pages = new Map(),
-        normalized = [],
-        redirects = [];
-      let continuation;
-      for (let pageNumber = 0; pageNumber < 10; pageNumber++) {
-        if (pageNumber) await new Promise((resolve) => setTimeout(resolve, 1000));
+    let metadata, errorReason;
+    if (!blocked) {
+      if (start) await pause(1200);
+      try {
         const url = new URL('https://wiki.biligame.com/sr/api.php');
-        url.search = new URLSearchParams({ ...parameters, ...continuation });
-        const fetched = await fetcher(url, {
-          signal: AbortSignal.timeout(45000),
-          headers: {
-            'User-Agent': 'hsrArchive/0.1 (BWIKI dialogue reference; public archive)',
-          },
+        url.search = new URLSearchParams({
+          action: 'query',
+          prop: 'revisions',
+          rvprop: 'ids|timestamp',
+          redirects: '1',
+          titles: batch.map((item) => item.title).join('|'),
+          format: 'json',
+          formatversion: '2',
+          maxlag: '5',
         });
-        if (
-          [403, 429].includes(fetched.status) ||
-          !fetched.headers.get('content-type')?.includes('json')
-        ) {
-          restricted = true;
-          throw new Error('BWIKI access restricted');
+        const response = await fetcher(url, {
+          signal: AbortSignal.timeout(45000),
+          headers: { 'User-Agent': 'hsrArchive/0.2 (revision cache)' },
+        });
+        if (!response.ok || !response.headers.get('content-type')?.includes('json')) {
+          stop('BWIKI HTTP ' + response.status, response.headers.get('retry-after'));
+          throw new Error(state.lastRequestError);
         }
-        if (!fetched.ok) throw new Error('BWIKI HTTP ' + fetched.status);
-        const part = await fetched.json();
-        if (part.error || !Array.isArray(part.query?.pages))
-          throw new Error('Incomplete BWIKI response');
-        for (const page of part.query.pages) {
-          const previous = pages.get(page.title);
-          if (
-            previous?.revisions?.[0] &&
-            page.revisions?.[0] &&
-            previous.revisions[0].revid !== page.revisions[0].revid
-          )
-            throw new Error('BWIKI page changed during continuation');
-          if (!previous?.revisions?.length || page.revisions?.length) pages.set(page.title, page);
+        metadata = await response.json();
+        if (metadata.error || metadata.continue || !Array.isArray(metadata.query?.pages)) {
+          stop(
+            metadata.error?.code === 'maxlag' ? 'BWIKI maxlag' : 'BWIKI 수정 번호 응답 불완전',
+            response.headers.get('retry-after'),
+          );
+          throw new Error(state.lastRequestError);
         }
-        normalized.push(...(part.query.normalized ?? []));
-        redirects.push(...(part.query.redirects ?? []));
-        continuation = part.continue;
-        if (!continuation) break;
+      } catch (error) {
+        errorReason = error.message;
+        metadata = undefined;
+        if (!blocked) stop(errorReason);
       }
-      if (continuation) throw new Error('Incomplete BWIKI continuation');
-      response = {
-        query: { pages: [...pages.values()], normalized, redirects },
-      };
-    } catch {
-      results.push(
-        ...batch.map((item) => ({
-          ...item,
-          status: 'unavailable',
-          reason: 'BWIKI 조회 실패 · 기존 자료 유지',
-        })),
-      );
-      continue;
     }
     const aliases = new Map(
-      [...(response.query.normalized ?? []), ...(response.query.redirects ?? [])].map((item) => [
+      [...(metadata?.query.normalized ?? []), ...(metadata?.query.redirects ?? [])].map((item) => [
         item.from,
         item.to,
       ]),
     );
+    const pending = [];
     for (const item of batch) {
-      let title = item.title;
+      const old = await cached(item);
+      let canonical = item.title;
       const seen = new Set();
-      while (aliases.has(title) && !seen.has(title)) {
-        seen.add(title);
-        title = aliases.get(title);
+      while (aliases.has(canonical) && !seen.has(canonical)) {
+        seen.add(canonical);
+        canonical = aliases.get(canonical);
       }
-      const page = response.query.pages.find((page) => page.title === title);
-      const revision = page?.revisions?.[0];
-      const content = revision?.slots?.main?.content;
+      const page = metadata?.query.pages.find((page) => page.title === canonical),
+        revision = page?.revisions?.[0];
+      const key = `${request.commit}:${algorithm}:${revision?.revid ?? old?.revision ?? 0}`;
+      const observed = page?.missing ? 0 : revision?.revid;
       if (
+        page &&
+        (page.missing || page.ns === 0) &&
+        Number.isSafeInteger(observed) &&
+        observed >= 0
+      )
+        observations.push({ title: item.title, canonical, revision: observed });
+      if (!metadata) {
+        if (errorReason) failure(item, errorReason, true);
+        // Replay an old pinned revision only for an improved algorithm; the
+        // collection timestamp and source revision stay those of the old copy.
+        if (
+          old &&
+          options.algorithm &&
+          (options.forceAlignment || state.pages[item.title]?.aligned !== key)
+        )
+          results.push({ ...old, needsAlignment: true, alignmentKey: key });
+        else results.push(failure(item, errorReason ?? 'BWIKI 요청 대기 · 이전 검증 보존', false));
+      } else if (page?.missing) {
+        state.pages[item.title] = failedPage(state.pages[item.title], 'BWIKI 임무 문서 없음', now);
+        results.push({ ...item, status: 'missing', reason: 'BWIKI 임무 문서 없음' });
+      } else if (
         !page ||
-        page.missing ||
         page.ns !== 0 ||
-        typeof content !== 'string' ||
         !Number.isSafeInteger(revision?.revid) ||
         revision.revid <= 0 ||
         Number.isNaN(Date.parse(revision.timestamp))
-      ) {
+      )
+        results.push(failure(item, 'BWIKI 수정 번호 확인 실패'));
+      else if (old?.revision === revision.revid && old.pageTitle === canonical)
         results.push({
-          ...item,
-          status: 'missing',
-          reason: 'BWIKI 임무 문서 없음',
+          ...old,
+          retrieval: 'revision-cache',
+          metadataCheckedAt: new Date(now).toISOString(),
+          needsAlignment: Boolean(
+            options.forceAlignment || state.pages[item.title]?.aligned !== key,
+          ),
+          alignmentKey: key,
         });
-        continue;
+      else if (
+        Date.parse(state.pages[item.title]?.nextRetryAt ?? '') > now &&
+        state.pages[item.title]?.attemptedRevision === revision.revid
+      )
+        results.push(failure(item, 'BWIKI 본문 재시도 대기', false));
+      else if (downloads >= (options.maxDownloads ?? Infinity))
+        results.push(failure(item, '실행당 본문 조회 한도 · 다음 주기 재검토'));
+      else {
+        pending.push({ ...item, alignmentKey: key, expectedRevision: revision.revid });
+        downloads++;
       }
-      const bytes = Buffer.from(content, 'utf8');
-      const sha256 = crypto.createHash('sha256').update(bytes).digest('hex');
-      const target = path.join(cache, sha256 + '.wiki');
-      await fs.writeFile(target, bytes);
-      results.push({
-        ...item,
-        status: 'available',
-        pageTitle: page.title,
-        pageId: page.pageid,
-        revision: revision.revid,
-        collectedAt: new Date().toISOString(),
-        timestamp: revision.timestamp,
-        sha256,
-        file: path.resolve(target),
-      });
+    }
+    if (!pending.length || blocked) continue;
+    await pause(1200);
+    const scratch = path.join(cache, 'request-stage');
+    await fs.mkdir(path.join(scratch, '.cache/bwiki'), { recursive: true });
+    await fs.writeFile(
+      path.join(scratch, '.cache/bwiki/request.json'),
+      JSON.stringify({ ...request, requests: pending }),
+    );
+    let bodyFailure;
+    const body = await fetchBwikiLegacy(scratch, cache, async (...args) => {
+      try {
+        const response = await fetcher(...args);
+        if (!response.ok || !response.headers.get('content-type')?.includes('json')) {
+          stop('BWIKI HTTP ' + response.status, response.headers.get('retry-after'));
+          bodyFailure = state.lastRequestError;
+        } else {
+          const data = await response
+            .clone()
+            .json()
+            .catch(() => ({}));
+          if (data.error) {
+            stop('BWIKI ' + (data.error.code ?? 'API error'), response.headers.get('retry-after'));
+            bodyFailure = state.lastRequestError;
+          }
+        }
+        return response;
+      } catch (error) {
+        stop('BWIKI 본문 연결 실패');
+        bodyFailure = state.lastRequestError;
+        throw error;
+      }
+    });
+    for (const page of body.pages) {
+      if (page.status !== 'available' || page.revision !== page.expectedRevision) {
+        const item = failure(page, bodyFailure ?? 'BWIKI 본문 누락 또는 수집 중 수정');
+        state.pages[page.title].attemptedRevision = page.expectedRevision;
+        results.push(item);
+      } else {
+        const record = { ...page, retrieval: 'download', needsAlignment: true };
+        index[page.title] = record;
+        results.push(record);
+      }
+    }
+    if (!blocked) {
+      state.requestFailures = 0;
+      delete state.nextRequestAt;
+      delete state.lastRequestError;
     }
   }
+  await fs.writeFile(path.join(cache, 'index.json'), JSON.stringify(index));
   const manifest = {
     schema: 'hsr-bwiki-input.v1',
     commit: request.commit,
-    checkedAt: new Date().toISOString(),
+    checkedAt: new Date(now).toISOString(),
     license: BWIKI_LICENSE,
     pages: results,
+    observations,
     review: request.review,
   };
   await fs.writeFile(path.join(stage, '.cache/bwiki/manifest.json'), JSON.stringify(manifest));
   console.log(
-    `BWIKI: ${results.filter((item) => item.status === 'available').length}/${results.length} mission pages available`,
+    `BWIKI: ${results.filter((item) => item.status === 'available').length}/${results.length} available; ${downloads} body downloads selected`,
   );
   return manifest;
 }

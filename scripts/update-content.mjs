@@ -5,6 +5,14 @@ import { REPOSITORY, resolveUpstream, gitBlob } from './upstream-content.mjs';
 import { isMissionStructurePath, resolveMissionStructures } from './trailblaze-structures.mjs';
 import { prepareDialogueFlow } from './dialogue-flow.mjs';
 import { fetchBwiki } from './fetch-bwiki.mjs';
+import { retryContent, finishVerification } from './reverify-content.mjs';
+import {
+  algorithmHash,
+  readRetry,
+  saveRetry,
+  verificationRows,
+  compareVerification,
+} from './verification-retry.mjs';
 
 const root = process.cwd();
 const cache = path.resolve('.cache/upstream-content');
@@ -28,7 +36,7 @@ let mode, title;
 const args = process.argv.slice(2);
 for (let index = 0; index < args.length; index++) {
   const argument = args[index];
-  if (['--plan', '--apply'].includes(argument) && !mode) mode = argument;
+  if (['--plan', '--apply', '--retry'].includes(argument) && !mode) mode = argument;
   else if (
     argument === '--title' &&
     !title &&
@@ -38,8 +46,9 @@ for (let index = 0; index < args.length; index++) {
     title = args[++index].trim();
   else throw new Error('Unknown content update argument: ' + argument);
 }
-const plan =
-  mode === '--apply' ? JSON.parse(await fs.readFile(planFile, 'utf8')) : await resolveUpstream(api);
+const plan = ['--apply', '--retry'].includes(mode)
+  ? JSON.parse(await fs.readFile(planFile, 'utf8'))
+  : await resolveUpstream(api);
 if (
   plan.schema !== 'hsr-upstream-plan.v1' ||
   plan.repository !== REPOSITORY ||
@@ -47,12 +56,14 @@ if (
 )
   throw new Error('Invalid upstream plan');
 if (title) plan.trailblazeTitle = title;
-if (mode !== '--apply') await fs.writeFile(planFile, JSON.stringify(plan, null, 2) + '\n');
+if (!['--apply', '--retry'].includes(mode))
+  await fs.writeFile(planFile, JSON.stringify(plan, null, 2) + '\n');
 if (mode === '--plan') {
   if (process.env.GITHUB_OUTPUT)
     await fs.appendFile(process.env.GITHUB_OUTPUT, `commit=${plan.commit}\n`);
   console.log(`Resolved ${plan.version} (${plan.commit.slice(0, 7)})`);
 } else {
+  const before = await verificationRows(root);
   const raw = path.join(cache, 'raw');
   const blobs = path.join(cache, 'blobs');
   await fs.mkdir(raw, { recursive: true });
@@ -101,6 +112,15 @@ if (mode === '--plan') {
   await fs.mkdir(path.join(stage, 'src/data'), { recursive: true });
   await fs.mkdir(path.join(stage, 'public/content'), { recursive: true });
   await fs.mkdir(path.join(stage, '.cache'), { recursive: true });
+  if (mode === '--retry') {
+    if (
+      JSON.parse(await fs.readFile(path.join(root, 'public/content-update.json'))).commit !==
+      plan.commit
+    )
+      throw new Error('Retry requires the same official input commit');
+    await retryContent(root, stage, raw, planFile);
+    process.exit(0);
+  }
   for (const name of [
     'codex.json',
     'simulation.json',
@@ -183,7 +203,14 @@ if (mode === '--plan') {
   run('restore-dialogue-flow.py', [stage, path.join(stage, '.cache/dialogue-flow/manifest.json')]);
   run('bwiki-dialogue.py', [stage, raw, planFile, '--discover']);
   run('import-bwiki-chapters.py', [stage, raw, planFile, '--discover']);
-  await fetchBwiki(stage, path.join(cache, 'bwiki'));
+  const retryState = await readRetry(root),
+    algorithm = await algorithmHash(root);
+  const manifest = await fetchBwiki(stage, path.join(cache, 'bwiki'), fetch, {
+    state: retryState,
+    algorithm,
+    previousAudit: JSON.parse(await fs.readFile(path.join(root, 'public/bwiki-provenance.json'))),
+  });
+  await saveRetry(retryState, root);
   run('bwiki-dialogue.py', [
     stage,
     raw,
@@ -217,6 +244,14 @@ if (mode === '--plan') {
   );
   receipt.files.push(...trailblaze.files);
   // The projector validates every payload and metadata reference before any publication.
+  if (
+    JSON.parse(await fs.readFile(path.join(root, 'public/content-update.json'))).commit ===
+      plan.commit &&
+    compareVerification(before, await verificationRows(stage)).lostVerification.length
+  )
+    throw new Error(
+      'Same-version update would lose prior verified BWIKI rows; preserving deployed data',
+    );
   for (const file of receipt.files) {
     if (
       !/^(?:src\/data\/(?:codex|simulation|imported-content|train-databank|astropolis-intro|books|trailblaze)\.json|public\/(?:content-update|books-provenance|trailblaze-provenance|dialogue-flow-provenance|bwiki-provenance|video-order-provenance|video-review-summary)\.json|public\/content\/[A-Za-z0-9_-]+\.json|public\/content\/locales\/(?:manifest|(?:en|zh-CN|ja)\/[A-Za-z0-9_-]+)\.json)$/.test(
@@ -254,4 +289,5 @@ if (mode === '--plan') {
     }
   }
   console.log(`Verified and applied ${plan.version}: ${receipt.rows} rows`);
+  await finishVerification(root, before, manifest, retryState, algorithm, 'full');
 }

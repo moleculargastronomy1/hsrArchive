@@ -70,6 +70,9 @@ __pycache__/
 *.log
 *.tsbuildinfo
 /public/content-watch.json
+/public/verification-state.json
+/public/verification-state-*.json.gz
+/public/verification-progress.json
 logs/
 tmp/
 temp/

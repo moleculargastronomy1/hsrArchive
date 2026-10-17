@@ -59,6 +59,15 @@ class IntegrationAuditTest(unittest.TestCase):
         self.assertFalse(audit.unknown({'flowStatus': 'verified', 'bwikiStatus': 'review'}))
         self.assertFalse(audit.unknown({'flowStatus': 'review', 'videoStatus': 'caption-matched'}))
 
+    def test_actual_document_replay_rejects_reversed_order_even_when_published_edges_agree(self):
+        text = '{{任务|任务名称=任務|任务类型=开拓任务}}\n==剧情内容==\n{{剧情选项|选项1=选择。|剧情1=*角色：回应。}}'
+        segments = audit.bwiki.story_segments(text, True)
+        parsed = [(set(audit.imports.node_keys([segment])), segment) for segment in segments]
+        by_id = {row['id']: row for row in self.rows}
+        self.assertTrue(audit.verify_document_chunk(self.chunk, by_id, self.talks, self.cn, self.kr, parsed))
+        reversed_chunk = {**self.chunk, 'order': ['2', '1']}
+        self.assertFalse(audit.verify_document_chunk(reversed_chunk, by_id, self.talks, self.cn, self.kr, parsed))
+
 
 if __name__ == '__main__':
     unittest.main()

@@ -118,6 +118,20 @@ test('BWIKI revision continuation preserves explicit redirects and complete snap
       calls++;
       if (calls === 1)
         return Response.json({
+          query: {
+            redirects: [{ from: 'alias', to: 'canonical' }],
+            pages: [
+              {
+                ns: 0,
+                pageid: 4,
+                title: 'canonical',
+                revisions: [{ revid: 8, timestamp: '2026-10-16T00:00:00Z' }],
+              },
+            ],
+          },
+        });
+      if (calls === 2)
+        return Response.json({
           continue: { continue: '||', rvcontinue: 'next' },
           query: {
             redirects: [{ from: 'alias', to: 'canonical' }],
@@ -144,7 +158,7 @@ test('BWIKI revision continuation preserves explicit redirects and complete snap
         },
       });
     });
-    assert.equal(calls, 2);
+    assert.equal(calls, 3);
     assert.equal(result.pages[0].pageTitle, 'canonical');
     assert.equal(result.pages[0].revision, 8);
     assert.equal(fs.readFileSync(result.pages[0].file, 'utf8'), 'verified snapshot');

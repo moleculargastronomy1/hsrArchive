@@ -70,6 +70,9 @@ def discover(root, raw, plan_path):
     trailblaze_path = root / 'src/data/trailblaze.json'
     story_files = {chapter['content']['file'] for entry in json.loads(trailblaze_path.read_bytes())
                    for chapter in entry['chapters'] if chapter.get('content')} if trailblaze_path.exists() else set()
+    official_chapters = {chapter['upstreamChapterId'] for entry in json.loads(trailblaze_path.read_bytes())
+                         for chapter in entry['chapters'] if chapter.get('upstreamChapterId') and chapter.get('content')} if trailblaze_path.exists() else set()
+    used.update(row['MainMissionID'] for row in missions if row.get('Type') == 'Main' and row.get('ChapterID') in official_chapters)
     for spec in specs(root):
         payload = json.loads((root / 'public' / spec['file']).read_bytes())
         identities = {int(row['missionId'][6:]) for row in payload['rows'] if re.fullmatch(r'quest-\d+', row.get('missionId', ''))}
@@ -468,6 +471,13 @@ def supported_runs(segment, index):
                 runs.append(current)
                 current = []
             runs.append([{'kind': 'unsupported'}])
+            # Conditional scenes and responses have independent boundaries.
+            if node['kind'] == 'separated':
+                for part in node['segments']:
+                    runs.extend(supported_runs(part, index))
+            elif node['kind'] == 'choice':
+                for option in node['options']:
+                    runs.extend(supported_runs(option['body'], index))
         else:
             current.append(node)
     if current:
@@ -593,6 +603,23 @@ def apply_chunks(payload, chunks, mission_sequence=None):
     return accepted
 
 
+def cached_chunk_valid(old, before, evidence, index, sources):
+    if f"{old['page']}@{old['revision']}" not in sources:
+        return False
+    for identity in old['order']:
+        item, expected, row = evidence.get(identity), old['evidence'].get(identity), before.get(identity)
+        if not item or not expected or not row:
+            return False
+        key = ('choice' if row['type'] == 'choice' else 'line', item['text'], '' if row['type'] == 'choice' else item['speaker'])
+        if row.get('talkId') != expected.get('talkId') or row['type'] != expected.get('type') or any(item[key] != expected[key] for key in ['chineseHash', 'speakerHash', 'koreanHash']) or len(index[key]) != 1 or index[key][0]['id'] != identity:
+            return False
+        source_targets = set(row.get('nextIds', [])) & set(old['order'])
+        wiki_targets = set(old['edges'].get(identity, []))
+        if row.get('flowStatus') == 'verified' and source_targets and wiki_targets and source_targets != wiki_targets:
+            return False
+    return True
+
+
 def align(root, raw, plan_path, manifest_path, previous_root=None):
     plan, mission_rows, talk_rows, chinese, korean, input_hashes = inputs(raw, plan_path)
     mission_names = {'quest-' + str(row['MainMissionID']): _localizations.plain(korean.get(str(row.get('Name', {}).get('Hash')), ''))
@@ -655,17 +682,43 @@ def align(root, raw, plan_path, manifest_path, previous_root=None):
             routes.update(('quest-' + str(identity), group) for identity in members)
     title_ids = {title: list(dict.fromkeys(routes.get(identity, identity) for identity in identities))
                  for title, identities in title_ids.items()}
-    chapters, review, publications, totals, changed_rows, orders = {}, list(manifest['review']), [], Counter(), {}, []
-    mission_sequences = {}
+    # A newly reachable document may reveal that an older single-quest proof
+    # belongs to an officially shared title. Migrate only its derived grouping;
+    # IDs, original ownership, source revision and evidence hashes stay intact.
+    for values in previous.get('chapters', {}).values():
+        for old in values:
+            group = routes.get(old['missionId'])
+            if group:
+                old.update(missionId=group, officialMissionIds=group_members[group], mission=mission_names[group])
+                if old.get('missionStructure'):
+                    old['missionStructure'] = {key: routes.get(value, value) if isinstance(value, str) else value for key, value in old['missionStructure'].items()}
+    targets = set(manifest['targetFiles']) if 'targetFiles' in manifest else None
+    chapters = {file: chunks for file, chunks in previous.get('chapters', {}).items() if targets is not None and file not in targets}
+    review = [item for item in previous.get('review', []) if targets is not None and item.get('file') and item['file'] not in targets] + list(manifest['review'])
+    publications, totals, changed_rows, orders = [], Counter(), {}, []
+    mission_sequences = {file: value for file, value in previous.get('missionOrder', {}).items() if targets is not None and file not in targets}
+    chapter_owners = {chapter['content']['file']: chapter['upstreamChapterId']
+                      for entry in json.loads((root / 'src/data/trailblaze.json').read_bytes())
+                      for chapter in entry['chapters'] if chapter.get('content') and chapter.get('upstreamChapterId')} if (root / 'src/data/trailblaze.json').exists() else {}
     for spec in specs(root):
         file = 'public/' + spec['file']
         payload = json.loads((root / file).read_bytes())
+        if targets is not None and spec['file'] not in targets:
+            totals.update(payload.get('bwiki', {}))
+            continue
         owned = defaultdict(list)
         base_rank = {identity: position for position, identity in enumerate(payload.get('bwikiBaseOrder', []))}
         source_rows = sorted(payload['rows'], key=lambda row: base_rank.get(row['id'], len(base_rank)))
         for row in source_rows:
             if row.get('missionId', '').startswith('quest-'):
                 owned[routes.get(row['missionId'], row['missionId'])].append(row)
+        # Explore official subquests missing from the old scene export. Matching
+        # still requires one unique existing row in this same official chapter.
+        if spec['file'] in chapter_owners:
+            for mission in mission_rows:
+                if mission.get('Type') == 'Main' and mission.get('ChapterID') == chapter_owners[spec['file']]:
+                    identity = 'quest-' + str(mission['MainMissionID'])
+                    owned.setdefault(routes.get(identity, identity), [])
         if not owned:
             continue
         before = {row['id']: dict(row) for row in payload['rows']}
@@ -704,14 +757,14 @@ def align(root, raw, plan_path, manifest_path, previous_root=None):
                             valid = False
                             break
                     if valid:
-                        chunks.append({**old, 'status': 'cached', 'mission': mission_names.get(mission) or rows[0]['mission']})
+                        chunks.append({**old, 'status': 'cached', 'mission': mission_names.get(mission) or (rows[0]['mission'] if rows else '임무 기록')})
                         if old.get('missionStructure'):
                             structures[mission] = old['missionStructure']
                 continue
             try:
                 fields = validate_mission_page(text[page['missionId']], page.get('title', page['pageTitle']))
                 structures[mission] = mission_structure(fields, title_ids)
-                segments = story_segments(text[page['missionId']])
+                segments = story_segments(text[page['missionId']], True)
             except Unresolved as error:
                 review.append({'file': spec['file'], 'missionId': mission, 'reason': str(error)})
                 continue
@@ -722,12 +775,64 @@ def align(root, raw, plan_path, manifest_path, previous_root=None):
                     identity = f'{position}.{subposition}'
                     try:
                         matched, edges = compile_segment(run, index)
-                        chunks.append({'missionId': mission, 'mission': mission_names.get(mission) or rows[0]['mission'], 'page': page['pageTitle'], 'revision': page['revision'],
+                        chunks.append({'missionId': mission, 'mission': mission_names.get(mission) or (rows[0]['mission'] if rows else '임무 기록'), 'page': page['pageTitle'], 'revision': page['revision'],
                                        **({'officialMissionIds': group_members[mission]} if mission in group_members else {}),
-                                       'segment': identity, 'status': 'matched', 'missionStructure': structures[mission], 'order': [row['id'] for row in matched],
+                                       'segment': identity, 'status': 'cached' if page.get('retrieval') == 'cache-pinned' else 'matched', 'missionStructure': structures[mission], 'order': [row['id'] for row in matched],
                                        'edges': edges, 'evidence': {row['id']: {'talkId': row['talkId'], 'type': row['type'], **{key: evidence[row['id']][key] for key in ['chineseHash', 'speakerHash', 'koreanHash']}} for row in matched}})
                     except Unresolved as error:
                         review.append({'file': spec['file'], 'missionId': mission, 'segment': identity, 'reason': str(error)})
+        # An incomplete new collection/parser must not erase prior evidence.
+        for old in previous.get('chapters', {}).get(spec['file'], []):
+            mission = old['missionId']
+            if mission not in owned or any(chunk['order'] == old['order'] and chunk['edges'] == old['edges'] for chunk in chunks):
+                continue
+            index = matching_index(owned[mission], evidence, chapter_index)
+            if not cached_chunk_valid(old, before, evidence, index, source_records):
+                continue
+            old_ids = set(old['order'])
+            coverage = {identity for chunk in chunks for identity in chunk['order']}
+            if old_ids <= coverage:
+                continue
+            chunks = [chunk for chunk in chunks if not old_ids.intersection(chunk['order'])]
+            chunks.append({**old, 'status': 'cached'})
+            if old.get('missionStructure'):
+                structures.setdefault(mission, old['missionStructure'])
+        for old in previous.get('chapters', {}).get(spec['file'], []):
+            counts = Counter(identity for chunk in chunks for identity in chunk['order'])
+            if not any(counts[identity] > 1 for identity in old['order']) or old['missionId'] not in owned:
+                continue
+            index = matching_index(owned[old['missionId']], evidence, chapter_index)
+            if not cached_chunk_valid(old, before, evidence, index, source_records):
+                continue
+            protected = set(old['order'])
+            chunks = [chunk for chunk in chunks if not protected.intersection(chunk['order'])]
+            chunks.append({**old, 'status': 'cached'})
+            review.append({'file': spec['file'], 'missionId': old['missionId'], 'reason': '새 대조의 중복 위치 · 공식 원문 재검증한 이전 연결 유지'})
+        counts = Counter(identity for chunk in chunks for identity in chunk['order'])
+        for chunk in chunks:
+            if any(counts[identity] > 1 for identity in chunk['order']):
+                review.append({'file': spec['file'], 'missionId': chunk['missionId'], 'segment': chunk['segment'], 'reason': '같은 대사의 여러 위키 위치 · 새 구간 보류'})
+        chunks = [chunk for chunk in chunks if all(counts[identity] == 1 for identity in chunk['order'])]
+        # Removing an overlapping new run can uncover another old chunk whose
+        # IDs were contained in that run. Reach a fixed point; old chunks have
+        # disjoint IDs, so retaining one cannot invalidate another old chunk.
+        old_chunks = previous.get('chapters', {}).get(spec['file'], [])
+        for _ in range(len(old_chunks) + 1):
+            restored = False
+            coverage = {identity for chunk in chunks for identity in chunk['order']}
+            for old in old_chunks:
+                if set(old['order']) <= coverage or old['missionId'] not in owned:
+                    continue
+                index = matching_index(owned[old['missionId']], evidence, chapter_index)
+                if not cached_chunk_valid(old, before, evidence, index, source_records):
+                    continue
+                protected = set(old['order'])
+                chunks = [chunk for chunk in chunks if not protected.intersection(chunk['order'])]
+                chunks.append({**old, 'status': 'cached'})
+                coverage = {identity for chunk in chunks for identity in chunk['order']}
+                restored = True
+            if not restored:
+                break
         occurrences = Counter(identity for chunk in chunks for identity in chunk['order'])
         for chunk in chunks:
             if any(occurrences[identity] > 1 for identity in chunk['order']):
@@ -781,7 +886,7 @@ def align(root, raw, plan_path, manifest_path, previous_root=None):
               'matchingPolicy': {'version': 2, 'normalization': ['display markup', 'ruby base text', 'default protagonist name', 'editorial punctuation (numeric separators preserved)', 'Unicode typography', 'whitespace'],
                                  'evidence': 'Full official Chinese strings, speakers and Korean strings remain hashed; ambiguous IDs are excluded.'},
               'inputs': input_hashes, 'totals': dict(totals), 'chapters': chapters, 'missionCatalog': mission_catalog, 'missionOrder': mission_sequences, 'review': review,
-              'sources': {key: source_records[key] for key in sorted(used_sources)},
+              'sources': {key: source_records[key] for key in sorted(used_sources)}, 'imports': previous.get('imports', {}),
               'pages': [{**{key: value for key, value in page.items() if key != 'file'},
                          **({'sourceUrl': 'https://wiki.biligame.com/sr/' + quote(page['pageTitle']) + '?oldid=' + str(page['revision']),
                              'historyUrl': 'https://wiki.biligame.com/sr/' + quote(page['pageTitle']) + '?action=history'} if page['status'] == 'available' else {})}

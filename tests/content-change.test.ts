@@ -194,4 +194,19 @@ test('metadata-only observations stop repeated processing without promoting the 
     async () => new Response('', { status: 403 }),
   );
   assert.equal(restricted.wiki[0].revision, 7);
+  const recorded = makeSnapshot({
+    update: { commit },
+    wiki: { commit, sources: {} },
+    manifest: {
+      commit,
+      pages: [{ title: '별', status: 'unavailable' }],
+      observations: [{ title: '별', canonical: '별', revision: 8 }],
+    },
+    video: { commit, sources: [{ id: source.id, videos }] },
+    official: { recent: official },
+    config,
+    previous: prior,
+  });
+  assert.equal(recorded.wiki[0].revision, 8);
+  assert.equal(recorded.wiki[0].processedRevision, 7);
 });

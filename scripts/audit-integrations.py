@@ -15,6 +15,9 @@ from urllib.request import Request, urlopen
 _spec = importlib.util.spec_from_file_location('bwiki_audit', Path(__file__).with_name('bwiki-dialogue.py'))
 bwiki = importlib.util.module_from_spec(_spec)
 _spec.loader.exec_module(bwiki)
+_import_spec = importlib.util.spec_from_file_location('bwiki_import_audit', Path(__file__).with_name('import-bwiki-chapters.py'))
+imports = importlib.util.module_from_spec(_import_spec)
+_import_spec.loader.exec_module(imports)
 KST = timezone(timedelta(hours=9))
 CORE = ['id', 'type', 'speaker', 'text', 'missionId', 'talkId', 'source']
 
@@ -38,7 +41,7 @@ def text_proof(row, talks, chinese, korean):
     key = str(row.get('textHash', ''))
     cn, kr = chinese.get(key), korean.get(key)
     if row.get('talkId') is None and cn and kr and bwiki._localizations.plain(kr) == bwiki._localizations.plain(row['text']):
-        return {'chineseHash': bwiki.digest(bwiki.canonical(cn)), 'speakerHash': bwiki.digest(''), 'koreanHash': bwiki.digest(bwiki._localizations.plain(kr))}
+        return {'text': bwiki.comparable(cn), 'speaker': '', 'chineseHash': bwiki.digest(bwiki.canonical(cn)), 'speakerHash': bwiki.digest(''), 'koreanHash': bwiki.digest(bwiki._localizations.plain(kr))}
     return None
 
 
@@ -71,6 +74,33 @@ def load(path):
     return json.loads(path.read_bytes())
 
 
+def verify_document_chunk(chunk, by_id, talks, chinese, korean, parsed):
+    """Replay actual cached wikitext against this chunk, not the published edges alone."""
+    index = {}
+    for identity in chunk['order']:
+        row = by_id.get(identity)
+        proof = text_proof(row, talks, chinese, korean) if row else None
+        if not proof:
+            return False
+        kind = 'choice' if row['type'] == 'choice' else 'line'
+        name = '' if kind == 'choice' else chunk['evidence'][identity].get('wikiSpeaker', proof['speaker'])
+        key = kind, proof['text'], bwiki.normalized(name)
+        index.setdefault(key, []).append(row)
+    wanted = set(index)
+    occurrences = 0
+    for keys, segment in parsed:
+        if not wanted.issubset(keys):
+            continue
+        for run in imports.import_runs([segment], index):
+            try:
+                rows, edges = bwiki.compile_segment(run, index)
+            except bwiki.Unresolved:
+                continue
+            if [row['id'] for row in rows] == chunk['order'] and edges == chunk['edges']:
+                occurrences += 1
+    return occurrences == 1
+
+
 def site_read(base, file, stamp):
     url = base.rstrip('/') + '/' + quote(file, safe='/') + '?audit=' + quote(stamp)
     request = Request(url, headers={'User-Agent': 'hsrArchive integration audit/1.0'})
@@ -87,6 +117,23 @@ def source_cache_check(root, source):
         if candidate.exists() and sha(candidate.read_bytes()) == digest:
             return True
     return False
+
+
+def parsed_document(root, source, cache):
+    key = source.get('sha256', '')
+    if key not in cache:
+        cache[key] = None
+        if re.fullmatch('[a-f0-9]{64}', key):
+            for folder in ['.cache/upstream-content/bwiki', '.cache/bwiki/pages', '.cache/bwiki']:
+                candidate = root / folder / (key + '.wiki')
+                if candidate.exists() and sha(candidate.read_bytes()) == key:
+                    try:
+                        segments = bwiki.story_segments(candidate.read_text(encoding='utf-8'), True)
+                        cache[key] = [(set(imports.node_keys([segment])), segment) for segment in segments]
+                    except bwiki.Unresolved:
+                        pass
+                    break
+    return cache[key]
 
 
 def audit(root, raw, plan_path, base, expected_commit, output, local=False):
@@ -126,6 +173,7 @@ def audit(root, raw, plan_path, base, expected_commit, output, local=False):
                          '장별 검토 사유 건수와 미확인 대사 행 수는 서로 다른 단위임. 영상 제목 연결은 자막 검증이 아님.',
                          '미확인 행 수는 현재 수록본 안의 수치다. 게임 전체에서 빠진 대사 수는 완전한 독립 기준이 없어 산정할 수 없음.'],
               'chapters': []}
+    document_cache, global_talk_ids = {}, set()
     for entry, chapter in specs:
         file = chapter['content']['file']
         payload, expected = read(file), load(root / 'public' / file)
@@ -133,6 +181,28 @@ def audit(root, raw, plan_path, base, expected_commit, output, local=False):
         by_id = {row['id']: row for row in rows}
         chunks = wiki.get('chapters', {}).get(file, [])
         valid, edges, choices, issues = evidence_rows(payload, chunks, wiki['sources'], talks, chinese, korean)
+        global_talk_ids.update(by_id[identity]['talkId'] for identity in valid if by_id[identity].get('talkId') is not None)
+        document_rows, document_edges, document_choices, document_reasons = set(), set(), set(), Counter()
+        document_segments = 0
+        for chunk in chunks:
+            source = wiki['sources'].get(f"{chunk['page']}@{chunk['revision']}", {})
+            if not set(chunk['order']).issubset(valid):
+                document_reasons['공식 ID/원문 근거가 일치하지 않는 구간'] += 1
+                continue
+            parsed = parsed_document(root, source, document_cache)
+            if parsed is None:
+                document_reasons['원문 수집본 없음/해시 또는 문법 재확인 불가'] += 1
+            elif verify_document_chunk(chunk, by_id, talks, chinese, korean, parsed):
+                document_segments += 1
+                document_rows.update(set(chunk['order']) & valid)
+                for first, targets in chunk['edges'].items():
+                    for last in targets:
+                        if (first, last) in edges:
+                            document_edges.add((first, last))
+                            if by_id[first]['type'] == 'choice':
+                                document_choices.add(first)
+            else:
+                document_reasons['기록된 순서/분기를 문서에서 유일한 구간으로 재현하지 못함'] += 1
         used = {f"{chunk['page']}@{chunk['revision']}" for chunk in chunks}
         sources = [{**wiki['sources'][key], 'cachedContentHashVerified': source_cache_check(root, wiki['sources'][key])} for key in sorted(used) if key in wiki['sources']]
         identities = {int(value[6:]) for value in payload.get('sourceIds', []) if re.fullmatch(r'quest-\d+', value)}
@@ -185,7 +255,7 @@ def audit(root, raw, plan_path, base, expected_commit, output, local=False):
         eligible = {row['id'] for row in body}
         status = '부분 완료' if applied and (valid or caption_ids) else '미완료'
         structure = next((item for item in trailblaze.get('chapters', []) if item['chapterId'] == chapter.get('upstreamChapterId')), {})
-        report['chapters'].append({'entryId': entry['id'], 'entryTitle': entry['arcLabel'], 'chapterId': chapter['id'], 'title': chapter['title'], 'file': file,
+        report['chapters'].append({'entryId': entry['id'], 'entryTitle': entry.get('arcLabel', entry['title']), 'chapterId': chapter['id'], 'title': chapter['title'], 'file': file,
             'url': base.rstrip('/') + '/#/entry/' + entry['id'] + '/' + chapter['id'], 'status': status,
             'rows': len(rows), 'bodyRows': len(body), 'choiceRows': sum(row['type'] == 'choice' for row in body),
             'officialTalkIdMatchedRows': sum(bool(row.get('talkId') is not None and text_proof(row, talks, chinese, korean)) for row in body),
@@ -193,8 +263,11 @@ def audit(root, raw, plan_path, base, expected_commit, output, local=False):
             'wikiFreshRows': sum(by_id[identity].get('bwikiStatus') == 'matched' for identity in valid),
             'wikiRetainedRows': sum(by_id[identity].get('bwikiStatus') == 'cached' for identity in valid),
             'wikiSubtitleHashRows': sum(by_id[identity].get('talkId') is None for identity in valid),
-            'wikiOrderedSegments': len(chunks), 'wikiEdges': len(edges), 'wikiChoicesWithResponses': len(choices),
-            'wikiChoiceResponseEdges': sum(by_id[first]['type'] == 'choice' for first, last in edges),
+            'wikiOrderedSegments': document_segments, 'wikiRecordedSegments': len(chunks),
+            'wikiDocumentRecheckedRows': len(document_rows), 'wikiDocumentRecheckUnconfirmedRows': len(valid - document_rows),
+            'wikiDocumentRecheckReasons': dict(document_reasons), 'wikiEdges': len(document_edges),
+            'wikiRecordedEdges': len(edges), 'wikiRecordedChoices': len(choices), 'wikiChoicesWithResponses': len(document_choices),
+            'wikiChoiceResponseEdges': sum(by_id[first]['type'] == 'choice' for first, last in document_edges),
             'rawStructureVerifiedRows': len(raw_verified), 'unknownOrderRows': len(unresolved),
             'wikiUnmatchedBodyRows': len(eligible - valid), 'unknownReasonsByRow': dict(reasons),
             'reviewReasonRecords': dict(Counter(item.get('reason', '상세 사유 없음') for item in reviews)),
@@ -218,13 +291,17 @@ def audit(root, raw, plan_path, base, expected_commit, output, local=False):
         if again_site['commit'] != site['commit'] or again_wiki['checkedAt'] != wiki['checkedAt']:
             raise ValueError('Site changed during audit; rerun to obtain a consistent snapshot')
     chapters = report['chapters']
-    report['summary'] = {'chapters': len(chapters), 'statusCounts': dict(Counter(chapter['status'] for chapter in chapters)),
+    unique_sources = {f"{page['page']}@{page['revision']}": page for chapter in chapters for page in chapter['sourcePages']}
+    report['summary'] = {'chapters': len(chapters), 'statusCounts': {status: sum(chapter['status'] == status for chapter in chapters) for status in ['완료', '부분 완료', '미완료']},
         'wikiLinkedChapters': sum(chapter['wikiMatchedRows'] > 0 for chapter in chapters),
         'videoLinkedChapters': sum(bool(chapter['videos']) for chapter in chapters),
         'captionVerifiedChapters': sum(chapter['exactCaptionRows'] >= 3 for chapter in chapters),
         'siteAppliedChapters': sum(chapter['siteApplied'] for chapter in chapters),
         'youtubeVerificationIncompleteChapters': sum(chapter['componentStatus']['youtube'] == '미완료' for chapter in chapters),
-        **{key: sum(chapter[key] for chapter in chapters) for key in ['rows', 'wikiMatchedRows', 'wikiFreshRows', 'wikiRetainedRows', 'wikiChoicesWithResponses', 'wikiChoiceResponseEdges', 'unknownOrderRows', 'exactCaptionRows']},
+        'wikiUniqueTalkIds': len(global_talk_ids), 'wikiTalkIdMatchedRows': sum(chapter['wikiMatchedRows'] - chapter['wikiSubtitleHashRows'] for chapter in chapters),
+        'wikiSubtitleHashRows': sum(chapter['wikiSubtitleHashRows'] for chapter in chapters),
+        'linkedDocumentRevisions': len(unique_sources), 'documentSourceHashUnconfirmed': sum(not source['cachedContentHashVerified'] for source in unique_sources.values()),
+        **{key: sum(chapter[key] for chapter in chapters) for key in ['rows', 'wikiMatchedRows', 'wikiFreshRows', 'wikiRetainedRows', 'wikiDocumentRecheckedRows', 'wikiDocumentRecheckUnconfirmedRows', 'wikiOrderedSegments', 'wikiRecordedSegments', 'wikiRecordedChoices', 'wikiChoicesWithResponses', 'wikiChoiceResponseEdges', 'unknownOrderRows', 'exactCaptionRows']},
         'evidenceIssueRows': sum(len(chapter['evidenceIssues']) for chapter in chapters),
         'originalFieldChangesOrLostRows': sum(len(chapter['originalFieldChangesOrLostRows']) for chapter in chapters),
         'previouslyUnverifiedRowsMoved': sum(len(chapter['previouslyUnverifiedRowsMoved']) for chapter in chapters)}
@@ -251,16 +328,21 @@ def markdown(report):
               'videoLinkedChapters': '유튜브 영상이 연결된 장', 'captionVerifiedChapters': '유효 자막 3문장 이상 일치한 장',
               'siteAppliedChapters': '실제 게시된 본문·ID를 확인한 장', 'youtubeVerificationIncompleteChapters': '영상 자막 검증 미완료 장', 'rows': '전체 표시 행', 'wikiMatchedRows': '공식 원문 해시까지 재확인한 BWIKI 연결 행',
               'wikiFreshRows': '이번 문서 수집으로 대조한 행', 'wikiRetainedRows': '이전 문서 연결을 재검증해 유지한 행',
+              'wikiUniqueTalkIds': '장 사이 중복을 제거한 BWIKI 연결 대사 ID', 'wikiTalkIdMatchedRows': '대사 ID로 일치한 행',
+              'wikiSubtitleHashRows': '대사 ID 대신 공식 자막 TextMap 해시로 일치한 행',
+              'linkedDocumentRevisions': '연결 문서 수정본 수(중복 제거)', 'documentSourceHashUnconfirmed': '원문 수집본 SHA-256 재확인 불가 수정본',
+              'wikiDocumentRecheckedRows': '실제 문서 순서·분기로 재검증한 행', 'wikiDocumentRecheckUnconfirmedRows': 'ID는 일치하나 문서 순서·분기 재검증 미확인 행',
+              'wikiOrderedSegments': '실제 문서로 재검증한 순서 구간', 'wikiRecordedSegments': '기록된 BWIKI 순서 구간', 'wikiRecordedChoices': '기록된 응답 연결 선택지',
               'wikiChoicesWithResponses': 'BWIKI 응답 연결이 있는 선택지', 'wikiChoiceResponseEdges': 'BWIKI 선택지→응답 간선',
-              'unknownOrderRows': '순서 미확인 행', 'exactCaptionRows': '실제 자막 원문 일치 행', 'evidenceIssueRows': '근거 불일치 행',
+              'unknownOrderRows': '사이트 표시 기준 순서 미확인 행', 'exactCaptionRows': '실제 자막 원문 일치 행', 'evidenceIssueRows': '근거 불일치 행',
               'originalFieldChangesOrLostRows': '기존 본문·ID·역할·출처 변경/손실', 'previouslyUnverifiedRowsMoved': '기존 미확인 행의 미확인 유지 상태에서 위치 이동'}
     result += [f'| {labels.get(key, key)} | {clean(value)} |' for key, value in report['summary'].items()]
     result += ['', '## 장별 BWIKI·순서·분기·게시 상태', '',
                'BWIKI 일치는 공식 ID 또는 명시된 자막의 공식 TextMap 해시가 일치하는 행이다. 순서 구간·선택지 응답은 BWIKI 내부 연결이며 전체 플레이 순서나 모든 분기의 검증을 뜻하지 않는다. ID 수는 장 안에서 중복을 제거했다.', '',
-               '| 장 | 판정 | 전체 행 | BWIKI 일치 행 / ID | 이번 수집 / 이전 유지 행 | 순서 구간 | 응답 있는 선택지 / 응답 간선 | 순서 미확인 행 | 실제 게시 |',
+               '| 장 | 판정 | 전체 행 | BWIKI 일치 행 / ID | 이번 수집 / 이전 유지 행 | 문서 순서 재검증 / 기록 구간 | 응답 선택지 재검증 / 기록 | 순서 미확인 행 | 실제 게시 |',
                '|---|---|---:|---:|---:|---:|---:|---:|---|']
     for chapter in report['chapters']:
-        result.append(f"| [{clean(chapter['entryTitle'] + ' / ' + chapter['title'])}]({chapter['url']}) | {chapter['status']} | {count(chapter['rows'])} | {count(chapter['wikiMatchedRows'])} / {count(chapter['wikiUniqueTalkIds'])} | {count(chapter['wikiFreshRows'])} / {count(chapter['wikiRetainedRows'])} | {chapter['wikiOrderedSegments']} | {chapter['wikiChoicesWithResponses']} / {chapter['wikiChoiceResponseEdges']} | {count(chapter['unknownOrderRows'])} | {'확인' if chapter['siteApplied'] else '미확인/불일치'} |")
+        result.append(f"| [{clean(chapter['entryTitle'] + ' / ' + chapter['title'])}]({chapter['url']}) | {chapter['status']} | {count(chapter['rows'])} | {count(chapter['wikiMatchedRows'])} / {count(chapter['wikiUniqueTalkIds'])} | {count(chapter['wikiFreshRows'])} / {count(chapter['wikiRetainedRows'])} | {chapter['wikiOrderedSegments']} / {chapter['wikiRecordedSegments']} | {chapter['wikiChoicesWithResponses']} / {chapter['wikiRecordedChoices']} | {count(chapter['unknownOrderRows'])} | {'확인' if chapter['siteApplied'] else '미확인/불일치'} |")
     result += ['', '## 장별 실제 수집·영상·미확인 사유', '']
     for chapter in report['chapters']:
         statuses = Counter(page['status'] for page in chapter['latestAttemptPages'])
@@ -268,6 +350,7 @@ def markdown(report):
             f"- 판정: **{chapter['status']}**. 확인된 마지막 BWIKI 수집: {time(chapter['latestSuccessfulCollection'])}. 수집 시각을 알 수 없는 이전 문서 {chapter['successfulCollectionTimeUnknownPages']}개.",
             f"- 최근 문서 조회 결과: {dict(statuses)}. 실제 연결 문서 {len(chapter['sourcePages'])}개 중 로컬 수집본 SHA-256 재검증 {sum(page['cachedContentHashVerified'] for page in chapter['sourcePages'])}개.",
             f"- 공식 TalkSentenceID/한국어 본문 일치 {chapter['officialTalkIdMatchedRows']}행. BWIKI 미연결 본문 {chapter['wikiUnmatchedBodyRows']}행. 원본 장면 구조 연결 기록 {chapter['rawStructureVerifiedRows']}행. 이 수치들은 전체 플레이 완료 검증이 아니다.",
+            f"- 실제 문서 재검증: {chapter['wikiDocumentRecheckedRows']}행, 순서 구간 {chapter['wikiOrderedSegments']}/{chapter['wikiRecordedSegments']}, 선택지 응답 {chapter['wikiChoicesWithResponses']}/{chapter['wikiRecordedChoices']}, 선택지→응답 간선 {chapter['wikiChoiceResponseEdges']}. 재검증 미확인 {chapter['wikiDocumentRecheckUnconfirmedRows']}행. 구간별 사유: {chapter['wikiDocumentRecheckReasons'] or '없음'}.",
             f"- 순서 미확인 {chapter['unknownOrderRows']}행의 분류: {chapter['unknownReasonsByRow'] or '없음'}. 장면 사이 전체 진행 및 게임 전체 수록 여부는 별도 미확인.",
             f"- 별도 원본 구조 검토 사유: {chapter['rawStructureIssues'] or '기록 없음'}. 공식 임무명 미제공 ID: {chapter['missingOfficialMissionNames'] or '기록 없음'}. 미수록 대사 전체 개수는 산정 불가.",
             f"- 장/구간 검토 사유(대사 수와 다른 단위): {chapter['reviewReasonRecords'] or '별도 사유 기록 없음' }.",
@@ -281,7 +364,8 @@ def markdown(report):
             result.append(f"  - 영상 [{video['title']}]({video['url']}) · 제목 연결 근거 {video.get('linkMethod', '이전 제목 일치')} / {video.get('matchedTitle', '')} · 자막 마지막 결과 {check.get('status', '조회 이력 없음')} ({time(check.get('checkedAt'))}) · 원문 일치 {video['validExactCaptionRows']}행")
         result.append('')
     result += ['## 한계 및 출처', ''] + ['- ' + text for text in report['limits']]
-    result += ['', 'BWIKI 편집·정리 정보: [BWIKI 기여자](https://wiki.biligame.com/sr/开拓任务), [CC BY-NC-SA 4.0](https://creativecommons.org/licenses/by-nc-sa/4.0/). 공식 한국어 자료와 대사 ID에 맞춰 재구성한 정보를 검증했다. 게임 원문 권리는 HoYoverse 및 해당 권리자에게 있다.', '']
+    result += ['', f"공식 원문 입력: [고정 릴리스 스냅샷](https://github.com/DimbreathBot/TurnBasedGameData/tree/{report['upstreamCommit']}).",
+               'BWIKI 편집·정리 정보: [BWIKI 기여자](https://wiki.biligame.com/sr/开拓任务), [CC BY-NC-SA 4.0](https://creativecommons.org/licenses/by-nc-sa/4.0/). 공식 한국어 자료와 대사 ID에 맞춰 재구성한 정보를 검증했다. 게임 원문 권리는 HoYoverse 및 해당 권리자에게 있다.', '']
     return '\n'.join(result)
 
 

@@ -3,6 +3,8 @@ name: Deploy archive to GitHub Pages
 on:
   push:
     branches: [main]
+    paths-ignore:
+      - 'docs/reports/**'
   workflow_dispatch:
     inputs:
       detect_changes:
@@ -20,59 +22,57 @@ concurrency:
   cancel-in-progress: false
 
 jobs:
-  check:
+  build:
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pages: read
     outputs:
-      changed: ${{ steps.watch.outputs.changed }}
+      publish: ${{ steps.refresh.outputs.publish }}
     steps:
       - name: Check out source
         uses: actions/checkout@v6
-        with:
-          sparse-checkout: |
-            scripts
-            editorial
       - name: Set up Node.js
         uses: actions/setup-node@v6
         with:
           node-version: '22'
           package-manager-cache: false
+      - name: Restore retry schedule and run journal
+        uses: actions/cache/restore@v4
+        with:
+          path: .cache/verification-retry
+          key: hsr-verification-retry-v1-${{ github.run_id }}-${{ github.run_attempt }}
+          restore-keys: hsr-verification-retry-v1-
       - name: Check source metadata before processing
         id: watch
         run: node scripts/check-content-changes.mjs "${CHECK_MODE}"
         env:
           CHECK_MODE: ${{ (github.event_name == 'schedule' || inputs.detect_changes) && '--check' || '--force' }}
           GITHUB_TOKEN: ${{ github.token }}
-  build:
-    needs: check
-    if: needs.check.outputs.changed == 'true'
-    runs-on: ubuntu-latest
-    permissions:
-      contents: read
-      pages: read
-    steps:
-      - name: Check out source
-        uses: actions/checkout@v6
-      - name: Set up Node.js
-        uses: actions/setup-node@v6
-        with:
-          node-version: '22'
-          package-manager-cache: false
+      - name: Restore last successfully deployed derived data
+        if: steps.watch.outputs.changed == 'true'
+        run: node scripts/prepare-verification.mjs --restore
       - name: Set up pnpm
+        if: steps.watch.outputs.changed == 'true'
         uses: pnpm/action-setup@v6
         with:
           version: 11.25.0
       - name: Install dependencies
+        if: steps.watch.outputs.changed == 'true'
         run: pnpm install --frozen-lockfile
       - name: Set up Python
+        if: steps.watch.outputs.changed == 'true'
         uses: actions/setup-python@v6
         with:
           python-version: '3.12'
       - name: Resolve latest released text source
+        if: steps.watch.outputs.changed == 'true'
         id: upstream
         run: node scripts/update-content.mjs --plan
         env:
           GITHUB_TOKEN: ${{ github.token }}
       - name: Cache verified source blobs
+        if: steps.watch.outputs.changed == 'true'
         uses: actions/cache@v4
         with:
           path: .cache/upstream-content/blobs
@@ -80,34 +80,69 @@ jobs:
           restore-keys: |
             hsr-upstream-v2-
             hsr-upstream-v1-
-      - name: Restore derived video review progress
-        uses: actions/cache@v4
+      - name: Restore content-addressed BWIKI snapshots
+        if: steps.watch.outputs.changed == 'true'
+        uses: actions/cache/restore@v4
         with:
-          path: public/video-order-provenance.json
-          key: hsr-video-review-v1-${{ github.run_id }}-${{ github.run_attempt }}
-          restore-keys: |
-            hsr-video-review-v1-
-      - name: Refresh Korean content, books and comparison languages
-        run: node scripts/update-content.mjs --apply
+          path: .cache/upstream-content/bwiki
+          key: hsr-bwiki-snapshots-v1-${{ github.run_id }}-${{ github.run_attempt }}
+          restore-keys: hsr-bwiki-snapshots-v1-
+      - name: Refresh changed sources or retry unresolved BWIKI sections
+        if: steps.watch.outputs.changed == 'true'
+        id: refresh
+        run: node scripts/run-content-refresh.mjs
         env:
           GITHUB_TOKEN: ${{ github.token }}
       - name: Test archive behavior
+        if: steps.refresh.outputs.publish == 'true'
         run: pnpm test
       - name: Refresh official YouTube video
+        if: steps.refresh.outputs.publish == 'true'
         run: node scripts/update-official-videos.mjs
+      - name: Record processed revisions
+        if: steps.watch.outputs.changed == 'true' && success()
+        run: node scripts/check-content-changes.mjs --record
+      - name: Preserve validated derived data for the next deployment
+        if: steps.refresh.outputs.publish == 'true'
+        run: node scripts/prepare-verification.mjs --pack
       - name: Build static site
+        if: steps.refresh.outputs.publish == 'true'
         run: |
-          node scripts/check-content-changes.mjs --record
           pnpm build
       - name: Configure Pages
+        if: steps.refresh.outputs.publish == 'true'
         uses: actions/configure-pages@v5
       - name: Upload built site
+        if: steps.refresh.outputs.publish == 'true'
         uses: actions/upload-pages-artifact@v4
         with:
           path: dist
+      - name: Save BWIKI snapshots
+        if: always() && steps.watch.outputs.changed == 'true'
+        uses: actions/cache/save@v4
+        with:
+          path: .cache/upstream-content/bwiki
+          key: hsr-bwiki-snapshots-v1-${{ github.run_id }}-${{ github.run_attempt }}
+      - name: Save retry schedule and run journal
+        if: always()
+        uses: actions/cache/save@v4
+        with:
+          path: .cache/verification-retry
+          key: hsr-verification-retry-v1-${{ github.run_id }}-${{ github.run_attempt }}
+      - name: Upload verification run evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: verification-run-${{ github.run_id }}
+          path: |
+            .cache/content-watch/check.json
+            .cache/verification-retry/run.json
+          if-no-files-found: warn
+          retention-days: 90
 
   deploy:
     needs: build
+    if: needs.build.outputs.publish == 'true'
     runs-on: ubuntu-latest
     permissions:
       pages: write
