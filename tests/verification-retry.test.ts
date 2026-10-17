@@ -218,6 +218,17 @@ test('429 stops requests immediately and the next run respects global cooldown',
     assert.equal(Date.parse(state.nextRequestAt), now + 24 * HOUR);
     await fetchBwiki(root, path.join(root, 'cache'), blocked, { state, now: now + 6 * HOUR });
     assert.equal(calls, 1);
+    const delayedOptions: any = { state: { pages: {} }, now };
+    await fetchBwiki(
+      root,
+      path.join(root, 'cache'),
+      async () => {
+        delayedOptions.now += HOUR;
+        return new Response('', { status: 429, headers: { 'retry-after': '86400' } });
+      },
+      delayedOptions,
+    );
+    assert.equal(Date.parse(delayedOptions.state.nextRequestAt), now + 25 * HOUR);
   } finally {
     await cleanup(root);
   }

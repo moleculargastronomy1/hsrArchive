@@ -11,6 +11,7 @@ export async function fetchBwiki(stage, cache, fetcher = fetch, options = {}) {
     throw new Error('Invalid BWIKI request');
   const now = options.now ?? Date.now(),
     pause = options.pause ?? ((ms) => new Promise((resolve) => setTimeout(resolve, ms)));
+  const failureTime = () => options.now ?? Date.now();
   const state = options.state ?? { pages: {} },
     algorithm = options.algorithm ?? 'manual';
   let index = {},
@@ -28,7 +29,12 @@ export async function fetchBwiki(stage, cache, fetcher = fetch, options = {}) {
     if (page.status === 'available' && !index[page.title]) index[page.title] = page;
   const failure = (item, reason, attempted = true, retryAfter) => {
     if (attempted)
-      state.pages[item.title] = failedPage(state.pages[item.title], reason, now, retryAfter);
+      state.pages[item.title] = failedPage(
+        state.pages[item.title],
+        reason,
+        failureTime(),
+        retryAfter,
+      );
     return {
       ...item,
       status: 'unavailable',
@@ -38,7 +44,12 @@ export async function fetchBwiki(stage, cache, fetcher = fetch, options = {}) {
   };
   const stop = (reason, retryAfter) => {
     blocked = true;
-    const failed = failedPage({ failures: state.requestFailures ?? 0 }, reason, now, retryAfter);
+    const failed = failedPage(
+      { failures: state.requestFailures ?? 0 },
+      reason,
+      failureTime(),
+      retryAfter,
+    );
     Object.assign(state, {
       requestFailures: failed.failures,
       nextRequestAt: failed.nextRetryAt,
@@ -143,7 +154,11 @@ export async function fetchBwiki(stage, cache, fetcher = fetch, options = {}) {
           results.push({ ...old, needsAlignment: true, alignmentKey: key });
         else results.push(failure(item, errorReason ?? 'BWIKI 요청 대기 · 이전 검증 보존', false));
       } else if (page?.missing) {
-        state.pages[item.title] = failedPage(state.pages[item.title], 'BWIKI 임무 문서 없음', now);
+        state.pages[item.title] = failedPage(
+          state.pages[item.title],
+          'BWIKI 임무 문서 없음',
+          failureTime(),
+        );
         results.push({ ...item, status: 'missing', reason: 'BWIKI 임무 문서 없음' });
       } else if (
         !page ||
