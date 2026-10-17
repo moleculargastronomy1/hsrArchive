@@ -40,6 +40,7 @@ class BwikiDialogueTest(unittest.TestCase):
 
     def test_branch_templates_preserve_each_reply_and_common_continuation(self):
         bwiki.validate_mission_page(self.script, '任務')
+        bwiki.validate_mission_page(self.script.replace('开拓任务', '终末任务'), '任務')
         with self.assertRaises(bwiki.Unresolved):
             bwiki.validate_mission_page(self.script, '同名书籍')
         parts = bwiki.story_segments(self.script)
@@ -50,6 +51,17 @@ class BwikiDialogueTest(unittest.TestCase):
         self.assertEqual(edges['2'], ['102'])
         self.assertEqual(edges['101'], ['103'])
         self.assertEqual(edges['102'], ['103'])
+
+    def test_shared_mission_names_require_one_official_chapter_and_identical_korean_name(self):
+        missions = [{'MainMissionID': identity, 'ChapterID': chapter, 'Type': 'Main', 'Name': {'Hash': 901}}
+                    for identity, chapter in [(11, 77), (12, 77)]]
+        requests, review = bwiki.mission_requests(missions, {'901': '任務'}, {'901': '임무'}, {11})
+        self.assertEqual(requests[0]['missionIds'], [11, 12])
+        self.assertEqual(review, [])
+        missions[1]['ChapterID'] = 78
+        requests, review = bwiki.mission_requests(missions, {'901': '任務'}, {'901': '임무'}, {11})
+        self.assertEqual(requests, [])
+        self.assertEqual(len(review), 1)
 
     def test_nested_choices_do_not_flatten_branch_ownership(self):
         text = self.script.replace('*角色：{{颜色|描述|左侧回应。}}',
@@ -190,14 +202,14 @@ class BwikiDialogueTest(unittest.TestCase):
             raw = root / 'raw'
             raw.mkdir()
             commit = 'a' * 40
-            cn, kr, talks = {'900': '角色'}, {}, []
+            cn, kr, talks = {'900': '角色', '901': '任務'}, {'901': '임무'}, []
             for identity, row in zip([100, 1, 2, 101, 102, 103], self.rows):
                 text = next(key[1] for key, values in self.index.items() if values[0]['id'] == row['id'])
                 key = 18446744073709000000 + identity
                 cn[str(key)] = text
                 kr[str(key)] = row['text']
                 talks.append({'TalkSentenceID': identity, 'TalkSentenceText': {'Hash': key}, 'TextmapTalkSentenceName': {'Hash': 900}})
-            files = {'ExcelOutput/MainMission.json': [{'MainMissionID': 11, 'Name': {'Hash': 901}}],
+            files = {'ExcelOutput/MainMission.json': [{'MainMissionID': identity, 'ChapterID': 77, 'Type': 'Main', 'Name': {'Hash': 901}} for identity in [11, 12]],
                      'ExcelOutput/TalkSentenceConfig.json': talks, 'TextMap/TextMapCHS.json': cn, 'TextMap/TextMapKR.json': kr}
             plan = {'schema': 'hsr-upstream-plan.v1', 'repository': 'DimbreathBot/TurnBasedGameData', 'commit': commit, 'files': []}
             for name, value in files.items():
@@ -209,19 +221,25 @@ class BwikiDialogueTest(unittest.TestCase):
             bwiki.write(root / 'src/data/imported-content.json', {'entry/chapter': {'file': 'content/entry--chapter.json'}})
             bwiki.write(root / 'src/data/simulation.json', [])
             payload = {'schema': 'hsr-dialogue.v1', 'entryId': 'entry', 'chapterId': 'chapter', 'rows': list(reversed(self.rows))}
+            for row in payload['rows']:
+                if row['talkId'] >= 101:
+                    row['missionId'] = 'quest-12'
+            source_ownership = {row['id']: row['missionId'] for row in payload['rows']}
             bwiki.write(root / 'public/content/entry--chapter.json', payload)
             bwiki.write(root / 'public/content/search-index.json', {'rows': copy.deepcopy(payload['rows'])})
             bwiki.write(root / 'public/content-update.json', {'commit': commit})
             wiki = root / 'source.wiki'
             wiki.write_bytes(self.script.encode('utf-8'))
             manifest = {'schema': 'hsr-bwiki-input.v1', 'commit': commit, 'checkedAt': '2026-10-16T00:00:00Z',
-                        'license': {}, 'review': [], 'pages': [{'missionId': 11, 'status': 'available', 'pageTitle': '任務',
+                        'license': {}, 'review': [], 'pages': [{'missionId': 11, 'missionIds': [11, 12], 'pageId': 88, 'status': 'available', 'pageTitle': '任務',
                         'revision': 5, 'file': str(wiki), 'sha256': bwiki.digest(self.script)}]}
             manifest_file = root / 'wiki-plan.json'
             bwiki.write(manifest_file, manifest)
             bwiki.align(root, raw, plan_file, manifest_file)
             result = json.loads((root / 'public/content/entry--chapter.json').read_bytes())
             self.assertEqual(result['bwiki']['matchedRows'], 6)
+            self.assertTrue(all(row['bwikiMissionId'] == 'bwiki-page-88' for row in result['rows']))
+            self.assertEqual({row['id']: row['missionId'] for row in result['rows']}, source_ownership)
             self.assertEqual({row['id']: row['text'] for row in result['rows']}, {row['id']: row['text'] for row in self.rows})
             manifest['pages'][0]['status'] = 'unavailable'
             bwiki.write(manifest_file, manifest)

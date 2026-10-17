@@ -390,7 +390,7 @@ def publish(root, raw, plan_path, manifest_path, previous_root):
             page = pages.get(chunk['page'])
             if page and page['status'] == 'available' and page['revision'] == chunk['revision']:
                 report['sources'][source_key] = {
-                    'page': chunk['page'], 'revision': chunk['revision'], 'timestamp': page['timestamp'], 'sha256': page['sha256'],
+                    'page': chunk['page'], 'revision': chunk['revision'], 'timestamp': page['timestamp'], 'collectedAt': page.get('collectedAt'), 'sha256': page['sha256'],
                     'sourceUrl': 'https://wiki.biligame.com/sr/' + bwiki.quote(chunk['page']) + '?oldid=' + str(chunk['revision']),
                     'historyUrl': 'https://wiki.biligame.com/sr/' + bwiki.quote(chunk['page']) + '?action=history',
                 }

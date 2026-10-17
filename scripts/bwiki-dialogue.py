@@ -65,28 +65,51 @@ def specs(root):
 
 
 def discover(root, raw, plan_path):
-    plan, missions, _, chinese, _, _ = inputs(raw, plan_path)
-    used = set()
+    plan, missions, _, chinese, korean, _ = inputs(raw, plan_path)
+    used, priority = set(), set()
+    trailblaze_path = root / 'src/data/trailblaze.json'
+    story_files = {chapter['content']['file'] for entry in json.loads(trailblaze_path.read_bytes())
+                   for chapter in entry['chapters'] if chapter.get('content')} if trailblaze_path.exists() else set()
     for spec in specs(root):
         payload = json.loads((root / 'public' / spec['file']).read_bytes())
-        used.update(int(row['missionId'][6:]) for row in payload['rows'] if re.fullmatch(r'quest-\d+', row.get('missionId', '')))
+        identities = {int(row['missionId'][6:]) for row in payload['rows'] if re.fullmatch(r'quest-\d+', row.get('missionId', ''))}
+        used.update(identities)
+        if spec['file'] in story_files and not any(row.get('bwikiStatus') in ['matched', 'cached'] for row in payload['rows']):
+            priority.update(identities)
+    requests, missing = mission_requests(missions, chinese, korean, used)
+    requests.sort(key=lambda item: (not bool(set(item.get('missionIds', [item['missionId']])) & priority), item['title']))
+    write(root / '.cache/bwiki/request.json', {'schema': 'hsr-bwiki-request.v1', 'commit': plan['commit'],
+                                               'requests': requests, 'review': missing})
+    print(json.dumps({'missions': len(used), 'requests': len(requests), 'review': len(missing)}))
+
+
+def mission_requests(missions, chinese, korean, used):
     titles = defaultdict(list)
     missing = []
     for mission in missions:
         identity = mission.get('MainMissionID')
-        if identity not in used:
-            continue
         title = chinese.get(str(mission.get('Name', {}).get('Hash')), '').strip()
         if title:
-            titles[title].append(identity)
-        else:
+            titles[title].append(mission)
+        elif identity in used:
             missing.append({'missionId': identity, 'reason': '공식 중국어 임무명 없음'})
-    requests = [{'title': title, 'missionId': identities[0]} for title, identities in sorted(titles.items()) if len(identities) == 1]
-    missing.extend({'missionId': identity, 'reason': '같은 중국어 제목의 여러 임무'}
-                   for title, identities in titles.items() if len(identities) > 1 for identity in identities)
-    write(root / '.cache/bwiki/request.json', {'schema': 'hsr-bwiki-request.v1', 'commit': plan['commit'],
-                                               'requests': requests, 'review': missing})
-    print(json.dumps({'missions': len(used), 'requests': len(requests), 'review': len(missing)}))
+    requests = []
+    for title, members in sorted(titles.items()):
+        identities = sorted({item['MainMissionID'] for item in members})
+        if not set(identities) & used:
+            continue
+        chapters = {item.get('ChapterID') for item in members}
+        names = {_localizations.plain(korean.get(str(item.get('Name', {}).get('Hash')), '')) for item in members}
+        grouped = len(identities) > 1 and len(chapters) == 1 and next(iter(chapters)) not in [None, 0] and len(names) == 1 and '' not in names and all(item.get('Type') == 'Main' for item in members)
+        if len(identities) == 1 or grouped:
+            request = {'title': title, 'missionId': identities[0]}
+            if grouped:
+                request.update(missionIds=identities, officialChapterId=next(iter(chapters)))
+            requests.append(request)
+        else:
+            missing.extend({'missionId': identity, 'reason': '같은 중국어 제목의 여러 임무 · 챕터/공식 명칭 연결 모호'}
+                           for identity in identities if identity in used)
+    return requests, missing
 
 
 class Unresolved(ValueError):
@@ -353,7 +376,7 @@ def validate_mission_page(content, title):
             _, fields = template(value)
             if normalized(inline(fields.get('任务名称', ''))) != normalized(title):
                 raise Unresolved('위키 문서의 공식 임무명 불일치')
-            if fields.get('任务类型') not in ['开拓任务', '开拓续闻', '同行任务', '冒险任务', '日常任务', '活动任务', '命路群像']:
+            if fields.get('任务类型') not in ['开拓任务', '开拓续闻', '终末任务', '同行任务', '冒险任务', '日常任务', '活动任务', '命路群像']:
                 raise Unresolved('위키 문서의 임무 종류 확인 필요')
             return fields
     raise Unresolved('위키 임무 문서 형식 확인 필요')
@@ -596,18 +619,42 @@ def align(root, raw, plan_path, manifest_path, previous_root=None):
             continue
         title, revision = page['pageTitle'], page['revision']
         source_records[f'{title}@{revision}'] = {
-            'page': title, 'revision': revision, 'timestamp': page.get('timestamp'), 'sha256': page['sha256'],
+            'page': title, 'revision': revision, 'timestamp': page.get('timestamp'), 'collectedAt': page.get('collectedAt') or source_records.get(f'{title}@{revision}', {}).get('collectedAt'), 'sha256': page['sha256'],
             'sourceUrl': 'https://wiki.biligame.com/sr/' + quote(title) + '?oldid=' + str(revision),
             'historyUrl': 'https://wiki.biligame.com/sr/' + quote(title) + '?action=history',
         }
     pages, text = {}, {}
     for page in manifest['pages']:
-        pages['quest-' + str(page['missionId'])] = page
+        for identity in page.get('missionIds', [page['missionId']]):
+            pages['quest-' + str(identity)] = page
         if page['status'] == 'available':
             data = Path(page['file']).read_bytes()
             if digest(data.decode('utf-8')) != page['sha256']:
                 raise ValueError('Unverified BWIKI page input')
             text[page['missionId']] = data.decode('utf-8')
+    # Shared titles belong to a verified official chapter, not one arbitrarily
+    # selected subquest. Keep original row ownership and group the wiki document.
+    routes, group_members = {}, {}
+    wanted = {identity for page in manifest['pages'] for identity in page.get('missionIds', [])}
+    verified_groups = {tuple(item.get('missionIds', [])) for item in mission_requests(mission_rows, chinese, korean, wanted)[0] if item.get('missionIds')}
+    for page in manifest['pages']:
+        members = sorted(page.get('missionIds', []))
+        if len(members) <= 1:
+            continue
+        if tuple(members) not in verified_groups:
+            raise ValueError('Unverified official BWIKI mission group')
+        group = 'bwiki-page-' + str(page['pageId']) if page.get('status') == 'available' and isinstance(page.get('pageId'), int) else None
+        if not group:
+            cached = {chunk['missionId'] for chunks in previous.get('chapters', {}).values() for chunk in chunks
+                      if chunk.get('officialMissionIds') == members}
+            group = next(iter(cached)) if len(cached) == 1 else None
+        if group:
+            pages[group] = page
+            group_members[group] = members
+            mission_names[group] = mission_names['quest-' + str(members[0])]
+            routes.update(('quest-' + str(identity), group) for identity in members)
+    title_ids = {title: list(dict.fromkeys(routes.get(identity, identity) for identity in identities))
+                 for title, identities in title_ids.items()}
     chapters, review, publications, totals, changed_rows, orders = {}, list(manifest['review']), [], Counter(), {}, []
     mission_sequences = {}
     for spec in specs(root):
@@ -618,7 +665,7 @@ def align(root, raw, plan_path, manifest_path, previous_root=None):
         source_rows = sorted(payload['rows'], key=lambda row: base_rank.get(row['id'], len(base_rank)))
         for row in source_rows:
             if row.get('missionId', '').startswith('quest-'):
-                owned[row['missionId']].append(row)
+                owned[routes.get(row['missionId'], row['missionId'])].append(row)
         if not owned:
             continue
         before = {row['id']: dict(row) for row in payload['rows']}
@@ -676,6 +723,7 @@ def align(root, raw, plan_path, manifest_path, previous_root=None):
                     try:
                         matched, edges = compile_segment(run, index)
                         chunks.append({'missionId': mission, 'mission': mission_names.get(mission) or rows[0]['mission'], 'page': page['pageTitle'], 'revision': page['revision'],
+                                       **({'officialMissionIds': group_members[mission]} if mission in group_members else {}),
                                        'segment': identity, 'status': 'matched', 'missionStructure': structures[mission], 'order': [row['id'] for row in matched],
                                        'edges': edges, 'evidence': {row['id']: {'talkId': row['talkId'], 'type': row['type'], **{key: evidence[row['id']][key] for key in ['chineseHash', 'speakerHash', 'koreanHash']}} for row in matched}})
                     except Unresolved as error:
@@ -719,11 +767,20 @@ def align(root, raw, plan_path, manifest_path, previous_root=None):
     write(search_file, search)
     publications.append('public/content/search-index.json')
     used_sources = {f"{chunk['page']}@{chunk['revision']}" for chunks in chapters.values() for chunk in chunks}
+    mission_catalog = {}
+    catalog_file = root / 'src/data/trailblaze.json'
+    if catalog_file.exists():
+        for entry in json.loads(catalog_file.read_bytes()):
+            for chapter in entry['chapters']:
+                if chapter.get('upstreamChapterId') and chapter.get('content'):
+                    mission_catalog[chapter['content']['file']] = [
+                        {'id': row['MainMissionID'], 'title': mission_names['quest-' + str(row['MainMissionID'])], 'chapterId': row['ChapterID']}
+                        for row in mission_rows if row.get('ChapterID') == chapter['upstreamChapterId'] and row.get('Type') == 'Main' and mission_names.get('quest-' + str(row['MainMissionID']))]
     report = {'schema': 'hsr-bwiki-audit.v1', 'commit': plan['commit'], 'checkedAt': manifest['checkedAt'],
               'license': manifest['license'], 'modifications': 'BWIKI scene and branch structure aligned to official dialogue IDs; Korean text unchanged.',
               'matchingPolicy': {'version': 2, 'normalization': ['display markup', 'ruby base text', 'default protagonist name', 'editorial punctuation (numeric separators preserved)', 'Unicode typography', 'whitespace'],
                                  'evidence': 'Full official Chinese strings, speakers and Korean strings remain hashed; ambiguous IDs are excluded.'},
-              'inputs': input_hashes, 'totals': dict(totals), 'chapters': chapters, 'missionOrder': mission_sequences, 'review': review,
+              'inputs': input_hashes, 'totals': dict(totals), 'chapters': chapters, 'missionCatalog': mission_catalog, 'missionOrder': mission_sequences, 'review': review,
               'sources': {key: source_records[key] for key in sorted(used_sources)},
               'pages': [{**{key: value for key, value in page.items() if key != 'file'},
                          **({'sourceUrl': 'https://wiki.biligame.com/sr/' + quote(page['pageTitle']) + '?oldid=' + str(page['revision']),

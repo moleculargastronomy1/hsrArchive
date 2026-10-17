@@ -3,7 +3,8 @@ import crypto from 'node:crypto';
 export const sha256 = (value) => crypto.createHash('sha256').update(value).digest('hex');
 
 export function selectVideoChecks(queue, checks, checkedAt, limit = 2) {
-  const selected = [], seen = new Set();
+  const selected = [],
+    seen = new Set();
   for (const item of queue) {
     if (selected.length >= limit) break;
     if (seen.has(item.video.id)) continue;
@@ -61,7 +62,12 @@ export function playlistItems(data) {
 }
 
 export async function fetchPlaylist(source, fetcher = fetch) {
-  const response = await fetcher(source.playlistUrl, { signal: AbortSignal.timeout(30000) });
+  const url = new URL(source.playlistUrl);
+  url.searchParams.set('hl', 'ko');
+  const response = await fetcher(url, {
+    signal: AbortSignal.timeout(30000),
+    headers: { 'Accept-Language': 'ko-KR,ko;q=0.9' },
+  });
   if (!response.ok) throw new Error('Public playlist unavailable');
   const html = await response.text();
   const initial = jsonAfter(html, 'var ytInitialData =');
@@ -86,7 +92,7 @@ export async function fetchPlaylist(source, fetcher = fetch) {
       signal: AbortSignal.timeout(30000),
       headers: { 'content-type': 'application/json' },
       body: JSON.stringify({
-        context: { client: { clientName: 'WEB', clientVersion: version } },
+        context: { client: { clientName: 'WEB', clientVersion: version, hl: 'ko', gl: 'KR' } },
         continuation: token,
       }),
     });

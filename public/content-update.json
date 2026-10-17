@@ -3,7 +3,7 @@
   "repository": "DimbreathBot/TurnBasedGameData",
   "commit": "312b4597691e0a29cf9828a15b592757dba86949",
   "version": "OSPRODWin4.6.0_D16728363_A16704710_L16700845",
-  "checkedAt": "2026-10-16T17:46:40.130Z",
+  "checkedAt": "2026-10-17T10:47:57.448Z",
   "latestTrailblaze": {
     "id": 105009,
     "chapter": 5,
@@ -37,8 +37,8 @@
       "sha256": "f81cf26a5f9e043a364e738ad12ab535defeae3e30db3a28028810ecd35bc278"
     }
   },
-  "rows": 61106,
-  "verifiedTextRows": 60782,
+  "rows": 61111,
+  "verifiedTextRows": 60787,
   "changedTextRows": 0,
   "retainedTextRows": 324,
   "scope": "Exact TalkSentence/hash joins, NounAtlas, LocalbookConfig and verified new Trailblaze structures. Unlinked text is retained. New story ownership is not inferred."

@@ -10,6 +10,7 @@ import {
   selectVideoChecks,
   sha256,
 } from './video-order.mjs';
+import { linkVideos } from './video-chapter-links.mjs';
 
 const root = path.resolve(process.argv[2] ?? '.');
 const previousRoot = path.resolve(process.argv[3] ?? root);
@@ -62,6 +63,32 @@ for (const source of config.sources) {
   for (const video of videos) catalog.set(video.id, { ...video, channelId: source.channelId });
 }
 const queue = [];
+const descriptors = [],
+  payloads = new Map();
+for (const entry of entries)
+  for (const chapter of entry.chapters) {
+    if (!chapter.content) continue;
+    const file = chapter.content.file;
+    if (!/^content\/[\w-]+\.json$/.test(file)) throw new Error('Invalid video chapter');
+    const payload = await read(root, 'public/' + file);
+    payloads.set(file, payload);
+    descriptors.push({
+      file,
+      title: chapter.title,
+      arcLabel: entry.arcLabel,
+      missionTitles: [
+        ...new Set([
+          ...(wiki.missionCatalog?.[file] ?? []).map((item) => item.title),
+          ...payload.rows
+            .filter((row) => ['matched', 'cached'].includes(row.bwikiStatus))
+            .map((row) => row.bwikiMission)
+            .filter(Boolean),
+        ]),
+      ],
+    });
+  }
+const linked = linkVideos(descriptors, [...catalog.values()]);
+report.linkReview = linked.review;
 const files = new Set(['public/video-order-provenance.json', 'public/video-review-summary.json']);
 const changed = new Map();
 const validEvidenceCount = (payload, evidence) =>
@@ -79,19 +106,14 @@ for (const entry of entries)
     if (!chapter.content) continue;
     const file = chapter.content.file;
     if (!/^content\/[\w-]+\.json$/.test(file)) throw new Error('Invalid verification payload');
-    const payload = await read(root, 'public/' + file);
+    const payload = payloads.get(file);
     let metadataChanged = false;
     for (const row of payload.rows)
       for (const key of ['videoStatus', 'videoId', 'videoStartMs']) {
         if (key in row) metadataChanged = true;
         delete row[key];
       }
-    const title = normalizedKorean(
-      chapter.title.replace(/^(?:제\d+막|개척 후문|종말 임무|모험 임무):\s*/, ''),
-    );
-    const videos = [...catalog.values()].filter(
-      (video) => title.length >= 5 && normalizedKorean(video.title).includes(title),
-    );
+    const videos = linked.matches[file];
     const unresolved = payload.rows.filter(
       (row) =>
         row.flowStatus === 'review' && !['matched', 'cached'].includes(row.bwikiStatus ?? ''),
@@ -100,7 +122,13 @@ for (const entry of entries)
     const pending = unresolved.length > 0 || importReview.length > 0 || payload.rows.length <= 1;
     report.chapters[file] = {
       title: chapter.title,
-      videos: videos.map(({ id, title, url }) => ({ id, title, url })),
+      videos: videos.map(({ id, title, url, linkMethod, matchedTitle }) => ({
+        id,
+        title,
+        url,
+        linkMethod,
+        matchedTitle,
+      })),
       unresolvedRowIds: unresolved.map((row) => row.id),
       unresolvedWikiSections: importReview.length,
       status: pending ? 'pending-video-review' : 'bwiki-matched',

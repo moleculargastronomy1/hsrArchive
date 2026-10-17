@@ -138,6 +138,7 @@ export async function fetchBwiki(stage, cache, fetcher = fetch) {
         pageTitle: page.title,
         pageId: page.pageid,
         revision: revision.revid,
+        collectedAt: new Date().toISOString(),
         timestamp: revision.timestamp,
         sha256,
         file: path.resolve(target),
