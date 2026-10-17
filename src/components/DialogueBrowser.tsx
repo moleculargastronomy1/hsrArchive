@@ -52,7 +52,6 @@ export default function DialogueBrowser({
   const [pageInput, setPageInput] = useState(String(savedPage));
   const restorePage = useRef(true);
   const [selected, setSelected] = useState<number>();
-  const [contextStart, setContextStart] = useState<number>();
   const version = useRef(0);
   const dialog = useRef<HTMLDialogElement>(null);
   const tableTop = useRef<HTMLDivElement>(null);
@@ -142,13 +141,10 @@ export default function DialogueBrowser({
     if (selected === undefined) return;
     if (!dialog.current?.open) dialog.current?.showModal();
     const frame = requestAnimationFrame(() => {
-      const body = dialog.current?.querySelector('.context-dialog-body');
-      if (body) body.scrollTop = 0;
-      if (contextStart === undefined)
-        dialog.current?.querySelector('.context-selected')?.scrollIntoView({ block: 'center' });
+      dialog.current?.querySelector('.context-selected')?.scrollIntoView({ block: 'center' });
     });
     return () => cancelAnimationFrame(frame);
-  }, [selected, contextStart]);
+  }, [selected]);
 
   const submit = (event: FormEvent) => {
     event.preventDefault();
@@ -173,22 +169,15 @@ export default function DialogueBrowser({
     (selectedRow.flowStatus === 'verified' ||
       ['matched', 'cached'].includes(selectedRow.bwikiStatus ?? ''));
   const selectedWiki = ['matched', 'cached'].includes(selectedRow?.bwikiStatus ?? '');
-  const contextRows = useMemo(
+  const context = useMemo(
     () =>
       selected === undefined
         ? []
         : linkedChoice
-          ? choiceDialogue(rows, selected, Number.MAX_SAFE_INTEGER)
-          : nearbyDialogue(rows, selected, Number.MAX_SAFE_INTEGER),
+          ? choiceDialogue(rows, selected)
+          : nearbyDialogue(rows, selected),
     [rows, selected, linkedChoice],
   );
-  const contextSize = 41;
-  const initialContextStart = linkedChoice
-    ? 0
-    : Math.max(0, contextRows.findIndex((row) => row.id === selectedRow?.id) - 20);
-  const contextPageStart = contextStart ?? initialContextStart;
-  const contextPageEnd = Math.min(contextPageStart + contextSize, contextRows.length);
-  const context = contextRows.slice(contextPageStart, contextPageEnd);
   const byId = useMemo(() => new Map(rows.map((row) => [row.id, row])), [rows]);
   const flowSummary = useMemo(
     () => ({
@@ -211,7 +200,6 @@ export default function DialogueBrowser({
     setSelected(undefined);
   };
   const openContext = (index: number) => {
-    setContextStart(undefined);
     setSelected(index);
   };
 
@@ -516,44 +504,24 @@ export default function DialogueBrowser({
           ))}
         </div>
         <footer>
-          <nav className="context-navigation" aria-label="앞뒤 대사 이동">
-            <span role="status" aria-live="polite">
-              {contextRows.length > 0
-                ? `${(contextPageStart + 1).toLocaleString('ko-KR')}–${contextPageEnd.toLocaleString('ko-KR')} / ${contextRows.length.toLocaleString('ko-KR')}줄`
-                : '0줄'}
-            </span>
-            <div className="context-navigation-buttons">
-              <button
-                className="button secondary"
-                disabled={contextPageStart === 0}
-                onClick={() => setContextStart(Math.max(0, contextPageStart - contextSize))}
-              >
-                <ArrowLeft size={14} />
-                이전 41줄
-              </button>
-              <button
-                className="button secondary"
-                disabled={contextPageStart === initialContextStart}
-                onClick={() => setContextStart(undefined)}
-              >
-                선택한 대사로
-              </button>
-              <button
-                className="button secondary"
-                disabled={contextPageEnd >= contextRows.length}
-                onClick={() => setContextStart(contextPageEnd)}
-              >
-                다음 41줄
-                <ArrowRight size={14} />
-              </button>
-            </div>
+          <nav className="context-navigation" aria-label="선택한 대사로 이동">
+            <button
+              className="button secondary"
+              onClick={() =>
+                dialog.current
+                  ?.querySelector('.context-selected')
+                  ?.scrollIntoView({ block: 'center' })
+              }
+            >
+              선택한 대사로
+            </button>
           </nav>
           <p>
             {selectedRow && entries.get(selectedRow.entryId)?.category === 'books'
-              ? '서적 원문은 선택한 권 안에서 41줄씩 이동합니다.'
+              ? '서적 원문은 선택한 권 단위로 표시합니다.'
               : linkedChoice
-                ? '확인된 응답과 공통 후속 대사를 41줄씩 표시하며, 다음 선택지 앞에서 멈춥니다.'
-                : '같은 장면 안에서 41줄씩 이동합니다.'}
+                ? '확인된 응답과 공통 후속 대사를 최대 41줄 표시하며, 다음 선택지 앞에서 멈춥니다.'
+                : '같은 장면 안에서 최대 앞뒤 20줄을 표시합니다.'}
           </p>
         </footer>
       </dialog>
