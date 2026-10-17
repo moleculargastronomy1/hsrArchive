@@ -332,8 +332,13 @@
 .context-dialog::backdrop {
   background: #0c1716b8;
 }
+.context-dialog[open] {
+  display: flex;
+  flex-direction: column;
+}
 .context-dialog > header {
   display: flex;
+  flex-shrink: 0;
   gap: 20px;
   justify-content: space-between;
   padding: 23px 26px;
@@ -354,6 +359,7 @@
   line-height: 1.9;
 }
 .context-dialog-body {
+  min-height: 0;
   max-height: calc(100vh - 280px);
   overflow-y: auto;
   overscroll-behavior: contain;
@@ -384,10 +390,28 @@
   border-left: 3px solid var(--accent);
 }
 .context-dialog footer {
+  flex-shrink: 0;
   padding: 13px 26px;
   font-size: 10px;
   color: var(--muted);
   border-top: 1px solid var(--line);
+}
+.context-navigation {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  margin-bottom: 10px;
+}
+.context-navigation-buttons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.context-navigation .button {
+  min-height: 32px;
+  padding: 7px 10px;
 }
 .dialogue-verification-details {
   margin-top: 32px;
