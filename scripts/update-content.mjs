@@ -244,10 +244,13 @@ if (mode === '--plan') {
   );
   receipt.files.push(...trailblaze.files);
   // The projector validates every payload and metadata reference before any publication.
+  const preservation = compareVerification(before, await verificationRows(stage));
   if (
     JSON.parse(await fs.readFile(path.join(root, 'public/content-update.json'))).commit ===
       plan.commit &&
-    compareVerification(before, await verificationRows(stage)).lostVerification.length
+    (preservation.lostVerification.length ||
+      preservation.removedRows.length ||
+      preservation.changedCoreRows.length)
   )
     throw new Error(
       'Same-version update would lose prior verified BWIKI rows; preserving deployed data',

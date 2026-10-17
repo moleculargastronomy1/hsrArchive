@@ -56,6 +56,8 @@ export async function finishVerification(root, before, manifest, state, algorith
     newlyVerifiedRowIds: comparison.newlyVerified,
     remainingUnknown: comparison.remainingUnknown.length,
     lostVerification: comparison.lostVerification.length,
+    removedRows: comparison.removedRows.length,
+    changedCoreRows: comparison.changedCoreRows.length,
     changed: comparison.changed,
     collectionFailures: reasons,
     matchingReviewRecords: matchingReasons,
@@ -208,9 +210,13 @@ export async function publishRetryStage(
       { cwd: stage, stdio: 'inherit', env: { ...process.env, PYTHONUTF8: '1' } },
     );
   const comparison = compareVerification(before, await verificationRows(stage));
-  if (comparison.lostVerification.length)
+  if (
+    comparison.lostVerification.length ||
+    comparison.removedRows.length ||
+    comparison.changedCoreRows.length
+  )
     throw new Error(
-      `Retry would lose ${comparison.lostVerification.length} verified rows; preserving deployed data`,
+      `Retry rejected: ${comparison.lostVerification.length} verified rows lost, ${comparison.removedRows.length} rows removed, ${comparison.changedCoreRows.length} original rows modified; preserving deployed data`,
     );
   if (comparison.changed) {
     run('import-localizations.py', [stage, raw, planFile]);

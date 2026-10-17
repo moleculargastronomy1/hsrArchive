@@ -251,4 +251,14 @@ test('counters cannot turn a failed lookup or a cached status change into new ve
   assert.deepEqual(compareVerification(old, cached).newlyVerified, ['unknown']);
   cached.get('known')!.bwikiStatus = 'review';
   assert.deepEqual(compareVerification(old, cached).lostVerification, ['known']);
+  const deleted = new Map([['unknown', old.get('unknown')!]]);
+  assert.deepEqual(compareVerification(old, deleted).lostVerification, ['known']);
+  assert.deepEqual(compareVerification(old, deleted).removedRows, ['known']);
+  assert.deepEqual(compareVerification(old, new Map([['known', old.get('known')!]])).removedRows, [
+    'unknown',
+  ]);
+  const altered = new Map(
+    [...old].map(([id, row]) => [id, { ...row, text: id === 'known' ? '임의 수정' : row.text }]),
+  );
+  assert.deepEqual(compareVerification(old, altered).changedCoreRows, ['known']);
 });

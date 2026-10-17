@@ -128,6 +128,20 @@ export function compareVerification(before, after) {
   const newlyVerified = [],
     lostVerification = [],
     remainingUnknown = [];
+  const removedRows = [],
+    changedCoreRows = [];
+  for (const [id, row] of before) {
+    const current = after.get(id);
+    if (!current) {
+      removedRows.push(id);
+      if (['matched', 'cached'].includes(row.bwikiStatus)) lostVerification.push(id);
+    } else if (
+      ['text', 'speaker', 'type', 'missionId', 'talkId', 'source'].some(
+        (key) => current[key] !== row[key],
+      )
+    )
+      changedCoreRows.push(id);
+  }
   for (const [id, row] of after) {
     if (orderUnknown(row)) remainingUnknown.push(id);
     if (
@@ -164,6 +178,8 @@ export function compareVerification(before, after) {
     newlyVerified,
     lostVerification,
     remainingUnknown,
+    removedRows,
+    changedCoreRows,
     changed: digest(before) !== digest(after),
     digest: digest(after),
   };
