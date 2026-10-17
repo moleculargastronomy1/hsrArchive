@@ -31,7 +31,7 @@ def core_hash(row):
 
 
 def unknown(row):
-    return (row.get('flowStatus') == 'review' or row.get('bwikiStatus') == 'review') and row.get('flowStatus') != 'verified' and row.get('bwikiStatus') not in ['matched', 'cached'] and row.get('videoStatus') != 'caption-matched'
+    return (row.get('flowStatus') == 'review' or row.get('bwikiStatus') == 'review') and row.get('flowStatus') != 'verified' and row.get('bwikiStatus') not in ['matched', 'cached'] and row.get('videoStatus') not in ['caption-matched', 'screen-matched']
 
 
 def text_proof(row, talks, chinese, korean):

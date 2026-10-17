@@ -51,6 +51,7 @@ class ContentStageTest(unittest.TestCase):
                 ('public/content/search-index.json', lambda value: value['rows'].reverse()),
                 ('public/content/search-index.json', lambda value: value['rows'][0].update(bwikiStatus='review')),
                 ('public/content/entry--chapter.json', lambda value: value['rows'][0].update(bwikiNextIds=['missing'])),
+                ('public/content/entry--chapter.json', lambda value: value['rows'][0].update(videoStatus='screen-matched', videoScene='video', videoNextIds=['reply'])),
                 ('src/data/imported-content.json', lambda value: value['entry/chapter'].update(rows=3)),
                 ('public/content/locales/en/entry--chapter.json', lambda value: value['rows'][0].update(id='foreign')),
                 ('public/video-order-provenance.json', lambda value: value.update(commit='b' * 40)),

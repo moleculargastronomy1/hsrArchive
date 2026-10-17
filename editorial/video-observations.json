@@ -1,0 +1,862 @@
+{
+  "schema": "hsr-video-observations.v1",
+  "policy": "Derived observations only; revalidate official ID, role, original source scope and exact Korean hash on every integration. No transcript text or raw media is republished.",
+  "evidence": [
+    {
+      "method": "public-transcript-exact",
+      "file": "content/station-departure--arrival.json",
+      "videoId": "SsuDCp8nYEw",
+      "url": "https://www.youtube.com/watch?v=SsuDCp8nYEw",
+      "language": "ko",
+      "kind": "asr",
+      "captionSha256": "77fbcdc42fcff1854e946c4eb162cac6b42bc0296e3d433b293cbe859a7b4a7b",
+      "timingPrecisionMs": 1000,
+      "referenceCommit": "312b4597691e0a29cf9828a15b592757dba86949",
+      "checkedAt": "2026-10-17T18:19:22.090Z",
+      "matches": [
+        {
+          "rowId": "station-departure-arrival-quest-1000400-594",
+          "startMs": 76000,
+          "endMs": 107000,
+          "koreanHash": "c94a14b0642175cfac8322044f2801f3e26c8b0e587faf82b6195c8535cfded9",
+          "talkId": 200010202,
+          "officialTextHash": "12944882718224405728",
+          "officialKoreanHash": "c94a14b0642175cfac8322044f2801f3e26c8b0e587faf82b6195c8535cfded9"
+        },
+        {
+          "rowId": "station-departure-arrival-quest-1000400-602",
+          "startMs": 118000,
+          "endMs": 149000,
+          "koreanHash": "4ace28083f5c3c296425d7b9ac860c5d5f36db0995557dba03cb92ffad86d1eb",
+          "talkId": 200010210,
+          "officialTextHash": "8691552973772303100",
+          "officialKoreanHash": "4ace28083f5c3c296425d7b9ac860c5d5f36db0995557dba03cb92ffad86d1eb"
+        },
+        {
+          "rowId": "station-departure-arrival-quest-1000101-74",
+          "startMs": 232000,
+          "endMs": 264000,
+          "koreanHash": "b825fc32d691f15bd7020b7b81eb39d7d6c0aedfaf5fe6b6da0c10cfeb11ad81",
+          "talkId": 100019641,
+          "officialTextHash": "7431062421365335624",
+          "officialKoreanHash": "b825fc32d691f15bd7020b7b81eb39d7d6c0aedfaf5fe6b6da0c10cfeb11ad81"
+        },
+        {
+          "rowId": "station-departure-arrival-quest-1000101-16",
+          "startMs": 361000,
+          "endMs": 392000,
+          "koreanHash": "4b8977e9cd7f448f8aedfc02f94ab42c4d523c93722c8aa12665b907e1c35596",
+          "talkId": 200010710,
+          "officialTextHash": "8538452564727644264",
+          "officialKoreanHash": "4b8977e9cd7f448f8aedfc02f94ab42c4d523c93722c8aa12665b907e1c35596"
+        },
+        {
+          "rowId": "station-departure-arrival-quest-1000101-20",
+          "startMs": 381000,
+          "endMs": 412000,
+          "koreanHash": "8d369a341b219b9e0f444bf22251eb8f8a54de2f79be316690df86e4f16ae70d",
+          "talkId": 200010714,
+          "officialTextHash": "983592535174620322",
+          "officialKoreanHash": "8d369a341b219b9e0f444bf22251eb8f8a54de2f79be316690df86e4f16ae70d"
+        },
+        {
+          "rowId": "station-departure-arrival-quest-1000101-64",
+          "startMs": 395000,
+          "endMs": 427000,
+          "koreanHash": "9ecac5924f78c67b93a77eb96a35adc039442a71a3509dc57265e8f457f0c1f8",
+          "talkId": 100019630,
+          "officialTextHash": "9920353919911025371",
+          "officialKoreanHash": "9ecac5924f78c67b93a77eb96a35adc039442a71a3509dc57265e8f457f0c1f8"
+        },
+        {
+          "rowId": "station-departure-arrival-quest-1000101-24",
+          "startMs": 596000,
+          "endMs": 628000,
+          "koreanHash": "d6db0b53c18b681f020e3ab18fdad6da78b1d7ccda290790e8166377ba9d0009",
+          "talkId": 200011102,
+          "officialTextHash": "17409648410576519505",
+          "officialKoreanHash": "d6db0b53c18b681f020e3ab18fdad6da78b1d7ccda290790e8166377ba9d0009"
+        },
+        {
+          "rowId": "station-departure-arrival-quest-1000101-27",
+          "startMs": 619000,
+          "endMs": 650000,
+          "koreanHash": "a367296bdb6b55169e550f4199416536452344130e2eece14d3f645c7b477e23",
+          "talkId": 200011105,
+          "officialTextHash": "8576639361312498520",
+          "officialKoreanHash": "a367296bdb6b55169e550f4199416536452344130e2eece14d3f645c7b477e23"
+        },
+        {
+          "rowId": "station-departure-arrival-quest-1000101-31",
+          "startMs": 646000,
+          "endMs": 678000,
+          "koreanHash": "8ca688f562271aef71d343d36f76ae7deba082e65c24690013a6b757467063cc",
+          "talkId": 200011109,
+          "officialTextHash": "10680900509077902589",
+          "officialKoreanHash": "8ca688f562271aef71d343d36f76ae7deba082e65c24690013a6b757467063cc"
+        },
+        {
+          "rowId": "station-departure-arrival-quest-1000101-43",
+          "startMs": 663000,
+          "endMs": 696000,
+          "koreanHash": "464ab88f3c3ddffec9878b6178b89024b2a00413b4f2a9bf9939537b1d2cb618",
+          "talkId": 200011402,
+          "officialTextHash": "2878239850047908580",
+          "officialKoreanHash": "464ab88f3c3ddffec9878b6178b89024b2a00413b4f2a9bf9939537b1d2cb618"
+        },
+        {
+          "rowId": "station-departure-arrival-quest-1000101-45",
+          "startMs": 678000,
+          "endMs": 714000,
+          "koreanHash": "25a63169ac5e62df1439c919dd2e926195120589533b5d2c821b7618cafd066c",
+          "talkId": 200011202,
+          "officialTextHash": "5812348885109438508",
+          "officialKoreanHash": "25a63169ac5e62df1439c919dd2e926195120589533b5d2c821b7618cafd066c"
+        },
+        {
+          "rowId": "station-departure-arrival-quest-1000101-40",
+          "startMs": 781000,
+          "endMs": 816000,
+          "koreanHash": "228a6c370f037d6587394b1f051ae9a803856a2238b8a6f22726aba8c467c19a",
+          "talkId": 100020105,
+          "officialTextHash": "15621341004770305822",
+          "officialKoreanHash": "228a6c370f037d6587394b1f051ae9a803856a2238b8a6f22726aba8c467c19a"
+        },
+        {
+          "rowId": "station-departure-arrival-quest-1000101-132",
+          "startMs": 866000,
+          "endMs": 897000,
+          "koreanHash": "58a91cd284ebc1637f78f5f47a2dbea0ad805ef8c7f393bf4e54d29e7709f6cd",
+          "talkId": 100020121,
+          "officialTextHash": "224389391855959815",
+          "officialKoreanHash": "58a91cd284ebc1637f78f5f47a2dbea0ad805ef8c7f393bf4e54d29e7709f6cd"
+        },
+        {
+          "rowId": "station-departure-arrival-quest-1000101-153",
+          "startMs": 902000,
+          "endMs": 934000,
+          "koreanHash": "e847e4c4bc3fd1ca6e5b80f7fe341b365b202617df1e2b9eaa84de3e06653fc6",
+          "talkId": 100020124,
+          "officialTextHash": "15650092322701674912",
+          "officialKoreanHash": "e847e4c4bc3fd1ca6e5b80f7fe341b365b202617df1e2b9eaa84de3e06653fc6"
+        },
+        {
+          "rowId": "station-departure-arrival-quest-1000101-133",
+          "startMs": 938000,
+          "endMs": 970000,
+          "koreanHash": "5fd53839fe1cdb8b5327aa5655842a314525429731c41299fb851a99d229bddc",
+          "talkId": 100020136,
+          "officialTextHash": "6676923242993598311",
+          "officialKoreanHash": "5fd53839fe1cdb8b5327aa5655842a314525429731c41299fb851a99d229bddc"
+        },
+        {
+          "rowId": "station-departure-arrival-quest-1000101-164",
+          "startMs": 946000,
+          "endMs": 979000,
+          "koreanHash": "d7502d88a3bdfc1547ebc04f9bb2741af10b63fa3fd4177af7588eb52ee466ab",
+          "talkId": 100020138,
+          "officialTextHash": "6105992162492364410",
+          "officialKoreanHash": "d7502d88a3bdfc1547ebc04f9bb2741af10b63fa3fd4177af7588eb52ee466ab"
+        },
+        {
+          "rowId": "station-departure-arrival-quest-1000201-391",
+          "startMs": 1231000,
+          "endMs": 1263000,
+          "koreanHash": "541cae29d4a02c87f44c0289aefcefb098b5bdd4575d76128690c3df9833043d",
+          "talkId": 100020310,
+          "officialTextHash": "13587553410002272445",
+          "officialKoreanHash": "541cae29d4a02c87f44c0289aefcefb098b5bdd4575d76128690c3df9833043d"
+        },
+        {
+          "rowId": "station-departure-arrival-quest-1000201-343",
+          "startMs": 1277000,
+          "endMs": 1310000,
+          "koreanHash": "e9de28c1520039b73328fed13762bdb250e49d76687580e457f8abbaedcfcad0",
+          "talkId": 100020319,
+          "officialTextHash": "7029001618861142958",
+          "officialKoreanHash": "e9de28c1520039b73328fed13762bdb250e49d76687580e457f8abbaedcfcad0"
+        },
+        {
+          "rowId": "station-departure-arrival-quest-1000201-345",
+          "startMs": 1299000,
+          "endMs": 1331000,
+          "koreanHash": "1a3cbda795ab689f432efbb6d41ecdd5bb568549253c4040c6dee2eddeb3fd5a",
+          "talkId": 100020321,
+          "officialTextHash": "17344824848310859470",
+          "officialKoreanHash": "1a3cbda795ab689f432efbb6d41ecdd5bb568549253c4040c6dee2eddeb3fd5a"
+        },
+        {
+          "rowId": "station-departure-arrival-quest-1000201-360",
+          "startMs": 1384000,
+          "endMs": 1417000,
+          "koreanHash": "69f67eb6ea208621f5007665c5c8f28bffbb1b292b929a72813cfd32a88370cf",
+          "talkId": 100020333,
+          "officialTextHash": "15286616714867788596",
+          "officialKoreanHash": "69f67eb6ea208621f5007665c5c8f28bffbb1b292b929a72813cfd32a88370cf"
+        },
+        {
+          "rowId": "station-departure-arrival-quest-1000201-363",
+          "startMs": 1400000,
+          "endMs": 1432000,
+          "koreanHash": "5732d6cc626585fb238cefa106f23b7d5f5f18f54f7a381cf519b4935cd54142",
+          "talkId": 100020339,
+          "officialTextHash": "13922051123580678518",
+          "officialKoreanHash": "5732d6cc626585fb238cefa106f23b7d5f5f18f54f7a381cf519b4935cd54142"
+        },
+        {
+          "rowId": "station-departure-arrival-quest-1000300-489",
+          "startMs": 1793000,
+          "endMs": 1824000,
+          "koreanHash": "b365f99f29b389366ff7cd4416a40f9bafc8f433ed4f611237e92b9c55c502f8",
+          "talkId": 100021123,
+          "officialTextHash": "5200870193668763778",
+          "officialKoreanHash": "b365f99f29b389366ff7cd4416a40f9bafc8f433ed4f611237e92b9c55c502f8"
+        },
+        {
+          "rowId": "station-departure-arrival-quest-1000300-500",
+          "startMs": 1891000,
+          "endMs": 1922000,
+          "koreanHash": "cabbd3c39f9fba47d53030ccb01aee8c89c215b59e64af75b3b9d4e30d44f8be",
+          "talkId": 100021136,
+          "officialTextHash": "4903588689269736499",
+          "officialKoreanHash": "cabbd3c39f9fba47d53030ccb01aee8c89c215b59e64af75b3b9d4e30d44f8be"
+        },
+        {
+          "rowId": "station-departure-arrival-quest-1000300-502",
+          "startMs": 1909000,
+          "endMs": 1941000,
+          "koreanHash": "4306a897c00ae150b551a17b0f4a97ff5f090c4d946e12ad6bcad10759f11396",
+          "talkId": 100021139,
+          "officialTextHash": "14913275271522629412",
+          "officialKoreanHash": "4306a897c00ae150b551a17b0f4a97ff5f090c4d946e12ad6bcad10759f11396"
+        },
+        {
+          "rowId": "station-departure-arrival-quest-1000300-517",
+          "startMs": 2011000,
+          "endMs": 2043000,
+          "koreanHash": "338a12348eac41394e15ba7c24df68d746f42659aa3f37ce28226be104dc4959",
+          "talkId": 100021159,
+          "officialTextHash": "11807884612228201867",
+          "officialKoreanHash": "338a12348eac41394e15ba7c24df68d746f42659aa3f37ce28226be104dc4959"
+        },
+        {
+          "rowId": "station-departure-arrival-quest-1000300-518",
+          "startMs": 2021000,
+          "endMs": 2052000,
+          "koreanHash": "6d5155a818cbf6464af702f7f51b2820b9f1e1f2c6f78133edbba8e0376caf5e",
+          "talkId": 100021160,
+          "officialTextHash": "116934669518036135",
+          "officialKoreanHash": "6d5155a818cbf6464af702f7f51b2820b9f1e1f2c6f78133edbba8e0376caf5e"
+        },
+        {
+          "rowId": "station-departure-arrival-quest-1000300-584",
+          "startMs": 2041000,
+          "endMs": 2072000,
+          "koreanHash": "fde60cac41f6a9325c78cba82976fb1d1606058c648ed51d8461410a57adbcde",
+          "talkId": 100021114,
+          "officialTextHash": "11525911428135169262",
+          "officialKoreanHash": "fde60cac41f6a9325c78cba82976fb1d1606058c648ed51d8461410a57adbcde"
+        },
+        {
+          "rowId": "station-departure-arrival-quest-1000300-581",
+          "startMs": 2079000,
+          "endMs": 2113000,
+          "koreanHash": "f1a4a16739900d8a2738991214ccfb84a796803b28d370ec1c664d531a9c5c2a",
+          "talkId": 100021365,
+          "officialTextHash": "3492544722097496751",
+          "officialKoreanHash": "f1a4a16739900d8a2738991214ccfb84a796803b28d370ec1c664d531a9c5c2a"
+        },
+        {
+          "rowId": "station-departure-arrival-quest-1000300-436",
+          "startMs": 2116000,
+          "endMs": 2148000,
+          "koreanHash": "75f03de32c9ed851ca3b7aebb37105402ad2e36f1368b43c98d8545cf2f02094",
+          "talkId": 100021171,
+          "officialTextHash": "2310053045650635121",
+          "officialKoreanHash": "75f03de32c9ed851ca3b7aebb37105402ad2e36f1368b43c98d8545cf2f02094"
+        },
+        {
+          "rowId": "station-departure-arrival-quest-1000300-437",
+          "startMs": 2122000,
+          "endMs": 2155000,
+          "koreanHash": "5436be03158f4c14039b114c1d1e95d0eeee0d219167896332350d064bb9471b",
+          "talkId": 100021172,
+          "officialTextHash": "17120627846360070165",
+          "officialKoreanHash": "5436be03158f4c14039b114c1d1e95d0eeee0d219167896332350d064bb9471b"
+        },
+        {
+          "rowId": "station-departure-arrival-quest-1000300-438",
+          "startMs": 2134000,
+          "endMs": 2166000,
+          "koreanHash": "ae962857a6189e308b90bf7ecc3098907a2dbeeb977b26ee3018ddb0d447b8b2",
+          "talkId": 100021174,
+          "officialTextHash": "9008167840023247713",
+          "officialKoreanHash": "ae962857a6189e308b90bf7ecc3098907a2dbeeb977b26ee3018ddb0d447b8b2"
+        },
+        {
+          "rowId": "station-departure-arrival-quest-1000300-439",
+          "startMs": 2141000,
+          "endMs": 2173000,
+          "koreanHash": "4d5df6182f4b2f89370f66a0ebb40083b4e2f5cbc8fe5d672b0258a8ab848602",
+          "talkId": 100021175,
+          "officialTextHash": "2704290547126978104",
+          "officialKoreanHash": "4d5df6182f4b2f89370f66a0ebb40083b4e2f5cbc8fe5d672b0258a8ab848602"
+        },
+        {
+          "rowId": "station-departure-arrival-quest-1000300-440",
+          "startMs": 2146000,
+          "endMs": 2178000,
+          "koreanHash": "10f36cca5de4236e69e6137a255ae00cb39a7a2d50a47eeb0782e32c1bcd781f",
+          "talkId": 100021176,
+          "officialTextHash": "14481700914377250031",
+          "officialKoreanHash": "10f36cca5de4236e69e6137a255ae00cb39a7a2d50a47eeb0782e32c1bcd781f"
+        },
+        {
+          "rowId": "station-departure-arrival-quest-1000300-545",
+          "startMs": 2194000,
+          "endMs": 2227000,
+          "koreanHash": "c91834da4dcef5595b2ddbded2edf0cc68287e95263d5f8f6c73369055a81b96",
+          "talkId": 100021330,
+          "officialTextHash": "18270113444247086318",
+          "officialKoreanHash": "c91834da4dcef5595b2ddbded2edf0cc68287e95263d5f8f6c73369055a81b96"
+        },
+        {
+          "rowId": "station-departure-arrival-quest-1000300-565",
+          "startMs": 2230000,
+          "endMs": 2262000,
+          "koreanHash": "ba3d4a20d7088f232c8bcce89c0cbf2f4acd5f9f816d4975db37e80b823de5ad",
+          "talkId": 100021349,
+          "officialTextHash": "12969479742665994635",
+          "officialKoreanHash": "ba3d4a20d7088f232c8bcce89c0cbf2f4acd5f9f816d4975db37e80b823de5ad"
+        },
+        {
+          "rowId": "station-departure-arrival-quest-1000300-567",
+          "startMs": 2245000,
+          "endMs": 2276000,
+          "koreanHash": "cd6accb74562c9cc9bfb85c91b487beaa5f146d6c9afcac0ddf9fc7913a4b88e",
+          "talkId": 100021351,
+          "officialTextHash": "15716416365202182754",
+          "officialKoreanHash": "cd6accb74562c9cc9bfb85c91b487beaa5f146d6c9afcac0ddf9fc7913a4b88e"
+        },
+        {
+          "rowId": "station-departure-arrival-quest-1000300-475",
+          "startMs": 2367000,
+          "endMs": 2399000,
+          "koreanHash": "6303a071c6e9d9141af172139356a65069c16c93ad75678b4e11c000e1d32f4d",
+          "talkId": 100021224,
+          "officialTextHash": "17811801259989810186",
+          "officialKoreanHash": "6303a071c6e9d9141af172139356a65069c16c93ad75678b4e11c000e1d32f4d"
+        },
+        {
+          "rowId": "station-departure-arrival-quest-1000300-443",
+          "startMs": 2432000,
+          "endMs": 2465000,
+          "koreanHash": "f82c071fb82227deca3129b3419a69ffa7f89ce29dedefb1683cd90ba82c378f",
+          "talkId": 100021190,
+          "officialTextHash": "2141422757129022089",
+          "officialKoreanHash": "f82c071fb82227deca3129b3419a69ffa7f89ce29dedefb1683cd90ba82c378f"
+        },
+        {
+          "rowId": "station-departure-arrival-quest-1000300-445",
+          "startMs": 2453000,
+          "endMs": 2485000,
+          "koreanHash": "37428759561f3576f7eff4273fb8c90c41a4364f24091edd2788f92fcf9fae0e",
+          "talkId": 100021192,
+          "officialTextHash": "18149124164647972535",
+          "officialKoreanHash": "37428759561f3576f7eff4273fb8c90c41a4364f24091edd2788f92fcf9fae0e"
+        },
+        {
+          "rowId": "station-departure-arrival-quest-1000300-453",
+          "startMs": 2462000,
+          "endMs": 2493000,
+          "koreanHash": "52b7724be51bb131cd8a3cdbf4865d9b3a754640dfa3e3e811542a38d8973568",
+          "talkId": 100021201,
+          "officialTextHash": "7127705092502269443",
+          "officialKoreanHash": "52b7724be51bb131cd8a3cdbf4865d9b3a754640dfa3e3e811542a38d8973568"
+        },
+        {
+          "rowId": "station-departure-arrival-quest-1000300-521",
+          "startMs": 2477000,
+          "endMs": 2510000,
+          "koreanHash": "501408ee87f711a09734dca3178d32f89de9632b9c6b454dc46d656ce744d524",
+          "talkId": 100021302,
+          "officialTextHash": "2058195925478938572",
+          "officialKoreanHash": "501408ee87f711a09734dca3178d32f89de9632b9c6b454dc46d656ce744d524"
+        },
+        {
+          "rowId": "station-departure-arrival-quest-1000300-533",
+          "startMs": 2514000,
+          "endMs": 2547000,
+          "koreanHash": "a98eb91a84eaacb94d9a745b15d615d6a857d98d5b56aab6eda952c46bf70bb8",
+          "talkId": 100021317,
+          "officialTextHash": "13686764096767167659",
+          "officialKoreanHash": "a98eb91a84eaacb94d9a745b15d615d6a857d98d5b56aab6eda952c46bf70bb8"
+        },
+        {
+          "rowId": "station-departure-arrival-quest-1000400-619",
+          "startMs": 2602000,
+          "endMs": 2633000,
+          "koreanHash": "50559989f886fd3ad21b0e135ed8a21661d147905a0d8d24dd5cb41c18670541",
+          "talkId": 100040130,
+          "officialTextHash": "351471696525145986",
+          "officialKoreanHash": "50559989f886fd3ad21b0e135ed8a21661d147905a0d8d24dd5cb41c18670541"
+        },
+        {
+          "rowId": "station-departure-arrival-quest-1000400-627",
+          "startMs": 2642000,
+          "endMs": 2673000,
+          "koreanHash": "725a3905b6a068426c7fa6c4c5eae9e461d2e7ad5037aa0eabbdf97a2783b32d",
+          "talkId": 100040118,
+          "officialTextHash": "11270216532499688934",
+          "officialKoreanHash": "725a3905b6a068426c7fa6c4c5eae9e461d2e7ad5037aa0eabbdf97a2783b32d"
+        },
+        {
+          "rowId": "station-departure-arrival-quest-1000400-634",
+          "startMs": 2814000,
+          "endMs": 2846000,
+          "koreanHash": "765340047371b88a48f37e54b0a50ed7c9f767b47eb11b198e67f3252f1defff",
+          "talkId": 100040509,
+          "officialTextHash": "15125117225454368702",
+          "officialKoreanHash": "765340047371b88a48f37e54b0a50ed7c9f767b47eb11b198e67f3252f1defff"
+        },
+        {
+          "rowId": "station-departure-arrival-quest-1000400-647",
+          "startMs": 2910000,
+          "endMs": 2942000,
+          "koreanHash": "6390edfefeef826ada0f2aebea6c4159debf386f044b200f77c2b972ba5daabb",
+          "talkId": 100040217,
+          "officialTextHash": "10895134620700101368",
+          "officialKoreanHash": "6390edfefeef826ada0f2aebea6c4159debf386f044b200f77c2b972ba5daabb"
+        },
+        {
+          "rowId": "station-departure-arrival-quest-1000400-658",
+          "startMs": 2937000,
+          "endMs": 2968000,
+          "koreanHash": "f7917d6c5a5aaa6a2c4cc4a34bfd6322610e64086632d523c81c6e0c11b83a15",
+          "talkId": 100040227,
+          "officialTextHash": "9267731241702283031",
+          "officialKoreanHash": "f7917d6c5a5aaa6a2c4cc4a34bfd6322610e64086632d523c81c6e0c11b83a15"
+        },
+        {
+          "rowId": "station-departure-arrival-quest-1000400-663",
+          "startMs": 2948000,
+          "endMs": 2979000,
+          "koreanHash": "0f9f636ddd16a2286d6d56ce9ae75ba1a740abacbc07a1166e7e16ccd2c1e788",
+          "talkId": 100040233,
+          "officialTextHash": "4498619308721879393",
+          "officialKoreanHash": "0f9f636ddd16a2286d6d56ce9ae75ba1a740abacbc07a1166e7e16ccd2c1e788"
+        },
+        {
+          "rowId": "station-departure-arrival-quest-1000400-680",
+          "startMs": 3011000,
+          "endMs": 3042000,
+          "koreanHash": "63fdf844d3ced72465a1649549b761110740ee24a58dd32ae10f06a6491b7e03",
+          "talkId": 100040250,
+          "officialTextHash": "10103361647606037655",
+          "officialKoreanHash": "63fdf844d3ced72465a1649549b761110740ee24a58dd32ae10f06a6491b7e03"
+        },
+        {
+          "rowId": "station-departure-arrival-quest-1000400-681",
+          "startMs": 3018000,
+          "endMs": 3049000,
+          "koreanHash": "e1fa88e83426c7e473c626a397f698dcc667a20f7dda917e97565b4d54193214",
+          "talkId": 100040251,
+          "officialTextHash": "4560668849340073264",
+          "officialKoreanHash": "e1fa88e83426c7e473c626a397f698dcc667a20f7dda917e97565b4d54193214"
+        },
+        {
+          "rowId": "station-departure-arrival-quest-1000400-708",
+          "startMs": 3193000,
+          "endMs": 3224000,
+          "koreanHash": "9fce4aa73ddf3ab12058c3ea013ee0206d8327bab7ae3b2dfd6c7ef8b33c782b",
+          "talkId": 100060116,
+          "officialTextHash": "12639148177727731966",
+          "officialKoreanHash": "9fce4aa73ddf3ab12058c3ea013ee0206d8327bab7ae3b2dfd6c7ef8b33c782b"
+        },
+        {
+          "rowId": "station-departure-arrival-quest-1000402-848",
+          "startMs": 3227000,
+          "endMs": 3260000,
+          "koreanHash": "c213545c55fab160f9149fe6deca2c16349ebbf5f44a1cf218196fff9677a6d3",
+          "talkId": 100040405,
+          "officialTextHash": "6535815080541490163",
+          "officialKoreanHash": "c213545c55fab160f9149fe6deca2c16349ebbf5f44a1cf218196fff9677a6d3"
+        },
+        {
+          "rowId": "station-departure-arrival-quest-1000402-858",
+          "startMs": 3272000,
+          "endMs": 3303000,
+          "koreanHash": "990b22f9a1b687c9d329a91f158c7a7fdc5a41992efc41c8ba51ab61ae669659",
+          "talkId": 100040413,
+          "officialTextHash": "12454239013677083836",
+          "officialKoreanHash": "990b22f9a1b687c9d329a91f158c7a7fdc5a41992efc41c8ba51ab61ae669659"
+        },
+        {
+          "rowId": "station-departure-arrival-quest-1000402-859",
+          "startMs": 3277000,
+          "endMs": 3308000,
+          "koreanHash": "5cc60e05b20d411f3d171ce9474ebf92133b5589fdb007b4f0377bf0fe896215",
+          "talkId": 100040414,
+          "officialTextHash": "190517432111743831",
+          "officialKoreanHash": "5cc60e05b20d411f3d171ce9474ebf92133b5589fdb007b4f0377bf0fe896215"
+        },
+        {
+          "rowId": "station-departure-arrival-quest-1000402-860",
+          "startMs": 3284000,
+          "endMs": 3315000,
+          "koreanHash": "013d381c1b8cb039b622e1e735abb79ec19243bf8debe7e1212c3de79e8b5e0b",
+          "talkId": 100040473,
+          "officialTextHash": "10324961184852223075",
+          "officialKoreanHash": "013d381c1b8cb039b622e1e735abb79ec19243bf8debe7e1212c3de79e8b5e0b"
+        },
+        {
+          "rowId": "station-departure-arrival-quest-1000402-861",
+          "startMs": 3290000,
+          "endMs": 3321000,
+          "koreanHash": "afd0f909476a6da7614b1a0db677591353d381540e27ccc0ccf2b73c28600bee",
+          "talkId": 100040474,
+          "officialTextHash": "1599476995235550171",
+          "officialKoreanHash": "afd0f909476a6da7614b1a0db677591353d381540e27ccc0ccf2b73c28600bee"
+        },
+        {
+          "rowId": "station-departure-arrival-quest-1000402-869",
+          "startMs": 3333000,
+          "endMs": 3365000,
+          "koreanHash": "ec4edfb1a1010dfb3dce5e1c895bf7e38dd10952097f70769ae9a6190798538f",
+          "talkId": 100040424,
+          "officialTextHash": "1694745372705398707",
+          "officialKoreanHash": "ec4edfb1a1010dfb3dce5e1c895bf7e38dd10952097f70769ae9a6190798538f"
+        },
+        {
+          "rowId": "station-departure-arrival-quest-1000402-1103",
+          "startMs": 3578000,
+          "endMs": 3610000,
+          "koreanHash": "9923e43b59189e13339ebaec695bbe964e05c445821fb2092e2a321f61ef0a1d",
+          "talkId": 100050410,
+          "officialTextHash": "12219838030313025147",
+          "officialKoreanHash": "9923e43b59189e13339ebaec695bbe964e05c445821fb2092e2a321f61ef0a1d"
+        },
+        {
+          "rowId": "station-departure-arrival-quest-1000402-1118",
+          "startMs": 3587000,
+          "endMs": 3618000,
+          "koreanHash": "8f026cf7b0b66add942ab1aa7106638f14968678e620c247d413700428311e22",
+          "talkId": 100050413,
+          "officialTextHash": "81854755642565424",
+          "officialKoreanHash": "8f026cf7b0b66add942ab1aa7106638f14968678e620c247d413700428311e22"
+        },
+        {
+          "rowId": "station-departure-arrival-quest-1000402-1112",
+          "startMs": 3601000,
+          "endMs": 3635000,
+          "koreanHash": "9964b08ca88c4d7ae0aa2c20209d2e43abed190114b8b56a9e0ca67b4de84325",
+          "talkId": 100050419,
+          "officialTextHash": "14947520183750337375",
+          "officialKoreanHash": "9964b08ca88c4d7ae0aa2c20209d2e43abed190114b8b56a9e0ca67b4de84325"
+        },
+        {
+          "rowId": "station-departure-arrival-quest-1000402-1107",
+          "startMs": 3622000,
+          "endMs": 3655000,
+          "koreanHash": "57edc0f1a04dea4fb6e93c38304f3fb6a44e641ddff39eee642717474e08b635",
+          "talkId": 100050426,
+          "officialTextHash": "4958155506884071803",
+          "officialKoreanHash": "57edc0f1a04dea4fb6e93c38304f3fb6a44e641ddff39eee642717474e08b635"
+        },
+        {
+          "rowId": "station-departure-arrival-quest-1000402-955",
+          "startMs": 3718000,
+          "endMs": 3749000,
+          "koreanHash": "40afabdc79026076acc0bb6ddbd7f2fdfefcb540d8bcb65aa03b9df2211413f4",
+          "talkId": 100050438,
+          "officialTextHash": "4134311156854770169",
+          "officialKoreanHash": "40afabdc79026076acc0bb6ddbd7f2fdfefcb540d8bcb65aa03b9df2211413f4"
+        },
+        {
+          "rowId": "station-departure-arrival-quest-1000402-905",
+          "startMs": 3741000,
+          "endMs": 3773000,
+          "koreanHash": "3cde478f9fa4ad2e5cfb1a010f9b770d5c57f66781e976eb7da48e5c197bf00d",
+          "talkId": 100050449,
+          "officialTextHash": "16000269738189157954",
+          "officialKoreanHash": "3cde478f9fa4ad2e5cfb1a010f9b770d5c57f66781e976eb7da48e5c197bf00d"
+        },
+        {
+          "rowId": "station-departure-arrival-quest-1000402-958",
+          "startMs": 3747000,
+          "endMs": 3779000,
+          "koreanHash": "1c309b6039eb1c68a93cdd7bfccca9da049b3c70e9428c45b2a685d0ff2f12fc",
+          "talkId": 100050450,
+          "officialTextHash": "5853055952337741022",
+          "officialKoreanHash": "1c309b6039eb1c68a93cdd7bfccca9da049b3c70e9428c45b2a685d0ff2f12fc"
+        },
+        {
+          "rowId": "station-departure-arrival-quest-1000402-914",
+          "startMs": 3759000,
+          "endMs": 3790000,
+          "koreanHash": "9342b7cd2a8e32dae3267666be49dfa359e69db42e8cb43e8a48bece46b3e0e1",
+          "talkId": 100050506,
+          "officialTextHash": "242169201739237519",
+          "officialKoreanHash": "9342b7cd2a8e32dae3267666be49dfa359e69db42e8cb43e8a48bece46b3e0e1"
+        },
+        {
+          "rowId": "station-departure-arrival-quest-1000402-928",
+          "startMs": 3765000,
+          "endMs": 3799000,
+          "koreanHash": "70e83db9d029707cf30a9b09bafdbea19094992f9483da9f9a0ee6f198b1e014",
+          "talkId": 100050512,
+          "officialTextHash": "6674444155806052198",
+          "officialKoreanHash": "70e83db9d029707cf30a9b09bafdbea19094992f9483da9f9a0ee6f198b1e014"
+        },
+        {
+          "rowId": "station-departure-arrival-quest-1000402-939",
+          "startMs": 3785000,
+          "endMs": 3816000,
+          "koreanHash": "99e1381868164fd672e74cbe4fe6b7df6ef06281f9a01dd02216c7ab8e29c95d",
+          "talkId": 100050525,
+          "officialTextHash": "8407933706060088891",
+          "officialKoreanHash": "99e1381868164fd672e74cbe4fe6b7df6ef06281f9a01dd02216c7ab8e29c95d"
+        },
+        {
+          "rowId": "station-departure-arrival-quest-1000402-895",
+          "startMs": 3814000,
+          "endMs": 3845000,
+          "koreanHash": "fcd5b2ca082405133d5c647b776e41ee467f136331d4092f116be1e955e95bca",
+          "talkId": 100050563,
+          "officialTextHash": "14559513378259067793",
+          "officialKoreanHash": "fcd5b2ca082405133d5c647b776e41ee467f136331d4092f116be1e955e95bca"
+        },
+        {
+          "rowId": "station-departure-arrival-quest-1000402-1121",
+          "startMs": 3823000,
+          "endMs": 3855000,
+          "koreanHash": "2edb99b6592aae892ce81db7adced3c8369e9425e8cd983823d71778571f7bc9",
+          "talkId": 100050566,
+          "officialTextHash": "5507148757551835340",
+          "officialKoreanHash": "2edb99b6592aae892ce81db7adced3c8369e9425e8cd983823d71778571f7bc9"
+        },
+        {
+          "rowId": "station-departure-arrival-quest-1000402-1122",
+          "startMs": 3829000,
+          "endMs": 3862000,
+          "koreanHash": "58e001084642f3f619534aa465a2615da8de2ed2aaf5584df0f0ffef60f99d49",
+          "talkId": 100050567,
+          "officialTextHash": "617754058611414923",
+          "officialKoreanHash": "58e001084642f3f619534aa465a2615da8de2ed2aaf5584df0f0ffef60f99d49"
+        },
+        {
+          "rowId": "station-departure-arrival-quest-1000402-978",
+          "startMs": 3837000,
+          "endMs": 3870000,
+          "koreanHash": "bb664a5964467bfeb031f7a84fa784ad969099129ceb73f946bd51cebed77822",
+          "talkId": 100050601,
+          "officialTextHash": "646802510985549861",
+          "officialKoreanHash": "bb664a5964467bfeb031f7a84fa784ad969099129ceb73f946bd51cebed77822"
+        },
+        {
+          "rowId": "station-departure-arrival-quest-1000402-984",
+          "startMs": 3892000,
+          "endMs": 3923000,
+          "koreanHash": "ffdb748a070ed4423b651072879d5b8144980fc397cd47e34f2f7a275bd6838a",
+          "talkId": 100050622,
+          "officialTextHash": "826544608095979525",
+          "officialKoreanHash": "ffdb748a070ed4423b651072879d5b8144980fc397cd47e34f2f7a275bd6838a"
+        },
+        {
+          "rowId": "station-departure-arrival-quest-1000402-1015",
+          "startMs": 3920000,
+          "endMs": 3952000,
+          "koreanHash": "055fe91494c39f83426538433ffe346169d036e63ebe95d10095a33fa5cac9cf",
+          "talkId": 100050706,
+          "officialTextHash": "1890634437844365057",
+          "officialKoreanHash": "055fe91494c39f83426538433ffe346169d036e63ebe95d10095a33fa5cac9cf"
+        },
+        {
+          "rowId": "station-departure-arrival-quest-1000402-1017",
+          "startMs": 3945000,
+          "endMs": 3977000,
+          "koreanHash": "480b31ca7690f2ca279bbc5fb374748a2c63d1a16afab6bce98a148306f3e970",
+          "talkId": 100050708,
+          "officialTextHash": "10300991246958415070",
+          "officialKoreanHash": "480b31ca7690f2ca279bbc5fb374748a2c63d1a16afab6bce98a148306f3e970"
+        },
+        {
+          "rowId": "station-departure-arrival-quest-1000402-1043",
+          "startMs": 4223000,
+          "endMs": 4254000,
+          "koreanHash": "62716b030b31c69e68c6c8697e707e07897c4fecba7870b029483b1b73425c27",
+          "talkId": 100050737,
+          "officialTextHash": "16117250727374739457",
+          "officialKoreanHash": "62716b030b31c69e68c6c8697e707e07897c4fecba7870b029483b1b73425c27"
+        },
+        {
+          "rowId": "station-departure-arrival-quest-1000402-1045",
+          "startMs": 4239000,
+          "endMs": 4271000,
+          "koreanHash": "3f27f47b450b981d798961302ebfdcf183839e9e6a848788fd24842c67952f86",
+          "talkId": 100050739,
+          "officialTextHash": "3885985034718103716",
+          "officialKoreanHash": "3f27f47b450b981d798961302ebfdcf183839e9e6a848788fd24842c67952f86"
+        },
+        {
+          "rowId": "station-departure-arrival-quest-1000402-1057",
+          "startMs": 4335000,
+          "endMs": 4368000,
+          "koreanHash": "94b3d83dd9390793b2f8c9f4fb6db891d5f5ea13666f9d5d66e5eb48dc0d8b94",
+          "talkId": 100050752,
+          "officialTextHash": "10405879721841405693",
+          "officialKoreanHash": "94b3d83dd9390793b2f8c9f4fb6db891d5f5ea13666f9d5d66e5eb48dc0d8b94"
+        },
+        {
+          "rowId": "station-departure-arrival-quest-1000402-1058",
+          "startMs": 4341000,
+          "endMs": 4372000,
+          "koreanHash": "66e4690bc1749c87b8b47636ff183a0471f52524bf8ed4bdb762465e294ab101",
+          "talkId": 100050754,
+          "officialTextHash": "16429777654825585128",
+          "officialKoreanHash": "66e4690bc1749c87b8b47636ff183a0471f52524bf8ed4bdb762465e294ab101"
+        },
+        {
+          "rowId": "station-departure-arrival-quest-1000402-1059",
+          "startMs": 4347000,
+          "endMs": 4378000,
+          "koreanHash": "bf302e19335b13e8a0ec132af4c332561ee3007d4e4133e8b7cc3c80edc129d5",
+          "talkId": 100050756,
+          "officialTextHash": "6415666403268920048",
+          "officialKoreanHash": "bf302e19335b13e8a0ec132af4c332561ee3007d4e4133e8b7cc3c80edc129d5"
+        },
+        {
+          "rowId": "station-departure-arrival-quest-1000402-1074",
+          "startMs": 4374000,
+          "endMs": 4405000,
+          "koreanHash": "6a751b1095b57f430d2d04b2fd1d51068223e88ca999d9be76950da3be7b66c2",
+          "talkId": 100050807,
+          "officialTextHash": "511154536319271026",
+          "officialKoreanHash": "6a751b1095b57f430d2d04b2fd1d51068223e88ca999d9be76950da3be7b66c2"
+        },
+        {
+          "rowId": "station-departure-arrival-quest-1000402-1079",
+          "startMs": 4423000,
+          "endMs": 4455000,
+          "koreanHash": "c3ebd666ff3912c9c0667bacf612108fbbe51c77cff49e909dea038142e33108",
+          "talkId": 100050813,
+          "officialTextHash": "16625420319331980187",
+          "officialKoreanHash": "c3ebd666ff3912c9c0667bacf612108fbbe51c77cff49e909dea038142e33108"
+        },
+        {
+          "rowId": "station-departure-arrival-quest-1000402-1087",
+          "startMs": 4503000,
+          "endMs": 4534000,
+          "koreanHash": "deff39d2fbe11c56c01a279a039d5845f1de68f1f5664a970ce416c132b113a7",
+          "talkId": 100050825,
+          "officialTextHash": "1861640213720018803",
+          "officialKoreanHash": "deff39d2fbe11c56c01a279a039d5845f1de68f1f5664a970ce416c132b113a7"
+        },
+        {
+          "rowId": "station-departure-arrival-quest-1000402-1089",
+          "startMs": 4520000,
+          "endMs": 4553000,
+          "koreanHash": "8c11eb8f7f38425b3a845714cbcf2704ccc03702dfd17fc0a606188dba6cea4b",
+          "talkId": 100050827,
+          "officialTextHash": "2239485665913122414",
+          "officialKoreanHash": "8c11eb8f7f38425b3a845714cbcf2704ccc03702dfd17fc0a606188dba6cea4b"
+        },
+        {
+          "rowId": "station-departure-arrival-quest-1000402-1092",
+          "startMs": 4537000,
+          "endMs": 4568000,
+          "koreanHash": "957a1f372e5fc4210e57a9f75fbacd64e1dad33e95e2251aa268637afdc0e394",
+          "talkId": 100050831,
+          "officialTextHash": "5425718979956789465",
+          "officialKoreanHash": "957a1f372e5fc4210e57a9f75fbacd64e1dad33e95e2251aa268637afdc0e394"
+        },
+        {
+          "rowId": "station-departure-arrival-quest-1000402-1093",
+          "startMs": 4544000,
+          "endMs": 4575000,
+          "koreanHash": "4ec32a0d3b93157593ec778a38373e3eae44731df422e15d8aabb1a143e33909",
+          "talkId": 100050832,
+          "officialTextHash": "1204875030447002582",
+          "officialKoreanHash": "4ec32a0d3b93157593ec778a38373e3eae44731df422e15d8aabb1a143e33909"
+        },
+        {
+          "rowId": "station-departure-arrival-quest-1000402-977",
+          "startMs": 4584000,
+          "endMs": 4613000,
+          "koreanHash": "a79aba1354915a5ba53da0d546af5713672aed7ae716a58eee726f83927c5c69",
+          "talkId": 100050636,
+          "officialTextHash": "15423151386983300006",
+          "officialKoreanHash": "a79aba1354915a5ba53da0d546af5713672aed7ae716a58eee726f83927c5c69"
+        },
+        {
+          "rowId": "station-departure-arrival-quest-1000402-1099",
+          "startMs": 4604000,
+          "endMs": 4613000,
+          "koreanHash": "96181bf265ee750db93070ae1451d729217a5873b31d315a9febc4fb5d3c9eb7",
+          "talkId": 100050638,
+          "officialTextHash": "5742801040156586221",
+          "officialKoreanHash": "96181bf265ee750db93070ae1451d729217a5873b31d315a9febc4fb5d3c9eb7"
+        }
+      ]
+    },
+    {
+      "method": "reviewed-screen-path",
+      "file": "content/simulated-universe--quest-4030001.json",
+      "videoId": "exzWuZ3hdoM",
+      "url": "https://www.youtube.com/watch?v=exzWuZ3hdoM",
+      "language": "ko",
+      "referenceCommit": "312b4597691e0a29cf9828a15b592757dba86949",
+      "checkedAt": "2026-10-17T18:19:22.090Z",
+      "timingPrecisionMs": 1000,
+      "mode": "시뮬레이션 우주",
+      "event": "1차 클로즈 베타",
+      "scene": "후리 조우 후 헤르타 회수 및 사무실 복귀",
+      "source": "Config/Level/Mission/4030001/Act/Act403000114.json",
+      "missionId": "quest-4030001",
+      "matches": [
+        {
+          "rowId": "simulated-universe-quest-4030001-quest-4030001-38",
+          "talkId": 403011419,
+          "type": "dialogue",
+          "koreanHash": "7cad997f205c5a04071be3752430761d640acc575b813b8b6940abf7abd680a5",
+          "startMs": 386000,
+          "frameSha256": "5b44b5998ad142748ac9809c4fb52f644ca52864fbd01fbb1e50753e136a76d8",
+          "officialTextHash": "6676585338966375191",
+          "officialKoreanHash": "7cad997f205c5a04071be3752430761d640acc575b813b8b6940abf7abd680a5"
+        },
+        {
+          "rowId": "simulated-universe-quest-4030001-quest-4030001-39",
+          "talkId": 403011420,
+          "type": "choice",
+          "koreanHash": "59c91470bb90f74779aa3de6a2f9bd8547e62e3ee5b4a102be103f341af0637e",
+          "startMs": 387000,
+          "frameSha256": "cc5de89ae0adf5a08dd6b84a38fda758e0baf31697e6052da6d5bc03deaf5192",
+          "officialTextHash": "18044799504063719735",
+          "officialKoreanHash": "59c91470bb90f74779aa3de6a2f9bd8547e62e3ee5b4a102be103f341af0637e"
+        },
+        {
+          "rowId": "simulated-universe-quest-4030001-quest-4030001-40",
+          "talkId": 403010421,
+          "type": "dialogue",
+          "koreanHash": "c645dc7e5db27c83d62debd93984dab846e2bc894b41d69b0c5b42ba7ee9733c",
+          "startMs": 391000,
+          "frameSha256": "a8ab66ac5236343f57854a91f33d0d383828ba3a1c61f74b6334f33cf84ed28a",
+          "officialTextHash": "9138871527903061893",
+          "officialKoreanHash": "c645dc7e5db27c83d62debd93984dab846e2bc894b41d69b0c5b42ba7ee9733c"
+        }
+      ],
+      "edges": [
+        {
+          "from": "simulated-universe-quest-4030001-quest-4030001-38",
+          "to": "simulated-universe-quest-4030001-quest-4030001-39"
+        },
+        {
+          "from": "simulated-universe-quest-4030001-quest-4030001-39",
+          "to": "simulated-universe-quest-4030001-quest-4030001-40",
+          "selection": "observed-single-option"
+        }
+      ],
+      "review": "Full visible Korean body and single displayed choice checked against the official rows. Player name substitutes [개척자]; ruby annotation is rendered in place. Only this observed path is confirmed. Preceding two alternatives and other events remain unconfirmed."
+    }
+  ]
+}

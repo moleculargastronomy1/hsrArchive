@@ -87,7 +87,7 @@ jobs:
           path: .cache/upstream-content/bwiki
           key: hsr-bwiki-snapshots-v1-${{ github.run_id }}-${{ github.run_attempt }}
           restore-keys: hsr-bwiki-snapshots-v1-
-      - name: Refresh changed sources or retry unresolved BWIKI sections
+      - name: Refresh changed sources or retry unresolved BWIKI and YouTube sections
         if: steps.watch.outputs.changed == 'true'
         id: refresh
         run: node scripts/run-content-refresh.mjs

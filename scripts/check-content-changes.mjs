@@ -8,6 +8,7 @@ import {
 } from './content-change.mjs';
 import { algorithmHash, readRetry, saveRetry, retryDecision } from './verification-retry.mjs';
 import { SITE } from './verification-state.mjs';
+import { videoRetryDecision, mergeVideoChecks } from './video-order.mjs';
 
 const read = async (file) => JSON.parse(await fs.readFile(file, 'utf8'));
 const config = await read('editorial/video-verification-sources.json');
@@ -55,6 +56,20 @@ if (mode === '--record') {
   }
   if (state.pendingDigest && state.pendingDigest === published?.digest) delete state.pendingDigest;
   const retry = retryDecision(state, algorithm, published);
+  let videoRetry = { needed: false, reason: 'video-state-unavailable' };
+  try {
+    const response = await fetch(SITE + 'video-order-provenance.json', {
+      cache: 'no-store',
+      signal: AbortSignal.timeout(30000),
+    });
+    if (response.ok) {
+      const video = await response.json();
+      video.checks = mergeVideoChecks(video.checks, state.videoChecks);
+      videoRetry = videoRetryDecision(video);
+    }
+  } catch {
+    /* A failed probe never becomes successful verification. */
+  }
   if (mode === '--force') result = { changed: true, checks: { source: 'requested-build' } };
   else {
     try {
@@ -84,11 +99,14 @@ if (mode === '--record') {
       result = { changed: false, checks: { snapshot: 'unavailable' } };
     }
   }
-  // A retry is bounded to BWIKI. Release/config/video/code updates retain the
-  // standard complete content pipeline and tests.
+  // Source changes retain the full pipeline. Independent BWIKI/video retries
+  // only process the due verifier and still pass preservation and build gates.
   const full = mode === '--force' || result.changed;
   result.checks.retry = retry.reason;
-  result.changed ||= retry.needed;
+  result.checks.youtubeRetry = videoRetry.reason;
+  result.retryBwiki = retry.needed;
+  result.retryVideo = videoRetry.needed;
+  result.changed ||= retry.needed || videoRetry.needed;
   result.mode = full ? 'full' : 'retry';
   await saveRetry(state);
   await fs.mkdir(path.resolve('.cache/content-watch'), { recursive: true });
@@ -118,7 +136,7 @@ if (mode === '--record') {
   if (process.env.GITHUB_STEP_SUMMARY)
     await fs.appendFile(
       process.env.GITHUB_STEP_SUMMARY,
-      `### 자료 변경 확인\n\n${result.changed ? (result.mode === 'retry' ? '재시도 사유 확인: BWIKI 대상 구간만 다시 대조합니다.' : '새 자료 또는 소스 배포: 전체 갱신을 실행합니다.') : '새 변경이나 재시도 사유가 없어 전체 갱신·빌드·배포를 생략합니다.'}\n\n` +
+      `### 자료 변경 확인\n\n${result.changed ? (result.mode === 'retry' ? '재시도 사유 확인: 기한이 된 BWIKI·유튜브 대상 구간을 다시 대조합니다.' : '새 자료 또는 소스 배포: 전체 갱신을 실행합니다.') : '새 변경이나 재시도 사유가 없어 전체 갱신·빌드·배포를 생략합니다.'}\n\n` +
         Object.entries(result.checks)
           .map(([name, status]) => `- ${name}: ${status}`)
           .join('\n') +

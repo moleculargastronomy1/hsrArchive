@@ -9,5 +9,19 @@
       "playlistId": "PLDe4FAcRpNgbnBAGle21FSWhXb1LGg82U",
       "playlistUrl": "https://www.youtube.com/playlist?list=PLDe4FAcRpNgbnBAGle21FSWhXb1LGg82U"
     }
+  ],
+  "videos": [
+    {
+      "id": "exzWuZ3hdoM",
+      "title": "붕괴: 스타레일 시뮬레이션 우주 1차 클로즈 베타 스토리 다시보기",
+      "url": "https://www.youtube.com/watch?v=exzWuZ3hdoM",
+      "channelId": "UC3Ijmw9TIi4UfDVqA4o4sCw",
+      "channelUrl": "https://www.youtube.com/@KKamto",
+      "language": "ko",
+      "category": "simulation",
+      "mode": "시뮬레이션 우주",
+      "event": "1차 클로즈 베타",
+      "files": ["content/simulated-universe--quest-4030001.json"]
+    }
   ]
 }

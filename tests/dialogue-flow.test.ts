@@ -57,6 +57,40 @@ test('malformed links fail validation and cyclic response links stop safely', ()
   );
 });
 
+test('screen-observed single choice uses its own response graph while preserving official and BWIKI graphs', () => {
+  const rows = [
+    row('choice', 'choice', []),
+    row('reply', 'dialogue', []),
+    row('other-choice', 'choice', []),
+  ];
+  for (const item of rows) {
+    item.flowStatus = 'review';
+    item.videoStatus = 'screen-matched';
+    item.videoScene = 'video-scene';
+  }
+  rows[0].bwikiStatus = 'cached';
+  rows[0].bwikiScene = 'wiki-scene';
+  rows[0].videoNextIds = ['reply'];
+  rows[1].videoNextIds = ['other-choice'];
+  assert.equal(isDialogueRows(rows), true);
+  assert.deepEqual(
+    choiceDialogue(rows, 0).map((item) => item.id),
+    ['choice', 'reply'],
+  );
+  rows[1].videoScene = 'foreign-event';
+  assert.deepEqual(
+    choiceDialogue(rows, 0).map((item) => item.id),
+    ['choice'],
+  );
+  rows[0].bwikiNextIds = ['reply'];
+  assert.deepEqual(
+    choiceDialogue(rows, 0).map((item) => item.id),
+    ['choice'],
+  );
+  assert.equal(isDialogueRows([{ ...rows[0], videoStatus: 'title-linked' }]), false);
+  assert.equal(isDialogueRows([{ ...rows[0], videoNextIds: [1] }]), false);
+});
+
 test('safe restoration validates actual markers and never changes unresolved text', () => {
   execFileSync(
     process.env.HSR_PYTHON || (process.platform === 'win32' ? 'python' : 'python3'),
@@ -85,7 +119,7 @@ test('published flow links stay inside the verified scene and uncertain row posi
       if (
         item.flowStatus === 'review' &&
         !['matched', 'cached'].includes(item.bwikiStatus ?? '') &&
-        item.videoStatus !== 'caption-matched'
+        !['caption-matched', 'screen-matched'].includes(item.videoStatus ?? '')
       ) {
         assert.equal(item.id, payload.referenceOrder[index]);
         assert.equal(item.nextIds, undefined);

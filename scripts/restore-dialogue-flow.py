@@ -179,7 +179,7 @@ def restore(payload, structures):
     for row in rows:
         for key in ['nextIds', 'replyToIds', 'flowStatus', 'flowScene', 'flowBoundary']:
             row.pop(key, None)
-        for key in ['bwikiStatus', 'bwikiScene', 'bwikiNextIds', 'bwikiReplyToIds', 'bwikiPage', 'bwikiRevision', 'bwikiMissionId', 'bwikiMission', 'videoStatus', 'videoId', 'videoStartMs']:
+        for key in ['bwikiStatus', 'bwikiScene', 'bwikiNextIds', 'bwikiReplyToIds', 'bwikiPage', 'bwikiRevision', 'bwikiMissionId', 'bwikiMission', 'videoStatus', 'videoId', 'videoStartMs', 'videoScene', 'videoNextIds', 'videoReplyToIds']:
             row.pop(key, None)
         if row.get('missionId', '').startswith('quest-'):
             row['flowStatus'] = 'review'

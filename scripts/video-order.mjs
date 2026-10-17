@@ -2,14 +2,87 @@ import crypto from 'node:crypto';
 
 export const sha256 = (value) => crypto.createHash('sha256').update(value).digest('hex');
 
+export const VIDEO_FIELDS = [
+  'videoStatus',
+  'videoId',
+  'videoStartMs',
+  'videoScene',
+  'videoNextIds',
+  'videoReplyToIds',
+];
+export const videoVerified = (row) =>
+  ['caption-matched', 'screen-matched'].includes(row?.videoStatus);
+export function mergeVideoChecks(...sources) {
+  const merged = {};
+  for (const source of sources)
+    for (const [id, check] of Object.entries(source ?? {}))
+      if (!merged[id] || Date.parse(check.checkedAt) > Date.parse(merged[id].checkedAt))
+        merged[id] = check;
+  return merged;
+}
+
+export function parseTranscriptExport(raw, videoId) {
+  raw = raw.replace(/\r\n/g, '\n');
+  if (
+    !raw.startsWith('YouTube transcript\n') ||
+    !raw.includes(`\nVideo ID: ${videoId}\n`) ||
+    !/^Language: ko$/m.test(raw)
+  )
+    throw new Error('Transcript identity/language mismatch');
+  const cues = [...raw.matchAll(/^\[(\d+(?::\d+){1,2})\] (.+)$/gm)].map((match) => ({
+    startMs: match[1].split(':').reduce((seconds, part) => seconds * 60 + Number(part), 0) * 1000,
+    text: match[2],
+  }));
+  if (!cues.length || cues.some((cue, index) => index && cue.startMs < cues[index - 1].startMs))
+    throw new Error('Transcript timestamps unavailable or unordered');
+  cues.forEach((cue, index) => {
+    cue.endMs = cues[index + 1]?.startMs ?? cue.startMs;
+  });
+  return {
+    cues,
+    sha256: sha256(raw),
+    language: 'ko',
+    kind: /^Captions: auto-generated$/m.test(raw) ? 'asr' : 'manual',
+    timingPrecisionMs: 1000,
+  };
+}
+
+export function videoRetryDecision(report, now = Date.now()) {
+  const pending = Object.values(report?.chapters ?? {}).filter(
+    (chapter) => chapter.pending ?? !['bwiki-matched', 'reference-only'].includes(chapter.status),
+  );
+  const ids = new Set(
+    pending.flatMap((chapter) => (chapter.videos ?? []).map((video) => video.id)),
+  );
+  const due = [...ids].filter((id) => {
+    const check = report.checks?.[id];
+    const next = Date.parse(check?.nextRetryAt ?? '');
+    if (Number.isFinite(next)) return next <= now;
+    const last = Date.parse(check?.checkedAt ?? '');
+    return !Number.isFinite(last) || last + 86400000 <= now;
+  });
+  return {
+    needed: due.length > 0,
+    due,
+    reason: due.length ? 'public-captions-due' : 'video-backoff-or-no-source',
+  };
+}
+
 export function selectVideoChecks(queue, checks, checkedAt, limit = 2) {
   const selected = [],
     seen = new Set();
   for (const item of queue) {
     if (selected.length >= limit) break;
     if (seen.has(item.video.id)) continue;
-    const lastCheck = Date.parse(checks?.[item.video.id]?.checkedAt ?? '');
-    if (Number.isFinite(lastCheck) && Date.parse(checkedAt) - lastCheck < 86400000) continue;
+    const check = checks?.[item.video.id];
+    const next = Date.parse(check?.nextRetryAt ?? '');
+    const lastCheck = Date.parse(check?.checkedAt ?? '');
+    if (
+      Number.isFinite(next)
+        ? Date.parse(checkedAt) < next
+        : Number.isFinite(lastCheck) && Date.parse(checkedAt) - lastCheck < 86400000
+    )
+      continue;
     selected.push(item);
     seen.add(item.video.id);
   }
@@ -233,6 +306,7 @@ export function validatedCaptionMatches(rows, evidence) {
       const row = byId.get(match.rowId);
       return (
         row &&
+        (match.talkId === undefined || row.talkId === match.talkId) &&
         row.type !== 'choice' &&
         normalizedKorean(row.text).length >= 16 &&
         !/[{}]/.test(

@@ -1,6 +1,7 @@
 import { publishContentStage } from './content-publication.mjs';
 import fs from 'node:fs/promises';
 import path from 'node:path';
+import { execFileSync } from 'node:child_process';
 import { pythonRunner } from './content-process.mjs';
 import { discoverBwiki, alignBwiki } from './bwiki-verification.mjs';
 import {
@@ -15,8 +16,28 @@ import { algorithmHash, readRetry, saveRetry } from './verification-retry.mjs';
 
 const read = async (file) => JSON.parse(await fs.readFile(file));
 const write = (file, data) => fs.writeFile(file, JSON.stringify(data));
-export async function finishVerification(root, before, manifest, state, algorithm, mode) {
-  const comparison = compareVerification(before, await verificationRows(root));
+export async function finishVerification(
+  root,
+  before,
+  manifest,
+  state,
+  algorithm,
+  mode,
+  reviewRoot = root,
+) {
+  const after = await verificationRows(root);
+  const comparison = compareVerification(before, after);
+  const newlyVideoVerified = [...after.values()]
+    .filter(
+      (row) =>
+        ['caption-matched', 'screen-matched'].includes(row.videoStatus) &&
+        !['caption-matched', 'screen-matched'].includes(before.get(row.id)?.videoStatus),
+    )
+    .map((row) => row.id);
+  const video = await read(path.join(reviewRoot, 'public/video-order-provenance.json')).catch(
+    () => ({}),
+  );
+  state.videoChecks = (await readRetry(root)).videoChecks ?? state.videoChecks;
   for (const page of manifest.pages)
     if (page.status === 'available' && page.alignmentKey) {
       const previous = state.pages[page.title];
@@ -55,6 +76,15 @@ export async function finishVerification(root, before, manifest, state, algorith
     digest: comparison.digest,
     newlyVerified: comparison.newlyVerified.length,
     newlyVerifiedRowIds: comparison.newlyVerified,
+    newlyVideoVerified: newlyVideoVerified.length,
+    newlyVideoVerifiedRowIds: newlyVideoVerified,
+    videoReview: {
+      examined: video.retry?.examined ?? 0,
+      limit: video.retry?.limit ?? 2,
+      remainingDue: video.retry?.due?.length ?? 0,
+      conflicts: video.integrationReview?.length ?? 0,
+      checks: video.checks ?? {},
+    },
     remainingUnknown: comparison.remainingUnknown.length,
     lostVerification: comparison.lostVerification.length,
     removedRows: comparison.removedRows.length,
@@ -106,7 +136,7 @@ export async function finishVerification(root, before, manifest, state, algorith
   if (process.env.GITHUB_STEP_SUMMARY)
     await fs.appendFile(
       process.env.GITHUB_STEP_SUMMARY,
-      `\n### 미검증 대사 재검증\n\n- 새 BWIKI 확인: ${result.newlyVerified}행\n- 순서 미확인: ${result.remainingUnknown}행\n- 기존 BWIKI 근거 상실: ${result.lostVerification}행\n- 본문 다운로드/캐시 재사용: ${result.bodyDownloads}/${result.cachedDocuments}문서\n- 수집 실패: ${JSON.stringify(reasons)}\n- 미확인 사유(검토 기록 수): ${JSON.stringify(matchingReasons)}\n- 자료 변경: ${result.changed}; 전체 플레이 검증 완료를 의미하지 않습니다.\n`,
+      `\n### 미검증 대사 재검증\n\n- 새 BWIKI 확인: ${result.newlyVerified}행\n- 새 영상 확인: ${result.newlyVideoVerified}행\n- 유튜브 조회: ${result.videoReview.examined}/${result.videoReview.limit}개, 남은 기한 도래 영상 ${result.videoReview.remainingDue}개\n- 순서 미확인: ${result.remainingUnknown}행\n- 기존 BWIKI 근거 상실: ${result.lostVerification}행\n- 본문 다운로드/캐시 재사용: ${result.bodyDownloads}/${result.cachedDocuments}문서\n- 수집 실패: ${JSON.stringify(reasons)}\n- 미확인 사유(검토 기록 수): ${JSON.stringify(matchingReasons)}\n- 자료 변경: ${result.changed}; 전체 플레이 검증 완료를 의미하지 않습니다.\n`,
     );
   console.log(
     `Verification: +${result.newlyVerified} BWIKI rows; ${result.remainingUnknown} unknown; changed=${result.changed}`,
@@ -127,6 +157,30 @@ export async function retryContent(root, stage, raw, planFile) {
   }
   await fs.mkdir(path.join(stage, '.cache'), { recursive: true });
   await write(path.join(stage, 'receipt.json'), { files: [], rows: before.size });
+  const watch = await read(path.join(root, '.cache/content-watch/check.json')).catch(() => ({}));
+  if (watch.retryBwiki === false) {
+    const previous = await read(path.join(root, 'public/bwiki-provenance.json'));
+    const manifest = {
+      schema: 'hsr-bwiki-input.v1',
+      commit: previous.commit,
+      checkedAt: new Date().toISOString(),
+      license: previous.license,
+      pages: [],
+      review: [],
+      observations: [],
+      targetFiles: [],
+      targetSources: ['youtube'],
+    };
+    await fs.mkdir(path.join(stage, '.cache/bwiki'), { recursive: true });
+    await write(path.join(stage, '.cache/bwiki/manifest.json'), manifest);
+    if (watch.retryVideo)
+      execFileSync(
+        process.execPath,
+        [path.join(root, 'scripts/verify-video-order.mjs'), stage, root, '--retry'],
+        { cwd: root, stdio: 'inherit' },
+      );
+    return publishRetryStage(root, stage, raw, planFile, before, manifest, state, algorithm);
+  }
   discoverBwiki(run, stage, raw, planFile);
   const previous = await read(path.join(root, 'public/bwiki-provenance.json'));
   const requestFile = path.join(stage, '.cache/bwiki/request.json'),
@@ -176,6 +230,12 @@ export async function retryContent(root, stage, raw, planFile) {
   manifest.targetFiles = [...targets].sort();
   await write(path.join(stage, '.cache/bwiki/manifest.json'), manifest);
   if (targets.size) alignBwiki(run, stage, raw, planFile, root);
+  if (watch.retryVideo)
+    execFileSync(
+      process.execPath,
+      [path.join(root, 'scripts/verify-video-order.mjs'), stage, root, '--retry'],
+      { cwd: root, stdio: 'inherit' },
+    );
   return publishRetryStage(root, stage, raw, planFile, before, manifest, state, algorithm);
 }
 
@@ -199,5 +259,5 @@ export async function publishRetryStage(
     await publishContentStage(root, stage, receipt.files);
   }
   // A no-improvement run retains deployed bytes and only writes the journal.
-  return finishVerification(root, before, manifest, state, algorithm, 'retry');
+  return finishVerification(root, before, manifest, state, algorithm, 'retry', stage);
 }

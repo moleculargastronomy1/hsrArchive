@@ -40,6 +40,26 @@ export function linkVideos(chapters, videos) {
   const matches = Object.fromEntries(chapters.map((chapter) => [chapter.file, []]));
   const review = [];
   for (const video of videos) {
+    if (Array.isArray(video.files)) {
+      for (const file of video.files) {
+        const chapter = chapters.find(
+          (item) => item.file === file && item.category === video.category,
+        );
+        if (chapter)
+          matches[file].push({
+            ...video,
+            linkMethod: 'reviewed-mode-and-event-scope',
+            matchedTitle: chapter.title,
+          });
+        else
+          review.push({
+            videoId: video.id,
+            reason: '등록한 모드/사건 범위가 현재 목차와 일치하지 않음',
+            candidateFiles: [file],
+          });
+      }
+      continue;
+    }
     const kind = videoKind(video.title);
     if (!kind) continue; // Event and companion videos cannot verify main story order.
     const major = video.title.match(/개척\s*임무\s*제\s*(\d+)\s*장/)?.[1];
@@ -49,6 +69,7 @@ export function linkVideos(chapters, videos) {
     const normalized = normalize(video.title);
     const candidates = [];
     for (const chapter of chapters) {
+      if (chapter.category === 'simulation') continue;
       if (chapterKind(chapter.title) !== kind) continue;
       const expectedMajor = chapter.arcLabel?.match(/제\s*(\d+)\s*장/)?.[1];
       if (major && expectedMajor && major !== expectedMajor) continue;

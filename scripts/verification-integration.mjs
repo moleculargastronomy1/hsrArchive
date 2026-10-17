@@ -1,7 +1,7 @@
 import fs from 'node:fs/promises';
 import path from 'node:path';
 import { hash } from './verification-state.mjs';
-import { validatedCaptionMatches } from './video-order.mjs';
+import { validatedCaptionMatches, videoVerified, sha256 } from './video-order.mjs';
 
 // Cross-source decisions belong here. Collectors and exact matchers stay independent.
 const coreKeys = [
@@ -21,7 +21,6 @@ const coreKeys = [
 ];
 const wikiVerified = (row) => ['matched', 'cached'].includes(row?.bwikiStatus);
 const flowVerified = (row) => row?.flowStatus === 'verified';
-const videoVerified = (row) => row?.videoStatus === 'caption-matched';
 const containsLinks = (current, old, key) =>
   (old[key] ?? []).every((id) => (current[key] ?? []).includes(id));
 
@@ -46,7 +45,7 @@ export function orderUnknown(row) {
     (row.bwikiStatus === 'review' || row.flowStatus === 'review') &&
     row.flowStatus !== 'verified' &&
     !['matched', 'cached'].includes(row.bwikiStatus) &&
-    row.videoStatus !== 'caption-matched'
+    !videoVerified(row)
   );
 }
 export function baselineChoice(repository, published) {
@@ -100,7 +99,9 @@ export function compareVerification(before, after) {
       ((wikiVerified(row) &&
         ['bwikiNextIds', 'bwikiReplyToIds'].some((key) => !containsLinks(current, row, key))) ||
         (flowVerified(row) &&
-          ['nextIds', 'replyToIds'].some((key) => !containsLinks(current, row, key))))
+          ['nextIds', 'replyToIds'].some((key) => !containsLinks(current, row, key))) ||
+        (videoVerified(row) &&
+          ['videoNextIds', 'videoReplyToIds'].some((key) => !containsLinks(current, row, key))))
     )
       conflictingLinks.push(id);
   }
@@ -159,6 +160,9 @@ export function compareVerification(before, after) {
           row.videoStatus,
           row.videoId,
           row.videoStartMs,
+          row.videoScene,
+          row.videoNextIds,
+          row.videoReplyToIds,
         ]),
       ),
     );
@@ -208,6 +212,7 @@ export function restoreVideoOrder(payload, evidence) {
         match.startMs < last.startMs &&
         !['matched', 'cached'].includes(byId.get(match.rowId).bwikiStatus ?? '') &&
         byId.get(match.rowId).flowStatus !== 'verified' &&
+        !videoVerified(byId.get(match.rowId)) &&
         (byId.get(match.rowId).bwikiMissionId === a.bwikiMissionId ||
           (a.missionId &&
             a.missionId === b.missionId &&
@@ -240,4 +245,146 @@ export function restoreVideoOrder(payload, evidence) {
     confirmed += middle.length;
   }
   return { changed, confirmed };
+}
+
+export function restoreVideoMissions(payload, evidence) {
+  const byId = new Map(payload.rows.map((row) => [row.id, row]));
+  const groups = new Map();
+  for (const match of evidence.matches) {
+    const row = byId.get(match.rowId);
+    if (!row) continue;
+    const mission = row.bwikiMissionId ?? row.missionId;
+    if (!mission) continue;
+    if (!groups.has(mission)) groups.set(mission, []);
+    groups.get(mission).push(match);
+  }
+  const result = { changed: 0, confirmed: 0, conflicts: [] };
+  for (const [missionId, matches] of groups) {
+    const candidate = structuredClone(payload);
+    const applied = restoreVideoOrder(candidate, { ...evidence, matches });
+    if (applied.conflict) result.conflicts.push(missionId);
+    else {
+      try {
+        assertVerificationPreserved(
+          compareVerification(
+            new Map(payload.rows.map((row) => [row.id, row])),
+            new Map(candidate.rows.map((row) => [row.id, row])),
+          ),
+          'Video mission',
+        );
+      } catch {
+        result.conflicts.push(missionId);
+        continue;
+      }
+      payload.rows = candidate.rows;
+      result.changed += applied.changed;
+      result.confirmed += applied.confirmed;
+    }
+  }
+  return result;
+}
+
+// Screen-reviewed paths carry exact official row hashes and one original source
+// scope. They never manufacture unobserved alternatives or overwrite other graphs.
+export function applyScreenEvidence(payload, evidence) {
+  const byId = new Map(payload.rows.map((row) => [row.id, row]));
+  const matches = evidence.matches;
+  const fail = (reason) => ({ changed: 0, confirmed: 0, reason });
+  if (
+    evidence.method !== 'reviewed-screen-path' ||
+    !/^[\w-]{11}$/.test(evidence.videoId ?? '') ||
+    !Array.isArray(matches) ||
+    matches.length < 3 ||
+    new Set(matches.map((item) => item.rowId)).size !== matches.length ||
+    !Array.isArray(evidence.edges) ||
+    evidence.edges.length !== matches.length - 1 ||
+    matches
+      .slice(0, -1)
+      .some(
+        (match, index) =>
+          evidence.edges[index]?.from !== match.rowId ||
+          evidence.edges[index]?.to !== matches[index + 1].rowId,
+      )
+  )
+    return fail('incomplete-screen-path');
+  for (const [index, match] of matches.entries()) {
+    const row = byId.get(match.rowId);
+    if (
+      !row ||
+      row.source !== evidence.source ||
+      row.missionId !== evidence.missionId ||
+      row.talkId !== match.talkId ||
+      row.type !== match.type ||
+      sha256(row.text) !== match.koreanHash ||
+      !Number.isFinite(match.startMs) ||
+      match.startMs < 0 ||
+      (index && match.startMs <= matches[index - 1].startMs) ||
+      !/^[a-f0-9]{64}$/.test(match.frameSha256 ?? '')
+    )
+      return fail('screen-proof-no-longer-valid');
+  }
+  for (const edge of evidence.edges ?? []) {
+    const index = matches.findIndex((item) => item.rowId === edge.from);
+    if (index < 0 || matches[index + 1]?.rowId !== edge.to) return fail('unobserved-screen-edge');
+    const row = byId.get(edge.from);
+    if (row.type === 'choice' && edge.selection !== 'observed-single-option')
+      return fail('choice-selection-unproven');
+    for (const [verified, key] of [
+      [wikiVerified(row), 'bwikiNextIds'],
+      [flowVerified(row), 'nextIds'],
+      [videoVerified(row), 'videoNextIds'],
+    ])
+      if (verified && row[key]?.length && !row[key].includes(edge.to))
+        return fail('screen-order-conflict');
+  }
+  const before = new Map(payload.rows.map((row) => [row.id, { ...row }]));
+  const candidate = structuredClone(payload);
+  const candidateById = new Map(candidate.rows.map((row) => [row.id, row]));
+  const scene =
+    'video-' +
+    sha256(
+      JSON.stringify([evidence.videoId, evidence.source, matches.map((item) => item.rowId)]),
+    ).slice(0, 16);
+  for (const match of matches)
+    Object.assign(candidateById.get(match.rowId), {
+      videoStatus: 'screen-matched',
+      videoId: evidence.videoId,
+      videoStartMs: match.startMs,
+      videoScene: scene,
+    });
+  for (const edge of evidence.edges ?? []) {
+    candidateById.get(edge.from).videoNextIds = [edge.to];
+    if (candidateById.get(edge.from).type === 'choice')
+      candidateById.get(edge.to).videoReplyToIds = [edge.from];
+  }
+  // Move only previously unverified observed rows beside their observed neighbor.
+  for (let index = matches.length - 1; index >= 0; index--) {
+    const match = matches[index],
+      row = before.get(match.rowId);
+    if (wikiVerified(row) || flowVerified(row) || videoVerified(row)) continue;
+    const next = matches[index + 1],
+      previous = matches[index - 1];
+    if (!next && !previous) continue;
+    candidate.rows = candidate.rows.filter((item) => item.id !== row.id);
+    const insertion = next
+      ? candidate.rows.findIndex((item) => item.id === next.rowId)
+      : candidate.rows.findIndex((item) => item.id === previous.rowId) + 1;
+    candidate.rows.splice(insertion, 0, candidateById.get(row.id));
+  }
+  const comparison = compareVerification(
+    before,
+    new Map(candidate.rows.map((row) => [row.id, row])),
+  );
+  try {
+    assertVerificationPreserved(comparison, 'Screen integration');
+  } catch {
+    return fail('screen-conflicts-with-established-proof');
+  }
+  payload.rows = candidate.rows;
+  return {
+    changed: comparison.changed ? 1 : 0,
+    confirmed: matches.filter((item) => orderUnknown(before.get(item.rowId))).length,
+    observed: matches.length,
+    edges: (evidence.edges ?? []).length,
+  };
 }

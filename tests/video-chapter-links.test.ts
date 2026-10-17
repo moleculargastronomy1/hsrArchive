@@ -2,6 +2,34 @@ import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { linkVideos } from '../scripts/video-chapter-links.mjs';
 
+test('simulation sources require an explicit reviewed mode/event file scope', () => {
+  const chapters = [
+    {
+      file: 'simulation-a',
+      category: 'simulation',
+      title: '같은 사건',
+      missionTitles: ['같은 사건'],
+    },
+    {
+      file: 'simulation-b',
+      category: 'simulation',
+      title: '같은 사건',
+      missionTitles: ['같은 사건'],
+    },
+  ];
+  const plain = { id: 'exzWuZ3hdoM', title: '시뮬레이션 우주 같은 사건' };
+  assert.ok(
+    Object.values(linkVideos(chapters, [plain]).matches).every(
+      (items: unknown[]) => items.length === 0,
+    ),
+  );
+  const result = linkVideos(chapters, [
+    { ...plain, category: 'simulation', files: ['simulation-a'] },
+  ]);
+  assert.equal(result.matches['simulation-a'][0].linkMethod, 'reviewed-mode-and-event-scope');
+  assert.equal(result.matches['simulation-b'].length, 0);
+});
+
 test('official subquest names link videos to chapters without treating episode numbers as act numbers', () => {
   const chapters = [
     {

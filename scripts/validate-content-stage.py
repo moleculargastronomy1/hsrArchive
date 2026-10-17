@@ -49,10 +49,17 @@ def validate(root):
                     any(not isinstance(row.get(key), str) for key in
                         ['id', 'text', 'speaker', 'mission', 'scene', 'source']) or not row['text'].strip()):
                 raise ValueError('Invalid or duplicate final row: ' + row['id'])
+            if 'videoStatus' in row and (row['videoStatus'] not in ['caption-matched', 'screen-matched'] or
+                    not re.fullmatch(r'[\w-]{11}', row.get('videoId', '')) or
+                    not isinstance(row.get('videoStartMs'), (int, float)) or row['videoStartMs'] < 0 or
+                    (row['videoStatus'] == 'screen-matched' and not row.get('videoScene'))):
+                raise ValueError('Invalid final video proof: ' + row['id'])
             for key, scene, status in [('nextIds', 'flowScene', 'flowStatus'),
                                        ('replyToIds', 'flowScene', 'flowStatus'),
                                        ('bwikiNextIds', 'bwikiScene', 'bwikiStatus'),
-                                       ('bwikiReplyToIds', 'bwikiScene', 'bwikiStatus')]:
+                                       ('bwikiReplyToIds', 'bwikiScene', 'bwikiStatus'),
+                                       ('videoNextIds', 'videoScene', 'videoStatus'),
+                                       ('videoReplyToIds', 'videoScene', 'videoStatus')]:
                 links = row.get(key, [])
                 if not isinstance(links, list) or len(set(links)) != len(links):
                     raise ValueError('Invalid final links: ' + row['id'])
@@ -60,8 +67,14 @@ def validate(root):
                     other = by_id.get(target)
                     if (not other or target == row['id'] or not row.get(scene) or
                             other.get(scene) != row[scene] or
-                            other.get(status) not in ['verified', 'matched', 'cached']):
+                            other.get(status) not in ['verified', 'matched', 'cached', 'screen-matched']):
                         raise ValueError('Unresolved final link: ' + row['id'])
+                    if key.startswith('video') and (row.get('videoStatus') != 'screen-matched' or
+                            other.get('videoStatus') != 'screen-matched' or
+                            row.get('videoId') != other.get('videoId') or
+                            row.get('missionId') != other.get('missionId') or row['source'] != other['source'] or
+                            (key == 'videoReplyToIds' and (other['type'] != 'choice' or row['id'] not in other.get('videoNextIds', [])))):
+                        raise ValueError('Conflicting final video scope/choice: ' + row['id'])
             rows[row['id']] = row
         orders.append([row['id'] for row in payload['rows']])
         for language in ['en', 'zh-CN', 'ja']:

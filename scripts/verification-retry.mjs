@@ -17,6 +17,9 @@ export async function algorithmHash(root = process.cwd()) {
     'content-process.mjs',
     'content-publication.mjs',
     'validate-content-stage.py',
+    'video-order.mjs',
+    'video-chapter-links.mjs',
+    'verify-video-order.mjs',
     'import-localizations.py',
   ];
   return hash(

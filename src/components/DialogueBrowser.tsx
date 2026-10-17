@@ -292,7 +292,7 @@ export default function DialogueBrowser({
                   (row.flowStatus === 'review' || row.bwikiStatus === 'review') &&
                   row.flowStatus !== 'verified' &&
                   !['matched', 'cached'].includes(row.bwikiStatus ?? '') &&
-                  row.videoStatus !== 'caption-matched';
+                  !['caption-matched', 'screen-matched'].includes(row.videoStatus ?? '');
                 return (
                   <div
                     className={`dialogue-row ${row.type === 'choice' ? 'choice-row' : ''} ${languages.length ? 'comparing' : ''}`}

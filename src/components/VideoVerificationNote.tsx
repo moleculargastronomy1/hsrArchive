@@ -3,6 +3,7 @@ import { useEffect, useState } from 'react';
 type VideoReview = {
   videos: { id: string; title: string }[];
   captionMatches: number;
+  screenMatches?: number;
   status: string;
 };
 
@@ -41,9 +42,11 @@ export default function VideoVerificationNote({ file }: { file: string }) {
       영상 보조 대조:{' '}
       {review.status === 'caption-order-conflict'
         ? '순서 충돌 검토 중'
-        : review.captionMatches
-          ? `자막 문장 ${review.captionMatches}줄 일치`
-          : '확인 대기'}
+        : review.screenMatches
+          ? `화면 대사 ${review.screenMatches}줄 대조`
+          : review.captionMatches
+            ? `자막 문장 ${review.captionMatches}줄 일치`
+            : '확인 대기'}
       . 공개 자막을 읽지 못했거나 연결이 모호한 구간은 미확인으로 유지합니다.
       {review.videos.map((video) => (
         <span key={video.id} style={{ display: 'block' }}>

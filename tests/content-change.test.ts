@@ -81,6 +81,21 @@ test('unchanged source metadata skips full processing; release changes trigger w
   assert.equal(requests, 1);
 });
 
+test('YouTube-only retries preserve the last successful BWIKI watch revisions', () => {
+  const previous = snapshot();
+  const next = makeSnapshot({
+    update: { commit },
+    wiki: { commit, sources: {} },
+    manifest: { commit, pages: [], observations: [], targetSources: ['youtube'] },
+    video: { commit, sources: [{ id: source.id, videos }] },
+    official: { recent: official },
+    config,
+    previous,
+  });
+  assert.deepEqual(next.wiki, previous.wiki);
+  assert.equal(validSnapshot(next), true);
+});
+
 test('BWIKI revision and redirect changes trigger independently; restrictions stop batch requests', async () => {
   assert.equal(
     await probeWiki(snapshot().wiki, async () =>

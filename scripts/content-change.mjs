@@ -4,6 +4,12 @@ import { CHANNEL_ID, parseVideos } from './youtube-feed.mjs';
 
 export const WATCH_URL = 'https://moleculargastronomy1.github.io/hsrArchive/content-watch.json';
 const schema = 'hsr-content-watch.v1';
+export const configFingerprint = (config) =>
+  sha256(
+    JSON.stringify(
+      config.videos ? { sources: config.sources, videos: config.videos } : config.sources,
+    ),
+  );
 export const playlistFingerprint = (videos) =>
   sha256(JSON.stringify(videos.map(({ id, title }) => ({ id, title }))));
 export const officialFingerprint = (videos) =>
@@ -79,7 +85,7 @@ export function makeSnapshot({ update, wiki, manifest, video, official, config, 
   const result = {
     schema,
     upstreamCommit: update.commit,
-    configHash: sha256(JSON.stringify(config.sources)),
+    configHash: configFingerprint(config),
     wiki: [...new Map(pages.map((item) => [item.title, item])).values()].sort((a, b) =>
       a.title.localeCompare(b.title, 'zh'),
     ),
@@ -90,6 +96,14 @@ export function makeSnapshot({ update, wiki, manifest, video, official, config, 
     }),
     officialFingerprint: officialFingerprint(official.recent),
   };
+  if (
+    manifest.targetSources?.length === 1 &&
+    manifest.targetSources[0] === 'youtube' &&
+    !manifest.pages.length &&
+    validSnapshot(previous) &&
+    previous.upstreamCommit === update.commit
+  )
+    result.wiki = previous.wiki;
   if (!validSnapshot(result)) throw new Error('Invalid content watch snapshot');
   return result;
 }
@@ -201,7 +215,7 @@ export async function checkSources(
   if (!validSnapshot(previous))
     return { changed: true, checks: { snapshot: 'initial-deployment' } };
   const checks = {};
-  if (previous.configHash !== sha256(JSON.stringify(config.sources)))
+  if (previous.configHash !== configFingerprint(config))
     return { changed: true, checks: { sources: 'changed' } };
   try {
     const latest = await fetchJson(
