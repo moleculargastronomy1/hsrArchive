@@ -25514,7 +25514,159 @@
     "limit": 2
   },
   "deployment": {
-    "status": "pending"
+    "status": "verified",
+    "checkedAt": "2026-10-17T18:33:52.713Z",
+    "commit": "36c363b9c443ba31fb466e8dfef3e33a4ecea95d",
+    "url": "https://moleculargastronomy1.github.io/hsrArchive/",
+    "runUrl": "https://github.com/moleculargastronomy1/hsrArchive/actions/runs/39058360379",
+    "newlyVideoVerified": 3,
+    "remainingUnknown": 15009,
+    "videoReview": {
+      "examined": 2,
+      "limit": 2,
+      "remainingDue": 50,
+      "conflicts": 1,
+      "checks": {
+        "9_6soeMvsDo": {
+          "checkedAt": "2026-10-17T18:31:44.905Z",
+          "status": "public-captions-unavailable",
+          "reason": "Video identity mismatch",
+          "failureKind": "query-failed",
+          "failures": 1,
+          "nextRetryAt": "2026-10-18T18:31:44.905Z"
+        },
+        "iM9r3tAsBQ0": {
+          "checkedAt": "2026-10-16T17:43:13.452Z",
+          "status": "public-captions-unavailable"
+        },
+        "eEOkwITKrdw": {
+          "checkedAt": "2026-10-16T17:47:54.680Z",
+          "status": "public-captions-unavailable"
+        },
+        "1Pm3Ua3U22E": {
+          "checkedAt": "2026-10-16T17:50:29.064Z",
+          "status": "public-captions-unavailable"
+        },
+        "cBcl3zYVF6Y": {
+          "checkedAt": "2026-10-16T17:58:27.448Z",
+          "status": "public-captions-unavailable"
+        },
+        "Xsy6KPdFQAg": {
+          "checkedAt": "2026-10-16T18:01:09.441Z",
+          "status": "public-captions-unavailable"
+        },
+        "hU_WlIoRqho": {
+          "checkedAt": "2026-10-16T18:01:09.441Z",
+          "status": "public-captions-unavailable"
+        },
+        "Qo5Gf3tGT1g": {
+          "checkedAt": "2026-10-16T18:05:26.231Z",
+          "status": "public-captions-unavailable"
+        },
+        "D6LS6JeUNxY": {
+          "checkedAt": "2026-10-16T18:05:26.231Z",
+          "status": "public-captions-unavailable"
+        },
+        "TdIQysm0GZ0": {
+          "checkedAt": "2026-10-16T18:16:20.048Z",
+          "status": "public-captions-unavailable"
+        },
+        "mTMECP2rvOI": {
+          "checkedAt": "2026-10-16T18:16:20.048Z",
+          "status": "public-captions-unavailable"
+        },
+        "bHZr5JAVuso": {
+          "checkedAt": "2026-10-16T18:32:38.157Z",
+          "status": "public-captions-unavailable"
+        },
+        "9sMYDAy1VCQ": {
+          "checkedAt": "2026-10-16T18:32:38.157Z",
+          "status": "public-captions-unavailable"
+        },
+        "iQbaOJ3Bd34": {
+          "checkedAt": "2026-10-16T18:35:56.460Z",
+          "status": "public-captions-unavailable"
+        },
+        "ywxN0xyBj28": {
+          "checkedAt": "2026-10-16T18:35:56.460Z",
+          "status": "public-captions-unavailable"
+        },
+        "SsuDCp8nYEw": {
+          "checkedAt": "2026-10-17T11:03:24.262Z",
+          "status": "public-captions-unavailable"
+        },
+        "roaNU69fhxQ": {
+          "checkedAt": "2026-10-17T11:03:24.262Z",
+          "status": "public-captions-unavailable"
+        },
+        "rQk_u27MLYc": {
+          "checkedAt": "2026-10-17T12:00:51.078Z",
+          "status": "public-captions-unavailable"
+        },
+        "bjc7y_etyRk": {
+          "checkedAt": "2026-10-17T12:00:51.078Z",
+          "status": "public-captions-unavailable"
+        },
+        "Zk6ENk7Bb-U": {
+          "checkedAt": "2026-10-17T12:11:32.899Z",
+          "status": "public-captions-unavailable"
+        },
+        "MSi4F5Hk-IU": {
+          "checkedAt": "2026-10-17T12:11:32.899Z",
+          "status": "public-captions-unavailable"
+        },
+        "DDa4qBziXlU": {
+          "checkedAt": "2026-10-17T12:16:28.669Z",
+          "status": "public-captions-unavailable"
+        },
+        "TkzJAuhcvWI": {
+          "checkedAt": "2026-10-17T12:16:28.669Z",
+          "status": "public-captions-unavailable"
+        },
+        "rVQNbyaxhXs": {
+          "checkedAt": "2026-10-17T13:31:53.162Z",
+          "status": "public-captions-unavailable"
+        },
+        "ZOTRMcLUwFI": {
+          "checkedAt": "2026-10-17T13:31:53.162Z",
+          "status": "public-captions-unavailable"
+        },
+        "OKzS5CyUw6k": {
+          "checkedAt": "2026-10-17T18:31:44.905Z",
+          "status": "public-captions-unavailable",
+          "reason": "Video identity mismatch",
+          "failureKind": "query-failed",
+          "failures": 1,
+          "nextRetryAt": "2026-10-18T18:31:44.905Z"
+        }
+      }
+    },
+    "matchedScreenRows": [
+      {
+        "id": "simulated-universe-quest-4030001-quest-4030001-38",
+        "talkId": 403011419,
+        "videoStartMs": 386000,
+        "videoNextIds": [
+          "simulated-universe-quest-4030001-quest-4030001-39"
+        ]
+      },
+      {
+        "id": "simulated-universe-quest-4030001-quest-4030001-39",
+        "talkId": 403011420,
+        "videoStartMs": 387000,
+        "videoNextIds": [
+          "simulated-universe-quest-4030001-quest-4030001-40"
+        ]
+      },
+      {
+        "id": "simulated-universe-quest-4030001-quest-4030001-40",
+        "talkId": 403010421,
+        "videoStartMs": 391000,
+        "videoReplyToIds": [
+          "simulated-universe-quest-4030001-quest-4030001-39"
+        ]
+      }
+    ]
   },
   "regression": {
     "chapters": 2454,
