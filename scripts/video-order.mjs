@@ -220,80 +220,32 @@ export function matchCaptions(rows, cues) {
   return matches.sort((a, b) => a.startMs - b.startMs || a.endMs - b.endMs);
 }
 
-export function restoreVideoOrder(payload, evidence) {
-  const byId = new Map(payload.rows.map((row) => [row.id, row]));
+// Fresh and cached evidence use the same exact-text, identity and timestamp rules.
+export function validatedCaptionMatches(rows, evidence) {
+  const byId = new Map(rows.map((row) => [row.id, row]));
   const counts = new Map();
-  for (const row of payload.rows) {
+  for (const row of rows) {
     const text = normalizedKorean(row.text);
     counts.set(text, (counts.get(text) ?? 0) + 1);
   }
   const matches = evidence.matches
-    .filter(
-      (match) =>
-        byId.has(match.rowId) &&
-        byId.get(match.rowId).type !== 'choice' &&
-        counts.get(normalizedKorean(byId.get(match.rowId).text)) === 1 &&
+    .filter((match) => {
+      const row = byId.get(match.rowId);
+      return (
+        row &&
+        row.type !== 'choice' &&
+        normalizedKorean(row.text).length >= 16 &&
+        !/[{}]/.test(
+          row.text.replace(/\{RUBY_B#(?:[^{}]|\{[^{}]*\})*\}([\s\S]*?)\{RUBY_E#\}/g, '$1'),
+        ) &&
+        counts.get(normalizedKorean(row.text)) === 1 &&
         Number.isFinite(match.startMs) &&
         Number.isFinite(match.endMs) &&
         match.startMs >= 0 &&
         match.endMs >= match.startMs &&
-        sha256(byId.get(match.rowId).text) === match.koreanHash,
-    )
+        sha256(row.text) === match.koreanHash
+      );
+    })
     .sort((a, b) => a.startMs - b.startMs);
-  if (new Set(matches.map((match) => match.rowId)).size !== matches.length)
-    return { changed: 0, confirmed: 0 };
-  if (matches.length < 3) return { changed: 0, confirmed: 0 };
-  const positions = new Map(payload.rows.map((row, index) => [row.id, index]));
-  const anchors = matches.filter((match) =>
-    ['matched', 'cached'].includes(byId.get(match.rowId).bwikiStatus ?? ''),
-  );
-  // BWIKI remains primary. A conflicting path cannot override it automatically.
-  for (let i = 1; i < anchors.length; i++) {
-    const a = byId.get(anchors[i - 1].rowId),
-      b = byId.get(anchors[i].rowId);
-    if (a.bwikiMissionId === b.bwikiMissionId && positions.get(a.id) >= positions.get(b.id))
-      return { changed: 0, confirmed: 0, conflict: true };
-  }
-  let changed = 0,
-    confirmed = 0;
-  for (let i = 1; i < anchors.length; i++) {
-    const first = anchors[i - 1],
-      last = anchors[i];
-    const a = byId.get(first.rowId),
-      b = byId.get(last.rowId);
-    if (!a.bwikiMissionId || a.bwikiMissionId !== b.bwikiMissionId) continue;
-    const middle = matches.filter(
-      (match) =>
-        match.startMs > first.startMs &&
-        match.startMs < last.startMs &&
-        !['matched', 'cached'].includes(byId.get(match.rowId).bwikiStatus ?? '') &&
-        byId.get(match.rowId).flowStatus !== 'verified',
-    );
-    if (!middle.length) continue;
-    const before = payload.rows.map((row) => row.id);
-    const aIndex = payload.rows.findIndex((row) => row.id === first.rowId);
-    const bIndex = payload.rows.findIndex((row) => row.id === last.rowId);
-    const outside = middle.filter((match) => {
-      const index = payload.rows.findIndex((row) => row.id === match.rowId);
-      return index < aIndex || index > bIndex;
-    });
-    const outsideIds = new Set(outside.map((match) => match.rowId));
-    payload.rows = payload.rows.filter((row) => !outsideIds.has(row.id));
-    const insertion = payload.rows.findIndex((row) => row.id === last.rowId);
-    payload.rows.splice(insertion, 0, ...outside.map((match) => byId.get(match.rowId)));
-    const middleIds = new Set(middle.map((match) => match.rowId));
-    const slots = payload.rows.flatMap((row, index) => (middleIds.has(row.id) ? [index] : []));
-    slots.forEach((slot, index) => {
-      payload.rows[slot] = byId.get(middle[index].rowId);
-    });
-    for (const match of middle)
-      Object.assign(byId.get(match.rowId), {
-        videoStatus: 'caption-matched',
-        videoId: evidence.videoId,
-        videoStartMs: match.startMs,
-      });
-    changed += payload.rows.filter((row, index) => row.id !== before[index]).length;
-    confirmed += middle.length;
-  }
-  return { changed, confirmed };
+  return new Set(matches.map((match) => match.rowId)).size === matches.length ? matches : [];
 }

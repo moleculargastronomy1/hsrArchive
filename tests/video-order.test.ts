@@ -1,3 +1,4 @@
+import { restoreVideoOrder } from '../scripts/verification-integration.mjs';
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { execFileSync } from 'node:child_process';
@@ -6,21 +7,20 @@ import {
   playlistItems,
   captionCues,
   matchCaptions,
-  restoreVideoOrder,
   sha256,
   fetchPublicCaptions,
   selectVideoChecks,
 } from '../scripts/video-order.mjs';
 
 test('video review rotates past recent failures, deduplicates videos and retries after a day', () => {
-  const queue = ['latest', 'old', 'old', 'unseen'].map(id => ({ video: { id } }));
+  const queue = ['latest', 'old', 'old', 'unseen'].map((id) => ({ video: { id } }));
   const checks = { latest: { checkedAt: '2026-10-17T00:00:00Z' } };
   assert.deepEqual(
-    selectVideoChecks(queue, checks, '2026-10-17T06:00:00Z').map(item => item.video.id),
+    selectVideoChecks(queue, checks, '2026-10-17T06:00:00Z').map((item) => item.video.id),
     ['old', 'unseen'],
   );
   assert.deepEqual(
-    selectVideoChecks(queue, checks, '2026-10-18T00:00:00Z').map(item => item.video.id),
+    selectVideoChecks(queue, checks, '2026-10-18T00:00:00Z').map((item) => item.video.id),
     ['latest', 'old'],
   );
 });

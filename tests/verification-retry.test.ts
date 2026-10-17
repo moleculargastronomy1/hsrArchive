@@ -1,17 +1,11 @@
+import { compareVerification, baselineChoice } from '../scripts/verification-integration.mjs';
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs/promises';
 import path from 'node:path';
 import { gzipSync } from 'node:zlib';
 import { hash, packState, unpackState, restoreState } from '../scripts/verification-state.mjs';
-import {
-  HOUR,
-  retryDelay,
-  failedPage,
-  retryDecision,
-  compareVerification,
-  baselineChoice,
-} from '../scripts/verification-retry.mjs';
+import { HOUR, retryDelay, failedPage, retryDecision } from '../scripts/verification-retry.mjs';
 import { fetchBwiki } from '../scripts/fetch-bwiki.mjs';
 
 const commit = 'a'.repeat(40);

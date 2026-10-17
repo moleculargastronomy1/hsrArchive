@@ -1,3 +1,4 @@
+import { restoreVideoOrder } from './verification-integration.mjs';
 import fs from 'node:fs/promises';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -5,10 +6,8 @@ import {
   fetchPlaylist,
   fetchPublicCaptions,
   matchCaptions,
-  normalizedKorean,
-  restoreVideoOrder,
+  validatedCaptionMatches,
   selectVideoChecks,
-  sha256,
 } from './video-order.mjs';
 import { linkVideos } from './video-chapter-links.mjs';
 
@@ -92,15 +91,7 @@ report.linkReview = linked.review;
 const files = new Set(['public/video-order-provenance.json', 'public/video-review-summary.json']);
 const changed = new Map();
 const validEvidenceCount = (payload, evidence) =>
-  evidence.matches.filter((match) => {
-    const row = payload.rows.find((row) => row.id === match.rowId);
-    return (
-      row &&
-      sha256(row.text) === match.koreanHash &&
-      payload.rows.filter((other) => normalizedKorean(other.text) === normalizedKorean(row.text))
-        .length === 1
-    );
-  }).length;
+  validatedCaptionMatches(payload.rows, evidence).length;
 for (const entry of entries)
   for (const chapter of entry.chapters) {
     if (!chapter.content) continue;

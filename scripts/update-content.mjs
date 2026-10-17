@@ -1,3 +1,4 @@
+import { publishContentStage } from './content-publication.mjs';
 import fs from 'node:fs/promises';
 import path from 'node:path';
 import { execFileSync } from 'node:child_process';
@@ -6,13 +7,15 @@ import { isMissionStructurePath, resolveMissionStructures } from './trailblaze-s
 import { prepareDialogueFlow } from './dialogue-flow.mjs';
 import { fetchBwiki } from './fetch-bwiki.mjs';
 import { retryContent, finishVerification } from './reverify-content.mjs';
+import { algorithmHash, readRetry, saveRetry } from './verification-retry.mjs';
+
 import {
-  algorithmHash,
-  readRetry,
-  saveRetry,
   verificationRows,
   compareVerification,
-} from './verification-retry.mjs';
+  assertVerificationPreserved,
+} from './verification-integration.mjs';
+import { pythonRunner } from './content-process.mjs';
+import { discoverBwiki, alignBwiki } from './bwiki-verification.mjs';
 
 const root = process.cwd();
 const cache = path.resolve('.cache/upstream-content');
@@ -128,13 +131,7 @@ if (mode === '--plan') {
     'text-bindings.json',
   ])
     await fs.copyFile(path.join(root, 'src/data', name), path.join(stage, 'src/data', name));
-  const python = process.env.HSR_PYTHON || (process.platform === 'win32' ? 'python' : 'python3');
-  const run = (script, args = [], cwd = stage) =>
-    execFileSync(python, [path.join(root, 'scripts', script), ...args], {
-      cwd,
-      stdio: 'inherit',
-      env: { ...process.env, PYTHONUTF8: '1' },
-    });
+  const run = pythonRunner(root, stage);
   const catalog = path.join(stage, '.cache/trailblaze-catalog.json');
   execFileSync(
     process.execPath,
@@ -201,8 +198,7 @@ if (mode === '--plan') {
   run('project-upstream-content.py', [root, raw, planFile], stage);
   await prepareDialogueFlow(root, stage, plan.commit, api, blobs);
   run('restore-dialogue-flow.py', [stage, path.join(stage, '.cache/dialogue-flow/manifest.json')]);
-  run('bwiki-dialogue.py', [stage, raw, planFile, '--discover']);
-  run('import-bwiki-chapters.py', [stage, raw, planFile, '--discover']);
+  discoverBwiki(run, stage, raw, planFile);
   const retryState = await readRetry(root),
     algorithm = await algorithmHash(root);
   const manifest = await fetchBwiki(stage, path.join(cache, 'bwiki'), fetch, {
@@ -211,20 +207,7 @@ if (mode === '--plan') {
     previousAudit: JSON.parse(await fs.readFile(path.join(root, 'public/bwiki-provenance.json'))),
   });
   await saveRetry(retryState, root);
-  run('bwiki-dialogue.py', [
-    stage,
-    raw,
-    planFile,
-    path.join(stage, '.cache/bwiki/manifest.json'),
-    root,
-  ]);
-  run('import-bwiki-chapters.py', [
-    stage,
-    raw,
-    planFile,
-    path.join(stage, '.cache/bwiki/manifest.json'),
-    root,
-  ]);
+  alignBwiki(run, stage, raw, planFile, root);
   execFileSync(process.execPath, [path.join(root, 'scripts/verify-video-order.mjs'), stage, root], {
     cwd: root,
     stdio: 'inherit',
@@ -243,54 +226,14 @@ if (mode === '--plan') {
     await fs.readFile(path.join(stage, '.cache/trailblaze-receipt.json'), 'utf8'),
   );
   receipt.files.push(...trailblaze.files);
-  // The projector validates every payload and metadata reference before any publication.
+  // Preserve existing proof first; publication validates the final integrated view.
   const preservation = compareVerification(before, await verificationRows(stage));
   if (
     JSON.parse(await fs.readFile(path.join(root, 'public/content-update.json'))).commit ===
-      plan.commit &&
-    (preservation.lostVerification.length ||
-      preservation.removedRows.length ||
-      preservation.changedCoreRows.length)
+    plan.commit
   )
-    throw new Error(
-      'Same-version update would lose prior verified BWIKI rows; preserving deployed data',
-    );
-  for (const file of receipt.files) {
-    if (
-      !/^(?:src\/data\/(?:codex|simulation|imported-content|train-databank|astropolis-intro|books|trailblaze)\.json|public\/(?:content-update|books-provenance|trailblaze-provenance|dialogue-flow-provenance|bwiki-provenance|video-order-provenance|video-review-summary)\.json|public\/content\/[A-Za-z0-9_-]+\.json|public\/content\/locales\/(?:manifest|(?:en|zh-CN|ja)\/[A-Za-z0-9_-]+)\.json)$/.test(
-        file,
-      )
-    )
-      throw new Error(`Invalid publication path: ${file}`);
-  }
-  for (const file of receipt.files) {
-    const destination = path.join(root, file);
-    const bytes = await fs.readFile(path.join(stage, file));
-    const previous = await fs.readFile(destination).catch((error) => {
-      if (error.code !== 'ENOENT') throw error;
-      return undefined;
-    });
-    // Avoid rewriting unchanged JSON, including existing final-newline preferences.
-    if (previous && previous.toString('utf8').trimEnd() === bytes.toString('utf8').trimEnd())
-      continue;
-    await fs.mkdir(path.dirname(destination), { recursive: true });
-    const temporary = destination + '.tmp';
-    await fs.writeFile(temporary, bytes);
-    for (let attempt = 0; ; attempt++) {
-      try {
-        await fs.rename(temporary, destination);
-        break;
-      } catch (error) {
-        if (
-          process.platform !== 'win32' ||
-          !['EPERM', 'EBUSY', 'EACCES'].includes(error.code) ||
-          attempt >= 4
-        )
-          throw error;
-        await new Promise((resolve) => setTimeout(resolve, 250 * (attempt + 1)));
-      }
-    }
-  }
+    assertVerificationPreserved(preservation, 'Same-version update');
+  await publishContentStage(root, stage, receipt.files);
   console.log(`Verified and applied ${plan.version}: ${receipt.rows} rows`);
   await finishVerification(root, before, manifest, retryState, algorithm, 'full');
 }

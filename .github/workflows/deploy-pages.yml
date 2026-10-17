@@ -93,12 +93,15 @@ jobs:
         run: node scripts/run-content-refresh.mjs
         env:
           GITHUB_TOKEN: ${{ github.token }}
-      - name: Test archive behavior
-        if: steps.refresh.outputs.publish == 'true'
-        run: pnpm test
       - name: Refresh official YouTube video
         if: steps.refresh.outputs.publish == 'true'
         run: node scripts/update-official-videos.mjs
+      - name: Validate final content contracts
+        if: steps.refresh.outputs.publish == 'true'
+        run: python scripts/validate-content-stage.py .
+      - name: Test archive behavior
+        if: steps.refresh.outputs.publish == 'true'
+        run: pnpm test
       - name: Record processed revisions
         if: steps.watch.outputs.changed == 'true' && success()
         run: node scripts/check-content-changes.mjs --record

@@ -1,7 +1,14 @@
 import fs from 'node:fs/promises';
 import path from 'node:path';
-import { SITE, restoreState, packState, statePath, stateFiles, writeDerived } from './verification-state.mjs';
-import { baselineChoice, verificationRows } from './verification-retry.mjs';
+import {
+  SITE,
+  restoreState,
+  packState,
+  statePath,
+  stateFiles,
+  writeDerived,
+} from './verification-state.mjs';
+import { baselineChoice, verificationRows } from './verification-integration.mjs';
 
 if (process.argv[2] === '--pack') {
   const result = await packState(process.cwd());

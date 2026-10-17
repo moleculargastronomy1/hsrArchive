@@ -739,24 +739,7 @@ def align(root, raw, plan_path, manifest_path, previous_root=None):
                 for old in previous.get('chapters', {}).get(spec['file'], []):
                     if old['missionId'] != mission:
                         continue
-                    if f"{old['page']}@{old['revision']}" not in source_records:
-                        continue
-                    valid = True
-                    for identity in old['order']:
-                        item = evidence.get(identity)
-                        expected = old['evidence'].get(identity)
-                        row = before.get(identity)
-                        key = ('choice' if row and row['type'] == 'choice' else 'line', item['text'] if item else '',
-                               '' if row and row['type'] == 'choice' else item['speaker'] if item else '')
-                        if not item or not expected or row.get('talkId') != expected.get('talkId') or row['type'] != expected.get('type') or any(item[key] != expected[key] for key in ['chineseHash', 'speakerHash', 'koreanHash']) or len(index[key]) != 1 or index[key][0]['id'] != identity:
-                            valid = False
-                            break
-                        source_targets = set(row.get('nextIds', [])) & set(old['order'])
-                        wiki_targets = set(old['edges'].get(identity, []))
-                        if row.get('flowStatus') == 'verified' and source_targets and wiki_targets and source_targets != wiki_targets:
-                            valid = False
-                            break
-                    if valid:
+                    if cached_chunk_valid(old, before, evidence, index, source_records):
                         chunks.append({**old, 'status': 'cached', 'mission': mission_names.get(mission) or (rows[0]['mission'] if rows else '임무 기록')})
                         if old.get('missionStructure'):
                             structures[mission] = old['missionStructure']

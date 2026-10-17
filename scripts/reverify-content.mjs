@@ -1,16 +1,17 @@
+import { publishContentStage } from './content-publication.mjs';
 import fs from 'node:fs/promises';
 import path from 'node:path';
-import { execFileSync } from 'node:child_process';
-import { fetchBwiki } from './fetch-bwiki.mjs';
-import { stateFiles, writeDerived } from './verification-state.mjs';
+import { pythonRunner } from './content-process.mjs';
+import { discoverBwiki, alignBwiki } from './bwiki-verification.mjs';
 import {
-  algorithmHash,
-  readRetry,
-  saveRetry,
   verificationRows,
   compareVerification,
+  assertVerificationPreserved,
   orderUnknown,
-} from './verification-retry.mjs';
+} from './verification-integration.mjs';
+import { fetchBwiki } from './fetch-bwiki.mjs';
+import { stateFiles } from './verification-state.mjs';
+import { algorithmHash, readRetry, saveRetry } from './verification-retry.mjs';
 
 const read = async (file) => JSON.parse(await fs.readFile(file));
 const write = (file, data) => fs.writeFile(file, JSON.stringify(data));
@@ -58,6 +59,10 @@ export async function finishVerification(root, before, manifest, state, algorith
     lostVerification: comparison.lostVerification.length,
     removedRows: comparison.removedRows.length,
     changedCoreRows: comparison.changedCoreRows.length,
+    lostFlowVerification: comparison.lostFlowVerification.length,
+    lostVideoVerification: comparison.lostVideoVerification.length,
+    conflictingLinks: comparison.conflictingLinks.length,
+    conflictingOrder: comparison.conflictingOrder.length,
     changed: comparison.changed,
     collectionFailures: reasons,
     matchingReviewRecords: matchingReasons,
@@ -70,7 +75,9 @@ export async function finishVerification(root, before, manifest, state, algorith
       'Exact official ID/hash matches only. Unknown rows and whole-playthrough coverage are not marked complete.',
   };
   state.lastRun = result;
-  if (comparison.changed) state.pendingDigest = comparison.digest;
+  // Full runs publish source changes even when dialogue bytes are unchanged.
+  // Record their current digest so a successful deployment acknowledges it too.
+  if (mode !== 'retry' || comparison.changed) state.pendingDigest = comparison.digest;
   await saveRetry(state, root);
   await fs.mkdir(path.join(root, '.cache/verification-retry/runs'), { recursive: true });
   await write(path.join(root, '.cache/verification-retry/run.json'), result);
@@ -111,12 +118,7 @@ export async function retryContent(root, stage, raw, planFile) {
   const state = await readRetry(root),
     algorithm = await algorithmHash(root),
     before = await verificationRows(root);
-  const run = (script, args) =>
-    execFileSync(
-      process.env.HSR_PYTHON || (process.platform === 'win32' ? 'python' : 'python3'),
-      [path.join(root, 'scripts', script), ...args],
-      { cwd: stage, stdio: 'inherit', env: { ...process.env, PYTHONUTF8: '1' } },
-    );
+  const run = pythonRunner(root, stage);
   // No books, nomenclature, execution graph or translated-text projection on a
   // retry: start with the last successfully published derived files.
   for (const file of [...(await stateFiles(root)), 'src/data/text-bindings.json']) {
@@ -125,8 +127,7 @@ export async function retryContent(root, stage, raw, planFile) {
   }
   await fs.mkdir(path.join(stage, '.cache'), { recursive: true });
   await write(path.join(stage, 'receipt.json'), { files: [], rows: before.size });
-  run('bwiki-dialogue.py', [stage, raw, planFile, '--discover']);
-  run('import-bwiki-chapters.py', [stage, raw, planFile, '--discover']);
+  discoverBwiki(run, stage, raw, planFile);
   const previous = await read(path.join(root, 'public/bwiki-provenance.json'));
   const requestFile = path.join(stage, '.cache/bwiki/request.json'),
     request = await read(requestFile);
@@ -174,22 +175,7 @@ export async function retryContent(root, stage, raw, planFile) {
       targets.add(chapter.file);
   manifest.targetFiles = [...targets].sort();
   await write(path.join(stage, '.cache/bwiki/manifest.json'), manifest);
-  if (targets.size) {
-    run('bwiki-dialogue.py', [
-      stage,
-      raw,
-      planFile,
-      path.join(stage, '.cache/bwiki/manifest.json'),
-      root,
-    ]);
-    run('import-bwiki-chapters.py', [
-      stage,
-      raw,
-      planFile,
-      path.join(stage, '.cache/bwiki/manifest.json'),
-      root,
-    ]);
-  }
+  if (targets.size) alignBwiki(run, stage, raw, planFile, root);
   return publishRetryStage(root, stage, raw, planFile, before, manifest, state, algorithm);
 }
 
@@ -203,30 +189,14 @@ export async function publishRetryStage(
   state,
   algorithm,
 ) {
-  const run = (script, args) =>
-    execFileSync(
-      process.env.HSR_PYTHON || (process.platform === 'win32' ? 'python' : 'python3'),
-      [path.join(root, 'scripts', script), ...args],
-      { cwd: stage, stdio: 'inherit', env: { ...process.env, PYTHONUTF8: '1' } },
-    );
+  const run = pythonRunner(root, stage);
   const comparison = compareVerification(before, await verificationRows(stage));
-  if (
-    comparison.lostVerification.length ||
-    comparison.removedRows.length ||
-    comparison.changedCoreRows.length
-  )
-    throw new Error(
-      `Retry rejected: ${comparison.lostVerification.length} verified rows lost, ${comparison.removedRows.length} rows removed, ${comparison.changedCoreRows.length} original rows modified; preserving deployed data`,
-    );
+  assertVerificationPreserved(comparison, 'Retry');
   if (comparison.changed) {
     run('import-localizations.py', [stage, raw, planFile]);
     const receipt = await read(path.join(stage, 'receipt.json'));
     receipt.files.push(...(await read(path.join(stage, '.cache/localization-receipt.json'))).files);
-    for (const file of new Set(receipt.files)) {
-      if (!(await import('./verification-state.mjs')).statePath(file))
-        throw new Error('Unsafe retry publication path');
-      await writeDerived(root, file, await fs.readFile(path.join(stage, file)));
-    }
+    await publishContentStage(root, stage, receipt.files);
   }
   // A no-improvement run retains deployed bytes and only writes the journal.
   return finishVerification(root, before, manifest, state, algorithm, 'retry');

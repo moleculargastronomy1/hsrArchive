@@ -12,6 +12,11 @@ export async function algorithmHash(root = process.cwd()) {
     'fetch-bwiki-legacy.mjs',
     'verification-retry.mjs',
     'reverify-content.mjs',
+    'bwiki-verification.mjs',
+    'verification-integration.mjs',
+    'content-process.mjs',
+    'content-publication.mjs',
+    'validate-content-stage.py',
     'import-localizations.py',
   ];
   return hash(
@@ -82,105 +87,5 @@ export function retryDecision(state, algorithm, published, now = Date.now()) {
     needed: due.length > 0,
     reason: due.length ? 'failed-pages-due' : 'unchanged-processed-inputs',
     due,
-  };
-}
-export function orderUnknown(row) {
-  return (
-    (row.bwikiStatus === 'review' || row.flowStatus === 'review') &&
-    row.flowStatus !== 'verified' &&
-    !['matched', 'cached'].includes(row.bwikiStatus) &&
-    row.videoStatus !== 'caption-matched'
-  );
-}
-export function baselineChoice(repository, published) {
-  const verified = (row) => ['matched', 'cached'].includes(row.bwikiStatus);
-  const contains = (larger, smaller) =>
-    [...smaller].every(([id, row]) => {
-      const other = larger.get(id);
-      return (
-        other &&
-        ['text', 'speaker', 'type', 'missionId', 'talkId', 'source'].every(
-          (key) => other[key] === row[key],
-        ) &&
-        (!verified(row) || verified(other)) &&
-        (row.flowStatus !== 'verified' || other.flowStatus === 'verified') &&
-        (row.videoStatus !== 'caption-matched' || other.videoStatus === 'caption-matched')
-      );
-    });
-  if (contains(published, repository)) return 'published';
-  if (contains(repository, published)) return 'repository';
-  return 'conflict';
-}
-
-export async function verificationRows(root) {
-  const rows = new Map();
-  const folder = path.join(root, 'public/content');
-  for (const name of (await fs.readdir(folder))
-    .filter((name) => /^[A-Za-z0-9_-]+\.json$/.test(name) && name !== 'search-index.json')
-    .sort()) {
-    const payload = JSON.parse(await fs.readFile(path.join(folder, name)));
-    if (payload.schema !== 'hsr-dialogue.v1') continue;
-    for (const row of payload.rows) rows.set(row.id, { ...row, file: 'content/' + name });
-  }
-  return rows;
-}
-export function compareVerification(before, after) {
-  const newlyVerified = [],
-    lostVerification = [],
-    remainingUnknown = [];
-  const removedRows = [],
-    changedCoreRows = [];
-  for (const [id, row] of before) {
-    const current = after.get(id);
-    if (!current) {
-      removedRows.push(id);
-      if (['matched', 'cached'].includes(row.bwikiStatus)) lostVerification.push(id);
-    } else if (
-      ['text', 'speaker', 'type', 'missionId', 'talkId', 'source'].some(
-        (key) => current[key] !== row[key],
-      )
-    )
-      changedCoreRows.push(id);
-  }
-  for (const [id, row] of after) {
-    if (orderUnknown(row)) remainingUnknown.push(id);
-    if (
-      ['matched', 'cached'].includes(row.bwikiStatus) &&
-      (!before.has(id) || orderUnknown(before.get(id)))
-    )
-      newlyVerified.push(id);
-    if (
-      before.has(id) &&
-      ['matched', 'cached'].includes(before.get(id).bwikiStatus) &&
-      !['matched', 'cached'].includes(row.bwikiStatus)
-    )
-      lostVerification.push(id);
-  }
-  const digest = (rows) =>
-    hash(
-      JSON.stringify(
-        [...rows].map(([id, row]) => [
-          id,
-          row.text,
-          row.speaker,
-          row.type,
-          row.missionId,
-          row.talkId,
-          row.bwikiScene,
-          row.bwikiNextIds,
-          row.bwikiReplyToIds,
-          row.bwikiMissionId,
-          ['matched', 'cached'].includes(row.bwikiStatus),
-        ]),
-      ),
-    );
-  return {
-    newlyVerified,
-    lostVerification,
-    remainingUnknown,
-    removedRows,
-    changedCoreRows,
-    changed: digest(before) !== digest(after),
-    digest: digest(after),
   };
 }
