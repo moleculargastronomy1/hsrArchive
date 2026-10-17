@@ -44,6 +44,47 @@ export function validSnapshot(value) {
   );
 }
 
+export function watchObservation(previous, snapshot, run) {
+  return {
+    schema: 'hsr-watch-observation.v1',
+    base: validSnapshot(previous) ? sha256(JSON.stringify(previous)) : null,
+    snapshot,
+    publishRequired: run?.mode !== 'retry' || run?.changed !== false,
+  };
+}
+
+export function watchBaseline(published, observation) {
+  // Only no-publication BWIKI observations may suppress repeated work. Cached
+  // official feeds, playlists and config never acknowledge a failed deployment.
+  if (
+    !validSnapshot(published) ||
+    observation?.schema !== 'hsr-watch-observation.v1' ||
+    observation.publishRequired !== false ||
+    observation.base !== sha256(JSON.stringify(published)) ||
+    !validSnapshot(observation.snapshot) ||
+    observation.snapshot.upstreamCommit !== published.upstreamCommit
+  )
+    return published;
+  return { ...published, wiki: observation.snapshot.wiki };
+}
+
+export function contentRefreshDecision(sources, bwiki, video, unpublished = false) {
+  const full = sources.changed || unpublished;
+  return {
+    ...sources,
+    changed: full || bwiki.needed || video.needed,
+    mode: full ? 'full' : 'retry',
+    retryBwiki: bwiki.needed,
+    retryVideo: video.needed,
+    checks: {
+      ...sources.checks,
+      retry: bwiki.reason,
+      youtubeRetry: video.reason,
+      ...(unpublished ? { publication: 'retry-unpublished-result' } : {}),
+    },
+  };
+}
+
 export function makeSnapshot({ update, wiki, manifest, video, official, config, previous }) {
   if (
     wiki.commit !== update.commit ||

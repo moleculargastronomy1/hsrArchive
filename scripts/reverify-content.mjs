@@ -37,7 +37,9 @@ export async function finishVerification(
   const video = await read(path.join(reviewRoot, 'public/video-order-provenance.json')).catch(
     () => ({}),
   );
-  state.videoChecks = (await readRetry(root)).videoChecks ?? state.videoChecks;
+  const latestRetry = await readRetry(root);
+  state.videoChecks = latestRetry.videoChecks ?? state.videoChecks;
+  state.videoAlgorithm = latestRetry.videoAlgorithm ?? state.videoAlgorithm;
   for (const page of manifest.pages)
     if (page.status === 'available' && page.alignmentKey) {
       const previous = state.pages[page.title];
@@ -54,7 +56,8 @@ export async function finishVerification(
           : {}),
       };
     }
-  state.algorithm = algorithm;
+  if (!(manifest.targetSources?.length === 1 && manifest.targetSources[0] === 'youtube'))
+    state.algorithm = algorithm;
   const report = await read(path.join(root, 'public/bwiki-provenance.json'));
   const reasons = {};
   for (const page of manifest.pages)
@@ -71,7 +74,8 @@ export async function finishVerification(
     schema: 'hsr-verification-run.v1',
     checkedAt: new Date().toISOString(),
     mode,
-    algorithm,
+    algorithm: state.algorithm,
+    videoAlgorithm: state.videoAlgorithm,
     upstreamCommit: manifest.commit,
     digest: comparison.digest,
     newlyVerified: comparison.newlyVerified.length,

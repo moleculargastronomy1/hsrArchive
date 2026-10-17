@@ -47,7 +47,7 @@ export function parseTranscriptExport(raw, videoId) {
   };
 }
 
-export function videoRetryDecision(report, now = Date.now()) {
+export function videoRetryDecision(report, now = Date.now(), algorithm) {
   const pending = Object.values(report?.chapters ?? {}).filter(
     (chapter) => chapter.pending ?? !['bwiki-matched', 'reference-only'].includes(chapter.status),
   );
@@ -62,9 +62,14 @@ export function videoRetryDecision(report, now = Date.now()) {
     return !Number.isFinite(last) || last + 86400000 <= now;
   });
   return {
-    needed: due.length > 0,
+    needed: (algorithm !== undefined && report?.algorithm !== algorithm) || due.length > 0,
     due,
-    reason: due.length ? 'public-captions-due' : 'video-backoff-or-no-source',
+    reason:
+      algorithm !== undefined && report?.algorithm !== algorithm
+        ? 'video-algorithm-changed'
+        : due.length
+          ? 'public-captions-due'
+          : 'video-backoff-or-no-source',
   };
 }
 

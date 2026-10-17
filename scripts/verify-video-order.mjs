@@ -1,8 +1,4 @@
-import {
-  restoreVideoMissions,
-  applyScreenEvidence,
-  orderUnknown,
-} from './verification-integration.mjs';
+import { restoreVideoMissions, applyScreenEvidence } from './verification-integration.mjs';
 import fs from 'node:fs/promises';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -10,25 +6,24 @@ import {
   fetchPlaylist,
   fetchPublicCaptions,
   matchCaptions,
-  validatedCaptionMatches,
   selectVideoChecks,
   VIDEO_FIELDS,
-  videoRetryDecision,
   mergeVideoChecks,
 } from './video-order.mjs';
-import { readRetry, saveRetry } from './verification-retry.mjs';
+import { readRetry, saveRetry, videoAlgorithmHash } from './verification-retry.mjs';
 import { linkVideos } from './video-chapter-links.mjs';
+import {
+  writeVideoJson,
+  videoChapterSummary,
+  finalizeVideoReport,
+  saveVideoReview,
+} from './video-review.mjs';
 
 const root = path.resolve(process.argv[2] ?? '.');
 const previousRoot = path.resolve(process.argv[3] ?? root);
 const repository = path.dirname(path.dirname(fileURLToPath(import.meta.url)));
 const read = async (base, file) => JSON.parse(await fs.readFile(path.join(base, file), 'utf8'));
-const write = async (file, data) => {
-  const target = path.join(root, file);
-  await fs.mkdir(path.dirname(target), { recursive: true });
-  await fs.writeFile(target + '.tmp', JSON.stringify(data));
-  await fs.rename(target + '.tmp', target);
-};
+const write = (file, data) => writeVideoJson(root, file, data);
 const update = await read(root, 'public/content-update.json');
 const wiki = await read(root, 'public/bwiki-provenance.json');
 const entries = [
@@ -50,6 +45,7 @@ if (config.schema !== 'hsr-video-sources.v1' || wiki.commit !== update.commit)
   throw new Error('Mixed video verification inputs');
 const retryOnly = process.argv.includes('--retry');
 const retryState = await readRetry(repository);
+const algorithm = await videoAlgorithmHash(repository);
 const observations = await read(repository, 'editorial/video-observations.json').catch((error) => {
   if (error.code !== 'ENOENT') throw error;
   return { schema: 'hsr-video-observations.v1', evidence: [] };
@@ -59,6 +55,7 @@ if (observations.schema !== 'hsr-video-observations.v1' || !Array.isArray(observ
 const report = {
   schema: 'hsr-video-order-audit.v1',
   commit: update.commit,
+  algorithm,
   checkedAt: new Date().toISOString(),
   policy:
     'Official execution and BWIKI proofs are preserved. Exact public Korean captions support bracketed ordering; separately reviewed screen paths support only observed scenes and choices. Missing captions and conflicts remain pending. No access restriction bypass or video downloads.',
@@ -128,29 +125,7 @@ for (const entry of entries)
   }
 const linked = linkVideos(descriptors, [...catalog.values()]);
 report.linkReview = linked.review;
-const files = new Set(['public/video-order-provenance.json', 'public/video-review-summary.json']);
 const changed = new Map();
-const validEvidenceCount = (payload, evidence) =>
-  validatedCaptionMatches(payload.rows, evidence).length;
-const missingResponses = (rows) =>
-  rows.filter(
-    (row) =>
-      row.type === 'choice' &&
-      !(['matched', 'cached'].includes(row.bwikiStatus) && row.bwikiNextIds?.length) &&
-      !(row.flowStatus === 'verified' && row.nextIds?.length) &&
-      !(row.videoStatus === 'screen-matched' && row.videoNextIds?.length),
-  );
-function updatePending(file) {
-  const chapter = report.chapters[file],
-    rows = payloads.get(file).rows;
-  chapter.unresolvedRowIds = rows.filter(orderUnknown).map((row) => row.id);
-  chapter.unresolvedChoiceResponseIds = missingResponses(rows).map((row) => row.id);
-  chapter.pending =
-    chapter.unresolvedRowIds.length > 0 ||
-    chapter.unresolvedChoiceResponseIds.length > 0 ||
-    chapter.unresolvedWikiSections > 0 ||
-    rows.some((row) => row.source?.startsWith('ExcelOutput/MissionChapterConfig.json:'));
-}
 for (const entry of entries)
   for (const chapter of entry.chapters) {
     if (!chapter.content) continue;
@@ -164,41 +139,24 @@ for (const entry of entries)
         delete row[key];
       }
     const videos = linked.matches[file];
-    const unresolved = payload.rows.filter(
-      (row) =>
-        (row.flowStatus === 'review' || row.bwikiStatus === 'review') &&
-        row.flowStatus !== 'verified' &&
-        !['matched', 'cached'].includes(row.bwikiStatus ?? ''),
-    );
     const importReview = wiki.imports?.[file]?.review ?? [];
-    const pending =
-      unresolved.length > 0 ||
-      missingResponses(payload.rows).length > 0 ||
-      importReview.length > 0 ||
-      payload.rows.some((row) => row.source?.startsWith('ExcelOutput/MissionChapterConfig.json:'));
-    report.chapters[file] = {
-      title: chapter.title,
-      category: entry.verificationCategory,
-      videos: videos.map(({ id, title, url, linkMethod, matchedTitle }) => ({
-        id,
-        title,
-        url,
-        linkMethod,
-        matchedTitle,
-      })),
-      unresolvedRowIds: unresolved.map((row) => row.id),
-      unresolvedWikiSections: importReview.length,
-      pending,
-      status: pending
-        ? 'pending-video-review'
-        : payload.rows.some((row) => row.bwikiStatus || row.flowStatus)
-          ? 'bwiki-matched'
-          : 'reference-only',
-      captionMatches: 0,
-      screenMatches: 0,
-      reorderedRows: 0,
-      playlistUrl: config.sources[0]?.playlistUrl,
-    };
+    report.chapters[file] = videoChapterSummary(
+      {
+        title: chapter.title,
+        category: entry.verificationCategory,
+        videos: videos.map(({ id, title, url, linkMethod, matchedTitle }) => ({
+          id,
+          title,
+          url,
+          linkMethod,
+          matchedTitle,
+        })),
+        unresolvedWikiSections: importReview.length,
+        reorderedRows: 0,
+        playlistUrl: config.sources[0]?.playlistUrl,
+      },
+      payload.rows,
+    );
     const relevant = [
       ...report.evidence,
       ...observations.evidence.filter(
@@ -216,7 +174,6 @@ for (const entry of entries)
     for (const evidence of cached) {
       const result = restoreVideoMissions(payload, evidence);
       metadataChanged ||= result.changed > 0 || result.confirmed > 0;
-      report.chapters[file].captionMatches += validEvidenceCount(payload, evidence);
       report.chapters[file].reorderedRows += result.changed;
       report.chapters[file].status = result.confirmed
         ? 'partial-caption-order-matched'
@@ -247,16 +204,14 @@ for (const entry of entries)
       else {
         metadataChanged = true;
         report.screenEvidence.push(evidence);
-        report.chapters[file].screenMatches += result.observed;
         report.chapters[file].status = 'partial-screen-order-matched';
       }
     }
     if (metadataChanged) {
       await write('public/' + file, payload);
-      files.add('public/' + file);
       changed.set(file, payload.rows);
     }
-    if (pending)
+    if (report.chapters[file].pending)
       for (const video of videos)
         queue.push({
           file,
@@ -264,7 +219,7 @@ for (const entry of entries)
           payload,
           latest: chapter.upstreamChapterId === update.latestTrailblaze?.id,
         });
-    updatePending(file);
+    report.chapters[file] = videoChapterSummary(report.chapters[file], payload.rows);
   }
 queue.sort(
   (a, b) =>
@@ -335,7 +290,6 @@ for (const item of selectVideoChecks(
     );
     report.evidence.push(evidence);
     Object.assign(report.chapters[item.file], {
-      captionMatches: validEvidenceCount(item.payload, evidence),
       reorderedRows: result.changed,
       status: result.conflicts.length
         ? 'caption-order-conflict'
@@ -345,7 +299,6 @@ for (const item of selectVideoChecks(
     });
     if (result.changed || result.confirmed) {
       await write('public/' + item.file, item.payload);
-      files.add('public/' + item.file);
       changed.set(item.file, item.payload.rows);
     }
   }
@@ -353,71 +306,10 @@ for (const item of selectVideoChecks(
 }
 retryState.videoChecks = report.checks;
 await saveRetry(retryState, repository);
-for (const [file, payload] of payloads) {
-  updatePending(file);
-  const chapter = report.chapters[file];
-  chapter.captionMatches = new Set(
-    report.evidence
-      .filter(
-        (item) => item.file === file && chapter.videos.some((video) => video.id === item.videoId),
-      )
-      .flatMap((item) => validatedCaptionMatches(payload.rows, item).map((match) => match.rowId)),
-  ).size;
-  chapter.screenMatches = new Set(
-    report.screenEvidence
-      .filter((item) => item.file === file)
-      .flatMap((item) => item.matches.map((match) => match.rowId)),
-  ).size;
-  if (chapter.screenMatches) chapter.status = 'partial-screen-order-matched';
-}
-report.integrationReview = [
-  ...new Map(report.integrationReview.map((item) => [JSON.stringify(item), item])).values(),
-];
-report.retry = {
-  ...videoRetryDecision(report, Date.parse(report.checkedAt)),
-  examined: examined.size,
-  limit: 2,
-};
-if (changed.size) {
-  const search = await read(root, 'public/content/search-index.json');
-  const byId = new Map(search.rows.map((row) => [row.id, row]));
-  for (const rows of changed.values()) {
-    const ids = new Set(rows.map((row) => row.id));
-    const slots = search.rows.flatMap((row, index) => (ids.has(row.id) ? [index] : []));
-    if (slots.length !== rows.length) throw new Error('Video order lost a search identity');
-    slots.forEach((slot, index) => {
-      const row = rows[index];
-      const value = byId.get(row.id);
-      for (const key of VIDEO_FIELDS) {
-        delete value[key];
-        if (key in row) value[key] = row[key];
-      }
-      search.rows[slot] = value;
-    });
-  }
-  await write('public/content/search-index.json', search);
-  files.add('public/content/search-index.json');
-}
-await write('public/video-order-provenance.json', report);
-await write('public/video-review-summary.json', {
-  schema: 'hsr-video-review-summary.v1',
-  commit: report.commit,
-  checkedAt: report.checkedAt,
-  chapters: Object.fromEntries(
-    Object.entries(report.chapters).map(([file, chapter]) => [
-      file,
-      {
-        videos: chapter.videos,
-        captionMatches: chapter.captionMatches,
-        screenMatches: chapter.screenMatches,
-        status: chapter.status,
-      },
-    ]),
-  ),
-});
-const receipt = await read(root, 'receipt.json');
-receipt.files = [...new Set([...receipt.files, ...files])].sort();
-await write('receipt.json', receipt);
+finalizeVideoReport(report, payloads, examined.size);
+await saveVideoReview(root, report, changed);
+retryState.videoAlgorithm = algorithm;
+await saveRetry(retryState, repository);
 console.log(
   `Video order: ${catalog.size} reference videos; ${examined.size} public-caption checks; ${changed.size} chapters reordered`,
 );

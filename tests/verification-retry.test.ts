@@ -5,8 +5,16 @@ import fs from 'node:fs/promises';
 import path from 'node:path';
 import { gzipSync } from 'node:zlib';
 import { hash, packState, unpackState, restoreState } from '../scripts/verification-state.mjs';
-import { HOUR, retryDelay, failedPage, retryDecision } from '../scripts/verification-retry.mjs';
+import {
+  HOUR,
+  retryDelay,
+  failedPage,
+  retryDecision,
+  algorithmHash,
+  videoAlgorithmHash,
+} from '../scripts/verification-retry.mjs';
 import { fetchBwiki } from '../scripts/fetch-bwiki.mjs';
+import { finishVerification } from '../scripts/reverify-content.mjs';
 
 const commit = 'a'.repeat(40);
 const rootDir = path.resolve('.cache/tests');
@@ -36,6 +44,81 @@ async function cleanup(root: string) {
   assert.ok(root.startsWith(rootDir + path.sep));
   await fs.rm(root, { recursive: true, force: true });
 }
+
+test('BWIKI and video code changes have independent replay fingerprints, with shared safety rules in both', async () => {
+  const folder = await temporary();
+  try {
+    await fs.cp('scripts', path.join(folder, 'scripts'), { recursive: true });
+    const initialWiki = await algorithmHash(folder),
+      initialVideo = await videoAlgorithmHash(folder);
+    await fs.appendFile(path.join(folder, 'scripts/video-order.mjs'), '\n// video-only edit\n');
+    assert.equal(await algorithmHash(folder), initialWiki);
+    assert.notEqual(await videoAlgorithmHash(folder), initialVideo);
+    const editedVideo = await videoAlgorithmHash(folder);
+    await fs.appendFile(path.join(folder, 'scripts/bwiki-dialogue.py'), '\n# wiki-only edit\n');
+    assert.notEqual(await algorithmHash(folder), initialWiki);
+    assert.equal(await videoAlgorithmHash(folder), editedVideo);
+    const editedWiki = await algorithmHash(folder);
+    await fs.appendFile(
+      path.join(folder, 'scripts/verification-integration.mjs'),
+      '\n// shared safety edit\n',
+    );
+    assert.notEqual(await algorithmHash(folder), editedWiki);
+    assert.notEqual(await videoAlgorithmHash(folder), editedVideo);
+  } finally {
+    await cleanup(folder);
+  }
+});
+
+test('a video-only run preserves the unexecuted BWIKI algorithm and the newest video retry state', async () => {
+  const folder = await temporary();
+  try {
+    await fs.mkdir(path.join(folder, 'public/content'), { recursive: true });
+    await fs.mkdir(path.join(folder, '.cache/verification-retry'), { recursive: true });
+    await fs.writeFile(
+      path.join(folder, 'public/content/entry--chapter.json'),
+      JSON.stringify({ schema: 'hsr-dialogue.v1', rows: [{ id: 'row', text: '원문' }] }),
+    );
+    await fs.writeFile(
+      path.join(folder, 'public/bwiki-provenance.json'),
+      JSON.stringify({ review: [], imports: {} }),
+    );
+    await fs.writeFile(
+      path.join(folder, 'public/video-order-provenance.json'),
+      JSON.stringify({ retry: { examined: 0, due: [] } }),
+    );
+    await fs.writeFile(
+      path.join(folder, '.cache/verification-retry/state.json'),
+      JSON.stringify({
+        schema: 'hsr-verification-retry.v1',
+        pages: {},
+        videoAlgorithm: 'video-new',
+        videoChecks: { video: { checkedAt: '2026-10-18T00:00:00Z' } },
+      }),
+    );
+    const before = new Map([
+      ['row', { id: 'row', text: '원문', file: 'content/entry--chapter.json' }],
+    ]);
+    const state = { pages: {}, algorithm: 'wiki-old' };
+    const result = await finishVerification(
+      folder,
+      before,
+      { commit, pages: [], targetSources: ['youtube'] },
+      state,
+      'wiki-new',
+      'retry',
+    );
+    assert.equal(result.algorithm, 'wiki-old');
+    assert.equal(result.videoAlgorithm, 'video-new');
+    assert.equal(result.changed, false);
+    const saved = JSON.parse(
+      await fs.readFile(path.join(folder, '.cache/verification-retry/state.json')),
+    );
+    assert.equal(saved.videoChecks.video.checkedAt, '2026-10-18T00:00:00Z');
+  } finally {
+    await cleanup(folder);
+  }
+});
 
 test('published snapshots preserve exact integer bytes and validate every path/checksum before restoring', async () => {
   const root = await temporary();

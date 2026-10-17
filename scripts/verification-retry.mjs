@@ -4,24 +4,7 @@ import { hash } from './verification-state.mjs';
 
 export const RETRY_FILE = '.cache/verification-retry/state.json';
 export const HOUR = 3600000;
-export async function algorithmHash(root = process.cwd()) {
-  const files = [
-    'bwiki-dialogue.py',
-    'import-bwiki-chapters.py',
-    'fetch-bwiki.mjs',
-    'fetch-bwiki-legacy.mjs',
-    'verification-retry.mjs',
-    'reverify-content.mjs',
-    'bwiki-verification.mjs',
-    'verification-integration.mjs',
-    'content-process.mjs',
-    'content-publication.mjs',
-    'validate-content-stage.py',
-    'video-order.mjs',
-    'video-chapter-links.mjs',
-    'verify-video-order.mjs',
-    'import-localizations.py',
-  ];
+async function hashAlgorithmFiles(root, files) {
   return hash(
     Buffer.concat(
       await Promise.all(
@@ -34,6 +17,34 @@ export async function algorithmHash(root = process.cwd()) {
       ),
     ),
   );
+}
+export async function algorithmHash(root = process.cwd()) {
+  return hashAlgorithmFiles(root, [
+    'bwiki-dialogue.py',
+    'import-bwiki-chapters.py',
+    'fetch-bwiki.mjs',
+    'fetch-bwiki-legacy.mjs',
+    'verification-retry.mjs',
+    'reverify-content.mjs',
+    'bwiki-verification.mjs',
+    'verification-integration.mjs',
+    'content-process.mjs',
+    'content-publication.mjs',
+    'validate-content-stage.py',
+    'import-localizations.py',
+  ]);
+}
+export async function videoAlgorithmHash(root = process.cwd()) {
+  return hashAlgorithmFiles(root, [
+    'video-order.mjs',
+    'video-chapter-links.mjs',
+    'verify-video-order.mjs',
+    'video-review.mjs',
+    'verification-integration.mjs',
+    'verification-retry.mjs',
+    'content-publication.mjs',
+    'validate-content-stage.py',
+  ]);
 }
 export async function readRetry(root = process.cwd()) {
   try {

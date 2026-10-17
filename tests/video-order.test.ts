@@ -42,6 +42,23 @@ test('video retry is independent of BWIKI changes and honors persisted failure b
   report.checks.b = { checkedAt: '2026-10-18T00:00:00Z' };
   assert.equal(videoRetryDecision(report, now).needed, false);
   assert.equal(
+    videoRetryDecision({ ...report, algorithm: 'video-v1' }, now, 'video-v2').reason,
+    'video-algorithm-changed',
+  );
+  assert.equal(
+    videoRetryDecision({ ...report, algorithm: 'video-v1' }, now, 'video-v1').needed,
+    false,
+  );
+  assert.equal(
+    videoRetryDecision({ ...report, algorithm: 'video-v1' }, now, 'video-v2').due.length,
+    0,
+  );
+  // An algorithm replay rechecks cached evidence without bypassing fetch cooldowns.
+  assert.deepEqual(
+    selectVideoChecks([{ video: { id: 'a' } }], report.checks, new Date(now).toISOString()),
+    [],
+  );
+  assert.equal(
     mergeVideoChecks(
       { a: { checkedAt: '2026-10-18T00:00:00Z' } },
       { a: { checkedAt: '2026-10-17T00:00:00Z' } },

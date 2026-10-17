@@ -5,8 +5,17 @@ import {
   makeSnapshot,
   observeUnfetchedWiki,
   readPublishedSnapshot,
+  watchObservation,
+  watchBaseline,
+  contentRefreshDecision,
 } from './content-change.mjs';
-import { algorithmHash, readRetry, saveRetry, retryDecision } from './verification-retry.mjs';
+import {
+  algorithmHash,
+  videoAlgorithmHash,
+  readRetry,
+  saveRetry,
+  retryDecision,
+} from './verification-retry.mjs';
 import { SITE } from './verification-state.mjs';
 import { videoRetryDecision, mergeVideoChecks } from './video-order.mjs';
 
@@ -35,12 +44,17 @@ if (mode === '--record') {
   await fs.writeFile('public/content-watch.json.tmp', JSON.stringify(snapshot));
   await fs.rename('public/content-watch.json.tmp', 'public/content-watch.json');
   await fs.mkdir('.cache/verification-retry', { recursive: true });
-  await fs.writeFile('.cache/verification-retry/watch.json', JSON.stringify(snapshot));
+  const run = await read('.cache/verification-retry/run.json').catch(() => undefined);
+  await fs.writeFile(
+    '.cache/verification-retry/watch.json',
+    JSON.stringify(watchObservation(previous, snapshot, run)),
+  );
   console.log(`Recorded processed source metadata: ${snapshot.wiki.length} BWIKI titles`);
 } else if (!mode || mode === '--check' || mode === '--force') {
   let result;
   const state = await readRetry();
   const algorithm = await algorithmHash();
+  const videoAlgorithm = await videoAlgorithmHash();
   let published;
   try {
     const response = await fetch(SITE + 'verification-progress.json', {
@@ -52,10 +66,15 @@ if (mode === '--record') {
     /* Unknown is recorded below; never acknowledges publication. */
   }
   if (!state.lastRun && !Object.keys(state.pages).length && published?.retry) {
-    Object.assign(state, published.retry, { algorithm: published.algorithm, lastRun: published });
+    Object.assign(state, published.retry, {
+      algorithm: published.algorithm,
+      videoAlgorithm: published.videoAlgorithm,
+      lastRun: published,
+    });
   }
   if (state.pendingDigest && state.pendingDigest === published?.digest) delete state.pendingDigest;
-  const retry = retryDecision(state, algorithm, published);
+  const unpublished = Boolean(state.pendingDigest && state.pendingDigest !== published?.digest);
+  const retry = retryDecision({ ...state, pendingDigest: undefined }, algorithm, published);
   let videoRetry = { needed: false, reason: 'video-state-unavailable' };
   try {
     const response = await fetch(SITE + 'video-order-provenance.json', {
@@ -65,7 +84,8 @@ if (mode === '--record') {
     if (response.ok) {
       const video = await response.json();
       video.checks = mergeVideoChecks(video.checks, state.videoChecks);
-      videoRetry = videoRetryDecision(video);
+      video.algorithm = state.videoAlgorithm ?? video.algorithm;
+      videoRetry = videoRetryDecision(video, Date.now(), videoAlgorithm);
     }
   } catch {
     /* A failed probe never becomes successful verification. */
@@ -77,8 +97,7 @@ if (mode === '--record') {
       let previous = deployed;
       try {
         const observed = await read('.cache/verification-retry/watch.json');
-        if (!state.pendingDigest && observed.upstreamCommit === deployed?.upstreamCommit)
-          previous = observed;
+        if (!state.pendingDigest) previous = watchBaseline(deployed, observed);
       } catch {
         /* First retry uses the deployed baseline. */
       }
@@ -101,13 +120,7 @@ if (mode === '--record') {
   }
   // Source changes retain the full pipeline. Independent BWIKI/video retries
   // only process the due verifier and still pass preservation and build gates.
-  const full = mode === '--force' || result.changed;
-  result.checks.retry = retry.reason;
-  result.checks.youtubeRetry = videoRetry.reason;
-  result.retryBwiki = retry.needed;
-  result.retryVideo = videoRetry.needed;
-  result.changed ||= retry.needed || videoRetry.needed;
-  result.mode = full ? 'full' : 'retry';
+  result = contentRefreshDecision(result, retry, videoRetry, unpublished);
   await saveRetry(state);
   await fs.mkdir(path.resolve('.cache/content-watch'), { recursive: true });
   await fs.writeFile('.cache/content-watch/check.json', JSON.stringify(result, null, 2));
@@ -126,7 +139,7 @@ if (mode === '--record') {
       remainingUnknown: state.lastRun?.remainingUnknown ?? published?.remainingUnknown ?? null,
       collectionFailures: state.lastRun?.collectionFailures ?? {},
       checks: result.checks,
-      reason: retry.reason,
+      reason: unpublished ? 'unpublished-verified-result' : retry.reason,
       unknownCountAvailable: Number.isInteger(
         state.lastRun?.remainingUnknown ?? published?.remainingUnknown,
       ),

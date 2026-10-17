@@ -1,5 +1,10 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
+import fs from 'node:fs/promises';
+import path from 'node:path';
+import { pathToFileURL } from 'node:url';
+import { execFileSync } from 'node:child_process';
+import { algorithmHash, videoAlgorithmHash } from '../scripts/verification-retry.mjs';
 import {
   checkSources,
   makeSnapshot,
@@ -9,6 +14,9 @@ import {
   readPublishedSnapshot,
   validSnapshot,
   observeUnfetchedWiki,
+  watchBaseline,
+  watchObservation,
+  contentRefreshDecision,
 } from '../scripts/content-change.mjs';
 import { sha256 } from '../scripts/video-order.mjs';
 import { CHANNEL_ID } from '../scripts/youtube-feed.mjs';
@@ -63,6 +71,144 @@ const fetcher = async (input: string | URL) => {
   if (url.pathname === '/feeds/videos.xml') return new Response(feed);
   throw new Error('Unexpected metadata request');
 };
+
+test('failed publication cannot acknowledge metadata changes with an unchanged dialogue digest', async () => {
+  const published = snapshot();
+  published.officialFingerprint = '0'.repeat(64);
+  const candidate = snapshot();
+  const cached = watchObservation(published, candidate, { mode: 'full', changed: false });
+  assert.equal(cached.publishRequired, true);
+  const baseline = watchBaseline(published, cached);
+  const result = await checkSources(baseline, config, { fetcher });
+  assert.equal(result.checks.official, 'changed');
+  assert.equal(result.changed, true);
+  assert.deepEqual(watchBaseline(published, candidate), published); // Legacy cache is unacknowledged.
+  assert.deepEqual(
+    watchBaseline(
+      published,
+      watchObservation(published, candidate, { mode: 'retry', changed: true }),
+    ),
+    published,
+  );
+  assert.deepEqual(
+    watchBaseline(published, watchObservation(published, candidate, undefined)),
+    published,
+  );
+});
+
+test('no-improvement observations reuse only BWIKI metadata against the exact published baseline', () => {
+  const published = snapshot(),
+    observed = structuredClone(published);
+  observed.wiki[0].revision = 8;
+  observed.officialFingerprint = '0'.repeat(64);
+  observed.playlists = [];
+  const cached = watchObservation(published, observed, { mode: 'retry', changed: false });
+  const baseline = watchBaseline(published, cached);
+  assert.deepEqual(baseline, { ...published, wiki: observed.wiki });
+  const newer = { ...published, officialFingerprint: '1'.repeat(64) };
+  assert.deepEqual(watchBaseline(newer, cached), newer);
+});
+
+test('video-only code replay stays independent, while unpublished improvements rebuild through all gates', () => {
+  const sources = { changed: false, checks: { official: 'unchanged' } };
+  const wiki = { needed: false, reason: 'unchanged-processed-inputs' },
+    video = { needed: true, reason: 'video-algorithm-changed' };
+  const replay = contentRefreshDecision(sources, wiki, video);
+  assert.equal(replay.mode, 'retry');
+  assert.equal(replay.retryBwiki, false);
+  assert.equal(replay.retryVideo, true);
+  const unpublished = contentRefreshDecision(
+    sources,
+    wiki,
+    { needed: false, reason: 'backoff' },
+    true,
+  );
+  assert.equal(unpublished.changed, true);
+  assert.equal(unpublished.mode, 'full');
+  assert.equal(unpublished.checks.publication, 'retry-unpublished-result');
+  assert.equal(
+    contentRefreshDecision(sources, wiki, { needed: false, reason: 'backoff' }).changed,
+    false,
+  );
+});
+
+test('actual scheduled command retries failed metadata publication even when the dialogue digest is unchanged', async () => {
+  const parent = path.resolve('.cache/tests');
+  await fs.mkdir(parent, { recursive: true });
+  const folder = await fs.mkdtemp(path.join(parent, 'watch-publication-'));
+  const write = async (file, value) => {
+    const target = path.join(folder, file);
+    await fs.mkdir(path.dirname(target), { recursive: true });
+    await fs.writeFile(target, JSON.stringify(value));
+  };
+  try {
+    await fs.cp('scripts', path.join(folder, 'scripts'), { recursive: true });
+    const algorithm = await algorithmHash(folder),
+      videoAlgorithm = await videoAlgorithmHash(folder);
+    const noPlaylists = { schema: 'hsr-video-sources.v1', sources: [] };
+    await write('editorial/video-verification-sources.json', noPlaylists);
+    const current = {
+      ...snapshot(),
+      configHash: sha256(JSON.stringify([])),
+      wiki: [],
+      playlists: [],
+    };
+    const old = { ...current, officialFingerprint: '0'.repeat(64) };
+    for (const [published, cached, changed] of [
+      [old, current, true],
+      [old, watchObservation(old, current, { mode: 'full', changed: false }), true],
+      [current, watchObservation(old, current, { mode: 'full', changed: false }), false],
+    ]) {
+      await write('.cache/verification-retry/watch.json', cached);
+      await write('.cache/verification-retry/state.json', {
+        schema: 'hsr-verification-retry.v1',
+        pages: {},
+        algorithm,
+        videoAlgorithm,
+        pendingDigest: 'same-dialogue-digest',
+      });
+      const mock = path.join(folder, 'mock-network.mjs');
+      await fs.writeFile(
+        mock,
+        `
+        const json = value => new Response(JSON.stringify(value), {headers:{'content-type':'application/json'}});
+        globalThis.fetch = async input => {
+          const url = new URL(input);
+          if (url.pathname.endsWith('/verification-progress.json')) return json({digest:'same-dialogue-digest', algorithm:${JSON.stringify(algorithm)}});
+          if (url.pathname.endsWith('/video-order-provenance.json')) return json({algorithm:${JSON.stringify(videoAlgorithm)}, chapters:{}, checks:{}});
+          if (url.pathname.endsWith('/content-watch.json')) return json(${JSON.stringify(published)});
+          if (url.hostname === 'api.github.com') return json({sha:${JSON.stringify(commit)}, commit:{message:'OSPRODWin4.6.0'}});
+          if (url.pathname === '/feeds/videos.xml') return new Response(${JSON.stringify(feed)});
+          throw new Error('Unexpected network request');
+        };
+      `,
+      );
+      execFileSync(
+        process.execPath,
+        [
+          '--import',
+          pathToFileURL(mock).href,
+          path.resolve('scripts/check-content-changes.mjs'),
+          '--check',
+        ],
+        {
+          cwd: folder,
+          stdio: 'pipe',
+          env: { ...process.env, GITHUB_OUTPUT: '', GITHUB_STEP_SUMMARY: '' },
+        },
+      );
+      const result = JSON.parse(
+        await fs.readFile(path.join(folder, '.cache/content-watch/check.json')),
+      );
+      assert.equal(result.changed, changed);
+      assert.equal(result.checks.official, changed ? 'changed' : 'unchanged');
+      if (changed) assert.equal(result.mode, 'full');
+    }
+  } finally {
+    assert.ok(folder.startsWith(parent + path.sep));
+    await fs.rm(folder, { recursive: true, force: true });
+  }
+});
 
 test('unchanged source metadata skips full processing; release changes trigger without downloading raw text', async () => {
   assert.equal(validSnapshot(snapshot()), true);
