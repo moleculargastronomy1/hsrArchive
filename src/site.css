@@ -99,7 +99,7 @@
   transform: translateY(3px);
 }
 .app .sidebar .category-icon-books {
-  color: #b2c69f;
+  color: var(--gold);
 }
 .app .nav-dot {
   display: none;
