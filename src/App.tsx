@@ -4,7 +4,6 @@ import {
   ArrowDown,
   ArrowLeft,
   ArrowRight,
-  BookMarked,
   BookOpen,
   Bookmark,
   Check,
@@ -29,16 +28,14 @@ import {
 import { isBookmarks, isHistory, useStored, type ReadingHistory } from './lib/storage';
 import WorldArt from './components/WorldArt';
 import EntryArtwork, { hasCover } from './components/EntryArtwork';
-import OfficialVideo from './components/OfficialVideo';
 import DialogueBrowser from './components/DialogueBrowser';
 import { LanguageComparisonControls } from './components/LanguageComparison';
 import { useComparisonLanguages } from './hooks/useComparison';
 import CategoryIcon from './components/CategoryIcon';
 import CodexReader from './components/CodexReader';
 import ContentUpdateStatus from './components/ContentUpdateStatus';
-import HomeNotice from './components/HomeNotice';
+import HomePage from './components/HomePage';
 import SourceDetails from './components/SourceDetails';
-import starRailLogo from '../docs/reference-images/스타레일 로고.png';
 import dayIcon from '../docs/reference-images/darkmodeicon/DAY.webp';
 import nightIcon from '../docs/reference-images/darkmodeicon/Night.webp';
 
@@ -240,107 +237,15 @@ export default function App() {
 
   if (path === '/') {
     content = (
-      <>
-        <div className="page-intro">
-          <span className="eyebrow">
-            <span className="tiny-star">✦</span> THE ASTRAL ARCHIVE
-          </span>
-          <div className="intro-line">
-            <h1>열차 아카이브</h1>
-            <span className="language-chip">
-              한국어 아카이브 <span>KO</span>
-            </span>
-          </div>
-          <p>지나온 별의 이야기, 다시 펼쳐 보는 여정.</p>
-        </div>
-        <section className="hero">
-          <div className="hero-copy">
-            <h2>여정의 끝이 뭇별에 닿길</h2>
-            <p>별과 별 사이에 남겨진 대화와 기록들.</p>
-            <a className="button gold" href="#/archive?category=trailblaze">
-              이야기 둘러보기 <ArrowRight size={17} />
-            </a>
-            <HomeNotice />
-          </div>
-          <WorldArt world="space-station" hero />
-          <div className="hero-media">
-            <OfficialVideo className="hero-video" />
-            <div className="hero-brand">
-              <span>기록으로 이어지는 은하의 여정</span>
-              <img className="starrail-logo" src={starRailLogo} alt="붕괴: 스타레일" />
-            </div>
-          </div>
-          <div className="hero-caption">
-            <span>01 — THE BEGINNING</span>
-          </div>
-        </section>
-        <div className="quick-categories">
-          {categories.map((item) => {
-            return (
-              <a key={item.id} href={href(`/archive?category=${item.id}`)}>
-                <span className={`quick-icon ${item.id}`}>
-                  <CategoryIcon category={item.id} />
-                </span>
-                <span>
-                  <strong>{item.label}</strong>
-                  <small>{item.description}</small>
-                </span>
-                <ChevronRight size={17} />
-              </a>
-            );
-          })}
-        </div>
-        <section className="section">
-          <div className="section-heading">
-            <div>
-              <span className="eyebrow">FOLLOW THE JOURNEY</span>
-              <h2>뭇별로 향하는 궤도</h2>
-            </div>
-            <a className="text-link" href="#/archive?category=trailblaze">
-              개척 임무 전체 보기 <ArrowRight size={15} />
-            </a>
-          </div>
-          {cards(archive.filter((item) => item.category === 'trailblaze'))}
-        </section>
-        <div className="home-bottom">
-          <section className="simulation-callout">
-            <a
-              className="simulation-cover"
-              href="#/archive?category=simulation"
-              aria-label="시뮬레이션 우주 둘러보기"
-            >
-              <EntryArtwork world="simulated-universe" />
-            </a>
-            <span className="eyebrow">SIMULATED UNIVERSE</span>
-            <h2>시뮬레이션 우주</h2>
-            <p>우주의 실험과 기물에 남겨진 기록을 읽어 보세요.</p>
-            <a className="text-link" href="#/archive?category=simulation">
-              시뮬레이션 우주 열기 <ArrowRight size={15} />
-            </a>
-          </section>
-          <section className="continue-panel">
-            <span className="eyebrow">
-              <BookMarked size={14} /> MY READING ROOM
-            </span>
-            <h2>{lastEntry ? '멈췄던 이야기, 그다음 장으로' : '당신만의 여정을 모아 보세요'}</h2>
-            <p>
-              {lastEntry && lastChapter
-                ? `${lastEntry.title} · ${lastChapter.title}`
-                : '마음에 남은 이야기는 북마크에, 읽던 이야기는 읽기 기록에 보관됩니다.'}
-            </p>
-            <a
-              className="text-link"
-              href={
-                lastEntry && lastChapter
-                  ? href(readerPath(lastEntry.id, lastChapter.id))
-                  : '#/library'
-              }
-            >
-              {lastEntry ? '이어서 읽기' : '내 서재 열기'} <ArrowRight size={15} />
-            </a>
-          </section>
-        </div>
-      </>
+      <HomePage
+        search={search}
+        setSearch={setSearch}
+        searchRef={searchRef}
+        onSearch={submitSearch}
+        entries={cards(archive.filter((item) => item.category === 'trailblaze'))}
+        lastEntry={lastEntry || undefined}
+        lastChapter={lastChapter}
+      />
     );
   } else if (path === '/archive') {
     const results = searchEntries(archive, params.get('q') ?? '', selectedCategory, selectedWorld);
@@ -681,7 +586,7 @@ export default function App() {
   }
 
   return (
-    <div className={`app ${isReader ? 'reading-mode' : ''}`}>
+    <div className={`app ${path === '/' ? 'home-page' : ''} ${isReader ? 'reading-mode' : ''}`}>
       <a
         className="skip-link"
         href="#main-content"
@@ -704,12 +609,12 @@ export default function App() {
           <span className="brand-symbol">✦</span>
           <span>
             <strong>열차 아카이브</strong>
-            <small>HONKAI: STAR RAIL ARCHIVE</small>
+            <small>{path === '/' ? '붕괴: 스타레일 자료실' : 'HONKAI: STAR RAIL ARCHIVE'}</small>
           </span>
         </a>
         <div className="sidebar-rule" />
         <nav>
-          <span className="nav-label">EXPLORE</span>
+          <span className="nav-label">{path === '/' ? '탐색' : 'EXPLORE'}</span>
           <a
             className={navActive('/') ? 'active' : ''}
             href="#/"
@@ -722,7 +627,7 @@ export default function App() {
             <Search size={18} />
             원문 검색
           </a>
-          <span className="nav-label nav-space">STORIES</span>
+          <span className="nav-label nav-space">{path === '/' ? '자료 분류' : 'STORIES'}</span>
           {categories.map((item) => {
             const active =
               (navActive('/archive') && selectedCategory === item.id) ||
@@ -759,7 +664,7 @@ export default function App() {
               </Fragment>
             );
           })}
-          <span className="nav-label nav-space">MY ARCHIVE</span>
+          <span className="nav-label nav-space">{path === '/' ? '내 서재' : 'MY ARCHIVE'}</span>
           <a
             href="#/library"
             className={path === '/library' && params.get('view') !== 'history' ? 'active' : ''}
@@ -800,7 +705,7 @@ export default function App() {
             <Menu size={21} />
           </button>
           <div className="topbar-location">
-            ARCHIVE <ChevronRight size={12} />
+            {path === '/' ? '열차 아카이브' : 'ARCHIVE'} <ChevronRight size={12} />
             <span>
               {entry
                 ? categoryName(entry.category)
@@ -818,7 +723,7 @@ export default function App() {
           <form className="global-search" onSubmit={submitSearch} role="search">
             <Search size={16} />
             <input
-              ref={searchRef}
+              ref={path === '/' ? undefined : searchRef}
               aria-label="아카이브 검색"
               placeholder="어떤 이야기를 찾고 있나요?"
               value={search}
