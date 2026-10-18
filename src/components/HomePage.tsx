@@ -8,9 +8,9 @@ import HomeNotice from './HomeNotice';
 import OfficialVideo from './OfficialVideo';
 
 const categoryDescriptions = {
-  trailblaze: '장·임무 순서로 읽는 이야기',
-  simulation: '사건, 기물과 우주의 기록',
-  codex: '에이언즈, 파벌과 고유명사',
+  trailblaze: '뭇별로 향하는 궤도',
+  simulation: '껍질 속 우주',
+  codex: '은하열차 자료실',
   books: '지역별 서적, 편지와 문서',
 };
 
@@ -36,9 +36,6 @@ export default function HomePage({
       <section className="home-intro" aria-labelledby="home-title">
         <p className="home-kicker">붕괴: 스타레일 한국어 자료실</p>
         <h1 id="home-title">열차 아카이브</h1>
-        <p className="home-description">
-          임무 속 대사부터 서적과 설정까지, 필요한 기록을 찾아 읽으세요.
-        </p>
         <form className="home-search" onSubmit={onSearch} role="search" aria-label="홈 원문 검색">
           <Search size={23} strokeWidth={1.6} aria-hidden="true" />
           <input

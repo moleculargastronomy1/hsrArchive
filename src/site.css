@@ -163,13 +163,6 @@
   letter-spacing: -1.3px;
   line-height: 1.4;
 }
-.home-description {
-  font-size: 14px;
-  line-height: 1.8;
-  color: var(--muted);
-  margin-top: 10px;
-  word-break: keep-all;
-}
 .home-search {
   display: flex;
   align-items: center;
@@ -636,10 +629,6 @@
   }
   .home-intro h1 {
     font-size: 29px;
-  }
-  .home-description {
-    font-size: 13px;
-    margin-top: 8px;
   }
   .home-search {
     min-height: 56px;
