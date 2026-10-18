@@ -1021,14 +1021,6 @@ button {
   line-height: 1.9;
   color: #617267;
 }
-.tags {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 10px;
-  margin-top: 19px;
-  font-size: 9px;
-  color: #596d5e;
-}
 .detail-actions {
   display: flex;
   gap: 10px;

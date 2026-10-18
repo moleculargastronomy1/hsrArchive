@@ -526,13 +526,6 @@ export default function App() {
             <span className="eyebrow">{entry.arcLabel ?? worldName(entry.world)}</span>
             <h1>{entry.title}</h1>
             <p>{entry.description}</p>
-            <div className="tags">
-              {entry.tags.map((tag) => (
-                <span key={tag}>#{tag}</span>
-              ))}
-              <span>한국어</span>
-              <span>{entry.source.kind === 'extracted' ? '한국어 원문' : '예시 본문'}</span>
-            </div>
           </div>
           <EntryArtwork world={entry.world} entryId={entry.id} />
         </div>
