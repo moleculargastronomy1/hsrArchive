@@ -37,6 +37,15 @@ html {
 .theme-switch button:hover {
   color: var(--text);
 }
+.theme-switch img {
+  display: block;
+  flex-shrink: 0;
+  object-fit: contain;
+}
+:root[data-theme='light'] .theme-switch img {
+  filter: brightness(0);
+  opacity: 0.8;
+}
 .app .global-search {
   min-width: 0;
   width: min(420px, 45%);

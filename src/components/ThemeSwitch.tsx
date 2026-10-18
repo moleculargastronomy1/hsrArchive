@@ -1,4 +1,5 @@
-import { Moon, Sun } from 'lucide-react';
+import nightIcon from '../../docs/reference-images/darkmodeicon/Night.webp';
+import dayIcon from '../../docs/reference-images/darkmodeicon/DAY.webp';
 
 export default function ThemeSwitch({
   theme,
@@ -16,7 +17,7 @@ export default function ThemeSwitch({
         title="다크 모드"
         onClick={() => onChange('dark')}
       >
-        <Moon size={14} />
+        <img src={nightIcon} alt="" width={24} height={24} />
         <span>다크</span>
       </button>
       <button
@@ -26,7 +27,7 @@ export default function ThemeSwitch({
         title="라이트 모드"
         onClick={() => onChange('light')}
       >
-        <Sun size={14} />
+        <img src={dayIcon} alt="" width={24} height={24} />
         <span>라이트</span>
       </button>
     </div>
