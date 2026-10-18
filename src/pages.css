@@ -134,13 +134,12 @@ html {
 .archive-view-switch button {
   display: flex;
   align-items: center;
-  gap: 6px;
+  justify-content: center;
+  width: 28px;
   min-height: 28px;
-  padding: 4px 7px;
+  padding: 6px;
   border-radius: 3px;
   color: var(--muted);
-  font-size: 11px;
-  white-space: nowrap;
 }
 .archive-view-switch button:hover {
   color: var(--text);

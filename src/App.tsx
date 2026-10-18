@@ -308,20 +308,20 @@ export default function App() {
                 <button
                   type="button"
                   aria-label="액자형 보기"
+                  title="액자형 보기"
                   aria-pressed={archiveLayout === 'cards'}
                   onClick={() => setArchiveLayout('cards')}
                 >
-                  <LayoutGrid size={15} />
-                  액자형
+                  <LayoutGrid size={15} aria-hidden="true" />
                 </button>
                 <button
                   type="button"
                   aria-label="목록형 보기"
+                  title="목록형 보기"
                   aria-pressed={archiveLayout === 'list'}
                   onClick={() => setArchiveLayout('list')}
                 >
-                  <List size={15} />
-                  목록형
+                  <List size={15} aria-hidden="true" />
                 </button>
               </div>
             )}
