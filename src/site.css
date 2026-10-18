@@ -98,6 +98,10 @@
   height: 30px;
   transform: translateY(3px);
 }
+.app .sidebar .category-icon-codex img,
+.home-categories .category-icon-codex img {
+  filter: grayscale(1) sepia(1) saturate(1.5) brightness(0.85);
+}
 .app .sidebar .category-icon-books {
   color: var(--gold);
 }
@@ -264,7 +268,7 @@
   height: 26px;
 }
 .home-categories .category-icon-books {
-  color: var(--text);
+  color: var(--gold);
 }
 .home-categories strong {
   display: block;
