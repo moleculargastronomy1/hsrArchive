@@ -108,14 +108,6 @@
 .app .sidebar nav > a:is(:hover, :focus-visible, .active) .category-icon img {
   filter: grayscale(1) sepia(1) saturate(1.5) brightness(0.85);
 }
-.app .sidebar .category-icon-codex img {
-  width: 30px;
-  height: 30px;
-  transform: translateY(3px);
-}
-.home-categories .category-icon-codex img {
-  filter: grayscale(1) sepia(1) saturate(1.5) brightness(0.85);
-}
 .app .nav-dot {
   display: none;
 }
@@ -278,7 +270,7 @@
   width: 26px;
   height: 26px;
 }
-.home-categories .category-icon-books {
+.home-categories :is(.category-icon-codex, .category-icon-books) {
   color: var(--gold);
 }
 .home-categories strong {
