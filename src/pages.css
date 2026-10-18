@@ -114,6 +114,42 @@ html {
 .app .filter-bar select {
   font-size: 12px;
 }
+.archive-toolbar {
+  flex-wrap: wrap;
+}
+.archive-view-controls {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 6px;
+  margin-left: auto;
+}
+.archive-view-switch {
+  display: flex;
+  padding: 2px;
+  gap: 2px;
+  border: 1px solid var(--line);
+  border-radius: 5px;
+}
+.archive-view-switch button {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 28px;
+  padding: 4px 7px;
+  border-radius: 3px;
+  color: var(--muted);
+  font-size: 11px;
+  white-space: nowrap;
+}
+.archive-view-switch button:hover {
+  color: var(--text);
+  background: var(--soft);
+}
+.archive-view-switch button[aria-pressed='true'] {
+  color: var(--accent);
+  background: var(--soft);
+}
 .app .local-note {
   font-size: 12px;
 }
@@ -684,5 +720,94 @@ html {
   }
   .app .about-panel p {
     font-size: 13px;
+  }
+}
+
+/* Framed archive cards are independent of the compact home and library lists. */
+.app .framed-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 18px;
+  border: 0;
+}
+.app .framed-grid.trailblaze-grid {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+.app .framed-grid .entry-card {
+  flex-direction: column;
+  align-items: stretch;
+  gap: 0;
+  padding: 0;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  overflow: hidden;
+  background: var(--surface);
+}
+.app .framed-grid .entry-card:is(:hover, :focus-within) {
+  border-color: var(--accent);
+}
+.app .framed-grid .entry-card .card-art {
+  width: 100%;
+  height: auto;
+  aspect-ratio: 16 / 10;
+  border-radius: 0;
+  border-bottom: 1px solid var(--line);
+}
+.app .framed-grid.trailblaze-grid .entry-card .card-art {
+  aspect-ratio: 1051 / 597;
+}
+.app .framed-grid .card-body {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  padding: 16px 15px 10px;
+}
+.app .framed-grid .card-eyebrow {
+  margin-bottom: 5px;
+  font-size: 11px;
+  line-height: 1.7;
+}
+.app .framed-grid .card-body h3 {
+  font-size: 16px;
+  line-height: 1.6;
+  word-break: keep-all;
+  overflow-wrap: anywhere;
+}
+.app .framed-grid .card-body > p {
+  margin: 8px 0 16px;
+  font-size: 12px;
+  line-height: 1.8;
+  min-height: 3.6em;
+  -webkit-line-clamp: 3;
+}
+.app .framed-grid .card-footer {
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: auto;
+  padding-top: 6px;
+  border-top: 1px solid var(--line);
+}
+.app .framed-grid .card-footer > span {
+  font-size: 11px;
+}
+.app .framed-grid .card-footer > span > svg {
+  display: block;
+}
+@media (max-width: 1200px) {
+  .app .framed-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+@media (max-width: 1000px) {
+  .app .framed-grid,
+  .app .framed-grid.trailblaze-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+@media (max-width: 560px) {
+  .app .framed-grid,
+  .app .framed-grid.trailblaze-grid {
+    grid-template-columns: minmax(0, 1fr);
   }
 }

@@ -10,6 +10,8 @@ import {
   ChevronRight,
   Clock3,
   Home,
+  LayoutGrid,
+  List,
   Menu,
   Search,
   SlidersHorizontal,
@@ -125,6 +127,11 @@ export default function App() {
     (v): v is 'light' | 'dark' => v === 'light' || v === 'dark',
   );
   const [bookmarks, setBookmarks] = useStored<string[]>('bookmarks', [], isBookmarks);
+  const [archiveLayout, setArchiveLayout] = useStored<'cards' | 'list'>(
+    'archiveLayout',
+    'cards',
+    (value): value is 'cards' | 'list' => value === 'cards' || value === 'list',
+  );
   const [history, setHistory] = useStored<ReadingHistory>('history', {}, isHistory);
   const [fontSize, setFontSize] = useStored<number>(
     'fontSize',
@@ -210,9 +217,9 @@ export default function App() {
   const lastChapter = lastEntry?.chapters.find(
     (ch) => ch.id === recent[0][1].chapterId || ch.aliases?.includes(recent[0][1].chapterId),
   );
-  const cards = (entries: ArchiveEntry[]) => (
+  const cards = (entries: ArchiveEntry[], layout: 'cards' | 'list' = 'list') => (
     <div
-      className={`entry-grid${entries.length && entries.every((item) => item.category === 'trailblaze') ? ' trailblaze-grid' : ''}`}
+      className={`entry-grid${layout === 'cards' ? ' framed-grid' : ''}${entries.length && entries.every((item) => item.category === 'trailblaze') ? ' trailblaze-grid' : ''}`}
     >
       {entries.map((item) => (
         <EntryCard
@@ -278,7 +285,7 @@ export default function App() {
             </button>
           ))}
         </div>
-        <div className="filter-bar">
+        <div className="filter-bar archive-toolbar">
           <label>
             <SlidersHorizontal size={16} />
             <span>지역</span>
@@ -295,9 +302,33 @@ export default function App() {
               ))}
             </select>
           </label>
-          <span>
-            총 <strong>{results.length}</strong>개 기록
-          </span>
+          <div className="archive-view-controls">
+            {selectedCategory !== 'books' && (
+              <div className="archive-view-switch" role="group" aria-label="자료 보기 방식">
+                <button
+                  type="button"
+                  aria-label="액자형 보기"
+                  aria-pressed={archiveLayout === 'cards'}
+                  onClick={() => setArchiveLayout('cards')}
+                >
+                  <LayoutGrid size={15} />
+                  액자형
+                </button>
+                <button
+                  type="button"
+                  aria-label="목록형 보기"
+                  aria-pressed={archiveLayout === 'list'}
+                  onClick={() => setArchiveLayout('list')}
+                >
+                  <List size={15} />
+                  목록형
+                </button>
+              </div>
+            )}
+            <span>
+              총 <strong>{results.length}</strong>개 기록
+            </span>
+          </div>
         </div>
         {params.get('q') && (
           <div className="search-summary">
@@ -310,7 +341,7 @@ export default function App() {
           </div>
         )}
         {results.length ? (
-          cards(results)
+          cards(results, selectedCategory === 'books' ? 'list' : archiveLayout)
         ) : (
           <Empty
             title="일치하는 기록이 없어요"
