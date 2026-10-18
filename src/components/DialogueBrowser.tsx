@@ -1,4 +1,12 @@
-import { useEffect, useMemo, useRef, useState, type CSSProperties, type FormEvent } from 'react';
+import {
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+  type CSSProperties,
+  type FormEvent,
+  type ReactNode,
+} from 'react';
 import {
   ArrowLeft,
   ArrowRight,
@@ -23,6 +31,7 @@ import { LanguageComparisonControls, LocalizedPassage } from './LanguageComparis
 import { localizationKey, type ComparisonLanguage } from '../lib/localization';
 import GameText from './GameText';
 import VideoVerificationNote from './VideoVerificationNote';
+import SourceDetails from './SourceDetails';
 import { searchableGameText } from '../lib/game-text';
 
 export default function DialogueBrowser({
@@ -32,6 +41,8 @@ export default function DialogueBrowser({
   onReady,
   targetRowId,
   languages: controlledLanguages,
+  footer,
+  sourceNote,
 }: {
   file?: string;
   initialQuery?: string;
@@ -39,6 +50,8 @@ export default function DialogueBrowser({
   onReady?: () => void;
   targetRowId?: string;
   languages?: ComparisonLanguage[];
+  footer?: ReactNode;
+  sourceNote?: string;
 }) {
   const [storedLanguages, setLanguages] = useComparisonLanguages();
   const languages = controlledLanguages ?? storedLanguages;
@@ -442,36 +455,45 @@ export default function DialogueBrowser({
           </nav>
         </>
       )}
-      {!loading && !error && (flowSummary.verified > 0 || flowSummary.review > 0) && (
-        <details className="dialogue-verification-details">
-          <summary>검증 현황 및 출처</summary>
-          <p className="dialogue-flow-summary">
-            {(flowSummary.wiki > 0 || flowSummary.cached > 0) && (
-              <span>
-                BWIKI 대조 {flowSummary.wiki.toLocaleString('ko-KR')}줄 · 이전 대조 유지{' '}
-                {flowSummary.cached.toLocaleString('ko-KR')}줄
-              </span>
-            )}
-            {rows.some((row) => row.bwikiStatus) && (
-              <span>
-                순서·분기 참고:{' '}
-                <a href="https://wiki.biligame.com/sr/开拓任务" target="_blank" rel="noreferrer">
-                  BWIKI 기여자
-                </a>{' '}
-                ·{' '}
-                <a
-                  href="https://creativecommons.org/licenses/by-nc-sa/4.0/"
-                  target="_blank"
-                  rel="noreferrer"
-                >
-                  CC BY-NC-SA 4.0
-                </a>
-                . 정리 정보를 한국어 자료에 맞춰 재구성했습니다.
-              </span>
-            )}
-            <VideoVerificationNote file={file} />
-          </p>
-        </details>
+      {footer}
+      {(sourceNote ||
+        (!loading && !error && (flowSummary.verified > 0 || flowSummary.review > 0))) && (
+        <SourceDetails>
+          {sourceNote && (
+            <>
+              <p>{sourceNote}</p>
+              <p>게임 원문의 권리는 HoYoverse 및 해당 권리자에게 있습니다.</p>
+            </>
+          )}
+          {!loading && !error && (
+            <p className="dialogue-flow-summary">
+              {(flowSummary.wiki > 0 || flowSummary.cached > 0) && (
+                <span>
+                  BWIKI 대조 {flowSummary.wiki.toLocaleString('ko-KR')}줄 · 이전 대조 유지{' '}
+                  {flowSummary.cached.toLocaleString('ko-KR')}줄
+                </span>
+              )}
+              {rows.some((row) => row.bwikiStatus) && (
+                <span>
+                  순서·분기 참고:{' '}
+                  <a href="https://wiki.biligame.com/sr/开拓任务" target="_blank" rel="noreferrer">
+                    BWIKI 기여자
+                  </a>{' '}
+                  ·{' '}
+                  <a
+                    href="https://creativecommons.org/licenses/by-nc-sa/4.0/"
+                    target="_blank"
+                    rel="noreferrer"
+                  >
+                    CC BY-NC-SA 4.0
+                  </a>
+                  . 정리 정보를 한국어 자료에 맞춰 재구성했습니다.
+                </span>
+              )}
+              <VideoVerificationNote file={file} />
+            </p>
+          )}
+        </SourceDetails>
       )}
       <dialog
         className="context-dialog"

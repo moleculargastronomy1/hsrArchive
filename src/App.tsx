@@ -19,7 +19,13 @@ import {
 } from 'lucide-react';
 import { archive, categories, worlds } from './data/archive';
 import type { ArchiveEntry, Category, World } from './data/types';
-import { adjacentChapter, chapterNumber, readerPath, searchEntries } from './lib/archive';
+import {
+  adjacentChapter,
+  chapterContentLabel,
+  chapterNumber,
+  readerPath,
+  searchEntries,
+} from './lib/archive';
 import { isBookmarks, isHistory, useStored, type ReadingHistory } from './lib/storage';
 import WorldArt from './components/WorldArt';
 import EntryArtwork, { hasCover } from './components/EntryArtwork';
@@ -31,6 +37,7 @@ import CategoryIcon from './components/CategoryIcon';
 import CodexReader from './components/CodexReader';
 import ContentUpdateStatus from './components/ContentUpdateStatus';
 import HomeNotice from './components/HomeNotice';
+import SourceDetails from './components/SourceDetails';
 import starRailLogo from '../docs/reference-images/스타레일 로고.png';
 import dayIcon from '../docs/reference-images/darkmodeicon/DAY.webp';
 import nightIcon from '../docs/reference-images/darkmodeicon/Night.webp';
@@ -562,10 +569,7 @@ export default function App() {
                     : ch.kind === 'adventure'
                       ? '관련 모험 임무 · '
                       : ''}
-                  {ch.content
-                    ? (ch.contentNote ??
-                      `${ch.content.rows.toLocaleString('ko-KR')}줄 · 한국어 원문`)
-                    : '예시 대사'}
+                  {chapterContentLabel(ch)}
                 </small>
               </span>
               {ch.id === progress?.chapterId ? (
@@ -578,10 +582,13 @@ export default function App() {
             </a>
           ))}
         </div>
-        <p className="source-note">
-          자료 출처:{' '}
-          {entry.source.kind === 'demo' ? entry.source.note : `게임 자료 ${entry.source.version}`}.
-        </p>
+        <SourceDetails>
+          <p>
+            {entry.source.kind === 'demo' ? entry.source.note : `게임 자료 ${entry.source.version}`}
+            .
+          </p>
+          <p>게임 원문의 권리는 HoYoverse 및 해당 권리자에게 있습니다.</p>
+        </SourceDetails>
       </>
     );
   } else if (entry && chapter && parts.length === 3) {
@@ -943,6 +950,44 @@ function Reader({
     };
   }, [entry.id, chapterId, setHistory, contentReady, targetRowId]);
 
+  const chapterNavigation = (
+    <>
+      <div className="chapter-end">
+        <span />✦<span />
+      </div>
+      <nav className="chapter-navigation" aria-label="이전 다음 장">
+        {previous ? (
+          <a href={href(readerPath(entry.id, previous.id))}>
+            <ArrowLeft size={17} />
+            <span>
+              <small>이전 장</small>
+              <strong>{previous.title}</strong>
+            </span>
+          </a>
+        ) : (
+          <span className="chapter-boundary">첫 번째 장입니다</span>
+        )}
+        {next ? (
+          <a href={href(readerPath(entry.id, next.id))}>
+            <span>
+              <small>다음 장</small>
+              <strong>{next.title}</strong>
+            </span>
+            <ArrowRight size={17} />
+          </a>
+        ) : (
+          <a href={href(readerPath(entry.id))}>
+            <span>
+              <small>마지막 장입니다</small>
+              <strong>목차로 돌아가기</strong>
+            </span>
+            <ArrowDown size={17} />
+          </a>
+        )}
+      </nav>
+    </>
+  );
+
   return (
     <>
       <div className="reading-progress" style={{ width: `${progress}%` }} />
@@ -1005,7 +1050,7 @@ function Reader({
             <p>{entry.title}</p>
             {chapter.content ? (
               <LanguageComparisonControls
-                label={chapter.contentNote ?? '한국어 원문 · 선택지 포함'}
+                label={chapterContentLabel(chapter)}
                 languages={languages}
                 onChange={setLanguages}
               />
@@ -1022,6 +1067,12 @@ function Reader({
               targetRowId={targetRowId}
               onReady={markReady}
               languages={languages}
+              footer={chapterNavigation}
+              sourceNote={
+                entry.source.kind === 'demo'
+                  ? entry.source.note
+                  : `게임 자료 ${entry.source.version}.`
+              }
             />
           )}
           {!chapter.content && (
@@ -1045,39 +1096,7 @@ function Reader({
               )}
             </div>
           )}
-          <div className="chapter-end">
-            <span />✦<span />
-          </div>
-          <nav className="chapter-navigation" aria-label="이전 다음 장">
-            {previous ? (
-              <a href={href(readerPath(entry.id, previous.id))}>
-                <ArrowLeft size={17} />
-                <span>
-                  <small>이전 장</small>
-                  <strong>{previous.title}</strong>
-                </span>
-              </a>
-            ) : (
-              <span className="chapter-boundary">첫 번째 장입니다</span>
-            )}
-            {next ? (
-              <a href={href(readerPath(entry.id, next.id))}>
-                <span>
-                  <small>다음 장</small>
-                  <strong>{next.title}</strong>
-                </span>
-                <ArrowRight size={17} />
-              </a>
-            ) : (
-              <a href={href(readerPath(entry.id))}>
-                <span>
-                  <small>마지막 장입니다</small>
-                  <strong>목차로 돌아가기</strong>
-                </span>
-                <ArrowDown size={17} />
-              </a>
-            )}
-          </nav>
+          {!chapter.content && chapterNavigation}
         </article>
       </div>
     </>

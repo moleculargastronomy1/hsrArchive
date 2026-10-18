@@ -411,16 +411,6 @@
   min-height: 32px;
   padding: 7px 10px;
 }
-.dialogue-verification-details {
-  margin-top: 32px;
-  border-top: 1px solid var(--line);
-  font-size: 12px;
-  color: var(--muted);
-}
-.dialogue-verification-details summary {
-  padding: 18px 0;
-  cursor: pointer;
-}
 .reader-toc {
   max-height: calc(100vh - 60px);
   overflow-y: auto;

@@ -1,4 +1,10 @@
-import type { ArchiveEntry, Category, World } from '../data/types.ts';
+import type { ArchiveEntry, Category, Chapter, World } from '../data/types.ts';
+
+export function chapterContentLabel(chapter: Chapter) {
+  if (!chapter.content) return '예시 대사';
+  const original = `${chapter.content.rows.toLocaleString('ko-KR')}줄 · 한국어 원문`;
+  return chapter.bwikiManaged ? original : (chapter.contentNote ?? original);
+}
 
 export function searchEntries(
   entries: ArchiveEntry[],
