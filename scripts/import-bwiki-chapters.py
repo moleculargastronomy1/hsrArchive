@@ -412,10 +412,7 @@ def publish(root, raw, plan_path, manifest_path, previous_root):
                         ('public/content/search-index.json', search), ('public/content-update.json', updates),
                         ('public/trailblaze-provenance.json', trailblaze), ('public/bwiki-provenance.json', report)]:
         if file.startswith('src/data/') or file in ['public/content-update.json', 'public/trailblaze-provenance.json']:
-            target = root / file
-            temporary = target.with_suffix(target.suffix + '.tmp')
-            temporary.write_text(json.dumps(value, ensure_ascii=False, indent=2) + '\n', encoding='utf-8')
-            temporary.replace(target)
+            bwiki.write(root / file, value, pretty=True)
         else:
             bwiki.write(root / file, value)
         files.append(file)

@@ -29,6 +29,14 @@ export interface Chapter {
   intro?: boolean;
   aliases?: string[];
   contentNote?: string;
+  image?: {
+    url: string;
+    sourceUrl: string;
+    alt: string;
+    width: number;
+    height: number;
+    sha1: string;
+  };
   blocks: TextBlock[];
   content?: {
     file: string;

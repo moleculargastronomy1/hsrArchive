@@ -16,12 +16,24 @@ def validate(root):
                  'video-review-summary']:
         if read('public/' + file + '.json')['commit'] != commit:
             raise ValueError('Mixed final verification versions: ' + file)
+    events_path = root / 'public/simulation-events-provenance.json'
+    if events_path.exists() and read('public/simulation-events-provenance.json')['commit'] != commit:
+        raise ValueError('Mixed final event versions')
     if read('public/content/locales/manifest.json')['commit'] != commit:
         raise ValueError('Mixed localization version')
     specs = dict(read('src/data/imported-content.json'))
     for name in ['codex', 'simulation', 'books', 'trailblaze']:
         for entry in read('src/data/' + name + '.json'):
             for chapter in entry['chapters']:
+                if chapter.get('image'):
+                    from urllib.parse import urlparse
+                    image = chapter['image']
+                    if (urlparse(image.get('url', '')).scheme != 'https' or
+                        urlparse(image.get('url', '')).hostname != 'patchwiki.biligame.com' or
+                        urlparse(image.get('sourceUrl', '')).scheme != 'https' or
+                        urlparse(image.get('sourceUrl', '')).hostname != 'wiki.biligame.com' or
+                        not re.fullmatch(r'[a-f0-9]{40}', image.get('sha1', ''))):
+                        raise ValueError('Unverified final event image')
                 if chapter.get('content'):
                     key = entry['id'] + '/' + chapter['id']
                     if key in specs and specs[key] != chapter['content']:
@@ -99,6 +111,22 @@ def validate(root):
         expected['source'] = hashlib.sha256(rows[row['id']]['source'].encode()).hexdigest()[:16]
         if row != expected:
             raise ValueError('Final search text/verification mismatch: ' + row['id'])
+    if events_path.exists():
+        events = read('public/simulation-events-provenance.json')
+        wiki = read('public/bwiki-provenance.json')
+        for file, record in events['records'].items():
+            payload = read('public/' + file)
+            if record['rows'] != len(payload['rows']):
+                raise ValueError('Final event count mismatch')
+            for chunk in wiki['chapters'].get(file, []):
+                if f"{chunk['page']}@{chunk['revision']}" not in wiki['sources']:
+                    raise ValueError('Missing event source attribution')
+                for identity in chunk['order']:
+                    row, proof = rows[identity], chunk['evidence'][identity]
+                    if (row['missionId'] != payload['chapterId'] or row['talkId'] != proof['talkId'] or
+                        row.get('textHash') != proof['textHash'] or row['type'] != proof['type'] or
+                        hashlib.sha256(row['text'].encode()).hexdigest() != proof['koreanHash']):
+                        raise ValueError('Final event ID/text proof mismatch')
     return {'chapters': len(specs), 'rows': len(rows)}
 
 

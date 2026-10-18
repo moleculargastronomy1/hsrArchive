@@ -1,6 +1,15 @@
 import crypto from 'node:crypto';
 
 export const REPOSITORY = 'DimbreathBot/TurnBasedGameData';
+export const EVENT_TABLES = [
+  'RogueHandBookEvent.json',
+  'RogueHandBookEventType.json',
+  'RogueTournHandBookEvent.json',
+  'RogueNPC.json',
+  'RogueTournNPC.json',
+  'RogueMagicNPC.json',
+  'RogueDialogueOptionDisplay.json',
+];
 export const REQUIRED_TABLES = [
   'NounAtlas.json',
   'NounAtlasChangeInfo.json',
@@ -10,6 +19,7 @@ export const REQUIRED_TABLES = [
   'BookSeriesConfig.json',
   'BookSeriesWorld.json',
   'LocalbookConfig.json',
+  ...EVENT_TABLES,
 ];
 
 export function gitBlob(bytes) {

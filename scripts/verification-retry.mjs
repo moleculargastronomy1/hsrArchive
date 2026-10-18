@@ -4,6 +4,30 @@ import { hash } from './verification-state.mjs';
 
 export const RETRY_FILE = '.cache/verification-retry/state.json';
 export const HOUR = 3600000;
+export const REVIEW_INTERVAL = 24 * HOUR;
+
+export function prioritizeBwikiRequests(requests, state, waiting = new Map(), now = Date.now()) {
+  const pending = (item) =>
+    (item.eventFiles?.length ?? 0) +
+    (item.missionIds ?? [item.missionId]).reduce(
+      (sum, id) => sum + (waiting.get('quest-' + id) ?? 0),
+      0,
+    );
+  const due = (item) => !(Date.parse(state.pages[item.title]?.nextRetryAt ?? '') > now);
+  return requests.sort(
+    (a, b) =>
+      Number(due(b)) - Number(due(a)) ||
+      Number(pending(b) > 0) - Number(pending(a) > 0) ||
+      (Date.parse(
+        state.pages[a.title]?.lastReviewedAt ?? state.pages[a.title]?.lastAttempt ?? '',
+      ) || 0) -
+        (Date.parse(
+          state.pages[b.title]?.lastReviewedAt ?? state.pages[b.title]?.lastAttempt ?? '',
+        ) || 0) ||
+      pending(b) - pending(a) ||
+      a.title.localeCompare(b.title),
+  );
+}
 async function hashAlgorithmFiles(root, files) {
   return hash(
     Buffer.concat(
@@ -22,6 +46,9 @@ export async function algorithmHash(root = process.cwd()) {
   return hashAlgorithmFiles(root, [
     'bwiki-dialogue.py',
     'import-bwiki-chapters.py',
+    'import-simulation-events.py',
+    'simulation-events.mjs',
+    'event-images.mjs',
     'fetch-bwiki.mjs',
     'fetch-bwiki-legacy.mjs',
     'verification-retry.mjs',
@@ -95,7 +122,7 @@ export function retryDecision(state, algorithm, published, now = Date.now()) {
   if (Date.parse(state.nextRequestAt ?? '') > now)
     return { needed: false, reason: 'request-backoff' };
   const due = Object.entries(state.pages)
-    .filter(([, item]) => item.reason && Date.parse(item.nextRetryAt) <= now)
+    .filter(([, item]) => (item.reason || item.unresolved) && Date.parse(item.nextRetryAt) <= now)
     .map(([title]) => title);
   return {
     needed: due.length > 0,

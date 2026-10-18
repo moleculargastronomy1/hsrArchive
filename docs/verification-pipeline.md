@@ -24,6 +24,8 @@
 
 ## 역할과 데이터 흐름
 
+사건 기록 확장은 `simulation-events.mjs`에서 공식 사건 도감의 명시적 NPC·대사·선택지 파일을 해시 검증하고, `import-simulation-events.py`에서 모드별 원문·분기를 연결한다. `event-images.mjs`는 같은 BWIKI 대기 상태를 공유하며 사건 문서에 포함된 대표 이미지 메타데이터를 수집한다. 성공 조회 후에도 미확인 사건을 순환 재검토하고, 이미지 추가만 있는 게시 및 이전 이미지 보존도 공통 digest·최종 계약 검사에 포함한다. 상세 계약은 [사건 기록 연동](simulation-events.md)을 따른다.
+
 ```mermaid
 flowchart TD
   A[공식 릴리스 고정 커밋] --> B[해시 검증한 원본 캐시]

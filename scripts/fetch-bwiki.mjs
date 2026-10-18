@@ -110,6 +110,9 @@ export async function fetchBwiki(stage, cache, fetcher = fetch, options = {}) {
           );
           throw new Error(state.lastRequestError);
         }
+        state.requestFailures = 0;
+        delete state.nextRequestAt;
+        delete state.lastRequestError;
       } catch (error) {
         errorReason = error.message;
         metadata = undefined;
@@ -149,7 +152,10 @@ export async function fetchBwiki(stage, cache, fetcher = fetch, options = {}) {
         if (
           old &&
           options.algorithm &&
-          (options.forceAlignment || state.pages[item.title]?.aligned !== key)
+          (options.forceAlignment ||
+            state.pages[item.title]?.aligned !== key ||
+            (state.pages[item.title]?.unresolved &&
+              Date.parse(state.pages[item.title]?.nextRetryAt) <= now))
         )
           results.push({ ...old, needsAlignment: true, alignmentKey: key });
         else results.push(failure(item, errorReason ?? 'BWIKI 요청 대기 · 이전 검증 보존', false));
@@ -174,7 +180,10 @@ export async function fetchBwiki(stage, cache, fetcher = fetch, options = {}) {
           retrieval: 'revision-cache',
           metadataCheckedAt: new Date(now).toISOString(),
           needsAlignment: Boolean(
-            options.forceAlignment || state.pages[item.title]?.aligned !== key,
+            options.forceAlignment ||
+              state.pages[item.title]?.aligned !== key ||
+              (state.pages[item.title]?.unresolved &&
+                Date.parse(state.pages[item.title]?.nextRetryAt) <= now),
           ),
           alignmentKey: key,
         });
@@ -240,6 +249,21 @@ export async function fetchBwiki(stage, cache, fetcher = fetch, options = {}) {
     }
   }
   await fs.writeFile(path.join(cache, 'index.json'), JSON.stringify(index));
+  let alignments = 0;
+  for (const page of results) {
+    if (!page.needsAlignment) continue;
+    if (alignments++ < (options.maxAlignments ?? Infinity)) continue;
+    page.needsAlignment = false;
+    page.alignmentDeferred = true;
+    const previous = state.pages[page.title] ?? {};
+    state.pages[page.title] = {
+      ...previous,
+      unresolved: true,
+      nextRetryAt: new Date(
+        Math.max(Date.parse(previous.nextRetryAt ?? '') || 0, now + 6 * 3600000),
+      ).toISOString(),
+    };
+  }
   const manifest = {
     schema: 'hsr-bwiki-input.v1',
     commit: request.commit,

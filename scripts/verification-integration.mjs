@@ -33,7 +33,8 @@ export function assertVerificationPreserved(comparison, context) {
     'lostVideoVerification',
     'conflictingLinks',
     'conflictingOrder',
-  ].filter((key) => comparison[key].length);
+    'lostEventImages',
+  ].filter((key) => comparison[key]?.length);
   if (failures.length)
     throw new Error(
       `${context} rejected: ${failures.map((key) => `${key}=${comparison[key].length}`).join(', ')}; preserving deployed data`,
@@ -64,6 +65,25 @@ export function baselineChoice(repository, published) {
 
 export async function verificationRows(root) {
   const rows = new Map();
+  const simulation = await fs
+    .readFile(path.join(root, 'src/data/simulation.json'))
+    .catch((error) => {
+      if (error.code !== 'ENOENT') throw error;
+    });
+  rows.eventImages = simulation
+    ? JSON.parse(simulation)
+        .flatMap((entry) =>
+          entry.chapters
+            .filter((chapter) => chapter.image)
+            .map((chapter) => [
+              entry.id + '/' + chapter.id,
+              chapter.image.url,
+              chapter.image.sha1,
+              chapter.image.sourceUrl,
+            ]),
+        )
+        .sort((a, b) => a[0].localeCompare(b[0]))
+    : [];
   const folder = path.join(root, 'public/content');
   for (const name of (await fs.readdir(folder))
     .filter((name) => /^[A-Za-z0-9_-]+\.json$/.test(name) && name !== 'search-index.json')
@@ -78,6 +98,10 @@ export async function verificationRows(root) {
   return rows;
 }
 export function compareVerification(before, after) {
+  const imageKeys = new Set((after.eventImages ?? []).map(([key]) => key));
+  const lostEventImages = (before.eventImages ?? [])
+    .filter(([key]) => !imageKeys.has(key))
+    .map(([key]) => key);
   const newlyVerified = [],
     lostVerification = [],
     remainingUnknown = [];
@@ -143,8 +167,9 @@ export function compareVerification(before, after) {
   }
   const digest = (rows) =>
     hash(
-      JSON.stringify(
-        [...rows].map(([id, row]) => [
+      JSON.stringify({
+        eventImages: rows.eventImages ?? [],
+        rows: [...rows].map(([id, row]) => [
           id,
           ...coreKeys.map((key) => row[key]),
           row.flowStatus,
@@ -164,7 +189,7 @@ export function compareVerification(before, after) {
           row.videoNextIds,
           row.videoReplyToIds,
         ]),
-      ),
+      }),
     );
   return {
     newlyVerified,
@@ -176,6 +201,7 @@ export function compareVerification(before, after) {
     lostVideoVerification,
     conflictingLinks,
     conflictingOrder: [...new Set(conflictingOrder)],
+    lostEventImages,
     changed: digest(before) !== digest(after),
     digest: digest(after),
   };

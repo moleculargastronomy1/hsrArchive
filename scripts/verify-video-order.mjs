@@ -43,7 +43,8 @@ const prior = await read(previousRoot, 'public/video-order-provenance.json').cat
 });
 if (config.schema !== 'hsr-video-sources.v1' || wiki.commit !== update.commit)
   throw new Error('Mixed video verification inputs');
-const retryOnly = process.argv.includes('--retry');
+const reuseOnly = process.argv.includes('--reuse');
+const retryOnly = process.argv.includes('--retry') || reuseOnly;
 const retryState = await readRetry(repository);
 const algorithm = await videoAlgorithmHash(repository);
 const observations = await read(repository, 'editorial/video-observations.json').catch((error) => {
@@ -55,7 +56,7 @@ if (observations.schema !== 'hsr-video-observations.v1' || !Array.isArray(observ
 const report = {
   schema: 'hsr-video-order-audit.v1',
   commit: update.commit,
-  algorithm,
+  algorithm: reuseOnly ? (prior.algorithm ?? algorithm) : algorithm,
   checkedAt: new Date().toISOString(),
   policy:
     'Official execution and BWIKI proofs are preserved. Exact public Korean captions support bracketed ordering; separately reviewed screen paths support only observed scenes and choices. Missing captions and conflicts remain pending. No access restriction bypass or video downloads.',
@@ -230,7 +231,7 @@ queue.sort(
 const examined = new Set();
 // Rotate through the backlog even when the newest chapter stays inaccessible.
 for (const item of selectVideoChecks(
-  queue.filter((item) => report.chapters[item.file].pending),
+  reuseOnly ? [] : queue.filter((item) => report.chapters[item.file].pending),
   report.checks,
   report.checkedAt,
 )) {
@@ -308,7 +309,7 @@ retryState.videoChecks = report.checks;
 await saveRetry(retryState, repository);
 finalizeVideoReport(report, payloads, examined.size);
 await saveVideoReview(root, report, changed);
-retryState.videoAlgorithm = algorithm;
+if (!reuseOnly) retryState.videoAlgorithm = algorithm;
 await saveRetry(retryState, repository);
 console.log(
   `Video order: ${catalog.size} reference videos; ${examined.size} public-caption checks; ${changed.size} chapters reordered`,

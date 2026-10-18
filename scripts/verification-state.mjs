@@ -26,7 +26,7 @@ export async function writeDerived(root, relative, bytes) {
   }
 }
 export const statePath = (file) =>
-  /^(?:src\/data\/(?:codex|simulation|imported-content|train-databank|astropolis-intro|books|trailblaze)\.json|public\/(?:content-update|books-provenance|trailblaze-provenance|dialogue-flow-provenance|bwiki-provenance|video-order-provenance|video-review-summary)\.json|public\/content\/[A-Za-z0-9_-]+\.json|public\/content\/locales\/(?:manifest|(?:en|zh-CN|ja)\/[A-Za-z0-9_-]+)\.json)$/.test(
+  /^(?:src\/data\/(?:codex|simulation|imported-content|train-databank|astropolis-intro|books|trailblaze)\.json|public\/(?:content-update|books-provenance|trailblaze-provenance|dialogue-flow-provenance|bwiki-provenance|simulation-events-provenance|video-order-provenance|video-review-summary)\.json|public\/content\/[A-Za-z0-9_-]+\.json|public\/content\/locales\/(?:manifest|(?:en|zh-CN|ja)\/[A-Za-z0-9_-]+)\.json)$/.test(
     file,
   );
 

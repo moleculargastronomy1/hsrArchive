@@ -23,12 +23,16 @@ def refresh_row(row, talks, texts, bindings, chapters=None):
         return dict(row), False
     result = dict(row)
     result['text'] = plain(texts[str(text_hash)])
+    if row.get('missionId', '').startswith('event-'):
+        result['text'] = re.sub(r'</?align(?:=[^>]*)?>', '', result['text'], flags=re.I).strip()
     if introduction and chapters is not None:
         result['textHash'] = str(text_hash)
     if record:
         speaker_hash = record.get('TextmapTalkSentenceName', {}).get('Hash')
         if speaker_hash and isinstance(texts.get(str(speaker_hash)), str):
             result['speaker'] = plain(texts[str(speaker_hash)])
+            if row.get('missionId', '').startswith('event-'):
+                result['speaker'] = result['speaker'].strip()
     return result, True
 
 

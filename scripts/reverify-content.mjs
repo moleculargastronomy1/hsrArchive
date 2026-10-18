@@ -12,7 +12,15 @@ import {
 } from './verification-integration.mjs';
 import { fetchBwiki } from './fetch-bwiki.mjs';
 import { stateFiles } from './verification-state.mjs';
-import { algorithmHash, readRetry, saveRetry } from './verification-retry.mjs';
+import {
+  algorithmHash,
+  readRetry,
+  saveRetry,
+  REVIEW_INTERVAL,
+  prioritizeBwikiRequests,
+} from './verification-retry.mjs';
+import { prepareSimulationEvents } from './simulation-events.mjs';
+import { collectEventImages } from './event-images.mjs';
 
 const read = async (file) => JSON.parse(await fs.readFile(file));
 const write = (file, data) => fs.writeFile(file, JSON.stringify(data));
@@ -41,9 +49,10 @@ export async function finishVerification(
   state.videoChecks = latestRetry.videoChecks ?? state.videoChecks;
   state.videoAlgorithm = latestRetry.videoAlgorithm ?? state.videoAlgorithm;
   for (const page of manifest.pages)
-    if (page.status === 'available' && page.alignmentKey) {
+    if (page.status === 'available' && page.alignmentKey && page.needsAlignment) {
       const previous = state.pages[page.title];
       state.pages[page.title] = {
+        ...previous,
         aligned: `${manifest.commit}:${algorithm}:${page.revision}`,
         revision: page.revision,
         lastSuccess: page.collectedAt,
@@ -59,6 +68,41 @@ export async function finishVerification(
   if (!(manifest.targetSources?.length === 1 && manifest.targetSources[0] === 'youtube'))
     state.algorithm = algorithm;
   const report = await read(path.join(root, 'public/bwiki-provenance.json'));
+  const unresolvedMissions = new Set(
+    [...after.values()]
+      .filter((row) => orderUnknown(row) || (row.type === 'choice' && !row.bwikiNextIds?.length))
+      .flatMap((row) => [row.missionId, row.bwikiMissionId]),
+  );
+  for (const page of manifest.pages) {
+    const unresolved =
+      (page.eventFiles ?? []).some((file) => report.events?.[file]?.remaining > 0) ||
+      (page.missionIds ?? [page.missionId]).some((id) => unresolvedMissions.has('quest-' + id));
+    if (page.status === 'available' && page.needsAlignment && unresolved) {
+      const item = state.pages[page.title] ?? {};
+      state.pages[page.title] = {
+        ...item,
+        unresolved: true,
+        lastReviewedAt: manifest.checkedAt,
+        nextRetryAt: new Date(
+          Math.max(
+            Date.parse(item.nextRetryAt ?? '') || 0,
+            Date.parse(manifest.checkedAt) + REVIEW_INTERVAL,
+          ),
+        ).toISOString(),
+      };
+    } else if (
+      page.status === 'available' &&
+      page.needsAlignment &&
+      !unresolved &&
+      page.retrieval !== 'cache-pinned'
+    ) {
+      const item = state.pages[page.title];
+      delete item.unresolved;
+      delete item.reason;
+      delete item.failures;
+      delete item.nextRetryAt;
+    }
+  }
   const reasons = {};
   for (const page of manifest.pages)
     if (page.status !== 'available')
@@ -70,6 +114,10 @@ export async function finishVerification(
   ])
     matchingReasons[item.reason ?? '미확인 연결'] =
       (matchingReasons[item.reason ?? '미확인 연결'] ?? 0) + 1;
+  const events = await read(
+    path.join(reviewRoot, 'public/simulation-events-provenance.json'),
+  ).catch(() => undefined);
+  const eventRecords = Object.values(events?.records ?? {});
   const result = {
     schema: 'hsr-verification-run.v1',
     checkedAt: new Date().toISOString(),
@@ -100,6 +148,14 @@ export async function finishVerification(
     changed: comparison.changed,
     collectionFailures: reasons,
     matchingReviewRecords: matchingReasons,
+    eventReview: {
+      records: eventRecords.length,
+      rows: eventRecords.reduce((sum, item) => sum + item.rows, 0),
+      pendingRecords: eventRecords.filter((item) => item.status === 'pending').length,
+      partialRecords: eventRecords.filter((item) => item.status === 'partial').length,
+      linkedImages: eventRecords.filter((item) => item.imageStatus === 'linked').length,
+      deferredDocuments: manifest.pages.filter((item) => item.alignmentDeferred).length,
+    },
     targetFiles: manifest.targetFiles ?? 'all',
     bodyDownloads: manifest.pages.filter((item) => item.retrieval === 'download').length,
     cachedDocuments: manifest.pages.filter((item) =>
@@ -148,7 +204,7 @@ export async function finishVerification(
   return result;
 }
 
-export async function retryContent(root, stage, raw, planFile) {
+export async function retryContent(root, stage, raw, planFile, api, blobs) {
   const state = await readRetry(root),
     algorithm = await algorithmHash(root),
     before = await verificationRows(root);
@@ -185,6 +241,7 @@ export async function retryContent(root, stage, raw, planFile) {
       );
     return publishRetryStage(root, stage, raw, planFile, before, manifest, state, algorithm);
   }
+  await prepareSimulationEvents(stage, raw, planFile, api, blobs, run);
   discoverBwiki(run, stage, raw, planFile);
   const previous = await read(path.join(root, 'public/bwiki-provenance.json'));
   const requestFile = path.join(stage, '.cache/bwiki/request.json'),
@@ -194,11 +251,7 @@ export async function retryContent(root, stage, raw, planFile) {
     if (orderUnknown(row))
       for (const mission of new Set([row.missionId, row.bwikiMissionId]))
         waiting.set(mission, (waiting.get(mission) ?? 0) + 1);
-  request.requests.sort(
-    (a, b) =>
-      (b.missionIds ?? [b.missionId]).reduce((s, id) => s + (waiting.get('quest-' + id) ?? 0), 0) -
-      (a.missionIds ?? [a.missionId]).reduce((s, id) => s + (waiting.get('quest-' + id) ?? 0), 0),
-  );
+  prioritizeBwikiRequests(request.requests, state, waiting);
   await write(requestFile, request);
   const forceAlignment = Boolean(
     state.pendingDigest && state.pendingDigest !== compareVerification(before, before).digest,
@@ -207,7 +260,14 @@ export async function retryContent(root, stage, raw, planFile) {
     stage,
     path.join(root, '.cache/upstream-content/bwiki'),
     fetch,
-    { state, algorithm, previousAudit: previous, maxDownloads: 20, forceAlignment },
+    {
+      state,
+      algorithm,
+      previousAudit: previous,
+      maxDownloads: 20,
+      maxAlignments: 20,
+      forceAlignment,
+    },
   );
   // Persist failed collection/backoff even if later validation rejects output.
   await saveRetry(state, root);
@@ -223,6 +283,7 @@ export async function retryContent(root, stage, raw, planFile) {
       .filter((row) => missions.has(row.missionId) || missions.has(row.bwikiMissionId))
       .map((row) => row.file),
   );
+  for (const page of selected) for (const file of page.eventFiles ?? []) targets.add(file);
   for (const [file, chunks] of Object.entries(previous.chapters))
     if (chunks.some((chunk) => titles.has(chunk.page))) targets.add(file);
   for (const [file, members] of Object.entries(previous.missionCatalog ?? {}))
@@ -233,11 +294,23 @@ export async function retryContent(root, stage, raw, planFile) {
       targets.add(chapter.file);
   manifest.targetFiles = [...targets].sort();
   await write(path.join(stage, '.cache/bwiki/manifest.json'), manifest);
+  await collectEventImages(
+    stage,
+    path.join(root, '.cache/upstream-content/bwiki'),
+    manifest,
+    state,
+  );
+  await saveRetry(state, root);
   if (targets.size) alignBwiki(run, stage, raw, planFile, root);
-  if (watch.retryVideo)
+  if (watch.retryVideo || targets.size)
     execFileSync(
       process.execPath,
-      [path.join(root, 'scripts/verify-video-order.mjs'), stage, root, '--retry'],
+      [
+        path.join(root, 'scripts/verify-video-order.mjs'),
+        stage,
+        root,
+        watch.retryVideo ? '--retry' : '--reuse',
+      ],
       { cwd: root, stdio: 'inherit' },
     );
   return publishRetryStage(root, stage, raw, planFile, before, manifest, state, algorithm);

@@ -7,7 +7,12 @@ import { isMissionStructurePath, resolveMissionStructures } from './trailblaze-s
 import { prepareDialogueFlow } from './dialogue-flow.mjs';
 import { fetchBwiki } from './fetch-bwiki.mjs';
 import { retryContent, finishVerification } from './reverify-content.mjs';
-import { algorithmHash, readRetry, saveRetry } from './verification-retry.mjs';
+import {
+  algorithmHash,
+  readRetry,
+  saveRetry,
+  prioritizeBwikiRequests,
+} from './verification-retry.mjs';
 
 import {
   verificationRows,
@@ -16,6 +21,8 @@ import {
 } from './verification-integration.mjs';
 import { pythonRunner } from './content-process.mjs';
 import { discoverBwiki, alignBwiki } from './bwiki-verification.mjs';
+import { prepareSimulationEvents } from './simulation-events.mjs';
+import { collectEventImages } from './event-images.mjs';
 
 const root = process.cwd();
 const cache = path.resolve('.cache/upstream-content');
@@ -74,7 +81,7 @@ if (mode === '--plan') {
   await Promise.all(
     plan.files.map(async (file) => {
       if (
-        !/^(TextMap\/TextMap(?:KR|EN|CHS|JP)(?:_\d+)?|ExcelOutput\/(?:NounAtlas|NounAtlasChangeInfo|TalkSentenceConfig|MissionChapterConfig|MainMission|BookSeriesConfig|BookSeriesWorld|LocalbookConfig))\.json$/.test(
+        !/^(TextMap\/TextMap(?:KR|EN|CHS|JP)(?:_\d+)?|ExcelOutput\/(?:NounAtlas|NounAtlasChangeInfo|TalkSentenceConfig|MissionChapterConfig|MainMission|BookSeriesConfig|BookSeriesWorld|LocalbookConfig|RogueHandBookEvent|RogueHandBookEventType|RogueTournHandBookEvent|RogueNPC|RogueTournNPC|RogueMagicNPC|RogueDialogueOptionDisplay))\.json$/.test(
           file.path,
         ) ||
         !/^[a-f0-9]{40}$/.test(file.sha)
@@ -121,7 +128,7 @@ if (mode === '--plan') {
       plan.commit
     )
       throw new Error('Retry requires the same official input commit');
-    await retryContent(root, stage, raw, planFile);
+    await retryContent(root, stage, raw, planFile, api, blobs);
     process.exit(0);
   }
   for (const name of [
@@ -196,16 +203,26 @@ if (mode === '--plan') {
   run('import-books.py', [raw, planFile]);
   run('import-trailblaze.py', trailblazeArgs);
   run('project-upstream-content.py', [root, raw, planFile], stage);
+  await prepareSimulationEvents(stage, raw, planFile, api, blobs, run);
   await prepareDialogueFlow(root, stage, plan.commit, api, blobs);
   run('restore-dialogue-flow.py', [stage, path.join(stage, '.cache/dialogue-flow/manifest.json')]);
   discoverBwiki(run, stage, raw, planFile);
   const retryState = await readRetry(root),
     algorithm = await algorithmHash(root);
+  const requestFile = path.join(stage, '.cache/bwiki/request.json');
+  const request = JSON.parse(await fs.readFile(requestFile));
+  const waiting = new Map();
+  for (const row of before.values())
+    if (!['matched', 'cached'].includes(row.bwikiStatus))
+      waiting.set(row.missionId, (waiting.get(row.missionId) ?? 0) + 1);
+  prioritizeBwikiRequests(request.requests, retryState, waiting);
+  await fs.writeFile(requestFile, JSON.stringify(request));
   const manifest = await fetchBwiki(stage, path.join(cache, 'bwiki'), fetch, {
     state: retryState,
     algorithm,
     previousAudit: JSON.parse(await fs.readFile(path.join(root, 'public/bwiki-provenance.json'))),
   });
+  await collectEventImages(stage, path.join(cache, 'bwiki'), manifest, retryState);
   await saveRetry(retryState, root);
   alignBwiki(run, stage, raw, planFile, root);
   execFileSync(process.execPath, [path.join(root, 'scripts/verify-video-order.mjs'), stage, root], {

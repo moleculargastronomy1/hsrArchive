@@ -4,6 +4,7 @@ import html
 import json
 import re
 import sys
+import time
 import unicodedata
 from collections import Counter, defaultdict
 from pathlib import Path
@@ -16,11 +17,19 @@ _localizations = module_from_spec(_spec)
 _spec.loader.exec_module(_localizations)
 
 
-def write(path, value):
+def write(path, value, pretty=False):
     path.parent.mkdir(parents=True, exist_ok=True)
     temporary = path.with_suffix(path.suffix + '.tmp')
-    temporary.write_text(json.dumps(value, ensure_ascii=False, separators=(',', ':')), encoding='utf-8')
-    temporary.replace(path)
+    temporary.write_text(json.dumps(value, ensure_ascii=False, indent=2 if pretty else None,
+                                    separators=None if pretty else (',', ':')) + ('\n' if pretty else ''), encoding='utf-8')
+    for attempt in range(5):
+        try:
+            temporary.replace(path)
+            break
+        except PermissionError:
+            if attempt == 4:
+                raise
+            time.sleep(0.2 * (attempt + 1))
 
 
 def inputs(raw, plan_path):

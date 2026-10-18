@@ -474,7 +474,7 @@ export default function App() {
           </button>
         </div>
         <div className="section-heading chapter-heading">
-          <h2>임무 목차</h2>
+          <h2>{entry.category === 'simulation' ? '기록 목차' : '임무 목차'}</h2>
           <span>{entry.chapters.length}개 항목</span>
         </div>
         <div className="chapter-list">
@@ -488,6 +488,7 @@ export default function App() {
               <span>
                 <strong>{ch.title}</strong>
                 <small>
+                  {ch.group === '사건 기록' ? '사건 기록 · ' : ''}
                   {ch.kind === 'branch'
                     ? '선택 분기 · '
                     : ch.kind === 'adventure'
@@ -957,6 +958,11 @@ function Reader({
             </span>
             <h1>{chapter.title}</h1>
             <p>{entry.title}</p>
+            {chapter.group === '사건 기록' && chapter.content?.rows === 0 && (
+              <p className="local-note">
+                사건 본문과 선택지를 대조하고 있습니다. 확인된 원문은 자동 갱신됩니다.
+              </p>
+            )}
             {chapter.content ? (
               <LanguageComparisonControls
                 label={chapterContentLabel(chapter)}
@@ -970,6 +976,24 @@ function Reader({
               </div>
             )}
           </header>
+          {chapter.image && (
+            <figure className="event-image">
+              <img
+                src={chapter.image.url}
+                alt={chapter.image.alt}
+                width={chapter.image.width}
+                height={chapter.image.height}
+                loading="lazy"
+                referrerPolicy="no-referrer"
+              />
+              <figcaption>
+                <a href={chapter.image.sourceUrl} target="_blank" rel="noreferrer">
+                  이미지 출처: BWIKI
+                </a>
+                {' · '}© HoYoverse 및 해당 권리자
+              </figcaption>
+            </figure>
+          )}
           {chapter.content && (
             <DialogueBrowser
               file={chapter.content.file}
