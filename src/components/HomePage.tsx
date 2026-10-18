@@ -52,9 +52,6 @@ export default function HomePage({
         </form>
         <div className="home-search-help">
           <span>한국어 원문 검색 · 영어 / 중국어 / 일본어 비교</span>
-          <a href="#/search">
-            상세 검색 <ChevronRight size={13} />
-          </a>
         </div>
       </section>
 
