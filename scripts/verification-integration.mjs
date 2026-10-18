@@ -34,6 +34,7 @@ export function assertVerificationPreserved(comparison, context) {
     'conflictingLinks',
     'conflictingOrder',
     'lostEventImages',
+    'lostContentRoutes',
   ].filter((key) => comparison[key]?.length);
   if (failures.length)
     throw new Error(
@@ -63,8 +64,23 @@ export function baselineChoice(repository, published) {
   return 'conflict';
 }
 
-export async function verificationRows(root) {
+export async function verificationRows(root, { referencedOnly = false } = {}) {
   const rows = new Map();
+  const references = new Set();
+  const optionalJson = async (file) => {
+    const bytes = await fs.readFile(path.join(root, file)).catch((error) => {
+      if (error.code !== 'ENOENT') throw error;
+    });
+    return bytes ? JSON.parse(bytes) : undefined;
+  };
+  for (const item of Object.values((await optionalJson('src/data/imported-content.json')) ?? {}))
+    if (item.file) references.add(item.file);
+  for (const name of ['simulation', 'codex', 'books', 'trailblaze'])
+    for (const entry of (await optionalJson(`src/data/${name}.json`)) ?? [])
+      for (const chapter of entry.chapters)
+        if (chapter.content?.file) references.add(chapter.content.file);
+  if (referencedOnly && !references.size) throw new Error('Missing authoritative content routes');
+  rows.contentRoutes = [...references].sort();
   const simulation = await fs
     .readFile(path.join(root, 'src/data/simulation.json'))
     .catch((error) => {
@@ -88,6 +104,7 @@ export async function verificationRows(root) {
   for (const name of (await fs.readdir(folder))
     .filter((name) => /^[A-Za-z0-9_-]+\.json$/.test(name) && name !== 'search-index.json')
     .sort()) {
+    if (referencedOnly && !references.has('content/' + name)) continue;
     const payload = JSON.parse(await fs.readFile(path.join(folder, name)));
     if (payload.schema !== 'hsr-dialogue.v1') continue;
     for (const row of payload.rows) {
@@ -98,6 +115,8 @@ export async function verificationRows(root) {
   return rows;
 }
 export function compareVerification(before, after) {
+  const routes = new Set(after.contentRoutes ?? []);
+  const lostContentRoutes = (before.contentRoutes ?? []).filter((file) => !routes.has(file));
   const imageKeys = new Set((after.eventImages ?? []).map(([key]) => key));
   const lostEventImages = (before.eventImages ?? [])
     .filter(([key]) => !imageKeys.has(key))
@@ -169,6 +188,7 @@ export function compareVerification(before, after) {
     hash(
       JSON.stringify({
         eventImages: rows.eventImages ?? [],
+        contentRoutes: rows.contentRoutes ?? [],
         rows: [...rows].map(([id, row]) => [
           id,
           ...coreKeys.map((key) => row[key]),
@@ -202,6 +222,7 @@ export function compareVerification(before, after) {
     conflictingLinks,
     conflictingOrder: [...new Set(conflictingOrder)],
     lostEventImages,
+    lostContentRoutes,
     changed: digest(before) !== digest(after),
     digest: digest(after),
   };

@@ -20,7 +20,7 @@ import {
   assertVerificationPreserved,
 } from './verification-integration.mjs';
 import { pythonRunner } from './content-process.mjs';
-import { discoverBwiki, alignBwiki } from './bwiki-verification.mjs';
+import { discoverBwiki, alignBwiki, limitBwikiToPending } from './bwiki-verification.mjs';
 import { prepareSimulationEvents } from './simulation-events.mjs';
 import { collectEventImages } from './event-images.mjs';
 
@@ -211,6 +211,12 @@ if (mode === '--plan') {
     algorithm = await algorithmHash(root);
   const requestFile = path.join(stage, '.cache/bwiki/request.json');
   const request = JSON.parse(await fs.readFile(requestFile));
+  const pendingFiles = await limitBwikiToPending(
+    root,
+    stage,
+    request,
+    await verificationRows(stage),
+  );
   const waiting = new Map();
   for (const row of before.values())
     if (!['matched', 'cached'].includes(row.bwikiStatus))
@@ -222,6 +228,7 @@ if (mode === '--plan') {
     algorithm,
     previousAudit: JSON.parse(await fs.readFile(path.join(root, 'public/bwiki-provenance.json'))),
   });
+  manifest.targetFiles = [...pendingFiles].sort();
   await collectEventImages(stage, path.join(cache, 'bwiki'), manifest, retryState);
   await saveRetry(retryState, root);
   alignBwiki(run, stage, raw, planFile, root);

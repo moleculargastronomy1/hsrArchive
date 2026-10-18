@@ -3,7 +3,7 @@ import fs from 'node:fs/promises';
 import path from 'node:path';
 import { execFileSync } from 'node:child_process';
 import { pythonRunner } from './content-process.mjs';
-import { discoverBwiki, alignBwiki } from './bwiki-verification.mjs';
+import { discoverBwiki, alignBwiki, limitBwikiToPending } from './bwiki-verification.mjs';
 import {
   verificationRows,
   compareVerification,
@@ -246,6 +246,7 @@ export async function retryContent(root, stage, raw, planFile, api, blobs) {
   const previous = await read(path.join(root, 'public/bwiki-provenance.json'));
   const requestFile = path.join(stage, '.cache/bwiki/request.json'),
     request = await read(requestFile);
+  const pendingFiles = await limitBwikiToPending(root, stage, request, before);
   const waiting = new Map();
   for (const row of before.values())
     if (orderUnknown(row))
@@ -292,6 +293,7 @@ export async function retryContent(root, stage, raw, planFile, api, blobs) {
   for (const chapter of discovery.chapters)
     if (chapter.groups.some((group) => selected.some((page) => page.title === group.title)))
       targets.add(chapter.file);
+  for (const file of targets) if (!pendingFiles.has(file)) targets.delete(file);
   manifest.targetFiles = [...targets].sort();
   await write(path.join(stage, '.cache/bwiki/manifest.json'), manifest);
   await collectEventImages(

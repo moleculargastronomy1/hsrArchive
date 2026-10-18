@@ -14,7 +14,7 @@ if (process.argv[2] === '--pack') {
   const result = await packState(process.cwd());
   console.log(`Saved validated derived snapshot: ${result.files} files`);
 } else if (process.argv[2] === '--restore') {
-  const beforeRows = await verificationRows(process.cwd());
+  const beforeRows = await verificationRows(process.cwd(), { referencedOnly: true });
   const beforeCommit = JSON.parse(await fs.readFile('public/content-update.json')).commit;
   const repositoryBytes = new Map();
   for (const file of await stateFiles(process.cwd()))
@@ -72,7 +72,10 @@ if (process.argv[2] === '--pack') {
   } else console.log('Restored last successfully deployed verification state');
   const afterCommit = JSON.parse(await fs.readFile('public/content-update.json')).commit;
   if (beforeCommit === afterCommit) {
-    const choice = baselineChoice(beforeRows, await verificationRows(process.cwd()));
+    const choice = baselineChoice(
+      beforeRows,
+      await verificationRows(process.cwd(), { referencedOnly: true }),
+    );
     if (choice === 'conflict')
       throw new Error(
         'Repository and deployed verification each contain unique evidence; refusing to discard either',

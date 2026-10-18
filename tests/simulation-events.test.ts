@@ -6,6 +6,7 @@ import { prioritizeBwikiRequests, retryDecision, HOUR } from '../scripts/verific
 import fs from 'node:fs/promises';
 import path from 'node:path';
 import { collectEventImages } from '../scripts/event-images.mjs';
+import { limitBwikiToPending } from '../scripts/bwiki-verification.mjs';
 import {
   compareVerification,
   assertVerificationPreserved,
@@ -20,6 +21,59 @@ test('event paths reject escapes and unrelated sources', () => {
     'Config/Level/Rogue/RogueNPC/./test.json',
   ])
     assert.equal(eventPath(value), false);
+});
+
+test('BWIKI updates exclude completed files while retaining new events and unresolved responses', async () => {
+  await fs.mkdir('.cache/tests', { recursive: true });
+  const folder = await fs.mkdtemp(path.resolve('.cache/tests/pending-only-'));
+  try {
+    await fs.mkdir(path.join(folder, 'public'), { recursive: true });
+    await fs.mkdir(path.join(folder, '.cache/bwiki'), { recursive: true });
+    await fs.writeFile(
+      path.join(folder, 'public/bwiki-provenance.json'),
+      JSON.stringify({
+        imports: {},
+        events: { 'finished-event': { remaining: 0 } },
+      }),
+    );
+    await fs.writeFile(
+      path.join(folder, '.cache/bwiki/chapters.json'),
+      JSON.stringify({ chapters: [] }),
+    );
+    const request = {
+      requests: [
+        { title: '검증 완료', missionId: 1 },
+        { title: '미확인', missionId: 2 },
+        { title: '응답 미확인', missionId: 3 },
+        { title: '새 사건', missionId: 0, eventFiles: ['new-event'] },
+        { title: '완료 사건', missionId: 0, eventFiles: ['finished-event'] },
+      ],
+    };
+    const rows = new Map([
+      ['one', { file: 'done', missionId: 'quest-1', bwikiStatus: 'matched', type: 'dialogue' }],
+      ['two', { file: 'pending', missionId: 'quest-2', bwikiStatus: 'review', type: 'dialogue' }],
+      [
+        'three',
+        {
+          file: 'reply',
+          missionId: 'quest-3',
+          bwikiStatus: 'matched',
+          type: 'choice',
+          bwikiNextIds: [],
+        },
+      ],
+    ]);
+    const targets = await limitBwikiToPending(folder, folder, request, rows);
+    assert.deepEqual(
+      request.requests.map((item) => item.title),
+      ['미확인', '응답 미확인', '새 사건'],
+    );
+    assert.deepEqual([...targets].sort(), ['new-event', 'pending', 'reply']);
+    assert.equal(targets.has('done'), false);
+  } finally {
+    assert.ok(folder.startsWith(path.resolve('.cache/tests') + path.sep));
+    await fs.rm(folder, { recursive: true, force: true });
+  }
 });
 
 test('successful but unresolved documents become due without a new revision and rotate fairly', () => {
@@ -156,4 +210,65 @@ test('an image-only improvement triggers publication and cannot be silently eras
   ];
   assert.equal(compareVerification(before, after).changed, true);
   assert.throws(() => assertVerificationPreserved(compareVerification(after, before), 'Images'));
+});
+
+test('pending chapter routes cannot be overwritten by an older snapshot with orphan event payloads', async () => {
+  const { verificationRows, baselineChoice } = await import(
+    '../scripts/verification-integration.mjs'
+  );
+  await fs.mkdir('.cache/tests', { recursive: true });
+  const folder = await fs.mkdtemp(path.resolve('.cache/tests/event-baseline-'));
+  try {
+    await fs.mkdir(path.join(folder, 'src/data'), { recursive: true });
+    await fs.mkdir(path.join(folder, 'public/content'), { recursive: true });
+    const payload = {
+      schema: 'hsr-dialogue.v1',
+      entryId: 'entry',
+      chapterId: 'event',
+      rows: [{ id: 'new', text: '검증한 새 사건' }],
+    };
+    await fs.writeFile(
+      path.join(folder, 'public/content/entry--event.json'),
+      JSON.stringify(payload),
+    );
+    await fs.writeFile(
+      path.join(folder, 'src/data/simulation.json'),
+      JSON.stringify([
+        {
+          id: 'entry',
+          chapters: [
+            { id: 'event', content: { file: 'content/entry--event.json' } },
+            { id: 'pending', content: { file: 'content/entry--pending.json' } },
+          ],
+        },
+      ]),
+    );
+    await fs.writeFile(
+      path.join(folder, 'public/content/entry--pending.json'),
+      JSON.stringify({ ...payload, chapterId: 'pending', rows: [] }),
+    );
+    const repository = await verificationRows(folder, { referencedOnly: true });
+    await fs.writeFile(
+      path.join(folder, 'src/data/simulation.json'),
+      JSON.stringify([
+        { id: 'old', chapters: [{ id: 'old', content: { file: 'content/old--old.json' } }] },
+      ]),
+    );
+    await fs.writeFile(
+      path.join(folder, 'public/content/old--old.json'),
+      JSON.stringify({ ...payload, rows: [] }),
+    );
+    const published = await verificationRows(folder, { referencedOnly: true });
+    assert.equal(published.size, 0);
+    assert.equal(repository.size, 1);
+    // Real published routes are normally a subset of repository routes. Include
+    // the unchanged old route so this fixture isolates the added event routes.
+    repository.contentRoutes.push('content/old--old.json');
+    assert.equal(baselineChoice(repository, published), 'repository');
+    const removed = compareVerification(repository, published);
+    assert.ok(removed.lostContentRoutes.includes('content/entry--pending.json'));
+  } finally {
+    assert.ok(folder.startsWith(path.resolve('.cache/tests') + path.sep));
+    await fs.rm(folder, { recursive: true, force: true });
+  }
 });
