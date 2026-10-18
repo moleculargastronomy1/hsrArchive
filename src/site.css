@@ -93,16 +93,13 @@
   width: 21px;
   height: 21px;
 }
-.app .sidebar .category-icon img {
-  filter: grayscale(1);
-}
 .app .sidebar .category-icon-codex img {
   width: 30px;
   height: 30px;
   transform: translateY(3px);
 }
 .app .sidebar .category-icon-books {
-  color: inherit;
+  color: #b2c69f;
 }
 .app .nav-dot {
   display: none;
