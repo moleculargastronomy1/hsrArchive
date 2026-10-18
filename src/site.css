@@ -93,17 +93,28 @@
   width: 21px;
   height: 21px;
 }
+.app .sidebar .category-icon,
+.app .sidebar nav > a > svg,
+.app .sidebar-bottom > a > svg {
+  color: #b6c0d1;
+}
+.app .sidebar .category-icon img {
+  filter: grayscale(1);
+}
+.app .sidebar nav > a:is(:hover, :focus-visible, .active) :is(.category-icon, svg),
+.app .sidebar-bottom > a:is(:hover, :focus-visible) > svg {
+  color: var(--gold);
+}
+.app .sidebar nav > a:is(:hover, :focus-visible, .active) .category-icon img {
+  filter: grayscale(1) sepia(1) saturate(1.5) brightness(0.85);
+}
 .app .sidebar .category-icon-codex img {
   width: 30px;
   height: 30px;
   transform: translateY(3px);
 }
-.app .sidebar .category-icon-codex img,
 .home-categories .category-icon-codex img {
   filter: grayscale(1) sepia(1) saturate(1.5) brightness(0.85);
-}
-.app .sidebar .category-icon-books {
-  color: var(--gold);
 }
 .app .nav-dot {
   display: none;
