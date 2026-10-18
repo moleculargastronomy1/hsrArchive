@@ -562,7 +562,9 @@ export default function App() {
                     : ch.kind === 'adventure'
                       ? '관련 모험 임무 · '
                       : ''}
-                  {chapterContentLabel(ch)}
+                  {ch.content
+                    ? `${ch.content.rows.toLocaleString('ko-KR')}줄`
+                    : chapterContentLabel(ch)}
                 </small>
               </span>
               {ch.id === progress?.chapterId ? (
