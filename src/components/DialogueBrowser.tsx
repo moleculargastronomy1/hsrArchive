@@ -506,7 +506,7 @@ export default function DialogueBrowser({
       >
         <header>
           <div>
-            <span className="eyebrow">DIALOGUE CONTEXT</span>
+            <span className="eyebrow">대사 문맥</span>
             <h2 id="context-heading">
               <MessageSquareText size={19} />
               {selectedRow && entries.get(selectedRow.entryId)?.category === 'books'

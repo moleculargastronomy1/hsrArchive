@@ -1,0 +1,679 @@
+/* Page-specific reading and discovery surfaces share the home design system. */
+::selection {
+  background: #ccb582;
+  color: #101725;
+}
+html {
+  scrollbar-color: #5b6980 var(--bg);
+}
+.app .main-content {
+  min-width: 0;
+}
+.theme-switch {
+  display: flex;
+  flex-shrink: 0;
+  gap: 2px;
+  padding: 3px;
+  border: 1px solid var(--line);
+  border-radius: 5px;
+  margin-left: auto;
+}
+.theme-switch button {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+  justify-content: center;
+  padding: 7px 9px;
+  min-height: 32px;
+  color: var(--muted);
+  border-radius: 3px;
+  font-size: 11px;
+  white-space: nowrap;
+}
+.theme-switch button[aria-pressed='true'] {
+  background: var(--soft);
+  color: var(--text);
+}
+.theme-switch button:hover {
+  color: var(--text);
+}
+.app .global-search {
+  min-width: 0;
+  width: min(420px, 45%);
+  background: var(--surface);
+  font-size: 12px;
+}
+.app .global-search input {
+  min-width: 0;
+  font-size: 12px;
+}
+.app .topbar {
+  gap: 20px;
+}
+.app .page-intro {
+  margin-bottom: 28px;
+}
+.app .page-intro h1 {
+  font-size: 30px;
+  font-weight: 700;
+  letter-spacing: -1px;
+  margin: 0 0 10px;
+}
+.app .page-intro p {
+  font-size: 14px;
+  line-height: 1.9;
+}
+.app .eyebrow {
+  color: var(--muted);
+  letter-spacing: 0;
+}
+.app .text-link,
+.app .back-link {
+  color: var(--muted);
+  font-size: 12px;
+}
+.app .text-link:hover,
+.app .back-link:hover {
+  color: var(--text);
+}
+.app .button {
+  font-size: 12px;
+  border-radius: 4px;
+  gap: 10px;
+}
+.app .button.primary {
+  background: var(--button-bg);
+  color: var(--button-text);
+}
+.app .category-tabs {
+  margin-top: 0;
+  gap: 26px;
+}
+.app .category-tabs > button,
+.app .category-tabs > a {
+  font-size: 13px;
+  min-height: 42px;
+  padding-bottom: 13px;
+}
+.app .category-tabs span {
+  font-size: 10px;
+}
+.app .filter-bar {
+  margin: 20px 0;
+  font-size: 12px;
+}
+.app .filter-bar select {
+  font-size: 12px;
+}
+.app .local-note {
+  font-size: 12px;
+}
+.app .card-art:not(.has-cover) {
+  background: var(--soft);
+  color: var(--muted);
+}
+.app .card-art .world-art {
+  color: var(--muted);
+  opacity: 0.6;
+}
+.app .codex-submenu {
+  border-color: #33415b;
+  margin: 0 0 8px 22px;
+  padding-left: 10px;
+}
+.app .codex-submenu a {
+  padding: 7px 10px;
+  font-size: 12px;
+  line-height: 1.7;
+}
+.app .codex-submenu a:hover,
+.app .codex-submenu a.active {
+  background: #202b3c;
+  color: #e5d1a4;
+}
+.app .entry-detail {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 200px;
+  gap: 30px;
+  min-height: 0;
+  padding: 0 0 28px;
+  border-radius: 0;
+  border-bottom: 1px solid var(--line);
+  background: none;
+  color: var(--text);
+}
+.app .entry-detail > div:not(.entry-artwork) {
+  max-width: none;
+}
+.app .entry-detail > .entry-artwork {
+  position: static;
+  width: 200px;
+  height: 122px;
+  opacity: 1;
+  mask-image: none;
+  border-radius: 4px;
+}
+.app .entry-detail > .world-art {
+  display: none;
+}
+.app .entry-detail .eyebrow {
+  font-size: 12px;
+  color: var(--muted);
+}
+.app .entry-detail h1 {
+  font-family: inherit;
+  font-size: 30px;
+  line-height: 1.5;
+  color: var(--text);
+  margin: 9px 0 12px;
+}
+.app .entry-detail p {
+  color: var(--muted);
+  font-size: 13px;
+  line-height: 1.9;
+}
+.app .detail-actions {
+  margin: 22px 0 32px;
+  flex-wrap: wrap;
+}
+.app .section-heading h2 {
+  font-size: 18px;
+  font-weight: 600;
+}
+.app .chapter-list {
+  background: none;
+  border: 0;
+  border-top: 1px solid var(--line);
+  border-bottom: 1px solid var(--line);
+  border-radius: 0;
+}
+.app .chapter-list > a {
+  padding: 20px 14px;
+  gap: 20px;
+}
+.app .chapter-list > a > span {
+  min-width: 0;
+}
+.app .chapter-list strong {
+  font-size: 14px;
+  line-height: 1.8;
+  overflow-wrap: anywhere;
+}
+.app .chapter-list small {
+  font-size: 12px;
+  line-height: 1.8;
+  margin-top: 4px;
+}
+.app .chapter-number {
+  font-size: 13px;
+  color: var(--muted);
+}
+.app .reader-main {
+  max-width: 1500px;
+}
+.app .reader-toolbar {
+  margin-bottom: 25px;
+  flex-wrap: wrap;
+}
+.app .reader-toolbar .back-link {
+  font-size: 12px;
+}
+.app .reader-layout {
+  grid-template-columns: 190px minmax(0, 1fr);
+  gap: 28px;
+}
+.app .reader-toc {
+  top: 24px;
+}
+.app .reader-toc .eyebrow {
+  font-size: 11px;
+}
+.app .reader-toc h2 {
+  font-size: 14px;
+  line-height: 1.8;
+  margin: 10px 0 18px;
+}
+.app .reader-toc > a {
+  font-size: 12px;
+  padding: 10px;
+}
+.app .reader-toc > a > span {
+  font-size: 10px;
+}
+.app .reader-article {
+  background: var(--reader);
+  border-radius: 4px;
+  padding: 32px;
+  line-height: 2;
+}
+.app .reader-article h1 {
+  font-family: 'Noto Sans KR', sans-serif;
+  font-size: 28px;
+  font-weight: 600;
+  line-height: 1.6;
+}
+.app .reader-article > header > p {
+  font-size: 13px;
+}
+.app .reader-article .eyebrow {
+  font-size: 12px;
+}
+.app .reader-article > header {
+  margin-bottom: 24px;
+  padding-bottom: 22px;
+}
+.app .chapter-end {
+  color: var(--muted);
+}
+.app .chapter-navigation strong {
+  font-size: 12px;
+}
+.app .chapter-navigation small {
+  font-size: 11px;
+}
+.app .chapter-boundary {
+  font-size: 11px;
+}
+.app .global-dialogue-browser {
+  padding: 0;
+  border: 0;
+  background: none;
+}
+.app .global-dialogue-browser .dialogue-table {
+  background: var(--reader);
+}
+.dialogue-table {
+  border-radius: 3px;
+}
+.dialogue-search {
+  background: var(--surface);
+  padding: 10px 12px;
+}
+.dialogue-search input {
+  font-size: 14px;
+}
+.dialogue-search .button {
+  font-size: 12px;
+}
+.dialogue-help {
+  font-size: 12px;
+}
+.dialogue-result-bar {
+  font-size: 12px;
+}
+.dialogue-scopes {
+  gap: 22px;
+  font-size: 13px;
+  flex-wrap: wrap;
+}
+.dialogue-row-meta > span {
+  color: var(--text);
+  font-size: 12px;
+}
+.dialogue-row-meta small,
+.dialogue-row-meta > a {
+  font-size: 11px;
+  line-height: 1.8;
+}
+.dialogue-row-meta > a {
+  color: var(--muted);
+}
+.flow-reply-link {
+  font-size: 11px;
+}
+.dialogue-text {
+  line-height: 2.1;
+}
+.global-dialogue-browser .dialogue-text {
+  font-size: 16px;
+}
+.dialogue-browser mark {
+  background: #ccb58240;
+}
+.dialogue-text:hover {
+  background: var(--soft);
+}
+.choice-row {
+  background: var(--soft);
+}
+.context-dialog {
+  background: var(--reader);
+  border-radius: 5px;
+}
+.context-dialog::backdrop {
+  background: #050b17c9;
+}
+.context-dialog h2 {
+  font-size: 20px;
+  font-weight: 600;
+}
+.context-dialog header p,
+.context-dialog footer {
+  font-size: 12px;
+}
+.context-row strong {
+  color: var(--text);
+  font-size: 12px;
+}
+.context-row p {
+  font-size: 16px;
+  line-height: 2.1;
+}
+.context-row small {
+  font-size: 11px;
+  color: var(--muted);
+}
+.app .codex-cover {
+  height: clamp(110px, 14vw, 180px);
+  border-radius: 4px;
+  margin-bottom: 25px;
+}
+.app .codex-heading h1 {
+  font-size: 30px;
+  font-weight: 700;
+  margin-top: 0;
+  letter-spacing: -0.7px;
+}
+.app .codex-heading p {
+  font-size: 13px;
+}
+.app .codex-layout {
+  grid-template-columns: 240px minmax(0, 1fr);
+  gap: 26px;
+}
+.app .codex-index {
+  border-radius: 4px;
+  background: none;
+}
+.app .codex-index nav > a {
+  padding: 13px 14px;
+  font-size: 13px;
+}
+.app .codex-index-search input {
+  font-size: 13px;
+}
+.app .codex-index > p {
+  font-size: 11px;
+}
+.app .book-series-title {
+  background: var(--soft);
+  color: var(--muted);
+  font-size: 12px;
+}
+.app .book-collection-filter,
+.app .book-reading-note {
+  font-size: 12px;
+}
+.app .book-collection-filter select {
+  font-size: 12px;
+}
+.app .codex-article {
+  background: var(--reader);
+  border-radius: 4px;
+  padding: 30px;
+}
+.app .codex-article h2 {
+  font-size: 26px;
+  font-weight: 600;
+}
+.app .codex-passages h3 {
+  color: var(--text);
+  font-size: 13px;
+}
+.app .codex-article > footer {
+  font-size: 12px;
+}
+.app .codex-article > header > div:first-child {
+  min-width: 0;
+}
+.comparison-toolbar {
+  border: 0;
+  border-bottom: 1px solid var(--line);
+  border-radius: 0;
+  padding: 10px 0 14px;
+  background: none;
+  color: var(--muted);
+  font-size: 12px;
+}
+.comparison-language-label {
+  font-size: 11px;
+}
+.localized-passage > strong {
+  color: var(--text);
+  font-size: 12px;
+}
+.app .about-panel {
+  max-width: 850px;
+  margin-top: 0;
+  background: var(--reader);
+  padding: 30px;
+  border-radius: 4px;
+}
+.app .about-panel p {
+  font-size: 14px;
+  line-height: 2;
+  overflow-wrap: anywhere;
+}
+.app .about-panel h2 {
+  font-size: 18px;
+  font-weight: 600;
+}
+.app .source-details {
+  font-size: 12px;
+}
+
+@media (max-width: 1100px) {
+  .app .codex-layout {
+    grid-template-columns: 200px minmax(0, 1fr);
+    gap: 20px;
+  }
+  .app .codex-article {
+    padding: 24px;
+  }
+  .app .topbar {
+    gap: 12px;
+  }
+  .app .topbar-location {
+    gap: 6px;
+  }
+}
+@media (max-width: 1000px) {
+  .app .reader-layout {
+    display: block;
+  }
+  .app .reader-toc > a {
+    font-size: 11px;
+  }
+  .app .topbar-location {
+    display: none;
+  }
+  .app .global-search {
+    width: auto;
+    flex: 1;
+    margin-left: 0;
+  }
+}
+@media (max-width: 760px) {
+  .app .codex-cover {
+    display: none;
+  }
+  .app .codex-index nav {
+    max-height: 150px;
+  }
+  .app .reader-toc {
+    max-height: 150px;
+    margin-bottom: 20px;
+    padding-bottom: 10px;
+  }
+  .app .reader-toc h2 {
+    margin: 0 0 10px;
+    font-size: 13px;
+  }
+  .app .reader-toc > a {
+    padding: 7px;
+  }
+  .app .topbar {
+    height: 58px;
+    padding: 0 14px;
+    gap: 9px;
+  }
+  .app .topbar-location {
+    display: none;
+  }
+  .app.home-page .topbar-location {
+    display: flex;
+  }
+  .theme-switch {
+    padding: 2px;
+  }
+  .theme-switch button {
+    padding: 7px;
+    min-width: 30px;
+    min-height: 32px;
+  }
+  .theme-switch button span {
+    display: none;
+  }
+  .app .global-search {
+    padding: 8px;
+    gap: 7px;
+  }
+  .app .global-search input {
+    font-size: 16px;
+    width: 0;
+    flex: 1;
+  }
+  .app .global-search kbd {
+    display: none;
+  }
+  .app .main-content {
+    padding: 26px 18px 32px;
+  }
+  .app .page-intro h1 {
+    font-size: 26px;
+  }
+  .app .page-intro p {
+    font-size: 13px;
+  }
+  .app .category-tabs {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0 18px;
+    overflow: visible;
+  }
+  .app .category-tabs > button,
+  .app .category-tabs > a {
+    font-size: 12px;
+  }
+  .app .entry-detail {
+    grid-template-columns: minmax(0, 1fr) 90px;
+    gap: 16px;
+    padding-bottom: 23px;
+  }
+  .app .entry-detail > .entry-artwork {
+    width: 90px;
+    height: 90px;
+  }
+  .app .entry-detail h1 {
+    font-size: 24px;
+  }
+  .app .entry-detail .eyebrow {
+    font-size: 11px;
+  }
+  .app .entry-detail p {
+    font-size: 12px;
+  }
+  .app .chapter-list > a {
+    padding: 17px 4px;
+    gap: 12px;
+  }
+  .app .chapter-list > a.chapter-child {
+    padding-left: 20px;
+  }
+  .app .chapter-list strong {
+    font-size: 13px;
+  }
+  .app .chapter-list small {
+    font-size: 11px;
+  }
+  .app .reader-toolbar > div {
+    flex-wrap: wrap;
+  }
+  .app .reader-main {
+    padding: 22px 14px 30px;
+  }
+  .app .reader-article {
+    padding: 22px 16px;
+  }
+  .app .reader-article h1 {
+    font-size: 23px;
+  }
+  .app .reader-article .eyebrow {
+    font-size: 11px;
+  }
+  .app .codex-layout {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 20px;
+  }
+  .app .codex-heading {
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+  .app .codex-heading h1 {
+    font-size: 26px;
+  }
+  .app .codex-article {
+    padding: 22px 16px;
+  }
+  .app .codex-article h2 {
+    font-size: 23px;
+  }
+  .app .codex-article > header {
+    flex-wrap: wrap;
+  }
+  .dialogue-search input,
+  .app .codex-index-search input {
+    font-size: 16px;
+  }
+  .dialogue-help {
+    font-size: 11px;
+  }
+  .global-dialogue-browser .dialogue-text {
+    font-size: 15px;
+  }
+  .dialogue-scopes {
+    font-size: 12px;
+    gap: 14px;
+  }
+  .dialogue-row-meta small,
+  .dialogue-row-meta > a {
+    font-size: 10px;
+  }
+  .comparison-toolbar {
+    font-size: 11px;
+  }
+  .context-dialog > header {
+    padding: 18px;
+    gap: 10px;
+  }
+  .context-dialog h2 {
+    font-size: 18px;
+  }
+  .context-dialog header p,
+  .context-dialog footer {
+    font-size: 11px;
+  }
+  .context-dialog-body {
+    max-height: none;
+    flex: 1;
+  }
+  .context-row p {
+    font-size: 15px;
+  }
+  .app .about-panel {
+    padding: 22px 18px;
+  }
+  .app .about-panel p {
+    font-size: 13px;
+  }
+}

@@ -36,8 +36,7 @@ import CodexReader from './components/CodexReader';
 import ContentUpdateStatus from './components/ContentUpdateStatus';
 import HomePage from './components/HomePage';
 import SourceDetails from './components/SourceDetails';
-import dayIcon from '../docs/reference-images/darkmodeicon/DAY.webp';
-import nightIcon from '../docs/reference-images/darkmodeicon/Night.webp';
+import ThemeSwitch from './components/ThemeSwitch';
 
 const worldName = (id: World) => worlds.find((world) => world.id === id)!.label;
 const categoryName = (id: Category) => categories.find((category) => category.id === id)!.label;
@@ -79,7 +78,6 @@ function EntryCard({
         aria-hidden="true"
       >
         <EntryArtwork world={entry.world} entryId={entry.id} />
-        <span className="art-index">{String(entry.order).padStart(2, '0')} / ARCHIVE</span>
       </a>
       <div className="card-body">
         <div className="card-eyebrow">{entry.arcLabel ?? worldName(entry.world)}</div>
@@ -123,7 +121,7 @@ export default function App() {
   const { route, path, params } = useRoute();
   const [theme, setTheme] = useStored<'light' | 'dark'>(
     'theme',
-    'light',
+    'dark',
     (v): v is 'light' | 'dark' => v === 'light' || v === 'dark',
   );
   const [bookmarks, setBookmarks] = useStored<string[]>('bookmarks', [], isBookmarks);
@@ -252,7 +250,6 @@ export default function App() {
     content = (
       <>
         <PageIntro
-          eyebrow="EXPLORE THE ARCHIVE"
           title={selectedCategory ? categoryName(selectedCategory) : '이야기 탐색'}
           description={
             selectedCategory === 'trailblaze'
@@ -326,7 +323,6 @@ export default function App() {
     content = (
       <>
         <PageIntro
-          eyebrow="DIALOGUE SEARCH"
           title="원문 검색"
           description="임무명과 서적명, 화자와 한국어 원문을 검색하고 맥락을 함께 읽어보세요."
         />
@@ -339,7 +335,6 @@ export default function App() {
     content = (
       <>
         <PageIntro
-          eyebrow="YOUR READING ROOM"
           title="내 서재"
           description="다시 읽고 싶은 이야기와 마지막으로 머문 페이지를 모았습니다."
         />
@@ -448,7 +443,7 @@ export default function App() {
           </button>
         </div>
         <div className="section-heading chapter-heading">
-          <h2>이야기의 목차</h2>
+          <h2>임무 목차</h2>
           <span>{entry.chapters.length}개 항목</span>
         </div>
         <div className="chapter-list">
@@ -510,9 +505,8 @@ export default function App() {
     content = (
       <>
         <PageIntro
-          eyebrow="ABOUT THE ARCHIVE"
           title="사이트 안내"
-          description="별을 따라 이어지는 이야기를 더 편하게 읽을 수 있도록."
+          description="수록 범위, 자료 출처와 읽기 설정을 안내합니다."
         />
         <article className="about-panel">
           <h2>현재 수록한 자료</h2>
@@ -609,12 +603,12 @@ export default function App() {
           <span className="brand-symbol">✦</span>
           <span>
             <strong>열차 아카이브</strong>
-            <small>{path === '/' ? '붕괴: 스타레일 자료실' : 'HONKAI: STAR RAIL ARCHIVE'}</small>
+            <small>붕괴: 스타레일 자료실</small>
           </span>
         </a>
         <div className="sidebar-rule" />
         <nav>
-          <span className="nav-label">{path === '/' ? '탐색' : 'EXPLORE'}</span>
+          <span className="nav-label">탐색</span>
           <a
             className={navActive('/') ? 'active' : ''}
             href="#/"
@@ -627,7 +621,7 @@ export default function App() {
             <Search size={18} />
             원문 검색
           </a>
-          <span className="nav-label nav-space">{path === '/' ? '자료 분류' : 'STORIES'}</span>
+          <span className="nav-label nav-space">자료 분류</span>
           {categories.map((item) => {
             const active =
               (navActive('/archive') && selectedCategory === item.id) ||
@@ -664,7 +658,7 @@ export default function App() {
               </Fragment>
             );
           })}
-          <span className="nav-label nav-space">{path === '/' ? '내 서재' : 'MY ARCHIVE'}</span>
+          <span className="nav-label nav-space">내 서재</span>
           <a
             href="#/library"
             className={path === '/library' && params.get('view') !== 'history' ? 'active' : ''}
@@ -705,7 +699,7 @@ export default function App() {
             <Menu size={21} />
           </button>
           <div className="topbar-location">
-            {path === '/' ? '열차 아카이브' : 'ARCHIVE'} <ChevronRight size={12} />
+            열차 아카이브 <ChevronRight size={12} />
             <span>
               {entry
                 ? categoryName(entry.category)
@@ -725,7 +719,7 @@ export default function App() {
             <input
               ref={path === '/' ? undefined : searchRef}
               aria-label="아카이브 검색"
-              placeholder="어떤 이야기를 찾고 있나요?"
+              placeholder="임무명·인물·대사 검색"
               value={search}
               onChange={(event) => setSearch(event.target.value)}
             />
@@ -734,14 +728,7 @@ export default function App() {
               <ArrowRight size={15} />
             </button>
           </form>
-          <button
-            className="icon-button theme-button"
-            onClick={() => setTheme(theme === 'light' ? 'dark' : 'light')}
-            title={theme === 'light' ? '다크 모드로 전환' : '라이트 모드로 전환'}
-          >
-            <img src={theme === 'light' ? nightIcon : dayIcon} alt="" width={24} height={24} />
-            <span>{theme === 'light' ? '다크모드' : '라이트모드'}</span>
-          </button>
+          <ThemeSwitch theme={theme} onChange={setTheme} />
         </header>
         <main
           id="main-content"
@@ -768,18 +755,9 @@ export default function App() {
   );
 }
 
-function PageIntro({
-  eyebrow,
-  title,
-  description,
-}: {
-  eyebrow: string;
-  title: string;
-  description: string;
-}) {
+function PageIntro({ title, description }: { title: string; description: string }) {
   return (
     <div className="page-intro">
-      <span className="eyebrow">{eyebrow}</span>
       <h1>{title}</h1>
       <p>{description}</p>
     </div>
@@ -927,7 +905,7 @@ function Reader({
       </div>
       <div className={`reader-layout ${languages.length ? 'is-comparing' : ''}`}>
         <aside className="reader-toc" aria-label="챕터 목차">
-          <span className="eyebrow">IN THIS STORY</span>
+          <span className="eyebrow">목차</span>
           <h2>{entry.title}</h2>
           {entry.chapters.map((ch) => (
             <a

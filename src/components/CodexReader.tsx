@@ -129,7 +129,7 @@ export default function CodexReader({
       )}
       <div className="codex-heading">
         <div>
-          <span className="eyebrow">{isBooks ? 'BOOKSHELF' : 'GALACTIC ARCHIVE'}</span>
+          <span className="eyebrow">{isBooks ? '인게임 서적' : '열차 자료실'}</span>
           <h1>{entry.title}</h1>
           <p>{entry.description}</p>
         </div>

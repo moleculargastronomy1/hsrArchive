@@ -1,9 +1,17 @@
 <!doctype html>
-<html lang="ko">
+<html lang="ko" data-theme="dark">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="theme-color" content="#202b2b" />
+    <meta name="theme-color" content="#101725" />
+    <script>
+      try {
+        const savedTheme = JSON.parse(localStorage.getItem('hsr:theme'));
+        if (savedTheme === 'light' || savedTheme === 'dark') {
+          document.documentElement.dataset.theme = savedTheme;
+        }
+      } catch {}
+    </script>
     <meta
       name="description"
       content="열차 아카이브에서 붕괴: 스타레일의 개척 임무, 시뮬레이션 우주와 아카이브 기록을 읽고 검색하세요."

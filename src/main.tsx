@@ -5,7 +5,8 @@ import './styles.css';
 import './dialogue.css';
 import './codex.css';
 import './comparison.css';
-import './home.css';
+import './site.css';
+import './pages.css';
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>

@@ -2,32 +2,9 @@
 
 :root {
   font-family: 'Noto Sans KR', 'Malgun Gothic', sans-serif;
-  color: #303735;
-  background: #f7f8f5;
   font-synthesis: none;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
-  --bg: #f7f8f5;
-  --surface: #fff;
-  --text: #303735;
-  --muted: #7b837f;
-  --line: #e6e9e3;
-  --soft: #eff2eb;
-  --accent: #64755b;
-  --gold: #d8bf7c;
-  --sidebar: #202b2b;
-  --reader: #fff;
-}
-:root[data-theme='dark'] {
-  color-scheme: dark;
-  --bg: #171e1e;
-  --surface: #202a29;
-  --text: #e0e5de;
-  --muted: #a0ada4;
-  --line: #34423d;
-  --soft: #2a3630;
-  --accent: #b2c69f;
-  --reader: #1c2523;
 }
 * {
   box-sizing: border-box;
@@ -312,27 +289,6 @@ button {
 }
 .icon-button.saved {
   color: var(--accent);
-}
-.theme-button {
-  width: 52px;
-  height: 52px;
-  flex-direction: column;
-  gap: 3px;
-  padding: 4px;
-  color: var(--text);
-  font-size: 10px;
-  line-height: 1.4;
-  white-space: nowrap;
-}
-.theme-button img {
-  display: block;
-  object-fit: contain;
-  filter: brightness(0);
-  opacity: 0.8;
-}
-:root[data-theme='dark'] .theme-button img {
-  filter: none;
-  opacity: 1;
 }
 .mobile-menu {
   display: none;
