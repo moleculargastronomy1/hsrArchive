@@ -11,6 +11,7 @@ import simulation from '../../docs/reference-images/시뮬레이션 우주 기�
 import swarm from '../../docs/reference-images/시뮬레이션 우주-곤충 떼 재난 메인 일러.jpg';
 import gears from '../../docs/reference-images/시뮬레이션 우주 황금과 기계 메인 일러.jpg';
 import divergent from '../../docs/reference-images/시뮬레이션 우주 차분화 우주 메인 일러.png';
+import unknowable from '../../docs/reference-images/시뮬레이션 우주 인지 불가 영역 메인 일러.webp';
 import type { World } from '../data/types';
 import WorldArt from './WorldArt';
 
@@ -30,6 +31,7 @@ const entryCovers: Record<string, string[]> = {
   'swarm-disaster': [swarm],
   'gold-and-gears': [gears],
   'divergent-universe': [divergent],
+  'unknowable-domain': [unknowable],
 };
 
 const imagesFor = (world: World, entryId?: string) =>
