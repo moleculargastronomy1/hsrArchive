@@ -5,6 +5,7 @@ import json
 from pathlib import Path
 import tempfile
 import unittest
+from unittest.mock import patch
 
 spec = importlib.util.spec_from_file_location('bwiki', Path(__file__).resolve().parents[1] / 'scripts/bwiki-dialogue.py')
 bwiki = importlib.util.module_from_spec(spec)
@@ -241,6 +242,22 @@ class BwikiDialogueTest(unittest.TestCase):
             self.assertTrue(all(row['bwikiMissionId'] == 'bwiki-page-88' for row in result['rows']))
             self.assertEqual({row['id']: row['missionId'] for row in result['rows']}, source_ownership)
             self.assertEqual({row['id']: row['text'] for row in result['rows']}, {row['id']: row['text'] for row in self.rows})
+            # Completed files excluded from new matching still retain saved proof
+            # after full projection clears derived fields. No wiki parser may run.
+            result.pop('bwikiBaseOrder')
+            result.pop('bwiki')
+            for row in result['rows']:
+                for key in bwiki.BWIKI_FIELDS:
+                    row.pop(key, None)
+            bwiki.write(root / 'public/content/entry--chapter.json', result)
+            manifest['targetFiles'] = []
+            bwiki.write(manifest_file, manifest)
+            with patch.object(bwiki, 'story_segments', side_effect=AssertionError('Completed content reparsed')):
+                bwiki.align(root, raw, plan_file, manifest_file)
+            result = json.loads((root / 'public/content/entry--chapter.json').read_bytes())
+            self.assertEqual(result['bwiki']['cachedRows'], 6)
+            self.assertEqual({row['id']: row['missionId'] for row in result['rows']}, source_ownership)
+            manifest.pop('targetFiles')
             prior_path = root / 'public/bwiki-provenance.json'
             prior = json.loads(prior_path.read_bytes())
             for chunk in prior['chapters']['content/entry--chapter.json']:
@@ -269,6 +286,11 @@ class BwikiDialogueTest(unittest.TestCase):
             (raw / 'TextMapCHS.json').write_bytes(data)
             next(file for file in plan['files'] if file['path'] == 'TextMap/TextMapCHS.json')['sha'] = hashlib.sha1(f'blob {len(data)}\0'.encode() + data).hexdigest()
             bwiki.write(plan_file, plan)
+            # Changed official text must also invalidate completed-file reuse.
+            result.pop('bwikiBaseOrder')
+            bwiki.write(root / 'public/content/entry--chapter.json', result)
+            manifest['targetFiles'] = []
+            bwiki.write(manifest_file, manifest)
             bwiki.align(root, raw, plan_file, manifest_file)
             result = json.loads((root / 'public/content/entry--chapter.json').read_bytes())
             self.assertEqual(result['bwiki']['cachedRows'], 0)

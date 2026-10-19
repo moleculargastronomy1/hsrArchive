@@ -713,6 +713,30 @@ def align(root, raw, plan_path, manifest_path, previous_root=None):
         file = 'public/' + spec['file']
         payload = json.loads((root / file).read_bytes())
         if targets is not None and spec['file'] not in targets:
+            # Full text/flow projection can clear proofs from a completed file.
+            # Reuse its saved chunks without parsing or matching BWIKI again;
+            # only exact current official identities/hashes may retain a proof.
+            if spec['file'] in chapters and 'bwikiBaseOrder' not in payload:
+                before = {row['id']: row for row in payload['rows']}
+                evidence = {row['id']: row_evidence(row, talks, chinese, korean) for row in payload['rows']}
+                chapter_index = matching_index(payload['rows'], evidence, {})
+                chunks = []
+                for old in chapters[spec['file']]:
+                    members = {'quest-' + str(identity) for identity in old.get('officialMissionIds', [])}
+                    if not members:
+                        members = {before[identity]['missionId'] for identity in old['order'] if identity in before}
+                    owned = [row for row in payload['rows'] if row.get('missionId') in members]
+                    index = matching_index(owned, evidence, chapter_index)
+                    if cached_chunk_valid(old, before, evidence, index, source_records):
+                        chunks.append({**old, 'status': 'cached'})
+                    else:
+                        review.append({'file': spec['file'], 'missionId': old['missionId'],
+                                       'reason': '공식 원문·ID·실행 연결 변경 · 이전 근거 재사용 보류'})
+                chapters[spec['file']] = apply_chunks(payload, chunks, mission_sequences.get(spec['file']))
+                changed_rows.update((row['id'], row) for row in payload['rows'])
+                orders.append([row['id'] for row in payload['rows']])
+                write(root / file, payload)
+                publications.append(file)
             totals.update(payload.get('bwiki', {}))
             continue
         owned = defaultdict(list)
