@@ -271,7 +271,7 @@ export default function App() {
                 ? '우주의 본질은 뭘까? 에이언즈는 대체 어떻게 탄생하고, 어떻게 작동하는 걸까? 난 이 질문의 답을 찾기 위해 「시뮬레이션 우주」를 만들었어.'
                 : selectedCategory === 'books'
                   ? undefined
-                  : '아카이브의 표제어를 오늘 업데이트했으니까, 언제든지 열람해도 돼.'
+                  : '은하열차의 거대한 데이터베이스'
           }
         />
         <div className="category-tabs" aria-label="자료 분류">
