@@ -1,6 +1,13 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { adjacentChapter, chapterNumber, readerPath, searchEntries } from '../src/lib/archive.ts';
+import {
+  adjacentChapter,
+  chapterIndexPath,
+  chapterNumber,
+  readerPath,
+  searchEntries,
+  sectionChapters,
+} from '../src/lib/archive.ts';
 import { archive } from '../src/data/archive.ts';
 import type { ArchiveEntry } from '../src/data/types.ts';
 
@@ -88,6 +95,29 @@ test('subchapter numbering preserves main chapter order and navigation', () => {
   assert.equal(chapterNumber(entry, 'missing'), '');
   assert.equal(adjacentChapter(entry, 'first', 1)?.id, 'branch');
   assert.equal(adjacentChapter(entry, 'branch', 1)?.id, 'last');
+});
+
+test('simulation event categories preserve chapter routes and keep story navigation separate', () => {
+  const modes = archive.filter(
+    (entry) =>
+      entry.category === 'simulation' &&
+      entry.chapters.some((chapter) => chapter.group === '사건 기록'),
+  );
+  assert.equal(modes.length, 5);
+  for (const entry of modes) {
+    const stories = sectionChapters(entry);
+    const events = sectionChapters(entry, true);
+    assert.equal(stories.length + events.length, entry.chapters.length);
+    assert.equal(chapterNumber(entry, events[0].id), '01');
+    assert.equal(adjacentChapter(entry, events[0].id, -1), undefined);
+    assert.equal(adjacentChapter(entry, events.at(-1)!.id, 1), undefined);
+    assert.equal(chapterIndexPath(entry, events[0].id), `${readerPath(entry.id)}?section=events`);
+    assert.equal(readerPath(entry.id, events[0].id), `/entry/${entry.id}/${events[0].id}`);
+    if (stories.length) {
+      assert.equal(adjacentChapter(entry, stories.at(-1)!.id, 1), undefined);
+      assert.equal(chapterIndexPath(entry, stories[0].id), readerPath(entry.id));
+    }
+  }
 });
 
 test('all supplied trailblaze chapters have unique routes, valid parents and preserved demo dialogue', () => {

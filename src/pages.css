@@ -152,6 +152,13 @@ html {
 .app .local-note {
   font-size: 12px;
 }
+.simulation-event-category {
+  margin: 24px 0 32px;
+}
+.simulation-event-category > a > svg:first-child {
+  color: var(--accent);
+  flex-shrink: 0;
+}
 .app .card-art:not(.has-cover) {
   background: var(--soft);
   color: var(--muted);

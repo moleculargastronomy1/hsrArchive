@@ -9,6 +9,7 @@ import {
   Check,
   ChevronRight,
   Clock3,
+  FolderOpen,
   Home,
   LayoutGrid,
   List,
@@ -23,9 +24,11 @@ import type { ArchiveEntry, Category, World } from './data/types';
 import {
   adjacentChapter,
   chapterContentLabel,
+  chapterIndexPath,
   chapterNumber,
   readerPath,
   searchEntries,
+  sectionChapters,
 } from './lib/archive';
 import { isBookmarks, isHistory, useStored, type ReadingHistory } from './lib/storage';
 import WorldArt from './components/WorldArt';
@@ -86,7 +89,7 @@ function EntryCard({
         <h3>
           <a href={href(readerPath(entry.id))}>{entry.title}</a>
         </h3>
-        <p>{entry.description}</p>
+        {entry.category !== 'simulation' && <p>{entry.description}</p>}
         <div className="card-footer">
           <span>
             <BookOpen size={13} />
@@ -147,6 +150,7 @@ export default function App() {
   const chapter = entry?.chapters.find(
     (item) => item.id === parts[2] || item.aliases?.includes(parts[2]),
   );
+  const eventSection = entry?.category === 'simulation' && params.get('section') === 'events';
   const isReader = Boolean(chapter) && entry?.category !== 'codex' && entry?.category !== 'books';
   const selectedCategory =
     categories.find((item) => item.id === params.get('category'))?.id ??
@@ -169,7 +173,7 @@ export default function App() {
   useEffect(() => {
     const pageTitle =
       chapter?.title ??
-      entry?.title ??
+      (entry ? `${entry.title}${eventSection ? ' - 사건 기록' : ''}` : undefined) ??
       (path === '/archive'
         ? selectedCategory
           ? categoryName(selectedCategory)
@@ -185,7 +189,7 @@ export default function App() {
       pageTitle === '열차 아카이브'
         ? '열차 아카이브 · 붕괴: 스타레일'
         : `${pageTitle} · 열차 아카이브`;
-  }, [path, entry, chapter, selectedCategory]);
+  }, [path, entry, chapter, selectedCategory, eventSection]);
   useEffect(() => {
     const shortcut = (event: KeyboardEvent) => {
       if ((event.ctrlKey || event.metaKey) && event.key.toLowerCase() === 'k') {
@@ -443,27 +447,43 @@ export default function App() {
     );
   } else if (entry && parts.length === 2) {
     const progress = history[entry.id];
+    const chapters = sectionChapters(entry, eventSection);
+    const events = sectionChapters(entry, true);
     const resume =
-      entry.chapters.find(
+      chapters.find(
         (ch) => ch.id === progress?.chapterId || ch.aliases?.includes(progress?.chapterId ?? ''),
-      ) ?? entry.chapters[0];
+      ) ?? chapters[0];
     content = (
       <>
-        <a className="back-link" href={href(`/archive?category=${entry.category}`)}>
-          <ArrowLeft size={15} /> {categoryName(entry.category)} 목록
+        <a
+          className="back-link"
+          href={href(eventSection ? readerPath(entry.id) : `/archive?category=${entry.category}`)}
+        >
+          <ArrowLeft size={15} />{' '}
+          {eventSection ? entry.title : `${categoryName(entry.category)} 목록`}
         </a>
         <div className={`entry-detail world-${entry.world}`}>
           <div>
             <span className="eyebrow">{entry.arcLabel ?? worldName(entry.world)}</span>
-            <h1>{entry.title}</h1>
-            <p>{entry.description}</p>
+            <h1>
+              {entry.title}
+              {eventSection ? ' - 사건 기록' : ''}
+            </h1>
+            {entry.category !== 'simulation' && <p>{entry.description}</p>}
           </div>
           <EntryArtwork world={entry.world} entryId={entry.id} />
         </div>
         <div className="detail-actions">
-          <a className="button primary" href={href(readerPath(entry.id, resume.id))}>
-            {progress ? '이어서 읽기' : '첫 장 읽기'} <ArrowRight size={16} />
-          </a>
+          {resume && (
+            <a className="button primary" href={href(readerPath(entry.id, resume.id))}>
+              {resume.id === progress?.chapterId
+                ? '이어서 읽기'
+                : eventSection
+                  ? '첫 사건 읽기'
+                  : '첫 장 읽기'}{' '}
+              <ArrowRight size={16} />
+            </a>
+          )}
           <button
             className="button secondary"
             onClick={() => toggleBookmark(entry.id)}
@@ -473,42 +493,66 @@ export default function App() {
             {bookmarks.includes(entry.id) ? '북마크됨' : '북마크'}
           </button>
         </div>
-        <div className="section-heading chapter-heading">
-          <h2>{entry.category === 'simulation' ? '기록 목차' : '임무 목차'}</h2>
-          <span>{entry.chapters.length}개 항목</span>
-        </div>
-        <div className="chapter-list">
-          {entry.chapters.map((ch) => (
-            <a
-              key={ch.id}
-              className={ch.parentId ? 'chapter-child' : undefined}
-              href={href(readerPath(entry.id, ch.id))}
-            >
-              <span className="chapter-number">{chapterNumber(entry, ch.id)}</span>
+        {entry.category === 'simulation' && !eventSection && events.length > 0 && (
+          <nav
+            className="chapter-list simulation-event-category"
+            aria-label={`${entry.title} 하위 카테고리`}
+          >
+            <a href={href(`${readerPath(entry.id)}?section=events`)}>
+              <FolderOpen size={22} aria-hidden="true" />
               <span>
-                <strong>{ch.title}</strong>
-                <small>
-                  {ch.group === '사건 기록' ? '사건 기록 · ' : ''}
-                  {ch.kind === 'branch'
-                    ? '선택 분기 · '
-                    : ch.kind === 'adventure'
-                      ? '관련 모험 임무 · '
-                      : ''}
-                  {ch.content
-                    ? `${ch.content.rows.toLocaleString('ko-KR')}줄`
-                    : chapterContentLabel(ch)}
-                </small>
+                <strong>{entry.title} - 사건 기록</strong>
+                <small>{events.length}개 사건</small>
               </span>
-              {ch.id === progress?.chapterId ? (
-                <span className="reading-label">
-                  읽던 장 <Bookmark size={13} />
-                </span>
-              ) : (
-                <ChevronRight size={18} />
-              )}
+              <ChevronRight size={18} />
             </a>
-          ))}
-        </div>
+          </nav>
+        )}
+        {chapters.length > 0 && (
+          <>
+            <div className="section-heading chapter-heading">
+              <h2>
+                {eventSection
+                  ? '사건 기록'
+                  : entry.category === 'simulation'
+                    ? '스토리 목차'
+                    : '임무 목차'}
+              </h2>
+              <span>{chapters.length}개 항목</span>
+            </div>
+            <div className="chapter-list">
+              {chapters.map((ch) => (
+                <a
+                  key={ch.id}
+                  className={ch.parentId ? 'chapter-child' : undefined}
+                  href={href(readerPath(entry.id, ch.id))}
+                >
+                  <span className="chapter-number">{chapterNumber(entry, ch.id)}</span>
+                  <span>
+                    <strong>{ch.title}</strong>
+                    <small>
+                      {ch.kind === 'branch'
+                        ? '선택 분기 · '
+                        : ch.kind === 'adventure'
+                          ? '관련 모험 임무 · '
+                          : ''}
+                      {ch.content
+                        ? `${ch.content.rows.toLocaleString('ko-KR')}줄`
+                        : chapterContentLabel(ch)}
+                    </small>
+                  </span>
+                  {ch.id === progress?.chapterId ? (
+                    <span className="reading-label">
+                      읽던 장 <Bookmark size={13} />
+                    </span>
+                  ) : (
+                    <ChevronRight size={18} />
+                  )}
+                </a>
+              ))}
+            </div>
+          </>
+        )}
         <SourceDetails>
           <p>
             {entry.source.kind === 'demo' ? entry.source.note : `게임 자료 ${entry.source.version}`}
@@ -818,6 +862,9 @@ function Reader({
   setHistory: (value: ReadingHistory | ((previous: ReadingHistory) => ReadingHistory)) => void;
 }) {
   const chapter = entry.chapters.find((ch) => ch.id === chapterId)!;
+  const events = entry.category === 'simulation' && chapter.group === '사건 기록';
+  const chapters = sectionChapters(entry, events);
+  const indexPath = chapterIndexPath(entry, chapterId);
   const initialScroll = useRef(
     !targetRowId && history[entry.id]?.chapterId === chapterId ? history[entry.id].scroll : 0,
   );
@@ -886,7 +933,7 @@ function Reader({
             <ArrowRight size={17} />
           </a>
         ) : (
-          <a href={href(readerPath(entry.id))}>
+          <a href={href(indexPath)}>
             <span>
               <small>마지막 장입니다</small>
               <strong>목차로 돌아가기</strong>
@@ -902,8 +949,8 @@ function Reader({
     <>
       <div className="reading-progress" style={{ width: `${progress}%` }} />
       <div className="reader-toolbar">
-        <a className="back-link" href={href(readerPath(entry.id))}>
-          <ArrowLeft size={15} /> 목차로 돌아가기
+        <a className="back-link" href={href(indexPath)}>
+          <ArrowLeft size={15} /> {events ? '사건 기록 목차로 돌아가기' : '목차로 돌아가기'}
         </a>
         <div>
           <span className="font-label">글자 크기</span>
@@ -938,8 +985,11 @@ function Reader({
       <div className={`reader-layout ${languages.length ? 'is-comparing' : ''}`}>
         <aside className="reader-toc" aria-label="챕터 목차">
           <span className="eyebrow">목차</span>
-          <h2>{entry.title}</h2>
-          {entry.chapters.map((ch) => (
+          <h2>
+            {entry.title}
+            {events ? ' - 사건 기록' : ''}
+          </h2>
+          {chapters.map((ch) => (
             <a
               key={ch.id}
               className={`${ch.id === chapterId ? 'active' : ''}${ch.parentId ? ' toc-child' : ''}`}
