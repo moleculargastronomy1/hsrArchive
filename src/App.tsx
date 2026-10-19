@@ -89,7 +89,9 @@ function EntryCard({
         <h3>
           <a href={href(readerPath(entry.id))}>{entry.title}</a>
         </h3>
-        {entry.category !== 'simulation' && <p>{entry.description}</p>}
+        {entry.category !== 'simulation' && entry.category !== 'books' && (
+          <p>{entry.description}</p>
+        )}
         <div className="card-footer">
           <span>
             <BookOpen size={13} />
