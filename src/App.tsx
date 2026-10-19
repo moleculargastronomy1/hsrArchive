@@ -264,12 +264,12 @@ export default function App() {
           title={selectedCategory ? categoryName(selectedCategory) : '이야기 탐색'}
           description={
             selectedCategory === 'trailblaze'
-              ? '프롤로그부터 제5장까지, 개척의 여정을 순서대로 만나보세요.'
+              ? '여정의 끝이 뭇별에 닿길'
               : selectedCategory === 'simulation'
-                ? '시뮬레이션 우주의 실험, 기물과 발견의 기록을 만나보세요.'
+                ? '우주의 본질은 뭘까? 에이언즈는 대체 어떻게 탄생하고, 어떻게 작동하는 걸까? 난 이 질문의 답을 찾기 위해 「시뮬레이션 우주」를 만들었어.'
                 : selectedCategory === 'books'
                   ? '지역별로 정리한 인게임 서적과 편지, 문서를 시리즈·권 순서로 읽어보세요.'
-                  : '광추부터 파벌까지, 별바다에 남겨진 지식과 기록을 찾아보세요.'
+                  : '은하열차의 거대한 데이터베이스'
           }
         />
         <div className="category-tabs" aria-label="자료 분류">
