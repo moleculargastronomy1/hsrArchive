@@ -7,6 +7,14 @@ from collections import Counter, defaultdict
 from pathlib import Path
 
 
+FLOW_FIELDS = ['nextIds', 'replyToIds', 'flowStatus', 'flowScene', 'flowBoundary']
+EXTERNAL_PROOF_FIELDS = [
+    'bwikiStatus', 'bwikiScene', 'bwikiNextIds', 'bwikiReplyToIds', 'bwikiPage',
+    'bwikiRevision', 'bwikiMissionId', 'bwikiMission', 'videoStatus', 'videoId',
+    'videoStartMs', 'videoScene', 'videoNextIds', 'videoReplyToIds',
+]
+
+
 def write_json(path, value, pretty=False):
     temporary = path.with_suffix(path.suffix + '.tmp')
     data = json.dumps(value, ensure_ascii=False, indent=2 if pretty else None,
@@ -177,9 +185,7 @@ def restore(payload, structures):
     payload['referenceOrder'] = [row['id'] for row in rows]
     by_mission = defaultdict(list)
     for row in rows:
-        for key in ['nextIds', 'replyToIds', 'flowStatus', 'flowScene', 'flowBoundary']:
-            row.pop(key, None)
-        for key in ['bwikiStatus', 'bwikiScene', 'bwikiNextIds', 'bwikiReplyToIds', 'bwikiPage', 'bwikiRevision', 'bwikiMissionId', 'bwikiMission', 'videoStatus', 'videoId', 'videoStartMs', 'videoScene', 'videoNextIds', 'videoReplyToIds']:
+        for key in FLOW_FIELDS + EXTERNAL_PROOF_FIELDS:
             row.pop(key, None)
         if row.get('missionId', '').startswith('quest-'):
             row['flowStatus'] = 'review'
@@ -305,11 +311,12 @@ def run(root, manifest_path):
         orders.append([row['id'] for row in payload['rows']])
     search_file = root / 'public/content/search-index.json'
     search = json.loads(search_file.read_bytes())
-    # Preserve search source boundary hashes; only publish verified navigation metadata.
+    # Mirror both refreshed flow and invalidated external proofs. Fully resolved
+    # files may skip later BWIKI alignment, so stale search proofs cannot wait for it.
     for row in search['rows']:
         if row['id'] in all_rows:
             source = all_rows[row['id']]
-            for key in ['nextIds', 'replyToIds', 'flowStatus', 'flowScene', 'flowBoundary']:
+            for key in FLOW_FIELDS + EXTERNAL_PROOF_FIELDS:
                 row.pop(key, None)
                 if key in source:
                     row[key] = source[key]

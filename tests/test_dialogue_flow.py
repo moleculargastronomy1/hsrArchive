@@ -1,5 +1,8 @@
 import copy
+import hashlib
 import importlib.util
+import json
+import tempfile
 from pathlib import Path
 import unittest
 
@@ -110,6 +113,60 @@ class DialogueFlowTest(unittest.TestCase):
         for document in documents:
             with self.assertRaises(flow.Unresolved):
                 flow.scene_graph(document)
+
+    def test_search_reflects_removed_external_proofs_before_optional_bwiki_alignment(self):
+        parent = Path(__file__).resolve().parents[1] / '.cache/tests'
+        parent.mkdir(parents=True, exist_ok=True)
+        with tempfile.TemporaryDirectory(dir=parent) as folder:
+            root = Path(folder)
+
+            def write(file, value):
+                target = root / file
+                target.parent.mkdir(parents=True, exist_ok=True)
+                target.write_text(json.dumps(value), encoding='utf-8')
+                return target.read_bytes()
+
+            commit = 'a' * 40
+            file = 'public/content/entry--chapter.json'
+            payload = copy.deepcopy(self.payload)
+            for row in payload['rows']:
+                row.update(entryId='entry', chapterId='chapter', mission='mission',
+                           bwikiStatus='matched', bwikiScene='old-wiki', bwikiNextIds=[],
+                           bwikiReplyToIds=[], bwikiPage='page', bwikiRevision=123,
+                           bwikiMissionId='quest-11', bwikiMission='old mission',
+                           videoStatus='screen-matched', videoId='12345678901', videoStartMs=0,
+                           videoScene='old-video', videoNextIds=[], videoReplyToIds=[])
+            original = copy.deepcopy(payload['rows'])
+            search_rows = [{**{key: value for key, value in row.items()
+                              if key not in ['missionId', 'talkId', 'source']},
+                            'source': hashlib.sha256(row['source'].encode()).hexdigest()[:16]}
+                           for row in original]
+            write(file, payload)
+            write('public/content/search-index.json', {'rows': search_rows})
+            write('public/content-update.json', {'commit': commit})
+            write('src/data/imported-content.json', {'entry/chapter': {
+                'file': 'content/entry--chapter.json', 'rows': len(original)}})
+            write('src/data/simulation.json', [])
+            data = json.dumps(self.document).encode()
+            sha = hashlib.sha1(f'blob {len(data)}\0'.encode() + data).hexdigest()
+            blobs = root / '.cache/blobs'
+            blobs.mkdir(parents=True)
+            (blobs / sha).write_bytes(data)
+            write('.cache/flow.json', {'schema': 'hsr-dialogue-flow-input.v1', 'commit': commit,
+                                     'blobs': str(blobs), 'files': [{'path': self.source, 'sha': sha}]})
+            flow.run(root, root / '.cache/flow.json')
+            rows = json.loads((root / file).read_bytes())['rows']
+            search = json.loads((root / 'public/content/search-index.json').read_bytes())['rows']
+            expected = [{**{key: value for key, value in row.items()
+                            if key not in ['missionId', 'talkId', 'source']},
+                         'source': hashlib.sha256(row['source'].encode()).hexdigest()[:16]} for row in rows]
+            self.assertEqual(search, expected)
+            self.assertTrue(all(row['flowStatus'] == 'verified' for row in rows))
+            self.assertTrue(all(not any(key.startswith(('bwiki', 'video')) for key in row) for row in rows))
+            for row in rows:
+                before = next(item for item in original if item['id'] == row['id'])
+                for key in ['id', 'text', 'speaker', 'type', 'missionId', 'talkId', 'source']:
+                    self.assertEqual(row[key], before[key])
 
 
 if __name__ == '__main__':
