@@ -268,7 +268,7 @@ export default function App() {
               : selectedCategory === 'simulation'
                 ? '우주의 본질은 뭘까? 에이언즈는 대체 어떻게 탄생하고, 어떻게 작동하는 걸까? 난 이 질문의 답을 찾기 위해 「시뮬레이션 우주」를 만들었어.'
                 : selectedCategory === 'books'
-                  ? '인게임 서적과 편지, 문서'
+                  ? undefined
                   : '은하열차의 거대한 데이터베이스'
           }
         />
@@ -831,11 +831,11 @@ export default function App() {
   );
 }
 
-function PageIntro({ title, description }: { title: string; description: string }) {
+function PageIntro({ title, description }: { title: string; description?: string }) {
   return (
     <div className="page-intro">
       <h1>{title}</h1>
-      <p>{description}</p>
+      {description && <p>{description}</p>}
     </div>
   );
 }

@@ -1,6 +1,6 @@
 import type { FormEventHandler, ReactNode, Ref } from 'react';
 import { ArrowRight, BookMarked, ChevronRight, Search } from 'lucide-react';
-import { archive, categories } from '../data/archive';
+import { categories } from '../data/archive';
 import type { ArchiveEntry, Chapter } from '../data/types';
 import { readerPath } from '../lib/archive';
 import CategoryIcon from './CategoryIcon';
@@ -62,9 +62,6 @@ export default function HomePage({
             <span>
               <strong>{category.label}</strong>
               <small>{categoryDescriptions[category.id]}</small>
-              <span className="home-category-count">
-                {archive.filter((entry) => entry.category === category.id).length}개 자료
-              </span>
             </span>
             <ChevronRight className="home-category-arrow" size={16} />
           </a>

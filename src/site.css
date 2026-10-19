@@ -288,12 +288,6 @@
   color: var(--muted);
   word-break: keep-all;
 }
-.home-category-count {
-  display: block;
-  font-size: 10px;
-  color: var(--muted);
-  margin-top: 7px;
-}
 .home-category-arrow {
   margin-top: 5px;
   color: var(--muted);

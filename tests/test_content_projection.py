@@ -1,4 +1,10 @@
 import importlib.util
+import copy
+import hashlib
+import json
+import subprocess
+import sys
+import tempfile
 from pathlib import Path
 import unittest
 
@@ -84,6 +90,101 @@ class ProjectionTest(unittest.TestCase):
             projection.latest_trailblaze_chapter(rows, {**texts, '8': ''})
         with self.assertRaises(ValueError):
             projection.latest_trailblaze_chapter([], texts)
+
+    def test_projection_keeps_preserved_and_new_chapter_descriptors_in_sync(self):
+        parent = Path(__file__).resolve().parents[1] / '.cache/tests'
+        parent.mkdir(parents=True, exist_ok=True)
+        with tempfile.TemporaryDirectory(dir=parent) as folder:
+            root, raw, stage = [Path(folder) / name for name in ['root', 'raw', 'stage']]
+            old_commit, commit = 'a' * 40, 'b' * 40
+
+            def write(base, file, value):
+                target = base / file
+                target.parent.mkdir(parents=True, exist_ok=True)
+                target.write_text(json.dumps(value, ensure_ascii=False), encoding='utf-8')
+                return target.read_bytes()
+
+            tables = {
+                'TextMap/TextMapKR.json': {'1': '갱신된 선택', '2': '제1막•제1장', '3': '새로운 장'},
+                'ExcelOutput/TalkSentenceConfig.json': [
+                    {'TalkSentenceID': 123, 'TalkSentenceText': {'Hash': 1}}],
+                'ExcelOutput/MissionChapterConfig.json': [
+                    {'ID': 900, 'ChapterType': 'Normal', 'ChapterSequence': {'Hash': 2},
+                     'ChapterName': {'Hash': 3}}],
+            }
+            manifest = {'commit': commit, 'repository': 'DimbreathBot/TurnBasedGameData',
+                        'version': 'OSPRODWin1.0.0_TEST', 'checkedAt': '2026-10-20T00:00:00Z', 'files': []}
+            for file, value in tables.items():
+                data = write(raw, Path(file).name, value)
+                manifest['files'].append({'path': file, 'sha': hashlib.sha1(
+                    f'blob {len(data)}\0'.encode() + data).hexdigest()})
+            write(raw, 'plan.json', manifest)
+            legacy_rows = [
+                {**self.row, 'missionId': 'quest-1', 'nextIds': ['reply'],
+                 'flowScene': 'scene', 'flowStatus': 'verified'},
+                {**self.row, 'id': 'reply', 'talkId': 456, 'type': 'dialogue',
+                 'text': '연결되지 않은 기존 원문', 'replyToIds': ['row'],
+                 'bwikiStatus': 'cached', 'bwikiScene': 'scene'},
+            ]
+            new_row = {**self.row, 'id': 'new-row', 'chapterId': 'new', 'text': '새 장의 원문'}
+            metadata = {}
+            chapters = []
+            for chapter_id, rows, reference in [('chapter', legacy_rows, old_commit),
+                                                 ('new', [new_row], commit)]:
+                file = f'content/entry--{chapter_id}.json'
+                content = {'file': file, 'rows': len(rows), 'missing': 0,
+                           'sourceIds': ['quest-1'], 'textReferenceCommit': reference}
+                metadata['entry/' + chapter_id] = content
+                chapters.append({'id': chapter_id, 'title': chapter_id, 'content': copy.deepcopy(content),
+                                 'upstreamChapterId': 900, 'blocks': []})
+                write(root if chapter_id == 'chapter' else stage, 'public/' + file, {
+                    'schema': 'hsr-dialogue.v1', 'entryId': 'entry', 'chapterId': chapter_id,
+                    'referenceCommit': reference, 'textReferenceCommit': reference, 'rows': rows})
+            entries = [{'id': 'entry', 'title': '보존된 목차', 'chapters': chapters}]
+            for file, value in {
+                'src/data/imported-content.json': metadata, 'src/data/trailblaze.json': entries,
+                'src/data/text-bindings.json': {}, 'src/data/codex.json': [],
+                'src/data/simulation.json': [], 'src/data/books.json': [],
+                'src/data/train-databank.json': {'commit': commit, 'files': {}, 'groups': []},
+                'src/data/astropolis-intro.json': {'commit': commit, 'files': {}, 'documents': []},
+                '.cache/trailblaze-receipt.json': {'payloads': ['public/content/entry--new.json']},
+            }.items():
+                write(stage, file, value)
+            write(root, 'public/content/search-index.json', {'sourceReferences': [], 'referenceCommit': old_commit})
+            root_bytes = {file: file.read_bytes() for file in root.rglob('*.json')}
+            subprocess.run([sys.executable, str(Path(projection.__file__).resolve()),
+                            str(root), str(raw), str(raw / 'plan.json')], cwd=stage,
+                           check=True, capture_output=True)
+            load = lambda file: json.loads((stage / file).read_bytes())
+            projected = load('src/data/trailblaze.json')
+            descriptors = load('src/data/imported-content.json')
+            for before, after in zip(chapters, projected[0]['chapters']):
+                expected = {**before['content'], 'textReferenceCommit': commit}
+                self.assertEqual(after, {**before, 'content': expected})
+                self.assertEqual(after['content'], descriptors['entry/' + after['id']])
+            updated_rows = load('public/content/entry--chapter.json')['rows']
+            self.assertEqual(updated_rows[0], {**legacy_rows[0], 'text': '갱신된 선택'})
+            self.assertEqual(updated_rows[1], legacy_rows[1])
+            self.assertEqual(load('public/content/entry--new.json')['rows'], [new_row])
+            self.assertEqual(load('public/content-update.json')['retainedTextRows'], 1)
+            self.assertIn('src/data/trailblaze.json', load('receipt.json')['files'])
+            self.assertTrue(all(file.read_bytes() == data for file, data in root_bytes.items()))
+            # A disagreement must fail before rewriting any staged evidence.
+            for field, value in [('rows', 99), ('sourceIds', ['quest-999']),
+                                 ('file', 'content/foreign--chapter.json'),
+                                 ('textReferenceCommit', 'c' * 40)]:
+                with self.subTest(conflicting_field=field):
+                    write(stage, 'src/data/imported-content.json', metadata)
+                    conflicting = copy.deepcopy(entries)
+                    conflicting[0]['chapters'][0]['content'][field] = value
+                    write(stage, 'src/data/trailblaze.json', conflicting)
+                    before = {file: file.read_bytes() for file in stage.rglob('*.json')}
+                    result = subprocess.run(
+                        [sys.executable, str(Path(projection.__file__).resolve()),
+                         str(root), str(raw), str(raw / 'plan.json')], cwd=stage, capture_output=True)
+                    self.assertNotEqual(result.returncode, 0)
+                    self.assertIn(b'Conflicting Trailblaze content descriptor: entry/chapter', result.stderr)
+                    self.assertTrue(all(file.read_bytes() == data for file, data in before.items()))
 
 
 if __name__ == '__main__':

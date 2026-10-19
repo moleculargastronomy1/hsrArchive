@@ -143,6 +143,16 @@ def project(root, raw, manifest_path):
         evidence.update(source['files'])
     codex = read('src/data/codex.json')
     metadata = read('src/data/imported-content.json')
+    trailblaze = read('src/data/trailblaze.json')
+    # Preserved chapters keep their bodies, but share the refreshed descriptor.
+    # Reject disagreement before linking; never overwrite conflicting evidence.
+    for entry in trailblaze:
+        for chapter in entry['chapters']:
+            if chapter.get('content'):
+                key = entry['id'] + '/' + chapter['id']
+                if metadata.get(key) != chapter['content']:
+                    raise ValueError('Conflicting Trailblaze content descriptor: ' + key)
+                chapter['content'] = metadata[key]
     simulation = read('src/data/simulation.json')
     books = read('src/data/books.json')
     payloads = {}
@@ -268,7 +278,7 @@ def project(root, raw, manifest_path):
         if not entry['id'].startswith(('codex-aeons', 'codex-terms', 'codex-factions')):
             entry['source']['version'] = entry['source']['version'].split(' · 원문 갱신')[0] + ' · 원문 갱신 ' + commit[:7]
     for file, data in [('codex', codex), ('simulation', simulation), ('books', books), ('imported-content', metadata),
-                       ('train-databank', train), ('astropolis-intro', introductions)]:
+                       ('trailblaze', trailblaze), ('train-databank', train), ('astropolis-intro', introductions)]:
         write('src/data/' + file + '.json', data, True)
     write('public/content-update.json', {
         'schema': 'hsr-content-update.v1', 'repository': manifest['repository'],

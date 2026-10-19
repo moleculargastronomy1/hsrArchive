@@ -37,6 +37,8 @@ class ContentStageTest(unittest.TestCase):
                      'public/content/locales/manifest.json': {'commit': commit}}
             for name in ['codex', 'simulation', 'books', 'trailblaze']:
                 files['src/data/' + name + '.json'] = []
+            files['src/data/trailblaze.json'] = [{'id': 'entry', 'chapters': [
+                {'id': 'chapter', 'content': copy.deepcopy(metadata['entry/chapter'])}]}]
             for name in ['dialogue-flow-provenance', 'bwiki-provenance', 'video-order-provenance', 'video-review-summary']:
                 files['public/' + name + '.json'] = {'commit': commit}
             for language in ['en', 'zh-CN', 'ja']:
@@ -53,6 +55,7 @@ class ContentStageTest(unittest.TestCase):
                 ('public/content/entry--chapter.json', lambda value: value['rows'][0].update(bwikiNextIds=['missing'])),
                 ('public/content/entry--chapter.json', lambda value: value['rows'][0].update(videoStatus='screen-matched', videoScene='video', videoNextIds=['reply'])),
                 ('src/data/imported-content.json', lambda value: value['entry/chapter'].update(rows=3)),
+                ('src/data/trailblaze.json', lambda value: value[0]['chapters'][0]['content'].update(textReferenceCommit='b' * 40)),
                 ('public/content/locales/en/entry--chapter.json', lambda value: value['rows'][0].update(id='foreign')),
                 ('public/video-order-provenance.json', lambda value: value.update(commit='b' * 40)),
             ]
