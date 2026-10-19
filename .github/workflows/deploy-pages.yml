@@ -94,7 +94,7 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ github.token }}
       - name: Refresh official YouTube video
-        if: steps.refresh.outputs.publish == 'true'
+        if: steps.refresh.outputs.publish == 'true' && steps.refresh.outputs.site_only != 'true'
         run: node scripts/update-official-videos.mjs
       - name: Validate final content contracts
         if: steps.refresh.outputs.publish == 'true'
@@ -103,7 +103,7 @@ jobs:
         if: steps.refresh.outputs.publish == 'true'
         run: pnpm test
       - name: Record processed revisions
-        if: steps.watch.outputs.changed == 'true' && success()
+        if: steps.watch.outputs.changed == 'true' && steps.refresh.outputs.site_only != 'true' && success()
         run: node scripts/check-content-changes.mjs --record
       - name: Preserve validated derived data for the next deployment
         if: steps.refresh.outputs.publish == 'true'

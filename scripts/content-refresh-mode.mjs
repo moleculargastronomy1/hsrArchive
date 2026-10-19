@@ -1,6 +1,7 @@
-// A code deployment or a wiki revision does not require projecting already
-// verified Korean text again. Only a different official input uses import.
-export function contentRefreshMode(plan, previous) {
+// Code deployments reuse validated published data. Scheduled source work stays
+// independent, including when a newer official input is available.
+export function contentRefreshMode(plan, previous, watch = {}) {
+  if (requestedSiteBuild(watch)) return '--site-only';
   return plan.commit === previous.commit ? '--retry' : '--apply';
 }
 
