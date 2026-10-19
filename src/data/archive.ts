@@ -251,6 +251,16 @@ const originalEntries: ArchiveEntry[] = [
 ];
 
 const contentIndex = importedContent as Record<string, NonNullable<Chapter['content']>>;
+const simulationOrder = new Map(
+  [
+    'simulated-universe',
+    'swarm-disaster',
+    'gold-and-gears',
+    'unknowable-domain',
+    'divergent-universe',
+    'curios',
+  ].map((id, index) => [id, index]),
+);
 export const archive: ArchiveEntry[] = [
   ...(trailblaze.length ? (trailblaze as ArchiveEntry[]) : originalEntries).map(
     (entry): ArchiveEntry => ({
@@ -276,7 +286,11 @@ export const archive: ArchiveEntry[] = [
       })),
     }),
   ),
-  ...(simulation as ArchiveEntry[]),
+  ...[...(simulation as ArchiveEntry[])].sort(
+    (a, b) =>
+      (simulationOrder.get(a.id) ?? Infinity) - (simulationOrder.get(b.id) ?? Infinity) ||
+      a.order - b.order,
+  ),
   ...(codex as ArchiveEntry[]),
   ...(books as ArchiveEntry[]),
 ];
