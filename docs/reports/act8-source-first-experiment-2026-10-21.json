@@ -1,0 +1,107 @@
+{
+  "schema": "hsr-act8-isolated-experiment-report.v1",
+  "date": "2026-10-21",
+  "productionUpdated": false,
+  "officialCommit": "74a7b96fba32f00cf495a5c00b0311bd02207aaf",
+  "experimentSha256": "8fa3502fefa481c4a6ecba67f56480e7f83a472a7cd3add9609bbd5b20bd8f4d",
+  "coverage": {
+    "total": 3114,
+    "baselineLinked": 1383,
+    "experimentLinked": 2780,
+    "contentOnly": 121,
+    "unlinked": 213
+  },
+  "uniqueCoverage": {
+    "total": 2921,
+    "baselineLinked": 1378,
+    "experimentLinked": 2732,
+    "contentOnly": 48
+  },
+  "newOfficialTextCandidates": 1346,
+  "matchingMethods": {
+    "exact-global": 2760,
+    "translation-reviewed": 11,
+    "exact-game-gender-substitution": 9
+  },
+  "pendingReasons": {
+    "ambiguous-official-ids": 118,
+    "no-exact-official-candidate": 95
+  },
+  "narration": {
+    "total": 162,
+    "matched": 45
+  },
+  "boundaries": {
+    "barrier": 216,
+    "unsupported": 229
+  },
+  "reference": {
+    "schema": "hsr-isolated-asr-evaluation.v1",
+    "experimentSha256": "8fa3502fefa481c4a6ecba67f56480e7f83a472a7cd3add9609bbd5b20bd8f4d",
+    "referenceSha256": "7953829ee4b9832a20ffd23f41ff26d95686667656d17a642bcbc00de6805e24",
+    "referenceFileName": "8막 어제의 내일이 되어.txt",
+    "referenceUse": "Evaluation only. Missing choice, unvoiced, screen-only text is not an error. Fuzzy ASR matches are candidates, not verification.",
+    "cues": 2719,
+    "timestampResetSections": 3,
+    "unparsedNonemptyLines": 27,
+    "eligibleDistinctLongUtterances": 1527,
+    "observations": {
+      "not-observed-in-this-reference": 1074,
+      "exact-observed": 212,
+      "asr-similar-candidate": 237,
+      "exact-repeated": 4
+    },
+    "excludedByRole": {
+      "choice": 233,
+      "narration": 60
+    },
+    "unambiguousExactOrderAnchors": 211,
+    "orderComparison": {
+      "consistent-reachable-pairs": 721,
+      "no-source-path-no-judgment": 14836
+    },
+    "untimedSummary": {
+      "not-exactly-observed-in-frozen-experiment": 5,
+      "exact-content-observed-untimed": 7
+    }
+  },
+  "structure": {
+    "experimentSha256": "8fa3502fefa481c4a6ecba67f56480e7f83a472a7cd3add9609bbd5b20bd8f4d",
+    "officialFlowConflicts": [
+      {
+        "occurrence": "occ-90341bbae1eb7c1af9f7257a",
+        "rowId": "amphoreus-records-yesterdays-tomorrow-quest-1043706-678",
+        "korean": "이 흩어진 두루마리들에는 끔찍한 내용이 기록되어 있는데, 방 안에 가득 쌓여 있어",
+        "expected": ["amphoreus-records-yesterdays-tomorrow-quest-1043706-679"],
+        "observed": ["amphoreus-records-yesterdays-tomorrow-quest-1043706-874"],
+        "page": "英雄啊，归以凡身向侵晨",
+        "expectedText": ["*우리*는 여기 남아서 이것들을 정리해야 해"],
+        "observedText": [
+          "무섭기도 하고 슬프기도 해! 트리앤의 날개 덕분에 살았어. 안 그랬으면 완전히 파묻혔을 거야!"
+        ]
+      }
+    ],
+    "crossSiblingBranchEdges": [],
+    "repeatedOfficialIdsWithSeparateOccurrences": 50,
+    "roleDifferencesRequireReaderSupport": 15,
+    "unmappedOrIdAmbiguousVertices": 451,
+    "productionFilesWritten": false
+  },
+  "decision": {
+    "publish": false,
+    "status": "experiment-only",
+    "experimentSha256": "8fa3502fefa481c4a6ecba67f56480e7f83a472a7cd3add9609bbd5b20bd8f4d",
+    "reasons": [
+      "One wiki adjacency disagrees with preserved official execution proof; the supplied reference does not observe that exchange.",
+      "Original dialogue rows and BWIKI choice roles require an occurrence-aware reader; 15 row references at 14 occurrences differ.",
+      "Content-equivalent ambiguous IDs remain a separate class, not verified IDs."
+    ],
+    "referenceUsedOnlyForEvaluation": true,
+    "productionWrites": false,
+    "productionWorkflowDispatched": false,
+    "testsPassed": 7,
+    "crossSiblingEdges": 0,
+    "cycles": 0
+  },
+  "scope": "Seven pinned BWIKI pages. No omission in ASR is treated as a data error. Narration and unsupported blocks are outside the 3114 denominator."
+}
