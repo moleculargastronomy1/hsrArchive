@@ -22,7 +22,9 @@ permissions:
   contents: read
 
 concurrency:
-  group: github-pages
+  # The previous queue was orphaned after every job finished during an Actions incident.
+  # Keep all new publication runs serialized without waiting for that cancelled run.
+  group: github-pages-v2
   cancel-in-progress: false
 
 jobs:
