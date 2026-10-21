@@ -177,7 +177,11 @@ def make_row(record, group, mission_key, key, candidate):
     return row, evidence
 
 
-def build_chapter(record, payload, pages, source_text, candidates, previous_chunks, previous_sources, chinese):
+def build_chapter(record, payload, pages, source_text, candidates, previous_chunks, previous_sources, chinese, revalidate_existing=False):
+    # The standard pipeline may only replay old exact proofs here. New IDs and
+    # ownership are exclusively admitted by the source-first verifier.
+    if revalidate_existing:
+        pages, source_text = {}, {}
     by_id = {row['id']: dict(row) for row in payload['rows']}
     original_ids = set(by_id)
     chunks, review, groups = [], [], {}
@@ -211,13 +215,16 @@ def build_chapter(record, payload, pages, source_text, candidates, previous_chun
                         valid = False
                         break
                     candidate = choices[0]
-                    if any(candidate[name] != expected[name] for name in ['talkId', 'textHash', 'chineseHash', 'speakerHash', 'koreanHash']) or row['text'] != candidate['text'] or row['type'] != expected['type']:
+                    if (any(candidate[name] != expected[name] for name in ['talkId', 'textHash', 'chineseHash', 'speakerHash', 'koreanHash']) or
+                            row['text'] != candidate['text'] or row['type'] != expected['type'] or
+                            row.get('talkId') != expected['talkId'] or row.get('textHash') != expected['textHash'] or
+                            row.get('speaker') != candidate['speaker'] or row.get('missionId') != old['missionId']):
                         valid = False
                         break
                 if valid:
                     chunks.append({**old, 'status': 'cached'})
                     groups[old['missionId']] = old['missionStructure']
-            review.append({'page': group['title'], 'reason': '조회 실패 · 이전 대조를 공식 원문에 재검증'})
+            review.append({'page': group['title'], 'reason': '기존 수록 원문 전용 재검증 · 새 귀속·간선 반영 보류' if revalidate_existing else '조회 실패 · 이전 대조를 공식 원문에 재검증'})
             continue
         try:
             fields = bwiki.validate_mission_page(source_text[group['title']], group['title'])
@@ -280,7 +287,7 @@ def build_chapter(record, payload, pages, source_text, candidates, previous_chun
     return result, accepted, review, order
 
 
-def publish(root, raw, plan_path, manifest_path, previous_root):
+def publish(root, raw, plan_path, manifest_path, previous_root, revalidate_existing=False):
     plan, missions, talks, chinese, korean, hashes = bwiki.inputs(raw, plan_path)
     discovery = json.loads((root / '.cache/bwiki/chapters.json').read_bytes())
     manifest = json.loads(manifest_path.read_bytes())
@@ -303,6 +310,8 @@ def publish(root, raw, plan_path, manifest_path, previous_root):
                     raise ValueError('Unverified BWIKI mission group')
     previous_path = previous_root / 'public/bwiki-provenance.json'
     previous = json.loads(previous_path.read_bytes()) if previous_path.exists() else {}
+    if revalidate_existing:
+        discovery['chapters'] = [item for item in discovery['chapters'] if item['file'] in previous.get('imports', {})]
     report = json.loads((root / 'public/bwiki-provenance.json').read_bytes())
     if report['commit'] != plan['commit']:
         raise ValueError('Mixed BWIKI audit versions')
@@ -314,7 +323,8 @@ def publish(root, raw, plan_path, manifest_path, previous_root):
         data = Path(page['file']).read_bytes()
         if bwiki.digest(data.decode('utf-8')) != page['sha256']:
             raise ValueError('Unverified BWIKI chapter page')
-        source_text[page['title']] = data.decode('utf-8')
+        if not revalidate_existing:
+            source_text[page['title']] = data.decode('utf-8')
     for record in discovery['chapters']:
         for group in record['groups']:
             if group['title'] in source_text:
@@ -343,7 +353,9 @@ def publish(root, raw, plan_path, manifest_path, previous_root):
             totals.subtract(payload.get('bwiki', {}))
         result, chunks, review, sequence = build_chapter(
             record, payload, pages, source_text, candidates,
-            previous.get('chapters', {}).get(record['file'], []), previous.get('sources', {}), chinese)
+            previous.get('chapters', {}).get(record['file'], []), previous.get('sources', {}), chinese, revalidate_existing)
+        if revalidate_existing and {row['id'] for row in result['rows']} != {row['id'] for row in payload['rows']}:
+            raise ValueError('Existing-only BWIKI verification changed row identities')
         body = [row for row in result['rows'] if row['id'].startswith(f"bwiki-{record['id']}-")]
         if not body:
             if record['file'] in report['chapters']:
@@ -385,6 +397,7 @@ def publish(root, raw, plan_path, manifest_path, previous_root):
         report['imports'][record['file']] = {
             'chapterId': record['id'], 'groups': record['groups'], 'rows': len(body),
             'missingMissionNames': record['missingMissionNames'], 'review': review,
+            **({'verificationMode': 'existing-only-revalidated'} if revalidate_existing else {}),
             'scope': 'Unique official TalkSentence IDs; explicitly labelled subtitles may use a unique TextMap hash. No translated text or inferred individual subquest ownership.',
         }
         for chunk in chunks:
@@ -424,4 +437,4 @@ if __name__ == '__main__':
     if '--discover' in sys.argv:
         discover(Path(sys.argv[1]), Path(sys.argv[2]), Path(sys.argv[3]))
     else:
-        publish(*(Path(value) for value in sys.argv[1:6]))
+        publish(*(Path(value) for value in sys.argv[1:6]), revalidate_existing='--revalidate-existing' in sys.argv)

@@ -1,6 +1,7 @@
 import copy
 import importlib.util
 import unittest
+from unittest.mock import patch
 from pathlib import Path
 
 spec = importlib.util.spec_from_file_location('imports', Path(__file__).resolve().parents[1] / 'scripts/import-bwiki-chapters.py')
@@ -30,7 +31,7 @@ class BwikiChapterTest(unittest.TestCase):
                       'mission': '소개', 'scene': '소개', 'type': 'narration', 'speaker': '', 'text': '소개문', 'source': 'intro'}
         self.page = {'status': 'available', 'title': '任務', 'pageTitle': '任務', 'pageId': 7, 'revision': 5}
 
-    def build(self, script=None, payload=None, pages=None, old=None, sources=None, chinese=None):
+    def build(self, script=None, payload=None, pages=None, old=None, sources=None, chinese=None, revalidate_existing=False):
         script = script or self.script
         cn = chinese or self.cn
         keys = set(imports.node_keys(bwiki.story_segments(script, True)))
@@ -39,7 +40,46 @@ class BwikiChapterTest(unittest.TestCase):
                 keys.add((expected['kind'], bwiki.comparable(cn.get(expected['textHash'], '')), expected['wikiSpeaker']))
         candidates = imports.official_candidates(self.talks, cn, self.kr, keys)
         return imports.build_chapter(self.record, payload or {'rows': [self.intro]},
-            pages if pages is not None else {'任務': self.page}, {'任務': script}, candidates, old or [], sources or {}, cn)
+            pages if pages is not None else {'任務': self.page}, {'任務': script}, candidates, old or [], sources or {}, cn, revalidate_existing)
+
+    def test_existing_only_replays_subtitle_and_branch_proofs_without_new_ids_or_wiki_parsing(self):
+        payload, chunks, _, _ = self.build()
+        sources = {'任務@5': {'sha256': 'proof'}}
+        # Simulate the general matcher clearing evidence it cannot represent.
+        for row in payload['rows']:
+            for key in bwiki.BWIKI_FIELDS:
+                row.pop(key, None)
+        self.cn['105'], self.kr['105'] = '新增台词。', '새 대사.'
+        self.talks.append({'TalkSentenceID': 105, 'TalkSentenceText': {'Hash': 105},
+                           'TextmapTalkSentenceName': {'Hash': 9}})
+        script = self.script + '\n*角色：新增台词。'
+        with patch.object(bwiki, 'validate_mission_page', side_effect=AssertionError('Existing-only parsed new wiki content')):
+            result, accepted, review, _ = self.build(script=script, payload=payload,
+                old=chunks, sources=sources, revalidate_existing=True)
+        self.assertEqual({row['id'] for row in result['rows']}, {row['id'] for row in payload['rows']})
+        self.assertEqual(result['bwiki']['cachedRows'], 6)
+        self.assertEqual([chunk['edges'] for chunk in accepted], [chunk['edges'] for chunk in chunks])
+        self.assertEqual({chunk['revision'] for chunk in accepted}, {5})
+        self.assertTrue(all('기존 수록 원문 전용 재검증' in item['reason'] for item in review))
+        intro, new_chunks, _, _ = self.build(revalidate_existing=True)
+        self.assertEqual(intro['rows'], [self.intro])
+        self.assertFalse(new_chunks)
+
+    def test_existing_only_rejects_changed_official_hash_identity_speaker_or_ownership(self):
+        payload, chunks, _, _ = self.build()
+        sources = {'任務@5': {'sha256': 'proof'}}
+        for key, value in [('talkId', 999), ('textHash', '999'), ('speaker', '다른 화자'),
+                           ('missionId', 'quest-999'), ('type', 'narration')]:
+            changed = copy.deepcopy(payload)
+            next(row for row in changed['rows'] if row.get('talkId') == 100)[key] = value
+            result, accepted, _, _ = self.build(payload=changed, old=chunks, sources=sources, revalidate_existing=True)
+            self.assertFalse(any('bwiki-900-talk-100-line' in chunk['order'] for chunk in accepted), key)
+        changed_cn = {**self.cn, '100': '官方原文修改。'}
+        _, accepted, _, _ = self.build(payload=payload, old=chunks, sources=sources,
+            chinese=changed_cn, revalidate_existing=True)
+        self.assertFalse(any('bwiki-900-talk-100-line' in chunk['order'] for chunk in accepted))
+        _, accepted, _, _ = self.build(payload=payload, old=chunks, revalidate_existing=True)
+        self.assertFalse(accepted)
 
     def test_official_ids_subtitle_hash_and_intro_identity_are_preserved(self):
         payload, chunks, _, _ = self.build()

@@ -93,13 +93,18 @@ export function discoverBwiki(run, stage, raw, planFile) {
     run(script, [stage, raw, planFile, '--discover']);
 }
 
-export function alignBwiki(run, stage, raw, planFile, previousRoot) {
-  for (const script of ['bwiki-dialogue.py', 'import-simulation-events.py'])
+export function alignBwiki(run, stage, raw, planFile, previousRoot, { simulation = true } = {}) {
+  for (const script of [
+    'bwiki-dialogue.py',
+    'import-bwiki-chapters.py',
+    ...(simulation ? ['import-simulation-events.py'] : []),
+  ])
     run(script, [
       stage,
       raw,
       planFile,
       path.join(stage, '.cache/bwiki/manifest.json'),
       previousRoot,
+      ...(script === 'import-bwiki-chapters.py' ? ['--revalidate-existing'] : []),
     ]);
 }

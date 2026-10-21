@@ -1,6 +1,33 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { trailblazeTitleFiles, scopeBwikiRequests } from '../scripts/bwiki-verification.mjs';
+import {
+  trailblazeTitleFiles,
+  scopeBwikiRequests,
+  alignBwiki,
+} from '../scripts/bwiki-verification.mjs';
+
+test('full and scoped retries restore existing imported proofs with new admission disabled', () => {
+  for (const simulation of [true, false]) {
+    const calls: { script: string; args: string[] }[] = [];
+    alignBwiki(
+      (script: string, args: string[]) => calls.push({ script, args }),
+      'stage',
+      'raw',
+      'plan',
+      'baseline',
+      { simulation },
+    );
+    const replay = calls.find((call) => call.script === 'import-bwiki-chapters.py')!;
+    assert.ok(replay);
+    assert.equal(replay.args.at(-1), '--revalidate-existing');
+    assert.equal(replay.args.at(-2), 'baseline');
+    assert.equal(
+      calls.some((call) => call.script === 'import-simulation-events.py'),
+      simulation,
+    );
+    assert.equal(calls[0].script, 'bwiki-dialogue.py');
+  }
+});
 
 test('a targeted BWIKI retry requires one exact chapter title', () => {
   const entries = [

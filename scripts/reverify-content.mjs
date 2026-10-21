@@ -333,10 +333,7 @@ export async function retryContent(root, stage, raw, planFile, api, blobs, { tit
     );
   await saveRetry(state, root);
   if (targets.size) {
-    if (scopedFiles) {
-      for (const script of ['bwiki-dialogue.py'])
-        run(script, [stage, raw, planFile, path.join(stage, '.cache/bwiki/manifest.json'), root]);
-    } else alignBwiki(run, stage, raw, planFile, root);
+    alignBwiki(run, stage, raw, planFile, root, { simulation: !scopedFiles });
   }
   if (!scopedFiles && (watch.retryVideo || targets.size))
     execFileSync(
