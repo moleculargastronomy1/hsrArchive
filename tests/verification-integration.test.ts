@@ -108,6 +108,61 @@ test('flow and video evidence participate in preservation, change detection and 
   );
 });
 
+test('recovery retains repeated wiki positions and display links even with identical canonical rows', async () => {
+  const parent = path.resolve('.cache/tests');
+  await fs.mkdir(parent, { recursive: true });
+  const folder = await fs.mkdtemp(path.join(parent, 'wiki-recovery-'));
+  try {
+    await fs.mkdir(path.join(folder, 'public/content'), { recursive: true });
+    const file = path.join(folder, 'public/content/chapter.json');
+    const rows = [
+      { id: 'choice', type: 'choice', text: '선택지' },
+      { id: 'reply', text: '응답' },
+    ];
+    await fs.writeFile(file, JSON.stringify({ schema: 'hsr-dialogue.v1', rows }));
+    const old = await verificationRows(folder);
+    const reading = {
+      occurrences: [
+        { id: 'a', page: '任务', rowId: 'choice', sceneId: 'scene', nextIds: ['b'] },
+        { id: 'b', page: '任务', rowId: 'reply', sceneId: 'scene', nextIds: [] },
+        { id: 'c', page: '任务', rowId: 'reply', sceneId: 'another', nextIds: [] },
+      ],
+    };
+    await fs.writeFile(
+      file,
+      JSON.stringify({ schema: 'hsr-dialogue.v1', rows, wikiReading: reading }),
+    );
+    const improved = await verificationRows(folder);
+    assert.equal(compareVerification(old, improved).changed, true);
+    assert.equal(baselineChoice(improved, old), 'repository');
+    assert.equal(baselineChoice(old, improved), 'published');
+    const repeated = structuredClone(improved);
+    repeated.wikiReadings = structuredClone(improved.wikiReadings);
+    repeated.wikiReadings['content/chapter.json'].occurrences.pop();
+    assert.throws(
+      () => assertVerificationPreserved(compareVerification(improved, repeated), 'Recovery'),
+      /lostReadingPositions/,
+    );
+    const noReply = structuredClone(improved);
+    noReply.wikiReadings = structuredClone(improved.wikiReadings);
+    noReply.wikiReadings['content/chapter.json'].occurrences[0].nextIds = [];
+    assert.throws(
+      () => assertVerificationPreserved(compareVerification(improved, noReply), 'Recovery'),
+      /lostReadingLinks/,
+    );
+    const moved = structuredClone(improved);
+    moved.wikiReadings = structuredClone(improved.wikiReadings);
+    moved.wikiReadings['content/chapter.json'].occurrences[0].sceneId = 'other';
+    assert.throws(
+      () => assertVerificationPreserved(compareVerification(improved, moved), 'Recovery'),
+      /conflictingReadingPositions/,
+    );
+  } finally {
+    assert.ok(folder.startsWith(parent + path.sep));
+    await fs.rm(folder, { recursive: true, force: true });
+  }
+});
+
 test('caption counts and integration reject stale, duplicate, choice, short and unresolved evidence alike', () => {
   const rows = [
     {

@@ -567,10 +567,11 @@ export default function App() {
   } else if (entry && chapter && parts.length === 3) {
     content = (
       <Reader
-        key={`${entry.id}/${chapter.id}/${params.get('dialogue') ?? ''}`}
+        key={`${entry.id}/${chapter.id}/${params.get('dialogue') ?? ''}/${params.get('occurrence') ?? ''}`}
         entry={entry}
         chapterId={chapter.id}
         targetRowId={params.get('dialogue') ?? undefined}
+        targetOccurrenceId={params.get('occurrence') ?? undefined}
         fontSize={fontSize}
         setFontSize={setFontSize}
         saved={bookmarks.includes(entry.id)}
@@ -846,6 +847,7 @@ function Reader({
   entry,
   chapterId,
   targetRowId,
+  targetOccurrenceId,
   fontSize,
   setFontSize,
   saved,
@@ -856,6 +858,7 @@ function Reader({
   entry: ArchiveEntry;
   chapterId: string;
   targetRowId?: string;
+  targetOccurrenceId?: string;
   fontSize: number;
   setFontSize: (value: number) => void;
   saved: boolean;
@@ -1050,6 +1053,7 @@ function Reader({
             <DialogueBrowser
               file={chapter.content.file}
               targetRowId={targetRowId}
+              targetOccurrenceId={targetOccurrenceId}
               onReady={markReady}
               languages={languages}
               footer={chapterNavigation}

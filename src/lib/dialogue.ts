@@ -1,3 +1,5 @@
+import { wikiContext, type WikiPosition } from './wiki-reading.ts';
+
 export interface DialogueRow {
   id: string;
   entryId: string;
@@ -27,6 +29,9 @@ export interface DialogueRow {
   videoScene?: string;
   videoNextIds?: string[];
   videoReplyToIds?: string[];
+  wikiPosition?: WikiPosition;
+  wikiUnplaced?: { id: string; title: string };
+  wikiLegacy?: { id: string; title: string };
 }
 
 export function isDialogueRows(value: unknown): value is DialogueRow[] {
@@ -82,6 +87,8 @@ export function dialoguePage(rows: DialogueRow[], rowId: string, pageSize = 50) 
 export function nearbyDialogue(rows: DialogueRow[], index: number, radius = 20) {
   const selected = rows[index];
   if (!selected) return [];
+  if (selected.wikiPosition) return wikiContext(rows, index, false);
+  if (selected.wikiUnplaced) return [selected];
   if (selected.flowBoundary && selected.flowStatus === 'review') return [selected];
   const wiki = ['matched', 'cached'].includes(selected.bwikiStatus ?? '') && !!selected.bwikiScene;
   const sameScene = (row: DialogueRow) =>
@@ -106,6 +113,8 @@ export function nearbyDialogue(rows: DialogueRow[], index: number, radius = 20) 
 // the next choice. Other alternatives never become part of the selected path.
 export function choiceDialogue(rows: DialogueRow[], index: number, limit = 41) {
   const selected = rows[index];
+  if (selected?.wikiPosition) return wikiContext(rows, index, true, limit);
+  if (selected?.wikiUnplaced) return [selected];
   const video =
     selected?.videoStatus === 'screen-matched' &&
     !!selected.videoScene &&

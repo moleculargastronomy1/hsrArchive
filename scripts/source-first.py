@@ -27,6 +27,7 @@ def module(name, file):
 b = module('source_first_bwiki', 'bwiki-dialogue.py')
 imports = module('source_first_imports', 'import-bwiki-chapters.py')
 flow = module('source_first_flow', 'restore-dialogue-flow.py')
+placement = module('source_first_placement', 'bwiki-placement.py')
 
 
 def read(path):
@@ -52,7 +53,7 @@ def checkpoint(path, key):
 
 
 def code_hash():
-    files = ['source-first.py', 'source-first.mjs', 'bwiki-dialogue.py',
+    files = ['source-first.py', 'source-first.mjs', 'bwiki-dialogue.py', 'bwiki-placement.py',
              'import-bwiki-chapters.py', 'import-localizations.py', 'restore-dialogue-flow.py',
              'validate-content-stage.py', 'source-first-publication.mjs', 'content-publication.mjs', 'import-trailblaze.py']
     return digest({name: hashlib.sha256((CODE / name).read_bytes()).hexdigest() for name in files})
@@ -152,6 +153,7 @@ def inventory(segments, page, chapter_id):
         item = {'id': identity, 'page': page['pageTitle'], 'pageId': page['pageId'], 'revision': page['revision'],
                 'pageSha256': page['sha256'], 'location': location, 'kind': kind, 'branch': branch,
                 'context': context, 'chinese': node.get('text', ''), 'speaker': node.get('speaker', ''),
+                **({'label': node['label']} if node.get('label') else {}),
                 'status': 'pending', 'official': [], 'rowRefs': []}
         occurrences.append(item)
         node['_occ'] = identity
@@ -284,7 +286,7 @@ def match_occurrence(node, index, owners, mission_ids, existing):
 
 
 def audit_chapter(record, payload, pages, index, owners, graphs, reviewed=None, cache=None):
-    occurrences, edges, reviews, sources = [], {}, [], []
+    occurrences, edges, reviews, sources, documents = [], {}, [], [], []
     grouped = defaultdict(set)
     for m in record['missions']:
         grouped[m['chineseTitle']].add(m['id'])
@@ -315,6 +317,7 @@ def audit_chapter(record, payload, pages, index, owners, graphs, reviewed=None, 
                 occurrences.extend(prior['nodes'])
                 edges.update(prior['graph'])
                 sources.extend(prior['sources'])
+                documents.extend(prior.get('documents', []))
                 reviews.extend(prior['review'])
                 document_result({'status': 'audited', 'key': doc_key, 'reused': True})
                 continue
@@ -327,6 +330,10 @@ def audit_chapter(record, payload, pages, index, owners, graphs, reviewed=None, 
             document_result({'status': 'pending', 'reason': str(error)})
             continue
         source = {k: page[k] for k in ['pageTitle', 'pageId', 'revision', 'sha256']}
+        source['title'] = title
+        document = {'pageTitle': page['pageTitle'], 'fields': fields,
+                    'objectives': {k: v for k, v in fields.items() if any(word in k for word in ['目标', '条件', '地点'])}}
+        documents.append(document)
         source.update(sourceUrl='https://wiki.biligame.com/sr/' + b.quote(page['pageTitle']) + '?oldid=' + str(page['revision']),
                       historyUrl='https://wiki.biligame.com/sr/' + b.quote(page['pageTitle']) + '?action=history',
                       timestamp=page.get('timestamp'), collectedAt=page.get('collectedAt'))
@@ -356,7 +363,7 @@ def audit_chapter(record, payload, pages, index, owners, graphs, reviewed=None, 
         occurrences.extend(nodes)
         edges.update(graph)
         if doc_path:
-            saved = {'nodes': nodes, 'graph': graph, 'sources': [source], 'review': document_reviews}
+            saved = {'nodes': nodes, 'graph': graph, 'sources': [source], 'documents': [document], 'review': document_reviews}
             write(doc_path, {'key': doc_key, 'sha256': digest(saved), 'result': saved})
         document_result({'status': 'audited', 'key': doc_key, 'reused': False})
     by_id = {o['id']: o for o in occurrences}
@@ -380,7 +387,7 @@ def audit_chapter(record, payload, pages, index, owners, graphs, reviewed=None, 
                                 'localOrder': 'partial', 'wholePath': 'unverified'})
     return {'schema': 'hsr-source-first-chapter.v1', 'chapter': record, 'baselineRows': len(payload['rows']),
             'baselineLinkedRows': sum(r.get('bwikiStatus') in ['matched', 'cached'] for r in payload['rows']),
-            'sources': sources, 'missions': mission_reports, 'occurrences': occurrences, 'wikiGraph': edges, 'confirmedWikiGraph': safe_edges,
+            'sources': sources, 'documents': documents, 'missions': mission_reports, 'occurrences': occurrences, 'wikiGraph': edges, 'confirmedWikiGraph': safe_edges,
             'orderComparisons': orders, 'review': reviews,
             'counts': {'allParsedUnits': len(occurrences), 'speechOccurrences': len(speech),
                        'status': dict(counts), 'boundaries': sum(o['kind'] == 'barrier' for o in occurrences),
@@ -443,7 +450,10 @@ def main():
         print(json.dumps({'chapters': len(cat['chapters']), 'missions': sum(len(c['missions']) for c in cat['chapters']), 'documents': len(cat['requests'])}))
         return
     policy = read(CODE.parent / 'editorial/source-first-policy.json')
-    if policy.get('version') != 1 or not policy.get('requireExplicitMissionOwnership') or policy.get('newSemanticMatches') != 'candidate-only':
+    if (policy.get('version') != 2 or not policy.get('requireExplicitMissionOwnership') or
+            policy.get('newSemanticMatches') != 'candidate-only' or
+            policy.get('wikiPositionEdges') != 'wiki-display-only-never-official-execution' or
+            policy.get('publishUnknownEdges') is not False):
         raise ValueError('Unsupported or weakened source-first policy')
     manifest = read(args.work / 'manifest.json')
     if manifest.get('schema') != 'hsr-bwiki-input.v1' or manifest['commit'] != plan['commit']:
@@ -463,6 +473,7 @@ def main():
               'license': manifest.get('license'), 'chapters': {}}
     previous_path = args.root / 'public/source-first-provenance.json'
     previous = read(previous_path) if previous_path.exists() else {}
+    previous_wiki = read(args.root / 'public/bwiki-provenance.json')
     registry = read(CODE.parent / 'editorial/bwiki-translation-matches.json')
     source_records = {f"{p['pageTitle']}@{p['revision']}": {'sha256': p['sha256']}
                       for p in manifest['pages'] if p.get('status') == 'available'}
@@ -490,6 +501,8 @@ def main():
             result = audit_chapter(record, payload, pages, index, owners, graphs, reviewed, (args.work, version))
             write(target, {'key': key, 'sha256': digest(result), 'result': result})
         candidate, added = add_confirmed(payload, result)
+        candidate['wikiReading'] = placement.build(record, candidate, result, talks, cn, kr, owners,
+            previous_wiki.get('chapters', {}).get(record['file'], []), b, imports, {**version, 'commit': plan['commit']})
         retained_proofs, unverified_prior = [], []
         by_id = {r['id']: r for r in payload['rows']}
         for prior in previous.get('chapters', {}).get(record['file'], {}).get('additions', []):
@@ -508,6 +521,7 @@ def main():
                                     'verification': result['verification'], 'result': str(target), 'reused': reused,
                                     'orderComparisonCounts': dict(Counter(e['officialComparison'] for e in result['orderComparisons'])),
                                     'missions': result['missions'],
+                                    'reading': candidate['wikiReading']['summary'],
                                     'review': result['review']})
         write(progress, summary)
         # Keep the complete candidate inventory/graph in resumable checkpoints.
@@ -517,14 +531,16 @@ def main():
         public['chapters'][record['file']] = {'chapterId': record['id'], 'sources': result['sources'], 'counts': result['counts'],
             'missions': result['missions'],
             'verification': result['verification'], 'additions': retained_proofs + added, 'retainedUnverifiedRows': unverified_prior,
+            'reading': candidate['wikiReading']['summary'],
             'occurrences': [{k: v for k, v in o.items() if k not in ['chinese', 'speaker', 'official', 'ownership']}
                             | {'officialIds': [r['talkId'] for r in o['official']]} for o in result['occurrences'] if o['id'] in published_occurrences],
             'wikiGraph': {}, 'orderComparisonCounts': dict(Counter(e['officialComparison'] for e in result['orderComparisons'])),
             'orderReview': [e for e in result['orderComparisons'] if e['officialComparison'] == 'potential-order-conflict'],
             'inventoryKey': key, 'inventorySha256': digest(result), 'review': result['review']}
-        if args.apply and added:
+        if args.apply:
             write(args.root / 'public' / record['file'], candidate)
             changed.append('public/' + record['file'])
+        if args.apply and added:
             key_route = record['entryId'] + '/' + record['chapterId']
             metadata[key_route]['rows'] = len(candidate['rows'])
             for entry in entries:

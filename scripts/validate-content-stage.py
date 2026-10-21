@@ -3,10 +3,14 @@ import hashlib
 import json
 import re
 import sys
+import importlib.util
 from pathlib import Path
 
 
 def validate(root):
+    spec = importlib.util.spec_from_file_location('bwiki_placement_validation', Path(__file__).with_name('bwiki-placement.py'))
+    placement = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(placement)
     def read(file):
         return json.loads((root / file).read_bytes())
 
@@ -62,6 +66,8 @@ def validate(root):
                 payload['chapterId'] != chapter or len(payload['rows']) != content['rows']):
             raise ValueError('Invalid content descriptor: ' + route)
         by_id = {row['id']: row for row in payload['rows']}
+        if 'wikiReading' in payload:
+            placement.validate(payload['wikiReading'], payload['rows'], commit)
         for row in payload['rows']:
             if row.get('bwikiMatchMethod') is not None:
                 if row['bwikiMatchMethod'] != 'translation-reviewed' or row['id'] not in translated:

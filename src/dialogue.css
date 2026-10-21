@@ -196,6 +196,26 @@
   border-radius: 5px;
   overflow: hidden;
 }
+.wiki-mission-heading {
+  margin: 1.8rem 0 0;
+  padding: 1rem;
+  border-top: 1px solid var(--line);
+  color: var(--text);
+  font-size: 1rem;
+}
+.wiki-scene-heading {
+  padding: 0.65rem 1rem;
+  color: var(--muted);
+  font-size: 0.85rem;
+  border-bottom: 1px solid var(--line);
+}
+.wiki-scene-heading small {
+  display: block;
+  margin-top: 0.35rem;
+}
+.wiki-position-label {
+  color: var(--accent) !important;
+}
 .dialogue-row {
   display: grid;
   grid-template-columns: 135px minmax(0, 1fr);

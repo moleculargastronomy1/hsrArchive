@@ -281,7 +281,9 @@ def parse_body(value, fragmented=False, provenance=False):
                     continue
                 # Never connect across headings, stage directions, images or
                 # unparsed narration; these may represent independent scenes.
-                segments.append([{'kind': 'barrier' if line.startswith(('=', '----', ':')) else 'unsupported'}])
+                segments.append([{'kind': 'barrier' if line.startswith(('=', '----', ':')) else 'unsupported',
+                                  **({'label': re.sub(r'<[^>]+>', '', line).strip('=; ').strip()
+                                      if line.startswith(('=', ';')) and not any(mark in line for mark in ['{{', '}}', '|']) else ''} if provenance else {})}])
 
     def choice(data):
         name, fields = template(data)

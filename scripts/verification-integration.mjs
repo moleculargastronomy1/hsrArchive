@@ -35,6 +35,9 @@ export function assertVerificationPreserved(comparison, context) {
     'conflictingOrder',
     'lostEventImages',
     'lostContentRoutes',
+    'lostReadingPositions',
+    'lostReadingLinks',
+    'conflictingReadingPositions',
   ].filter((key) => comparison[key]?.length);
   if (failures.length)
     throw new Error(
@@ -81,6 +84,7 @@ export async function verificationRows(root, { referencedOnly = false } = {}) {
         if (chapter.content?.file) references.add(chapter.content.file);
   if (referencedOnly && !references.size) throw new Error('Missing authoritative content routes');
   rows.contentRoutes = [...references].sort();
+  rows.wikiReadings = {};
   const simulation = await fs
     .readFile(path.join(root, 'src/data/simulation.json'))
     .catch((error) => {
@@ -107,6 +111,7 @@ export async function verificationRows(root, { referencedOnly = false } = {}) {
     if (referencedOnly && !references.has('content/' + name)) continue;
     const payload = JSON.parse(await fs.readFile(path.join(folder, name)));
     if (payload.schema !== 'hsr-dialogue.v1') continue;
+    if (payload.wikiReading) rows.wikiReadings['content/' + name] = payload.wikiReading;
     for (const row of payload.rows) {
       if (rows.has(row.id)) throw new Error('Duplicate verification row identity: ' + row.id);
       rows.set(row.id, { ...row, file: 'content/' + name });
@@ -115,6 +120,54 @@ export async function verificationRows(root, { referencedOnly = false } = {}) {
   return rows;
 }
 export function compareVerification(before, after) {
+  // Recovery must preserve the optional occurrence layer too. Canonical row
+  // identity alone cannot detect a restored snapshot that loses every position.
+  const lostReadingPositions = [],
+    lostReadingLinks = [],
+    conflictingReadingPositions = [];
+  for (const [file, reading] of Object.entries(before.wikiReadings ?? {})) {
+    const current = after.wikiReadings?.[file];
+    const positions = new Map((current?.occurrences ?? []).map((p) => [p.id, p]));
+    const coverage = (items) => {
+      const counts = new Map();
+      for (const p of items) {
+        const key = JSON.stringify([p.page, p.rowId]);
+        counts.set(key, (counts.get(key) ?? 0) + 1);
+      }
+      return counts;
+    };
+    const now = coverage(current?.occurrences ?? []);
+    for (const [key, count] of coverage(reading.occurrences))
+      if ((now.get(key) ?? 0) < count) lostReadingPositions.push(file + ':' + key);
+    for (const p of reading.occurrences) {
+      const q = positions.get(p.id);
+      if (
+        q &&
+        [
+          'rowId',
+          'missionId',
+          'sceneId',
+          'page',
+          'revision',
+          'location',
+          'conditions',
+          'branch',
+        ].some((key) => JSON.stringify(p[key]) !== JSON.stringify(q[key]))
+      )
+        conflictingReadingPositions.push(file + ':' + p.id);
+    }
+    const links = (value) => {
+      const nodes = new Map((value?.occurrences ?? []).map((p) => [p.id, p]));
+      return new Set(
+        [...nodes.values()].flatMap((p) =>
+          p.nextIds.map((id) => JSON.stringify([p.page, p.rowId, nodes.get(id)?.rowId])),
+        ),
+      );
+    };
+    const currentLinks = links(current);
+    for (const key of links(reading))
+      if (!currentLinks.has(key)) lostReadingLinks.push(file + ':' + key);
+  }
   const routes = new Set(after.contentRoutes ?? []);
   const lostContentRoutes = (before.contentRoutes ?? []).filter((file) => !routes.has(file));
   const imageKeys = new Set((after.eventImages ?? []).map(([key]) => key));
@@ -189,6 +242,7 @@ export function compareVerification(before, after) {
       JSON.stringify({
         eventImages: rows.eventImages ?? [],
         contentRoutes: rows.contentRoutes ?? [],
+        wikiReadings: rows.wikiReadings ?? {},
         rows: [...rows].map(([id, row]) => [
           id,
           ...coreKeys.map((key) => row[key]),
@@ -224,6 +278,9 @@ export function compareVerification(before, after) {
     conflictingOrder: [...new Set(conflictingOrder)],
     lostEventImages,
     lostContentRoutes,
+    lostReadingPositions,
+    lostReadingLinks,
+    conflictingReadingPositions,
     changed: digest(before) !== digest(after),
     digest: digest(after),
   };

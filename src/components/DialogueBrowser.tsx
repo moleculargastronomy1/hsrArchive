@@ -3,6 +3,7 @@ import {
   useMemo,
   useRef,
   useState,
+  Fragment,
   type CSSProperties,
   type FormEvent,
   type ReactNode,
@@ -33,6 +34,7 @@ import GameText from './GameText';
 import VideoVerificationNote from './VideoVerificationNote';
 import SourceDetails from './SourceDetails';
 import { searchableGameText } from '../lib/game-text';
+import { isWikiReading, readingRows, positionKey, type WikiReading } from '../lib/wiki-reading';
 
 export default function DialogueBrowser({
   file = 'content/search-index.json',
@@ -40,6 +42,7 @@ export default function DialogueBrowser({
   global = false,
   onReady,
   targetRowId,
+  targetOccurrenceId,
   languages: controlledLanguages,
   footer,
   sourceNote,
@@ -49,13 +52,16 @@ export default function DialogueBrowser({
   global?: boolean;
   onReady?: () => void;
   targetRowId?: string;
+  targetOccurrenceId?: string;
   languages?: ComparisonLanguage[];
   footer?: ReactNode;
   sourceNote?: string;
 }) {
   const [storedLanguages, setLanguages] = useComparisonLanguages();
   const languages = controlledLanguages ?? storedLanguages;
-  const [rows, setRows] = useState<DialogueRow[]>([]);
+  const [canonicalRows, setRows] = useState<DialogueRow[]>([]);
+  const [reading, setReading] = useState<WikiReading>();
+  const rows = useMemo(() => readingRows(canonicalRows, reading), [canonicalRows, reading]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [retry, setRetry] = useState(0);
@@ -73,6 +79,7 @@ export default function DialogueBrowser({
   const [pageInput, setPageInput] = useState(String(savedPage));
   const restorePage = useRef(true);
   const [selected, setSelected] = useState<number>();
+  const [contextMode, setContextMode] = useState<'position' | 'existing'>('position');
   const version = useRef(0);
   const dialog = useRef<HTMLDialogElement>(null);
   const tableTop = useRef<HTMLDivElement>(null);
@@ -90,6 +97,7 @@ export default function DialogueBrowser({
     setLoading(true);
     setError('');
     setRows([]);
+    setReading(undefined);
     setMatches([]);
     setSelected(undefined);
     if (!/^content\/[a-zA-Z0-9_-]+\.json$/.test(file)) {
@@ -103,8 +111,11 @@ export default function DialogueBrowser({
         const data = await response.json();
         if (data.schema !== 'hsr-dialogue.v1' || !isDialogueRows(data.rows))
           throw new Error('본문의 자료 형식을 확인해 주세요.');
+        if (data.wikiReading !== undefined && !isWikiReading(data.wikiReading, data.rows))
+          throw new Error('출현 위치의 자료 형식을 확인해 주세요.');
         if (!controller.signal.aborted) {
           setRows(data.rows);
+          setReading(data.wikiReading);
           setLoading(false);
         }
       })
@@ -144,7 +155,16 @@ export default function DialogueBrowser({
       if (version.current === token) {
         const targetPage =
           restorePage.current && targetRowId && !query && scope === 'all'
-            ? dialoguePage(rows, targetRowId, pageSize)
+            ? targetOccurrenceId &&
+              rows.some(
+                (row) => row.wikiPosition?.id === targetOccurrenceId && row.id === targetRowId,
+              )
+              ? Math.floor(
+                  rows.findIndex(
+                    (row) => row.wikiPosition?.id === targetOccurrenceId && row.id === targetRowId,
+                  ) / pageSize,
+                ) + 1
+              : dialoguePage(rows, targetRowId, pageSize)
             : undefined;
         setMatches(result);
         setPage(
@@ -162,7 +182,7 @@ export default function DialogueBrowser({
       clearTimeout(timer);
       version.current++;
     };
-  }, [rows, query, scope, searchIndex, entries, loading, targetRowId]);
+  }, [rows, query, scope, searchIndex, entries, loading, targetRowId, targetOccurrenceId]);
   useEffect(() => {
     if (!loading && !searching && !error && !restorePage.current) onReady?.();
   }, [loading, searching, error, onReady]);
@@ -195,27 +215,44 @@ export default function DialogueBrowser({
   const selectedRow = selected === undefined ? undefined : rows[selected];
   const linkedChoice =
     selectedRow?.type === 'choice' &&
-    (selectedRow.flowStatus === 'verified' ||
-      ['matched', 'cached'].includes(selectedRow.bwikiStatus ?? ''));
-  const selectedWiki = ['matched', 'cached'].includes(selectedRow?.bwikiStatus ?? '');
+    (selectedRow.wikiPosition && contextMode !== 'existing'
+      ? selectedRow.wikiPosition.nextIds.length > 0
+      : selectedRow.flowStatus === 'verified' ||
+        ['matched', 'cached'].includes(selectedRow.bwikiStatus ?? ''));
+  const selectedWiki =
+    !!selectedRow?.wikiPosition || ['matched', 'cached'].includes(selectedRow?.bwikiStatus ?? '');
   const context = useMemo(
     () =>
       selected === undefined
         ? []
-        : linkedChoice
-          ? choiceDialogue(rows, selected)
-          : nearbyDialogue(rows, selected),
-    [rows, selected, linkedChoice],
+        : contextMode === 'existing'
+          ? (rows[selected].type === 'choice' ? choiceDialogue : nearbyDialogue)(
+              canonicalRows,
+              canonicalRows.findIndex((row) => row.id === rows[selected].id),
+            )
+          : linkedChoice
+            ? choiceDialogue(rows, selected)
+            : nearbyDialogue(rows, selected),
+    [rows, canonicalRows, selected, linkedChoice, contextMode],
   );
   const byId = useMemo(() => new Map(rows.map((row) => [row.id, row])), [rows]);
+  const byPosition = useMemo(
+    () => new Map(rows.filter((row) => row.wikiPosition).map((row) => [row.wikiPosition!.id, row])),
+    [rows],
+  );
+  const occurrenceIndex = targetOccurrenceId
+    ? rows.findIndex((row) => row.wikiPosition?.id === targetOccurrenceId && row.id === targetRowId)
+    : -1;
+  const targetIndex =
+    occurrenceIndex >= 0 ? occurrenceIndex : rows.findIndex((row) => row.id === targetRowId);
   const flowSummary = useMemo(
     () => ({
-      verified: rows.filter((row) => row.flowStatus === 'verified').length,
-      review: rows.filter((row) => row.flowStatus === 'review').length,
-      wiki: rows.filter((row) => row.bwikiStatus === 'matched').length,
-      cached: rows.filter((row) => row.bwikiStatus === 'cached').length,
+      verified: canonicalRows.filter((row) => row.flowStatus === 'verified').length,
+      review: canonicalRows.filter((row) => row.flowStatus === 'review').length,
+      wiki: canonicalRows.filter((row) => row.bwikiStatus === 'matched').length,
+      cached: canonicalRows.filter((row) => row.bwikiStatus === 'cached').length,
     }),
-    [rows],
+    [canonicalRows],
   );
   const translations = useLocalizations(
     [...visible.map((index) => rows[index]), ...context],
@@ -254,6 +291,7 @@ export default function DialogueBrowser({
     setSelected(undefined);
   };
   const openContext = (index: number) => {
+    setContextMode(rows[index].wikiLegacy ? 'existing' : 'position');
     setSelected(index);
   };
 
@@ -296,8 +334,9 @@ export default function DialogueBrowser({
         </div>
       )}
       <p className="dialogue-help">
-        연결이 확인된 선택지를 누르면 해당 응답과 이어지는 대사를 볼 수 있습니다. 확인이 필요한
-        구간은 기존 참조 순서를 유지합니다.
+        {reading
+          ? 'BWIKI의 임무·장면·선택지 순서로 표시합니다. 게임 실행 순서의 확인 여부는 별도로 표시하며, 출현 위치를 찾지 못한 원문은 세부 임무별로 구분합니다.'
+          : '연결이 확인된 선택지를 누르면 해당 응답과 이어지는 대사를 볼 수 있습니다. 확인이 필요한 구간은 기존 참조 순서를 유지합니다.'}
       </p>
       {loading ? (
         <div className="dialogue-status" role="status">
@@ -318,7 +357,7 @@ export default function DialogueBrowser({
             <span>
               {searching
                 ? '검색 중…'
-                : `${matches.length.toLocaleString('ko-KR')}줄${query ? ` · “${query}”` : ''}`}
+                : `${matches.length.toLocaleString('ko-KR')}${reading ? '개 출현 위치 · 원문 ' + canonicalRows.length.toLocaleString('ko-KR') + '줄' : '줄'}${query ? ` · “${query}”` : ''}`}
             </span>
             {query && (
               <button
@@ -342,8 +381,18 @@ export default function DialogueBrowser({
             </div>
           ) : (
             <div className="dialogue-table" aria-busy={searching}>
-              {visible.map((index) => {
+              {visible.map((index, visibleIndex) => {
                 const row = rows[index];
+                const position = row.wikiPosition;
+                const previous = visibleIndex ? rows[visible[visibleIndex - 1]] : undefined;
+                const missionChanged = position
+                  ? previous?.wikiPosition?.missionId !== position.missionId
+                  : row.wikiLegacy
+                    ? previous?.wikiLegacy?.id !== row.wikiLegacy.id
+                    : !!row.wikiUnplaced && previous?.wikiUnplaced?.id !== row.wikiUnplaced.id;
+                const sceneChanged =
+                  position && previous?.wikiPosition?.sceneId !== position.sceneId;
+                const isTarget = index === targetIndex;
                 const entry = entries.get(row.entryId);
                 const orderUnverified =
                   (row.flowStatus === 'review' || row.bwikiStatus === 'review') &&
@@ -351,72 +400,134 @@ export default function DialogueBrowser({
                   !['matched', 'cached'].includes(row.bwikiStatus ?? '') &&
                   !['caption-matched', 'screen-matched'].includes(row.videoStatus ?? '');
                 return (
-                  <div
-                    className={`dialogue-row ${row.type === 'choice' ? 'choice-row' : ''} ${languages.length ? 'comparing' : ''} ${row.id === targetRowId ? 'dialogue-target' : ''}`}
-                    key={row.id}
-                    ref={row.id === targetRowId ? targetRow : undefined}
-                    tabIndex={row.id === targetRowId ? -1 : undefined}
-                    data-dialogue-id={row.id}
-                  >
-                    <div className="dialogue-row-meta">
-                      <span>
-                        {entry?.category === 'books'
-                          ? '서적 원문'
-                          : row.type === 'choice'
-                            ? '선택지'
-                            : row.speaker || '장면 설명'}
-                      </span>
-                      <small>{row.bwikiMission ?? row.mission}</small>
-                      {orderUnverified && <small>(순서 미확인)</small>}
-                      {row.bwikiMatchMethod === 'translation-reviewed' && (
-                        <small>번역 내용 대조</small>
-                      )}
-                      {row.flowBoundary && <small>후속 대사 확인 필요</small>}
-                      {(row.bwikiReplyToIds ?? row.replyToIds)
-                        ?.map((id) => byId.get(id))
-                        .filter(Boolean)
-                        .map((choice) => (
-                          <button
-                            className="flow-reply-link"
-                            key={choice!.id}
-                            onClick={() => openContext(rows.indexOf(choice!))}
-                          >
-                            “<GameText text={choice!.text} />
-                            ”의 응답
-                          </button>
+                  <Fragment key={positionKey(row)}>
+                    {missionChanged && (
+                      <h3 className="wiki-mission-heading">
+                        {position?.mission ?? row.wikiLegacy?.title ?? row.wikiUnplaced?.title}
+                        {row.wikiLegacy
+                          ? ' · 기존 검증 구간'
+                          : row.wikiUnplaced?.id.startsWith('chapter-intro-')
+                            ? ' · 챕터 소개문'
+                            : row.wikiUnplaced
+                              ? ' · 순서 미확인'
+                              : ''}
+                      </h3>
+                    )}
+                    {sceneChanged && (
+                      <div className="wiki-scene-heading">
+                        {position.scene || `BWIKI 장면 ${Number(position.location[0]) + 1}`}
+                        {position.conditions.map((context, i) => (
+                          <small key={i}>
+                            {context.condition
+                              ? `조건: ${context.condition}`
+                              : context.fold
+                                ? `추가 대화: ${context.fold}`
+                                : ''}
+                          </small>
                         ))}
-                      {global && (
-                        <a href={`#${readerPath(row.entryId, row.chapterId, row.id)}`}>
-                          {entry?.arcLabel ?? entry?.title}
-                          <ArrowRight size={11} />
-                        </a>
-                      )}
-                    </div>
+                      </div>
+                    )}
                     <div
-                      className={languages.length ? 'comparison-columns' : undefined}
-                      style={columnStyle}
+                      className={`dialogue-row ${row.type === 'choice' ? 'choice-row' : ''} ${languages.length ? 'comparing' : ''} ${isTarget ? 'dialogue-target' : ''}`}
+                      ref={isTarget ? targetRow : undefined}
+                      tabIndex={isTarget ? -1 : undefined}
+                      data-dialogue-id={row.id}
+                      data-occurrence-id={position?.id}
                     >
-                      <button
-                        className="dialogue-text"
-                        lang="ko"
-                        onClick={() => openContext(index)}
-                        aria-haspopup="dialog"
-                      >
-                        {languages.length > 0 && (
-                          <span className="comparison-language-label">한국어</span>
+                      <div className="dialogue-row-meta">
+                        <span>
+                          {entry?.category === 'books'
+                            ? '서적 원문'
+                            : row.type === 'choice'
+                              ? '선택지'
+                              : row.speaker || '장면 설명'}
+                        </span>
+                        <small>{position?.mission ?? row.bwikiMission ?? row.mission}</small>
+                        {position && <small className="wiki-position-label">BWIKI 순서 확인</small>}
+                        {row.wikiLegacy &&
+                          ['matched', 'cached'].includes(row.bwikiStatus ?? '') && (
+                            <small>기존 BWIKI 순서 확인</small>
+                          )}
+                        {position && row.flowStatus !== 'verified' && (
+                          <small>공식 실행 순서 미확인</small>
                         )}
-                        <GameText text={row.text} query={query} />
-                      </button>
-                      {languages.map((language) => (
-                        <LocalizedPassage
-                          key={language}
-                          row={row}
-                          language={language}
-                          {...translations}
-                        />
-                      ))}
+                        {row.flowStatus === 'verified' && reading && (
+                          <small>공식 실행 순서 확인</small>
+                        )}
+                        {!position && orderUnverified && (
+                          <small>{row.wikiUnplaced ? '순서 미확인' : '(순서 미확인)'}</small>
+                        )}
+                        {row.bwikiMatchMethod === 'translation-reviewed' && (
+                          <small>번역 내용 대조</small>
+                        )}
+                        {row.flowBoundary && !position && <small>후속 대사 확인 필요</small>}
+                        {position &&
+                          row.type === 'choice' &&
+                          row.bwikiNextIds?.some(
+                            (id) =>
+                              !position.nextIds.some((target) => byPosition.get(target)?.id === id),
+                          ) && (
+                            <button
+                              className="flow-reply-link"
+                              onClick={() => {
+                                setContextMode('existing');
+                                setSelected(index);
+                              }}
+                            >
+                              기존 검증 연결
+                            </button>
+                          )}
+                        {(position?.replyToIds ?? row.bwikiReplyToIds ?? row.replyToIds)
+                          ?.map((id) => (position ? byPosition.get(id) : byId.get(id)))
+                          .filter(Boolean)
+                          .map((choice) => (
+                            <button
+                              className="flow-reply-link"
+                              key={positionKey(choice!)}
+                              onClick={() => {
+                                if (row.wikiLegacy) {
+                                  setContextMode('existing');
+                                  setSelected(rows.indexOf(choice!));
+                                } else openContext(rows.indexOf(choice!));
+                              }}
+                            >
+                              “<GameText text={choice!.text} />
+                              ”의 응답
+                            </button>
+                          ))}
+                        {global && (
+                          <a href={`#${readerPath(row.entryId, row.chapterId, row.id)}`}>
+                            {entry?.arcLabel ?? entry?.title}
+                            <ArrowRight size={11} />
+                          </a>
+                        )}
+                      </div>
+                      <div
+                        className={languages.length ? 'comparison-columns' : undefined}
+                        style={columnStyle}
+                      >
+                        <button
+                          className="dialogue-text"
+                          lang="ko"
+                          onClick={() => openContext(index)}
+                          aria-haspopup="dialog"
+                        >
+                          {languages.length > 0 && (
+                            <span className="comparison-language-label">한국어</span>
+                          )}
+                          <GameText text={row.text} query={query} />
+                        </button>
+                        {languages.map((language) => (
+                          <LocalizedPassage
+                            key={language}
+                            row={row}
+                            language={language}
+                            {...translations}
+                          />
+                        ))}
+                      </div>
                     </div>
-                  </div>
+                  </Fragment>
                 );
               })}
             </div>
@@ -519,7 +630,9 @@ export default function DialogueBrowser({
                   : '앞뒤 대사'}
             </h2>
             <p>
-              {selectedRow?.bwikiMission ?? selectedRow?.mission}
+              {selectedRow?.wikiPosition?.mission ??
+                selectedRow?.bwikiMission ??
+                selectedRow?.mission}
               {!selectedWiki && <> · {selectedRow?.scene}</>}
             </p>
           </div>
@@ -528,6 +641,13 @@ export default function DialogueBrowser({
           </button>
         </header>
         <div className="context-dialog-body">
+          {selectedRow?.wikiPosition && (
+            <p className="dialogue-help">
+              {contextMode === 'existing'
+                ? '이전에 검증한 고정 BWIKI 구간의 연결입니다. 새 출현 위치의 응답으로 확정하지 않습니다.'
+                : 'BWIKI에 명시된 출현 위치·응답입니다. 실제 게임 실행 경로의 확인 여부는 별도입니다.'}
+            </p>
+          )}
           {selectedRow?.flowStatus === 'review' && !selectedWiki && (
             <p className="dialogue-help">
               이 구간은 실행 연결을 확인하지 못했습니다. 아래 내용은 기존 자료의 주변 대사이며,
@@ -536,8 +656,8 @@ export default function DialogueBrowser({
           )}
           {context.map((row) => (
             <div
-              key={row.id}
-              className={`context-row ${row.id === selectedRow?.id ? 'context-selected' : ''}`}
+              key={positionKey(row)}
+              className={`context-row ${selectedRow && (contextMode === 'existing' ? row.id === selectedRow.id : positionKey(row) === positionKey(selectedRow)) ? 'context-selected' : ''}`}
             >
               <strong>
                 {entries.get(row.entryId)?.category === 'books'
@@ -568,7 +688,9 @@ export default function DialogueBrowser({
                 ))}
               </div>
               {row.id === selectedRow?.id && <small>선택한 대사</small>}
-              {row.flowBoundary && <small>이후 대사는 연결 자료가 부족해 표시하지 않습니다.</small>}
+              {row.flowBoundary && !row.wikiPosition && (
+                <small>이후 대사는 연결 자료가 부족해 표시하지 않습니다.</small>
+              )}
             </div>
           ))}
         </div>
@@ -577,7 +699,7 @@ export default function DialogueBrowser({
             {selectedRow && (
               <a
                 className="button secondary"
-                href={`#${readerPath(selectedRow.entryId, selectedRow.chapterId, selectedRow.id)}`}
+                href={`#${readerPath(selectedRow.entryId, selectedRow.chapterId, selectedRow.id)}${selectedRow.wikiPosition ? '&occurrence=' + encodeURIComponent(selectedRow.wikiPosition.id) : ''}`}
                 onClick={closeDialog}
               >
                 선택한 대사로
