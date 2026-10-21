@@ -1,8 +1,8 @@
 {
   "schema": "hsr-trailblaze-provenance.v1",
   "repository": "DimbreathBot/TurnBasedGameData",
-  "commit": "312b4597691e0a29cf9828a15b592757dba86949",
-  "version": "OSPRODWin4.6.0_D16728363_A16704710_L16700845",
+  "commit": "74a7b96fba32f00cf495a5c00b0311bd02207aaf",
+  "version": "OSPRODWin4.6.0_D16854589_A16781679_L16781679",
   "files": {
     "TextMapKR_0.json": {
       "gitBlob": "4c4adcf4ed86c48ebb407442801f3b3dd396eb19",

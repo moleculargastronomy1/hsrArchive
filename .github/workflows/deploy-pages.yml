@@ -47,6 +47,17 @@ jobs:
           path: .cache/verification-retry
           key: hsr-verification-retry-v1-${{ github.run_id }}-${{ github.run_attempt }}
           restore-keys: hsr-verification-retry-v1-
+      - name: Restore source-first checkpoints and independent collection schedule
+        uses: actions/cache/restore@v4
+        with:
+          path: |
+            .cache/source-first/api
+            .cache/source-first/results
+            .cache/source-first/document-results
+            .cache/source-first/missions
+            .cache/source-first/collection-state.json
+          key: hsr-source-first-v1-${{ github.run_id }}-${{ github.run_attempt }}
+          restore-keys: hsr-source-first-v1-
       - name: Check source metadata before processing
         id: watch
         run: node scripts/check-content-changes.mjs "${CHECK_MODE}"
@@ -103,7 +114,9 @@ jobs:
         run: node scripts/update-official-videos.mjs
       - name: Validate final content contracts
         if: steps.refresh.outputs.publish == 'true'
-        run: python scripts/validate-content-stage.py .
+        run: |
+          node scripts/source-first-publication.mjs --seal
+          python scripts/validate-content-stage.py .
       - name: Test archive behavior
         if: steps.refresh.outputs.publish == 'true'
         run: pnpm test
@@ -120,6 +133,9 @@ jobs:
       - name: Configure Pages
         if: steps.refresh.outputs.publish == 'true'
         uses: actions/configure-pages@v5
+      - name: Verify the built artifact is the tested data
+        if: steps.refresh.outputs.publish == 'true'
+        run: node scripts/source-first-publication.mjs --check-build
       - name: Upload built site
         if: steps.refresh.outputs.publish == 'true'
         uses: actions/upload-pages-artifact@v4
@@ -145,8 +161,22 @@ jobs:
           path: |
             .cache/content-watch/check.json
             .cache/verification-retry/run.json
+            .cache/source-first/report.json
+            .cache/source-first/validator-health.json
+            .cache/source-first/artifact-seal.json
           if-no-files-found: warn
           retention-days: 90
+      - name: Save source-first checkpoints even if a later stage fails
+        if: always()
+        uses: actions/cache/save@v4
+        with:
+          path: |
+            .cache/source-first/api
+            .cache/source-first/results
+            .cache/source-first/document-results
+            .cache/source-first/missions
+            .cache/source-first/collection-state.json
+          key: hsr-source-first-v1-${{ github.run_id }}-${{ github.run_attempt }}
 
   deploy:
     needs: build

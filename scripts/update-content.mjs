@@ -23,6 +23,7 @@ import { pythonRunner } from './content-process.mjs';
 import { discoverBwiki, alignBwiki, limitBwikiToPending } from './bwiki-verification.mjs';
 import { prepareSimulationEvents } from './simulation-events.mjs';
 import { collectEventImages } from './event-images.mjs';
+import { verifySourceFirst } from './source-first.mjs';
 
 const root = process.cwd();
 const cache = path.resolve('.cache/upstream-content');
@@ -232,6 +233,7 @@ if (mode === '--plan') {
   await collectEventImages(stage, path.join(cache, 'bwiki'), manifest, retryState);
   await saveRetry(retryState, root);
   alignBwiki(run, stage, raw, planFile, root);
+  await verifySourceFirst(root, stage, raw, planFile, { apply: true });
   execFileSync(process.execPath, [path.join(root, 'scripts/verify-video-order.mjs'), stage, root], {
     cwd: root,
     stdio: 'inherit',

@@ -27,6 +27,7 @@ import {
 } from './verification-retry.mjs';
 import { prepareSimulationEvents } from './simulation-events.mjs';
 import { collectEventImages } from './event-images.mjs';
+import { verifySourceFirst } from './source-first.mjs';
 
 const read = async (file) => JSON.parse(await fs.readFile(file));
 const write = (file, data) => fs.writeFile(file, JSON.stringify(data));
@@ -333,7 +334,7 @@ export async function retryContent(root, stage, raw, planFile, api, blobs, { tit
   await saveRetry(state, root);
   if (targets.size) {
     if (scopedFiles) {
-      for (const script of ['bwiki-dialogue.py', 'import-bwiki-chapters.py'])
+      for (const script of ['bwiki-dialogue.py'])
         run(script, [stage, raw, planFile, path.join(stage, '.cache/bwiki/manifest.json'), root]);
     } else alignBwiki(run, stage, raw, planFile, root);
   }
@@ -362,14 +363,27 @@ export async function publishRetryStage(
   algorithm,
 ) {
   const run = pythonRunner(root, stage);
+  if (manifest.targetSources?.[0] !== 'youtube')
+    await verifySourceFirst(root, stage, raw, planFile, { apply: true });
   const comparison = compareVerification(before, await verificationRows(stage));
   assertVerificationPreserved(comparison, 'Retry');
-  if (comparison.changed) {
+  const sourceReport = await read(path.join(stage, 'public/source-first-provenance.json')).catch(
+    () => undefined,
+  );
+  const previousReport = await read(path.join(root, 'public/source-first-provenance.json')).catch(
+    () => undefined,
+  );
+  const auditChanged =
+    sourceReport && JSON.stringify(sourceReport) !== JSON.stringify(previousReport);
+  if (comparison.changed || auditChanged) {
     run('import-localizations.py', [stage, raw, planFile]);
     const receipt = await read(path.join(stage, 'receipt.json'));
     receipt.files.push(...(await read(path.join(stage, '.cache/localization-receipt.json'))).files);
     await publishContentStage(root, stage, receipt.files);
   }
   // A no-improvement run retains deployed bytes and only writes the journal.
-  return finishVerification(root, before, manifest, state, algorithm, 'retry', stage);
+  const result = await finishVerification(root, before, manifest, state, algorithm, 'retry', stage);
+  if (auditChanged && process.env.GITHUB_OUTPUT)
+    await fs.appendFile(process.env.GITHUB_OUTPUT, 'publish=true\n');
+  return result;
 }

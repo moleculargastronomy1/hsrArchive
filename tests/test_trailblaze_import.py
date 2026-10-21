@@ -47,6 +47,8 @@ class TrailblazeTest(unittest.TestCase):
         record = trailblaze.discover([self.chapter], self.missions, self.texts, entries)[0]
         self.assertTrue(record['preserved'])
         self.assertEqual(record['chapterId'], 'saved-route')
+        chapter['upstreamManaged'] = True
+        self.assertTrue(trailblaze.discover([self.chapter], self.missions, self.texts, entries)[0]['preserved'])
         chapter['upstreamChapterId'] = 900
         record = trailblaze.discover([self.chapter], self.missions, {**self.texts, '2': '변경 제목'}, entries)[0]
         self.assertEqual(record['chapterId'], 'saved-route')

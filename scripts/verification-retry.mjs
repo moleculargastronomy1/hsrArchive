@@ -59,6 +59,10 @@ export async function algorithmHash(root = process.cwd()) {
     'content-publication.mjs',
     'validate-content-stage.py',
     'import-localizations.py',
+    'source-first.py',
+    'source-first.mjs',
+    'source-first-publication.mjs',
+    'import-trailblaze.py',
   ]);
   const reviews = await fs
     .readFile(path.join(root, 'editorial/bwiki-translation-matches.json'))
@@ -66,7 +70,8 @@ export async function algorithmHash(root = process.cwd()) {
       if (error.code !== 'ENOENT') throw error;
       return Buffer.from('no bilingual reviews');
     });
-  return hash(Buffer.concat([Buffer.from(code), reviews]));
+  const policy = await fs.readFile(path.join(root, 'editorial/source-first-policy.json'));
+  return hash(Buffer.concat([Buffer.from(code), reviews, policy]));
 }
 export async function videoAlgorithmHash(root = process.cwd()) {
   return hashAlgorithmFiles(root, [

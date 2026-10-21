@@ -148,6 +148,42 @@ def validate(root):
                         row.get('textHash') != proof['textHash'] or row['type'] != proof['type'] or
                         hashlib.sha256(row['text'].encode()).hexdigest() != proof['koreanHash']):
                         raise ValueError('Final event ID/text proof mismatch')
+    source_first = root / 'public/source-first-provenance.json'
+    if source_first.exists():
+        audit = read('public/source-first-provenance.json')
+        if (audit.get('schema') != 'hsr-source-first-provenance.v1' or audit.get('commit') != commit or
+                not re.fullmatch(r'[a-f0-9]{64}', audit.get('codeHash', '')) or
+                not re.fullmatch(r'[a-f0-9]{64}', audit.get('policyHash', ''))):
+            raise ValueError('Invalid source-first release/policy provenance')
+        seen_occurrences = set()
+        for file, chapter in audit['chapters'].items():
+            if file not in expected_files or chapter['verification'].get('wholePath') != 'unverified' or chapter['verification'].get('referenceTxtUsed') is not False:
+                raise ValueError('Unsupported source-first verification claim')
+            nodes = {n['id']: n for n in chapter['occurrences']}
+            if len(nodes) != len(chapter['occurrences']) or seen_occurrences.intersection(nodes):
+                raise ValueError('Duplicate source-first occurrence')
+            seen_occurrences.update(nodes)
+            for left, targets in chapter['wikiGraph'].items():
+                for target in targets:
+                    a, z = nodes[left], nodes[target]
+                    if (a['pageId'] != z['pageId'] or a['revision'] != z['revision'] or
+                            a['location'][0] != z['location'][0] or a['context'] != z['context'] or
+                            not (a['branch'] == z['branch'][:len(a['branch'])] or z['branch'] == a['branch'][:len(z['branch'])])):
+                        raise ValueError('Source-first graph crossed a scene/condition boundary')
+            for addition in chapter['additions']:
+                row = rows.get(addition['rowId'])
+                proof, content = addition['proof'], addition['content']
+                node = nodes.get(addition['occurrence'])
+                owner = re.fullmatch(r'(?:Config/Level/Mission|Story/(?:Discussion/)?Mission)/(\d+)/[\w./-]+\.json', proof['source'])
+                if (not row or not owner or int(owner[1]) != addition['missionId'] or
+                        row['missionId'] != 'quest-' + str(addition['missionId']) or
+                        row['source'] != proof['source'] or row.get('talkId') != content['talkId'] or
+                        row['text'] != content['text'] or row['speaker'] != content['speaker'] or
+                        hashlib.sha256(row['text'].encode()).hexdigest() != content['koreanHash'] or
+                        not node or node['status'] != 'confirmed' or node['officialIds'] != [row['talkId']] or
+                        not re.fullmatch(r'[a-f0-9]{40}', proof.get('gitBlob', '')) or
+                        not re.fullmatch(r'[a-f0-9]{64}', proof.get('sha256', ''))):
+                    raise ValueError('Invalid source-first explicit mission/text proof')
     return {'chapters': len(specs), 'rows': len(rows)}
 
 

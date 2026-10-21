@@ -95,7 +95,7 @@ def discover(root, raw, plan_path):
     print(json.dumps({'missions': len(used), 'requests': len(requests), 'review': len(missing)}))
 
 
-def mission_requests(missions, chinese, korean, used):
+def mission_requests(missions, chinese, korean, used, group_types=('Main',)):
     titles = defaultdict(list)
     missing = []
     for mission in missions:
@@ -112,7 +112,7 @@ def mission_requests(missions, chinese, korean, used):
             continue
         chapters = {item.get('ChapterID') for item in members}
         names = {_localizations.plain(korean.get(str(item.get('Name', {}).get('Hash')), '')) for item in members}
-        grouped = len(identities) > 1 and len(chapters) == 1 and next(iter(chapters)) not in [None, 0] and len(names) == 1 and '' not in names and all(item.get('Type') == 'Main' for item in members)
+        grouped = len(identities) > 1 and len(chapters) == 1 and next(iter(chapters)) not in [None, 0] and len(names) == 1 and '' not in names and all(item.get('Type') in group_types for item in members)
         if len(identities) == 1 or grouped:
             request = {'title': title, 'missionId': identities[0]}
             if grouped:
@@ -249,7 +249,7 @@ def comparable(value):
                     value[index - 1].isdigit() and value[index + 1].isdigit()))
 
 
-def parse_body(value, fragmented=False):
+def parse_body(value, fragmented=False, provenance=False):
     """Return independent sections. Optional/folded conversations never join the main path."""
     segments, current = [], []
 
@@ -293,7 +293,7 @@ def parse_body(value, fragmented=False):
         options = []
         for number in numbers:
             body = fields.get(f'剧情{number}', '')
-            parsed = parse_body(body, fragmented)
+            parsed = parse_body(body, fragmented, provenance)
             if len(parsed) > 1:
                 if not fragmented:
                     raise Unresolved('응답 안의 독립 장면 확인 필요')
@@ -332,7 +332,11 @@ def parse_body(value, fragmented=False):
                 if not separator or not label.strip():
                     segments.append([{'kind': 'unsupported'}])
                 else:
-                    segments.extend(parse_body(body, fragmented))
+                    parsed = parse_body(body, fragmented, provenance)
+                    if provenance:
+                        segments.append([{'kind': 'separated', 'condition': label.strip(), 'segments': parsed}])
+                    else:
+                        segments.extend(parsed)
             flush()
         elif name == '事件':
             try:
@@ -355,7 +359,11 @@ def parse_body(value, fragmented=False):
             flush()
             _, fields = template(data)
             if fields.get('标题') not in ['前情提要', '剧情梗概']:
-                segments.extend(parse_body(fields.get('内容', ''), fragmented))
+                parsed = parse_body(fields.get('内容', ''), fragmented, provenance)
+                if provenance:
+                    segments.append([{'kind': 'separated', 'fold': fields.get('标题', ''), 'segments': parsed}])
+                else:
+                    segments.extend(parsed)
             flush()
     consume(buffer)
     flush()
@@ -381,13 +389,13 @@ def split_tabs(value):
     return parts
 
 
-def story_segments(content, fragmented=False):
+def story_segments(content, fragmented=False, provenance=False):
     match = re.search(r'^==\s*(?:剧情内容|任务剧情)\s*==\s*$', content, flags=re.M)
     if not match:
         raise Unresolved('지원하는 임무 대사 구역 없음')
     body = content[match.end():]
     stop = re.search(r'^==[^=].*?==\s*$', body, flags=re.M)
-    return parse_body(body[:stop.start()] if stop else body, fragmented)
+    return parse_body(body[:stop.start()] if stop else body, fragmented, provenance)
 
 
 def validate_mission_page(content, title):

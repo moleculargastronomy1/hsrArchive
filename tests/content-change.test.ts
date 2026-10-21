@@ -143,6 +143,11 @@ test('actual scheduled command retries failed metadata publication even when the
   };
   try {
     await fs.cp('scripts', path.join(folder, 'scripts'), { recursive: true });
+    await fs.mkdir(path.join(folder, 'editorial'), { recursive: true });
+    await fs.copyFile(
+      'editorial/source-first-policy.json',
+      path.join(folder, 'editorial/source-first-policy.json'),
+    );
     const algorithm = await algorithmHash(folder),
       videoAlgorithm = await videoAlgorithmHash(folder);
     const noPlaylists = { schema: 'hsr-video-sources.v1', sources: [] };

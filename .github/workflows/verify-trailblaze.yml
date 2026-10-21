@@ -1,0 +1,80 @@
+name: Verify Trailblaze changes in isolation
+on:
+  pull_request:
+    paths:
+      - 'scripts/**'
+      - 'tests/**'
+      - 'src/**'
+      - 'public/content/**'
+      - 'public/*provenance.json'
+      - 'public/content-update.json'
+      - 'AGENTS.md'
+      - 'docs/bwiki-full-coverage.md'
+      - 'editorial/**'
+      - '.github/workflows/**'
+      - 'package*.json'
+      - 'pnpm-lock.yaml'
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: trailblaze-verification-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-node@v6
+        with:
+          node-version: '22'
+          package-manager-cache: false
+      - uses: actions/setup-python@v6
+        with:
+          python-version: '3.12'
+      - uses: pnpm/action-setup@v6
+        with:
+          version: 11.25.0
+      - run: pnpm install --frozen-lockfile
+      - uses: actions/cache/restore@v4
+        with:
+          path: |
+            .cache/upstream-content/blobs
+            .cache/upstream-content/bwiki
+            .cache/source-first/api
+            .cache/source-first/results
+            .cache/source-first/document-results
+            .cache/source-first/missions
+            .cache/source-first/collection-state.json
+          key: source-first-v1-${{ github.sha }}-${{ github.run_id }}-${{ github.run_attempt }}
+          restore-keys: source-first-v1-
+      - name: Test shared validators and rollback
+        run: pnpm test
+      - name: Audit all registered missions without publishing
+        run: pnpm verify:trailblaze
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+      - name: Preserve audit summary and health, without raw text
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: source-first-summary
+          path: |
+            .cache/source-first/report.json
+            .cache/source-first/validator-health.json
+            .cache/source-first/validated-stage.json
+          if-no-files-found: warn
+          retention-days: 90
+      - name: Save resumable checkpoints on success or failure
+        if: always()
+        uses: actions/cache/save@v4
+        with:
+          path: |
+            .cache/upstream-content/blobs
+            .cache/upstream-content/bwiki
+            .cache/source-first/api
+            .cache/source-first/results
+            .cache/source-first/document-results
+            .cache/source-first/missions
+            .cache/source-first/collection-state.json
+          key: source-first-v1-${{ github.sha }}-${{ github.run_id }}-${{ github.run_attempt }}

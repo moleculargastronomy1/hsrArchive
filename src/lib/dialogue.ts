@@ -82,8 +82,10 @@ export function dialoguePage(rows: DialogueRow[], rowId: string, pageSize = 50) 
 export function nearbyDialogue(rows: DialogueRow[], index: number, radius = 20) {
   const selected = rows[index];
   if (!selected) return [];
+  if (selected.flowBoundary && selected.flowStatus === 'review') return [selected];
   const wiki = ['matched', 'cached'].includes(selected.bwikiStatus ?? '') && !!selected.bwikiScene;
   const sameScene = (row: DialogueRow) =>
+    !(row.flowBoundary && row.flowStatus === 'review') &&
     row.entryId === selected.entryId &&
     row.chapterId === selected.chapterId &&
     (wiki

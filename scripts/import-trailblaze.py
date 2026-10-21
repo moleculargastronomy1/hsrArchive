@@ -66,7 +66,9 @@ def discover(chapters, missions, texts, entries, query=None):
             entry = entry_matches[0] if entry_matches else {'id': f'trailblaze-arc-{seq[0]}'}
             item = {'id': f'chapter-{identity}', 'content': {'rows': 0}}
         content = item.get('content', {})
-        known_body = (content.get('rows', 0) > 1 or any(source.startswith('quest-') for source in content.get('sourceIds', []))) and not item.get('upstreamManaged')
+        # Once published, IDs/bookmarks survive later extraction improvements.
+        # The projector updates exact text; source-first adds newly proven records.
+        known_body = content.get('rows', 0) > 1 or any(source.startswith('quest-') for source in content.get('sourceIds', []))
         result.append({
             'id': identity, 'title': title, 'arc': seq[0], 'act': seq[1], 'kind': seq[2],
             'entryId': entry['id'], 'chapterId': item['id'], 'preserved': known_body,

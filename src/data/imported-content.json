@@ -1,7 +1,7 @@
 {
   "station-departure/arrival": {
     "file": "content/station-departure--arrival.json",
-    "rows": 1195,
+    "rows": 1245,
     "missing": 0,
     "sourceIds": [
       "quest-1000101",
@@ -12,11 +12,11 @@
       "quest-1000402",
       "quest-1010001"
     ],
-    "textReferenceCommit": "312b4597691e0a29cf9828a15b592757dba86949"
+    "textReferenceCommit": "74a7b96fba32f00cf495a5c00b0311bd02207aaf"
   },
   "station-departure/platform": {
     "file": "content/station-departure--platform.json",
-    "rows": 835,
+    "rows": 847,
     "missing": 0,
     "sourceIds": [
       "quest-2000902",
@@ -25,11 +25,11 @@
       "quest-2000901",
       "quest-2001002"
     ],
-    "textReferenceCommit": "312b4597691e0a29cf9828a15b592757dba86949"
+    "textReferenceCommit": "74a7b96fba32f00cf495a5c00b0311bd02207aaf"
   },
   "jarilo-records/snowfield": {
     "file": "content/jarilo-records--snowfield.json",
-    "rows": 2477,
+    "rows": 2634,
     "missing": 0,
     "sourceIds": [
       "quest-1010002",
@@ -48,11 +48,11 @@
       "quest-1010901",
       "quest-1011001"
     ],
-    "textReferenceCommit": "312b4597691e0a29cf9828a15b592757dba86949"
+    "textReferenceCommit": "74a7b96fba32f00cf495a5c00b0311bd02207aaf"
   },
   "jarilo-records/city": {
     "file": "content/jarilo-records--city.json",
-    "rows": 1456,
+    "rows": 1494,
     "missing": 0,
     "sourceIds": [
       "quest-1011002",
@@ -68,11 +68,11 @@
       "quest-1011502",
       "quest-1011503"
     ],
-    "textReferenceCommit": "312b4597691e0a29cf9828a15b592757dba86949"
+    "textReferenceCommit": "74a7b96fba32f00cf495a5c00b0311bd02207aaf"
   },
   "jarilo-records/winter-dream": {
     "file": "content/jarilo-records--winter-dream.json",
-    "rows": 1069,
+    "rows": 1101,
     "missing": 0,
     "sourceIds": [
       "quest-2010201",
@@ -82,11 +82,11 @@
       "quest-2010206",
       "quest-2010203"
     ],
-    "textReferenceCommit": "312b4597691e0a29cf9828a15b592757dba86949"
+    "textReferenceCommit": "74a7b96fba32f00cf495a5c00b0311bd02207aaf"
   },
   "luofu-records/harbor": {
     "file": "content/luofu-records--harbor.json",
-    "rows": 2048,
+    "rows": 2118,
     "missing": 0,
     "sourceIds": [
       "quest-1020101",
@@ -102,11 +102,11 @@
       "quest-1021001",
       "quest-1021101"
     ],
-    "textReferenceCommit": "312b4597691e0a29cf9828a15b592757dba86949"
+    "textReferenceCommit": "74a7b96fba32f00cf495a5c00b0311bd02207aaf"
   },
   "luofu-records/clouds": {
     "file": "content/luofu-records--clouds.json",
-    "rows": 651,
+    "rows": 686,
     "missing": 0,
     "sourceIds": [
       "quest-1021201",
@@ -115,20 +115,20 @@
       "quest-1021501",
       "quest-1021601"
     ],
-    "textReferenceCommit": "312b4597691e0a29cf9828a15b592757dba86949"
+    "textReferenceCommit": "74a7b96fba32f00cf495a5c00b0311bd02207aaf"
   },
   "luofu-records/aftermath": {
     "file": "content/luofu-records--aftermath.json",
-    "rows": 471,
+    "rows": 489,
     "missing": 0,
     "sourceIds": [
       "quest-1021702"
     ],
-    "textReferenceCommit": "312b4597691e0a29cf9828a15b592757dba86949"
+    "textReferenceCommit": "74a7b96fba32f00cf495a5c00b0311bd02207aaf"
   },
   "luofu-records/foxian-tale": {
     "file": "content/luofu-records--foxian-tale.json",
-    "rows": 1976,
+    "rows": 2014,
     "missing": 0,
     "sourceIds": [
       "quest-2021701",
@@ -148,11 +148,11 @@
       "quest-8015194",
       "quest-8015104"
     ],
-    "textReferenceCommit": "312b4597691e0a29cf9828a15b592757dba86949"
+    "textReferenceCommit": "74a7b96fba32f00cf495a5c00b0311bd02207aaf"
   },
   "luofu-records/swords-upper": {
     "file": "content/luofu-records--swords-upper.json",
-    "rows": 1495,
+    "rows": 1542,
     "missing": 0,
     "sourceIds": [
       "quest-2022001",
@@ -167,11 +167,11 @@
       "quest-2022103",
       "quest-2022105"
     ],
-    "textReferenceCommit": "312b4597691e0a29cf9828a15b592757dba86949"
+    "textReferenceCommit": "74a7b96fba32f00cf495a5c00b0311bd02207aaf"
   },
   "luofu-records/swords-lower": {
     "file": "content/luofu-records--swords-lower.json",
-    "rows": 1137,
+    "rows": 1283,
     "missing": 0,
     "sourceIds": [
       "quest-2022201",
@@ -190,11 +190,11 @@
       "quest-2022307",
       "quest-2022308"
     ],
-    "textReferenceCommit": "312b4597691e0a29cf9828a15b592757dba86949"
+    "textReferenceCommit": "74a7b96fba32f00cf495a5c00b0311bd02207aaf"
   },
   "penacony-records/invitation": {
     "file": "content/penacony-records--invitation.json",
-    "rows": 2223,
+    "rows": 2408,
     "missing": 0,
     "sourceIds": [
       "quest-1030101",
@@ -210,11 +210,11 @@
       "quest-1030601",
       "quest-1030701"
     ],
-    "textReferenceCommit": "312b4597691e0a29cf9828a15b592757dba86949"
+    "textReferenceCommit": "74a7b96fba32f00cf495a5c00b0311bd02207aaf"
   },
   "penacony-records/dream": {
     "file": "content/penacony-records--dream.json",
-    "rows": 1728,
+    "rows": 1843,
     "missing": 0,
     "sourceIds": [
       "quest-1030901",
@@ -227,11 +227,11 @@
       "quest-1031701",
       "quest-1031801"
     ],
-    "textReferenceCommit": "312b4597691e0a29cf9828a15b592757dba86949"
+    "textReferenceCommit": "74a7b96fba32f00cf495a5c00b0311bd02207aaf"
   },
   "penacony-records/our-time": {
     "file": "content/penacony-records--our-time.json",
-    "rows": 2277,
+    "rows": 2407,
     "missing": 0,
     "sourceIds": [
       "quest-1032301",
@@ -248,11 +248,11 @@
       "quest-1033101",
       "quest-1033102"
     ],
-    "textReferenceCommit": "312b4597691e0a29cf9828a15b592757dba86949"
+    "textReferenceCommit": "74a7b96fba32f00cf495a5c00b0311bd02207aaf"
   },
   "penacony-records/farewell": {
     "file": "content/penacony-records--farewell.json",
-    "rows": 880,
+    "rows": 987,
     "missing": 0,
     "sourceIds": [
       "quest-1034101",
@@ -263,11 +263,11 @@
       "quest-1034108",
       "quest-1034109"
     ],
-    "textReferenceCommit": "312b4597691e0a29cf9828a15b592757dba86949"
+    "textReferenceCommit": "74a7b96fba32f00cf495a5c00b0311bd02207aaf"
   },
   "penacony-records/nana-outrage": {
     "file": "content/penacony-records--nana-outrage.json",
-    "rows": 1969,
+    "rows": 2187,
     "missing": 0,
     "sourceIds": [
       "quest-1034201",
@@ -283,11 +283,11 @@
       "quest-1034211",
       "quest-1034212"
     ],
-    "textReferenceCommit": "312b4597691e0a29cf9828a15b592757dba86949"
+    "textReferenceCommit": "74a7b96fba32f00cf495a5c00b0311bd02207aaf"
   },
   "penacony-records/eighth-day": {
     "file": "content/penacony-records--eighth-day.json",
-    "rows": 867,
+    "rows": 914,
     "missing": 0,
     "sourceIds": [
       "quest-1036001",
@@ -299,11 +299,11 @@
       "quest-1036105",
       "quest-1036106"
     ],
-    "textReferenceCommit": "312b4597691e0a29cf9828a15b592757dba86949"
+    "textReferenceCommit": "74a7b96fba32f00cf495a5c00b0311bd02207aaf"
   },
   "penacony-records/dream-grail": {
     "file": "content/penacony-records--dream-grail.json",
-    "rows": 1386,
+    "rows": 1395,
     "missing": 0,
     "sourceIds": [
       "quest-1040531",
@@ -319,11 +319,11 @@
       "quest-1040554",
       "quest-1040539"
     ],
-    "textReferenceCommit": "312b4597691e0a29cf9828a15b592757dba86949"
+    "textReferenceCommit": "74a7b96fba32f00cf495a5c00b0311bd02207aaf"
   },
   "penacony-records/memories-opening": {
     "file": "content/penacony-records--memories-opening.json",
-    "rows": 1758,
+    "rows": 1803,
     "missing": 0,
     "sourceIds": [
       "quest-1033800",
@@ -339,11 +339,11 @@
       "quest-1033810",
       "quest-1033811"
     ],
-    "textReferenceCommit": "312b4597691e0a29cf9828a15b592757dba86949"
+    "textReferenceCommit": "74a7b96fba32f00cf495a5c00b0311bd02207aaf"
   },
   "amphoreus-records/journey": {
     "file": "content/amphoreus-records--journey.json",
-    "rows": 3296,
+    "rows": 3769,
     "missing": 0,
     "sourceIds": [
       "quest-1040101",
@@ -360,11 +360,11 @@
       "quest-1040115",
       "quest-1040118"
     ],
-    "textReferenceCommit": "312b4597691e0a29cf9828a15b592757dba86949"
+    "textReferenceCommit": "74a7b96fba32f00cf495a5c00b0311bd02207aaf"
   },
   "amphoreus-records/gate-throne": {
     "file": "content/amphoreus-records--gate-throne.json",
-    "rows": 2439,
+    "rows": 2652,
     "missing": 0,
     "sourceIds": [
       "quest-1040201",
@@ -381,11 +381,11 @@
       "quest-1040212",
       "quest-1040213"
     ],
-    "textReferenceCommit": "312b4597691e0a29cf9828a15b592757dba86949"
+    "textReferenceCommit": "74a7b96fba32f00cf495a5c00b0311bd02207aaf"
   },
   "amphoreus-records/flowers": {
     "file": "content/amphoreus-records--flowers.json",
-    "rows": 2508,
+    "rows": 2737,
     "missing": 0,
     "sourceIds": [
       "quest-1040301",
@@ -403,11 +403,11 @@
       "quest-1040317",
       "quest-1040319"
     ],
-    "textReferenceCommit": "312b4597691e0a29cf9828a15b592757dba86949"
+    "textReferenceCommit": "74a7b96fba32f00cf495a5c00b0311bd02207aaf"
   },
   "amphoreus-records/dawn-fall": {
     "file": "content/amphoreus-records--dawn-fall.json",
-    "rows": 2548,
+    "rows": 2612,
     "missing": 0,
     "sourceIds": [
       "quest-1040401",
@@ -425,11 +425,11 @@
       "quest-1040414",
       "quest-1040415"
     ],
-    "textReferenceCommit": "312b4597691e0a29cf9828a15b592757dba86949"
+    "textReferenceCommit": "74a7b96fba32f00cf495a5c00b0311bd02207aaf"
   },
   "amphoreus-records/sun-destruction": {
     "file": "content/amphoreus-records--sun-destruction.json",
-    "rows": 1471,
+    "rows": 1554,
     "missing": 0,
     "sourceIds": [
       "quest-1040501",
@@ -439,11 +439,11 @@
       "quest-1040505",
       "quest-1040506"
     ],
-    "textReferenceCommit": "312b4597691e0a29cf9828a15b592757dba86949"
+    "textReferenceCommit": "74a7b96fba32f00cf495a5c00b0311bd02207aaf"
   },
   "amphoreus-records/before-heroes-die": {
     "file": "content/amphoreus-records--before-heroes-die.json",
-    "rows": 2004,
+    "rows": 2149,
     "missing": 0,
     "sourceIds": [
       "quest-1040601",
@@ -462,11 +462,11 @@
       "quest-1040614",
       "quest-1040616"
     ],
-    "textReferenceCommit": "312b4597691e0a29cf9828a15b592757dba86949"
+    "textReferenceCommit": "74a7b96fba32f00cf495a5c00b0311bd02207aaf"
   },
   "amphoreus-records/long-night": {
     "file": "content/amphoreus-records--long-night.json",
-    "rows": 1564,
+    "rows": 1649,
     "missing": 0,
     "sourceIds": [
       "quest-1043650",
@@ -483,11 +483,11 @@
       "quest-1043674",
       "quest-1043677"
     ],
-    "textReferenceCommit": "312b4597691e0a29cf9828a15b592757dba86949"
+    "textReferenceCommit": "74a7b96fba32f00cf495a5c00b0311bd02207aaf"
   },
   "amphoreus-records/yesterdays-tomorrow": {
     "file": "content/amphoreus-records--yesterdays-tomorrow.json",
-    "rows": 1576,
+    "rows": 1724,
     "missing": 0,
     "sourceIds": [
       "quest-1043700",
@@ -506,7 +506,7 @@
       "quest-1043714",
       "quest-1043715"
     ],
-    "textReferenceCommit": "312b4597691e0a29cf9828a15b592757dba86949"
+    "textReferenceCommit": "74a7b96fba32f00cf495a5c00b0311bd02207aaf"
   },
   "amphoreus-records/as-i-write": {
     "file": "content/amphoreus-records--as-i-write.json",
@@ -515,11 +515,11 @@
     "sourceIds": [
       "quest-2043701"
     ],
-    "textReferenceCommit": "312b4597691e0a29cf9828a15b592757dba86949"
+    "textReferenceCommit": "74a7b96fba32f00cf495a5c00b0311bd02207aaf"
   },
   "paradise-records/paradise": {
     "file": "content/paradise-records--paradise.json",
-    "rows": 2447,
+    "rows": 2691,
     "missing": 0,
     "sourceIds": [
       "quest-1054008",
@@ -534,11 +534,11 @@
       "quest-1054007",
       "quest-1054011"
     ],
-    "textReferenceCommit": "312b4597691e0a29cf9828a15b592757dba86949"
+    "textReferenceCommit": "74a7b96fba32f00cf495a5c00b0311bd02207aaf"
   },
   "paradise-records/astropolis": {
     "file": "content/paradise-records--astropolis.json",
-    "rows": 1994,
+    "rows": 2264,
     "missing": 0,
     "sourceIds": [
       "quest-1054102",
@@ -551,11 +551,11 @@
       "quest-1054110",
       "quest-1054112"
     ],
-    "textReferenceCommit": "312b4597691e0a29cf9828a15b592757dba86949"
+    "textReferenceCommit": "74a7b96fba32f00cf495a5c00b0311bd02207aaf"
   },
   "paradise-records/laughter": {
     "file": "content/paradise-records--laughter.json",
-    "rows": 1433,
+    "rows": 1546,
     "missing": 0,
     "sourceIds": [
       "quest-1054200",
@@ -572,11 +572,11 @@
       "quest-1054211",
       "quest-1054212"
     ],
-    "textReferenceCommit": "312b4597691e0a29cf9828a15b592757dba86949"
+    "textReferenceCommit": "74a7b96fba32f00cf495a5c00b0311bd02207aaf"
   },
   "paradise-records/river-of-oblivion": {
     "file": "content/paradise-records--river-of-oblivion.json",
-    "rows": 1271,
+    "rows": 1377,
     "missing": 0,
     "sourceIds": [
       "quest-1054302",
@@ -591,11 +591,11 @@
       "quest-1054309",
       "quest-1054310"
     ],
-    "textReferenceCommit": "312b4597691e0a29cf9828a15b592757dba86949"
+    "textReferenceCommit": "74a7b96fba32f00cf495a5c00b0311bd02207aaf"
   },
   "paradise-records/silent-horn": {
     "file": "content/paradise-records--silent-horn.json",
-    "rows": 1237,
+    "rows": 1238,
     "missing": 0,
     "sourceIds": [
       "quest-1054410",
@@ -606,7 +606,7 @@
       "quest-1054418",
       "quest-1054419"
     ],
-    "textReferenceCommit": "312b4597691e0a29cf9828a15b592757dba86949"
+    "textReferenceCommit": "74a7b96fba32f00cf495a5c00b0311bd02207aaf"
   },
   "paradise-records/celestial-gambit": {
     "file": "content/paradise-records--celestial-gambit.json",
@@ -620,7 +620,7 @@
       "quest-1054504",
       "quest-1054506"
     ],
-    "textReferenceCommit": "312b4597691e0a29cf9828a15b592757dba86949"
+    "textReferenceCommit": "74a7b96fba32f00cf495a5c00b0311bd02207aaf"
   },
   "paradise-records/penniless-billionaire": {
     "file": "content/paradise-records--penniless-billionaire.json",
@@ -637,7 +637,7 @@
       "quest-1054527",
       "quest-1054528"
     ],
-    "textReferenceCommit": "312b4597691e0a29cf9828a15b592757dba86949"
+    "textReferenceCommit": "74a7b96fba32f00cf495a5c00b0311bd02207aaf"
   },
   "paradise-records/before-moonrise": {
     "file": "content/paradise-records--before-moonrise.json",
@@ -653,6 +653,6 @@
       "quest-1054600",
       "quest-1054601"
     ],
-    "textReferenceCommit": "312b4597691e0a29cf9828a15b592757dba86949"
+    "textReferenceCommit": "74a7b96fba32f00cf495a5c00b0311bd02207aaf"
   }
 }

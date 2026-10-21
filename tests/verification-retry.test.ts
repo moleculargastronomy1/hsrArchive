@@ -49,8 +49,19 @@ test('BWIKI and video code changes have independent replay fingerprints, with sh
   const folder = await temporary();
   try {
     await fs.cp('scripts', path.join(folder, 'scripts'), { recursive: true });
+    await fs.mkdir(path.join(folder, 'editorial'), { recursive: true });
+    await fs.copyFile(
+      'editorial/source-first-policy.json',
+      path.join(folder, 'editorial/source-first-policy.json'),
+    );
     const initialWiki = await algorithmHash(folder),
       initialVideo = await videoAlgorithmHash(folder);
+    await fs.appendFile(path.join(folder, 'editorial/source-first-policy.json'), '\n');
+    assert.notEqual(await algorithmHash(folder), initialWiki);
+    await fs.copyFile(
+      'editorial/source-first-policy.json',
+      path.join(folder, 'editorial/source-first-policy.json'),
+    );
     await fs.appendFile(path.join(folder, 'scripts/video-order.mjs'), '\n// video-only edit\n');
     assert.equal(await algorithmHash(folder), initialWiki);
     assert.notEqual(await videoAlgorithmHash(folder), initialVideo);

@@ -1,0 +1,22 @@
+{
+  "schema": "hsr-source-first-policy.v1",
+  "version": 1,
+  "automaticMethods": ["exact-official", "translation-reviewed-pinned"],
+  "requireExplicitMissionOwnership": true,
+  "newSemanticMatches": "candidate-only",
+  "userReferenceText": "independent-evaluation-only",
+  "orderEvidence": ["wiki-display", "official-execution", "observed-playthrough"],
+  "act8AdjacencyCase": "execution-scope-unverified",
+  "publishUnknownEdges": false,
+  "reuseRequires": [
+    "officialInputs",
+    "wikiRevisionAndHash",
+    "codeHash",
+    "policyHash",
+    "baselineHash",
+    "structureHashes",
+    "reviewRegistryHash"
+  ],
+  "sharedValidatorFailure": "stop-affected-publication",
+  "deployment": "same-validated-artifact"
+}

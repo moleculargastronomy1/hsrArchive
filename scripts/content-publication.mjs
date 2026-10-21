@@ -10,7 +10,7 @@ export async function publishContentStage(root, stage, files) {
   await publishDerivedFiles(root, stage, files);
 }
 
-export async function publishDerivedFiles(root, stage, files) {
+export async function publishDerivedFiles(root, stage, files, { write = writeDerived } = {}) {
   if (!Array.isArray(files) || files.some((file) => typeof file !== 'string' || !statePath(file)))
     throw new Error('Unsafe content publication path');
   const changes = [];
@@ -28,13 +28,13 @@ export async function publishDerivedFiles(root, stage, files) {
   try {
     for (const item of changes) {
       attempted.push(item);
-      await writeDerived(root, item.file, item.bytes);
+      await write(root, item.file, item.bytes);
     }
   } catch (error) {
     const rollbackErrors = [];
     for (const item of attempted.reverse()) {
       try {
-        if (item.previous) await writeDerived(root, item.file, item.previous);
+        if (item.previous) await write(root, item.file, item.previous);
         else await fs.rm(path.join(root, item.file), { force: true });
         await fs.rm(path.join(root, item.file + '.tmp'), { force: true });
       } catch (rollbackError) {

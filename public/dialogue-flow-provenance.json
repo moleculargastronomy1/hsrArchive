@@ -1,6 +1,6 @@
 {
   "schema": "hsr-dialogue-flow-audit.v1",
-  "commit": "312b4597691e0a29cf9828a15b592757dba86949",
+  "commit": "74a7b96fba32f00cf495a5c00b0311bd02207aaf",
   "totals": {
     "verifiedRows": 5752,
     "reviewRows": 51021,
