@@ -28,6 +28,7 @@ import {
 import { prepareSimulationEvents } from './simulation-events.mjs';
 import { collectEventImages } from './event-images.mjs';
 import { verifySourceFirst } from './source-first.mjs';
+import { retainUnavailableWikiPositions } from './wiki-reading-recovery.mjs';
 
 const read = async (file) => JSON.parse(await fs.readFile(file));
 const write = (file, data) => fs.writeFile(file, JSON.stringify(data));
@@ -362,6 +363,23 @@ export async function publishRetryStage(
   const run = pythonRunner(root, stage);
   if (manifest.targetSources?.[0] !== 'youtube')
     await verifySourceFirst(root, stage, raw, planFile, { apply: true });
+  const retainedPositions = await retainUnavailableWikiPositions(
+    stage,
+    before,
+    manifest.targetSources?.[0] !== 'youtube'
+      ? await read(path.join(root, '.cache/source-first/manifest.json'))
+      : undefined,
+  );
+  if (retainedPositions.length)
+    console.log(
+      'Retained unavailable BWIKI position documents: ' +
+        JSON.stringify(
+          retainedPositions.map((item) => ({
+            file: item.file,
+            documents: item.documents.map((d) => d.page),
+          })),
+        ),
+    );
   const comparison = compareVerification(before, await verificationRows(stage));
   assertVerificationPreserved(comparison, 'Retry');
   const sourceReport = await read(path.join(stage, 'public/source-first-provenance.json')).catch(

@@ -46,6 +46,7 @@ export async function algorithmHash(root = process.cwd()) {
   const code = await hashAlgorithmFiles(root, [
     'bwiki-dialogue.py',
     'bwiki-placement.py',
+    'wiki-reading-recovery.mjs',
     'import-bwiki-chapters.py',
     'import-simulation-events.py',
     'simulation-events.mjs',

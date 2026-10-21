@@ -10,7 +10,8 @@
     "test": "node --experimental-strip-types --test tests/*.test.ts",
     "update:videos": "node scripts/update-official-videos.mjs",
     "update:content": "node scripts/update-content.mjs",
-    "verify:trailblaze": "node scripts/source-first.mjs"
+    "verify:trailblaze": "node scripts/source-first.mjs",
+    "export:bwiki-comparison": "node --experimental-strip-types scripts/export-bwiki-comparison.ts"
   },
   "dependencies": {
     "lucide-react": "^0.468.0",
