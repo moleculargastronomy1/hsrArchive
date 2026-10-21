@@ -10,7 +10,7 @@ from pathlib import Path
 FLOW_FIELDS = ['nextIds', 'replyToIds', 'flowStatus', 'flowScene', 'flowBoundary']
 EXTERNAL_PROOF_FIELDS = [
     'bwikiStatus', 'bwikiScene', 'bwikiNextIds', 'bwikiReplyToIds', 'bwikiPage',
-    'bwikiRevision', 'bwikiMissionId', 'bwikiMission', 'videoStatus', 'videoId',
+    'bwikiRevision', 'bwikiMissionId', 'bwikiMission', 'bwikiMatchMethod', 'videoStatus', 'videoId',
     'videoStartMs', 'videoScene', 'videoNextIds', 'videoReplyToIds',
 ]
 

@@ -2,6 +2,41 @@ import path from 'node:path';
 import fs from 'node:fs/promises';
 import { orderUnknown } from './verification-integration.mjs';
 
+export function trailblazeTitleFiles(entries, title) {
+  const normalize = (value) =>
+    value
+      .normalize('NFKC')
+      .replace(/^제\d+막\s*:\s*/, '')
+      .replace(/\s/g, '');
+  const chapters = entries
+    .flatMap((entry) => entry.chapters)
+    .filter((chapter) => normalize(chapter.title) === normalize(title) && chapter.content?.file);
+  if (chapters.length !== 1)
+    throw new Error('Trailblaze title must identify exactly one chapter: ' + title);
+  return new Set(chapters.map((chapter) => chapter.content.file));
+}
+
+export function scopeBwikiRequests(request, files, rows, audit, discovery) {
+  const missions = new Set();
+  for (const row of rows.values())
+    if (files.has(row.file)) for (const id of [row.missionId, row.bwikiMissionId]) missions.add(id);
+  for (const file of files)
+    for (const item of audit.missionCatalog?.[file] ?? []) missions.add('quest-' + item.id);
+  const titles = new Set(
+    discovery.chapters
+      .filter((item) => files.has(item.file))
+      .flatMap((item) => item.groups.map((group) => group.title)),
+  );
+  request.requests = request.requests.filter(
+    (item) =>
+      titles.has(item.title) ||
+      (item.missionIds ?? [item.missionId]).some((id) => missions.has('quest-' + id)),
+  );
+  request.review = request.review.filter(
+    (item) => files.has(item.file) || missions.has('quest-' + item.missionId),
+  );
+}
+
 // Reprocessing a document is only useful for its unresolved material. Completed
 // files retain their existing Korean rows, graph fields and verification records.
 export async function limitBwikiToPending(root, stage, request, rows) {

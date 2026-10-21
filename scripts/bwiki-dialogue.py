@@ -213,11 +213,14 @@ def inline(value):
             pieces.append(inline(args[-1]))
         elif name in ['注音', 'ruby'] and args:
             pieces.append(inline(args[0]))
+        elif name == '=' and not args:
+            pieces.append('=')
         else:
             raise Unresolved('미지원 인라인 템플릿: ' + name)
     result = ''.join(pieces)
     result = re.sub(r'\[\[(?:[^\]|]+\|)?([^\]]+)\]\]', r'\1', result)
     result = result.replace("'''", '').replace("''", '')
+    result = re.sub(r'</?span\b[^>]*>', '', result, flags=re.I)
     return html.unescape(result)
 
 
@@ -270,6 +273,12 @@ def parse_body(value, fragmented=False):
                     segments.append([{'kind': 'unsupported'}])
             else:
                 flush()
+                if line.startswith(':'):
+                    try:
+                        segments.append([{'kind': 'narration', 'speaker': '', 'text': inline(line.lstrip(':').strip())}])
+                    except Unresolved:
+                        segments.append([{'kind': 'unsupported'}])
+                    continue
                 # Never connect across headings, stage directions, images or
                 # unparsed narration; these may represent independent scenes.
                 segments.append([{'kind': 'barrier' if line.startswith(('=', '----', ':')) else 'unsupported'}])
@@ -471,8 +480,45 @@ def compile_segment(segment, index):
 
 def supported_runs(segment, index):
     """Unknown/missing lines are hard boundaries, not permission to bridge a gap."""
+    # One repeated position must not discard every unique neighbour in the run.
+    # Remove all ambiguous occurrences before compiling, rather than choosing
+    # the first occurrence by its position in the wiki or the source array.
+    occurrences = Counter()
+
+    def count(sequence):
+        for node in sequence:
+            if node['kind'] in ['line', 'narration']:
+                key = ('line', comparable(node['text']), normalized(node['speaker']))
+                candidates = index.get(key, [])
+                if len(candidates) == 1:
+                    occurrences[candidates[0]['id']] += 1
+            elif node['kind'] == 'choice':
+                for option in node['options']:
+                    candidates = index.get(('choice', comparable(option['text']), ''), [])
+                    if len(candidates) == 1:
+                        occurrences[candidates[0]['id']] += 1
+                    count(option['body'])
+            elif node['kind'] == 'separated':
+                for part in node['segments']:
+                    count(part)
+
+    count(segment)
+    blocked = {identity for identity, total in occurrences.items() if total > 1}
+    if blocked:
+        index = {key: candidates for key, candidates in index.items()
+                 if not any(row['id'] in blocked for row in candidates)}
     runs, current = [], []
     for node in segment:
+        if node['kind'] == 'narration':
+            if current:
+                runs.append(current)
+                current = []
+            candidates = index.get(('line', comparable(node['text']), ''), [])
+            if len(candidates) == 1 and candidates[0]['type'] == 'narration':
+                runs.append([{**node, 'kind': 'line'}])
+            else:
+                runs.append([{'kind': 'unsupported'}])
+            continue
         try:
             compile_segment([node], index)
         except Unresolved:
@@ -485,6 +531,19 @@ def supported_runs(segment, index):
                 for part in node['segments']:
                     runs.extend(supported_runs(part, index))
             elif node['kind'] == 'choice':
+                # A missing response does not make an exact choice label
+                # ambiguous. Keep the label as an isolated node, with no
+                # inferred reply, return, or link to the common continuation.
+                options = []
+                for option in node['options']:
+                    empty = {**option, 'body': []}
+                    try:
+                        compile_segment([{'kind': 'choice', 'options': [empty]}], index)
+                        options.append(empty)
+                    except Unresolved:
+                        pass
+                if options:
+                    runs.append([{'kind': 'choice', 'options': options}])
                 for option in node['options']:
                     runs.extend(supported_runs(option['body'], index))
         else:
@@ -494,7 +553,84 @@ def supported_runs(segment, index):
     return runs
 
 
-BWIKI_FIELDS = ['bwikiStatus', 'bwikiScene', 'bwikiNextIds', 'bwikiReplyToIds', 'bwikiPage', 'bwikiRevision', 'bwikiMissionId', 'bwikiMission']
+def isolate_chunks(chunks, blocked):
+    """Retain exact subgraphs without adding an edge across a removed position."""
+    result = []
+    for chunk in chunks:
+        if not blocked.intersection(chunk['order']):
+            result.append(chunk)
+            continue
+        allowed = set(chunk['order']) - blocked
+        neighbours = {identity: set() for identity in allowed}
+        for identity in allowed:
+            for target in chunk['edges'][identity]:
+                if target in allowed:
+                    neighbours[identity].add(target)
+                    neighbours[target].add(identity)
+        pending = set(allowed)
+        for identity in chunk['order']:
+            if identity not in pending:
+                continue
+            component, stack = set(), [identity]
+            while stack:
+                item = stack.pop()
+                if item not in pending:
+                    continue
+                pending.remove(item)
+                component.add(item)
+                stack.extend(neighbours[item])
+            order = [item for item in chunk['order'] if item in component]
+            result.append({**chunk,
+                           'segment': chunk['segment'] + ':isolated:' + digest('\0'.join(order))[:16],
+                           'matchingBasis': 'exact-independent-subgraph',
+                           'order': order,
+                           'edges': {item: [target for target in chunk['edges'][item] if target in component]
+                                     for item in order},
+                           'evidence': {item: chunk['evidence'][item] for item in order}})
+    return result
+
+
+BWIKI_FIELDS = ['bwikiStatus', 'bwikiScene', 'bwikiNextIds', 'bwikiReplyToIds', 'bwikiPage', 'bwikiRevision', 'bwikiMissionId', 'bwikiMission', 'bwikiMatchMethod']
+
+
+def translation_review_hash(record):
+    return digest(json.dumps(record, ensure_ascii=False, sort_keys=True, separators=(',', ':')))
+
+
+def validated_translation_reviews(records, file, rows, evidence, sources):
+    """Replay explicit bilingual reviews, never a runtime similarity threshold."""
+    by_id = {row['id']: row for row in rows}
+    counts = Counter((row['type'], item['text'], item['speaker'])
+                     for row in rows if (item := evidence.get(row['id'])))
+    result = {}
+    identities = Counter(record['rowId'] for record in records)
+    for record in records:
+        row, item = by_id.get(record['rowId']), evidence.get(record['rowId'])
+        source = sources.get(f"{record['page']}@{record['revision']}", {})
+        if (record['file'] != file or identities[record['rowId']] != 1 or not row or not item or
+                row.get('talkId') != record['talkId'] or row['type'] != record['type'] or
+                source.get('sha256') != record['pageSha256'] or
+                not record.get('translatedKorean', '').strip() or not record.get('rationale', '').strip() or
+                any(item[key] != record[key] for key in ['chineseHash', 'speakerHash', 'koreanHash']) or
+                normalized(record['wikiSpeaker']) != item['speaker'] or
+                counts[(row['type'], item['text'], item['speaker'])] != 1):
+            continue
+        result[row['id']] = record
+    return result
+
+
+def translated_index(index, reviews, page, rows):
+    index = dict(index)
+    by_id = {row['id']: row for row in rows}
+    aliases = defaultdict(list)
+    for identity, record in reviews.items():
+        if record['page'] == page['pageTitle'] and record['revision'] == page['revision'] and record['pageSha256'] == page['sha256']:
+            key = ('choice' if record['type'] == 'choice' else 'line', comparable(record['wikiText']), normalized(record['wikiSpeaker']))
+            aliases[key].append(by_id[identity])
+    for key, candidates in aliases.items():
+        if len(candidates) == 1 and key not in index:
+            index[key] = candidates
+    return index
 
 
 def matching_index(rows, evidence, chapter_index):
@@ -587,6 +723,8 @@ def apply_chunks(payload, chunks, mission_sequence=None):
             row.update(bwikiStatus=chunk['status'], bwikiScene=group, bwikiNextIds=chunk['edges'][identity],
                        bwikiPage=chunk['page'], bwikiRevision=chunk['revision'], bwikiMissionId=chunk['missionId'],
                        bwikiMission=chunk.get('mission', row['mission']))
+            if chunk.get('evidence', {}).get(identity, {}).get('translationReviewHash'):
+                row['bwikiMatchMethod'] = 'translation-reviewed'
             if row['type'] == 'choice':
                 for target in chunk['edges'][identity]:
                     reverse[target].append(identity)
@@ -612,12 +750,15 @@ def apply_chunks(payload, chunks, mission_sequence=None):
     return accepted
 
 
-def cached_chunk_valid(old, before, evidence, index, sources):
+def cached_chunk_valid(old, before, evidence, index, sources, translations=None):
     if f"{old['page']}@{old['revision']}" not in sources:
         return False
     for identity in old['order']:
         item, expected, row = evidence.get(identity), old['evidence'].get(identity), before.get(identity)
         if not item or not expected or not row:
+            return False
+        if expected.get('translationReviewHash') and (identity not in (translations or {}) or
+                translation_review_hash(translations[identity]) != expected['translationReviewHash']):
             return False
         key = ('choice' if row['type'] == 'choice' else 'line', item['text'], '' if row['type'] == 'choice' else item['speaker'])
         if row.get('talkId') != expected.get('talkId') or row['type'] != expected.get('type') or any(item[key] != expected[key] for key in ['chineseHash', 'speakerHash', 'koreanHash']) or len(index[key]) != 1 or index[key][0]['id'] != identity:
@@ -631,6 +772,11 @@ def cached_chunk_valid(old, before, evidence, index, sources):
 
 def align(root, raw, plan_path, manifest_path, previous_root=None):
     plan, mission_rows, talk_rows, chinese, korean, input_hashes = inputs(raw, plan_path)
+    review_path = Path(__file__).resolve().parents[1] / 'editorial/bwiki-translation-matches.json'
+    translation_registry = json.loads(review_path.read_bytes()) if review_path.exists() else {'schema': 'hsr-bwiki-translation-reviews.v1', 'reviews': []}
+    if translation_registry.get('schema') != 'hsr-bwiki-translation-reviews.v1' or not isinstance(translation_registry.get('reviews'), list):
+        raise ValueError('Invalid bilingual BWIKI review registry')
+    translation_records = translation_registry['reviews']
     mission_names = {'quest-' + str(row['MainMissionID']): _localizations.plain(korean.get(str(row.get('Name', {}).get('Hash')), ''))
                      for row in mission_rows if row}
     title_ids = defaultdict(list)
@@ -719,6 +865,7 @@ def align(root, raw, plan_path, manifest_path, previous_root=None):
             if spec['file'] in chapters and 'bwikiBaseOrder' not in payload:
                 before = {row['id']: row for row in payload['rows']}
                 evidence = {row['id']: row_evidence(row, talks, chinese, korean) for row in payload['rows']}
+                translations = validated_translation_reviews(translation_records, spec['file'], payload['rows'], evidence, source_records)
                 chapter_index = matching_index(payload['rows'], evidence, {})
                 chunks = []
                 for old in chapters[spec['file']]:
@@ -727,7 +874,7 @@ def align(root, raw, plan_path, manifest_path, previous_root=None):
                         members = {before[identity]['missionId'] for identity in old['order'] if identity in before}
                     owned = [row for row in payload['rows'] if row.get('missionId') in members]
                     index = matching_index(owned, evidence, chapter_index)
-                    if cached_chunk_valid(old, before, evidence, index, source_records):
+                    if cached_chunk_valid(old, before, evidence, index, source_records, translations):
                         chunks.append({**old, 'status': 'cached'})
                     else:
                         review.append({'file': spec['file'], 'missionId': old['missionId'],
@@ -756,6 +903,7 @@ def align(root, raw, plan_path, manifest_path, previous_root=None):
             continue
         before = {row['id']: dict(row) for row in payload['rows']}
         evidence = {row['id']: row_evidence(row, talks, chinese, korean) for row in payload['rows']}
+        translations = validated_translation_reviews(translation_records, spec['file'], payload['rows'], evidence, source_records)
         chapter_index = defaultdict(list)
         for row in payload['rows']:
             item = evidence[row['id']]
@@ -772,12 +920,13 @@ def align(root, raw, plan_path, manifest_path, previous_root=None):
                 for old in previous.get('chapters', {}).get(spec['file'], []):
                     if old['missionId'] != mission:
                         continue
-                    if cached_chunk_valid(old, before, evidence, index, source_records):
+                    if cached_chunk_valid(old, before, evidence, index, source_records, translations):
                         chunks.append({**old, 'status': 'cached', 'mission': mission_names.get(mission) or (rows[0]['mission'] if rows else '임무 기록')})
                         if old.get('missionStructure'):
                             structures[mission] = old['missionStructure']
                 continue
             try:
+                index = translated_index(index, translations, page, payload['rows'])
                 fields = validate_mission_page(text[page['missionId']], page.get('title', page['pageTitle']))
                 structures[mission] = mission_structure(fields, title_ids)
                 segments = story_segments(text[page['missionId']], True)
@@ -794,7 +943,8 @@ def align(root, raw, plan_path, manifest_path, previous_root=None):
                         chunks.append({'missionId': mission, 'mission': mission_names.get(mission) or (rows[0]['mission'] if rows else '임무 기록'), 'page': page['pageTitle'], 'revision': page['revision'],
                                        **({'officialMissionIds': group_members[mission]} if mission in group_members else {}),
                                        'segment': identity, 'status': 'cached' if page.get('retrieval') == 'cache-pinned' else 'matched', 'missionStructure': structures[mission], 'order': [row['id'] for row in matched],
-                                       'edges': edges, 'evidence': {row['id']: {'talkId': row['talkId'], 'type': row['type'], **{key: evidence[row['id']][key] for key in ['chineseHash', 'speakerHash', 'koreanHash']}} for row in matched}})
+                                       'edges': edges, 'evidence': {row['id']: {'talkId': row['talkId'], 'type': row['type'], **{key: evidence[row['id']][key] for key in ['chineseHash', 'speakerHash', 'koreanHash']},
+                                           **({'translationReviewHash': translation_review_hash(translations[row['id']])} if row['id'] in translations and translations[row['id']]['page'] == page['pageTitle'] and translations[row['id']]['revision'] == page['revision'] else {})} for row in matched}})
                     except Unresolved as error:
                         review.append({'file': spec['file'], 'missionId': mission, 'segment': identity, 'reason': str(error)})
         # An incomplete new collection/parser must not erase prior evidence.
@@ -803,13 +953,13 @@ def align(root, raw, plan_path, manifest_path, previous_root=None):
             if mission not in owned or any(chunk['order'] == old['order'] and chunk['edges'] == old['edges'] for chunk in chunks):
                 continue
             index = matching_index(owned[mission], evidence, chapter_index)
-            if not cached_chunk_valid(old, before, evidence, index, source_records):
+            if not cached_chunk_valid(old, before, evidence, index, source_records, translations):
                 continue
             old_ids = set(old['order'])
             coverage = {identity for chunk in chunks for identity in chunk['order']}
             if old_ids <= coverage:
                 continue
-            chunks = [chunk for chunk in chunks if not old_ids.intersection(chunk['order'])]
+            chunks = isolate_chunks(chunks, old_ids)
             chunks.append({**old, 'status': 'cached'})
             if old.get('missionStructure'):
                 structures.setdefault(mission, old['missionStructure'])
@@ -818,17 +968,17 @@ def align(root, raw, plan_path, manifest_path, previous_root=None):
             if not any(counts[identity] > 1 for identity in old['order']) or old['missionId'] not in owned:
                 continue
             index = matching_index(owned[old['missionId']], evidence, chapter_index)
-            if not cached_chunk_valid(old, before, evidence, index, source_records):
+            if not cached_chunk_valid(old, before, evidence, index, source_records, translations):
                 continue
             protected = set(old['order'])
-            chunks = [chunk for chunk in chunks if not protected.intersection(chunk['order'])]
+            chunks = isolate_chunks(chunks, protected)
             chunks.append({**old, 'status': 'cached'})
             review.append({'file': spec['file'], 'missionId': old['missionId'], 'reason': '새 대조의 중복 위치 · 공식 원문 재검증한 이전 연결 유지'})
         counts = Counter(identity for chunk in chunks for identity in chunk['order'])
         for chunk in chunks:
             if any(counts[identity] > 1 for identity in chunk['order']):
-                review.append({'file': spec['file'], 'missionId': chunk['missionId'], 'segment': chunk['segment'], 'reason': '같은 대사의 여러 위키 위치 · 새 구간 보류'})
-        chunks = [chunk for chunk in chunks if all(counts[identity] == 1 for identity in chunk['order'])]
+                review.append({'file': spec['file'], 'missionId': chunk['missionId'], 'segment': chunk['segment'], 'reason': '같은 대사의 여러 위키 위치 · 중복 행만 보류하고 고유 구간 분리'})
+        chunks = isolate_chunks(chunks, {identity for identity, count in counts.items() if count > 1})
         # Removing an overlapping new run can uncover another old chunk whose
         # IDs were contained in that run. Reach a fixed point; old chunks have
         # disjoint IDs, so retaining one cannot invalidate another old chunk.
@@ -840,10 +990,10 @@ def align(root, raw, plan_path, manifest_path, previous_root=None):
                 if set(old['order']) <= coverage or old['missionId'] not in owned:
                     continue
                 index = matching_index(owned[old['missionId']], evidence, chapter_index)
-                if not cached_chunk_valid(old, before, evidence, index, source_records):
+                if not cached_chunk_valid(old, before, evidence, index, source_records, translations):
                     continue
                 protected = set(old['order'])
-                chunks = [chunk for chunk in chunks if not protected.intersection(chunk['order'])]
+                chunks = isolate_chunks(chunks, protected)
                 chunks.append({**old, 'status': 'cached'})
                 coverage = {identity for chunk in chunks for identity in chunk['order']}
                 restored = True
@@ -899,9 +1049,10 @@ def align(root, raw, plan_path, manifest_path, previous_root=None):
                         for row in mission_rows if row.get('ChapterID') == chapter['upstreamChapterId'] and row.get('Type') == 'Main' and mission_names.get('quest-' + str(row['MainMissionID']))]
     report = {'schema': 'hsr-bwiki-audit.v1', 'commit': plan['commit'], 'checkedAt': manifest['checkedAt'],
               'license': manifest['license'], 'modifications': 'BWIKI scene and branch structure aligned to official dialogue IDs; Korean text unchanged.',
-              'matchingPolicy': {'version': 2, 'normalization': ['display markup', 'ruby base text', 'default protagonist name', 'editorial punctuation (numeric separators preserved)', 'Unicode typography', 'whitespace'],
+              'matchingPolicy': {'version': 3, 'isolation': 'Ambiguous positions are boundaries; retain exact unique subgraphs and isolated choice labels without inferred replies.', 'translation': 'Explicit bilingual content reviews pinned to a wiki revision and all official hashes; no runtime fuzzy threshold.', 'normalization': ['display markup', 'ruby base text', 'default protagonist name', 'editorial punctuation (numeric separators preserved)', 'Unicode typography', 'whitespace'],
                                  'evidence': 'Full official Chinese strings, speakers and Korean strings remain hashed; ambiguous IDs are excluded.'},
               'inputs': input_hashes, 'totals': dict(totals), 'chapters': chapters, 'missionCatalog': mission_catalog, 'missionOrder': mission_sequences, 'review': review,
+              'translationReviews': translation_registry,
               'sources': {key: source_records[key] for key in sorted(used_sources)}, 'imports': previous.get('imports', {}),
               'pages': [{**{key: value for key, value in page.items() if key != 'file'},
                          **({'sourceUrl': 'https://wiki.biligame.com/sr/' + quote(page['pageTitle']) + '?oldid=' + str(page['revision']),

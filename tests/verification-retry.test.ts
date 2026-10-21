@@ -59,6 +59,18 @@ test('BWIKI and video code changes have independent replay fingerprints, with sh
     assert.notEqual(await algorithmHash(folder), initialWiki);
     assert.equal(await videoAlgorithmHash(folder), editedVideo);
     const editedWiki = await algorithmHash(folder);
+    await fs.mkdir(path.join(folder, 'editorial'), { recursive: true });
+    await fs.writeFile(
+      path.join(folder, 'editorial/bwiki-translation-matches.json'),
+      '{"reviews":[]}',
+    );
+    const reviewedWiki = await algorithmHash(folder);
+    assert.notEqual(reviewedWiki, editedWiki);
+    await fs.writeFile(
+      path.join(folder, 'editorial/bwiki-translation-matches.json'),
+      '{"reviews":[{}]}',
+    );
+    assert.notEqual(await algorithmHash(folder), reviewedWiki);
     await fs.appendFile(
       path.join(folder, 'scripts/verification-integration.mjs'),
       '\n// shared safety edit\n',

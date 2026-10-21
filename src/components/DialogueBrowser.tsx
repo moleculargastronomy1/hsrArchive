@@ -368,6 +368,9 @@ export default function DialogueBrowser({
                       </span>
                       <small>{row.bwikiMission ?? row.mission}</small>
                       {orderUnverified && <small>(순서 미확인)</small>}
+                      {row.bwikiMatchMethod === 'translation-reviewed' && (
+                        <small>번역 내용 대조</small>
+                      )}
                       {row.flowBoundary && <small>후속 대사 확인 필요</small>}
                       {(row.bwikiReplyToIds ?? row.replyToIds)
                         ?.map((id) => byId.get(id))

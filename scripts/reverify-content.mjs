@@ -3,7 +3,13 @@ import fs from 'node:fs/promises';
 import path from 'node:path';
 import { execFileSync } from 'node:child_process';
 import { pythonRunner } from './content-process.mjs';
-import { discoverBwiki, alignBwiki, limitBwikiToPending } from './bwiki-verification.mjs';
+import {
+  discoverBwiki,
+  alignBwiki,
+  limitBwikiToPending,
+  trailblazeTitleFiles,
+  scopeBwikiRequests,
+} from './bwiki-verification.mjs';
 import {
   verificationRows,
   compareVerification,
@@ -65,7 +71,10 @@ export async function finishVerification(
           : {}),
       };
     }
-  if (!(manifest.targetSources?.length === 1 && manifest.targetSources[0] === 'youtube'))
+  if (
+    !manifest.scoped &&
+    !(manifest.targetSources?.length === 1 && manifest.targetSources[0] === 'youtube')
+  )
     state.algorithm = algorithm;
   const report = await read(path.join(root, 'public/bwiki-provenance.json'));
   const unresolvedMissions = new Set(
@@ -204,11 +213,14 @@ export async function finishVerification(
   return result;
 }
 
-export async function retryContent(root, stage, raw, planFile, api, blobs) {
+export async function retryContent(root, stage, raw, planFile, api, blobs, { title } = {}) {
   const state = await readRetry(root),
     algorithm = await algorithmHash(root),
     before = await verificationRows(root);
   const run = pythonRunner(root, stage);
+  const scopedFiles = title
+    ? trailblazeTitleFiles(await read(path.join(root, 'src/data/trailblaze.json')), title)
+    : undefined;
   // No books, nomenclature, execution graph or translated-text projection on a
   // retry: start with the last successfully published derived files.
   for (const file of [...(await stateFiles(root)), 'src/data/text-bindings.json']) {
@@ -218,7 +230,7 @@ export async function retryContent(root, stage, raw, planFile, api, blobs) {
   await fs.mkdir(path.join(stage, '.cache'), { recursive: true });
   await write(path.join(stage, 'receipt.json'), { files: [], rows: before.size });
   const watch = await read(path.join(root, '.cache/content-watch/check.json')).catch(() => ({}));
-  if (watch.retryBwiki === false) {
+  if (!scopedFiles && watch.retryBwiki === false) {
     const previous = await read(path.join(root, 'public/bwiki-provenance.json'));
     const manifest = {
       schema: 'hsr-bwiki-input.v1',
@@ -241,12 +253,25 @@ export async function retryContent(root, stage, raw, planFile, api, blobs) {
       );
     return publishRetryStage(root, stage, raw, planFile, before, manifest, state, algorithm);
   }
-  await prepareSimulationEvents(stage, raw, planFile, api, blobs, run);
-  discoverBwiki(run, stage, raw, planFile);
+  if (scopedFiles) {
+    for (const script of ['bwiki-dialogue.py', 'import-bwiki-chapters.py'])
+      run(script, [stage, raw, planFile, '--discover']);
+  } else {
+    await prepareSimulationEvents(stage, raw, planFile, api, blobs, run);
+    discoverBwiki(run, stage, raw, planFile);
+  }
   const previous = await read(path.join(root, 'public/bwiki-provenance.json'));
   const requestFile = path.join(stage, '.cache/bwiki/request.json'),
     request = await read(requestFile);
-  const pendingFiles = await limitBwikiToPending(root, stage, request, before);
+  const pendingFiles = scopedFiles ?? (await limitBwikiToPending(root, stage, request, before));
+  if (scopedFiles)
+    scopeBwikiRequests(
+      request,
+      scopedFiles,
+      before,
+      previous,
+      await read(path.join(stage, '.cache/bwiki/chapters.json')),
+    );
   const waiting = new Map();
   for (const row of before.values())
     if (orderUnknown(row))
@@ -255,7 +280,8 @@ export async function retryContent(root, stage, raw, planFile, api, blobs) {
   prioritizeBwikiRequests(request.requests, state, waiting);
   await write(requestFile, request);
   const forceAlignment = Boolean(
-    state.pendingDigest && state.pendingDigest !== compareVerification(before, before).digest,
+    scopedFiles ||
+      (state.pendingDigest && state.pendingDigest !== compareVerification(before, before).digest),
   );
   const manifest = await fetchBwiki(
     stage,
@@ -295,16 +321,23 @@ export async function retryContent(root, stage, raw, planFile, api, blobs) {
       targets.add(chapter.file);
   for (const file of targets) if (!pendingFiles.has(file)) targets.delete(file);
   manifest.targetFiles = [...targets].sort();
+  if (scopedFiles) manifest.scoped = true;
   await write(path.join(stage, '.cache/bwiki/manifest.json'), manifest);
-  await collectEventImages(
-    stage,
-    path.join(root, '.cache/upstream-content/bwiki'),
-    manifest,
-    state,
-  );
+  if (!scopedFiles)
+    await collectEventImages(
+      stage,
+      path.join(root, '.cache/upstream-content/bwiki'),
+      manifest,
+      state,
+    );
   await saveRetry(state, root);
-  if (targets.size) alignBwiki(run, stage, raw, planFile, root);
-  if (watch.retryVideo || targets.size)
+  if (targets.size) {
+    if (scopedFiles) {
+      for (const script of ['bwiki-dialogue.py', 'import-bwiki-chapters.py'])
+        run(script, [stage, raw, planFile, path.join(stage, '.cache/bwiki/manifest.json'), root]);
+    } else alignBwiki(run, stage, raw, planFile, root);
+  }
+  if (!scopedFiles && (watch.retryVideo || targets.size))
     execFileSync(
       process.execPath,
       [

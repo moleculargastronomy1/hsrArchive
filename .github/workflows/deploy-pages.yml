@@ -11,6 +11,10 @@ on:
         description: '새 자료가 있을 때만 갱신'
         type: boolean
         default: false
+      trailblaze_title:
+        description: 'BWIKI만 재검증할 개척 임무 장 제목 (비워 두면 기본 갱신)'
+        type: string
+        default: ''
   schedule:
     - cron: '15 */6 * * *'
 
@@ -93,6 +97,7 @@ jobs:
         run: node scripts/run-content-refresh.mjs
         env:
           GITHUB_TOKEN: ${{ github.token }}
+          HSR_TRAILBLAZE_TITLE: ${{ inputs.trailblaze_title }}
       - name: Refresh official YouTube video
         if: steps.refresh.outputs.publish == 'true' && steps.refresh.outputs.site_only != 'true'
         run: node scripts/update-official-videos.mjs

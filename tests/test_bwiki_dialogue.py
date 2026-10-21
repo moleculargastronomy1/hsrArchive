@@ -159,10 +159,95 @@ class BwikiDialogueTest(unittest.TestCase):
         self.assertEqual(runs[0][0]['kind'], 'unsupported')
         missing = {key: values for key, values in self.index.items() if key[1] != bwiki.comparable('左侧回应。')}
         runs = bwiki.supported_runs(copy.deepcopy(segment), missing)
-        self.assertEqual([run[0]['kind'] for run in runs], ['line', 'unsupported', 'unsupported', 'line', 'line'])
+        self.assertEqual([run[0]['kind'] for run in runs], ['line', 'unsupported', 'choice', 'unsupported', 'line', 'line'])
+        _, edges = bwiki.compile_segment(runs[2], missing)
+        self.assertEqual(edges, {'1': [], '2': []})
         malformed = self.script.replace('左侧回应。', '{{未知条件|左侧回应。}}')
         parsed = bwiki.story_segments(malformed)
         self.assertTrue(any(run[0]['kind'] == 'unsupported' for part in parsed for run in bwiki.supported_runs(part, self.index)))
+
+    def test_repeated_position_is_a_boundary_without_discarding_unique_neighbours(self):
+        text = '==剧情内容==\n*角色：开场。\n*角色：左侧回应。\n*角色：开场。\n*角色：共同后续。'
+        runs = bwiki.supported_runs(bwiki.story_segments(text)[0], self.index)
+        self.assertEqual([run[0]['kind'] for run in runs], ['unsupported', 'line', 'unsupported', 'line'])
+        matched = [bwiki.compile_segment(run, self.index) for run in runs if run[0]['kind'] != 'unsupported']
+        self.assertEqual([[row['id'] for row in rows] for rows, _ in matched], [['101'], ['103']])
+        self.assertEqual([edges for _, edges in matched], [{'101': []}, {'103': []}])
+
+    def test_partial_choice_labels_do_not_acquire_unproven_reply_or_continuation(self):
+        missing = {key: values for key, values in self.index.items() if key[1] != bwiki.comparable('左侧回应。')}
+        runs = bwiki.supported_runs(bwiki.story_segments(self.script)[0], missing)
+        labels = next(run for run in runs if run[0]['kind'] == 'choice')
+        rows, edges = bwiki.compile_segment(labels, missing)
+        self.assertEqual([row['id'] for row in rows], ['1', '2'])
+        self.assertEqual(edges, {'1': [], '2': []})
+        # An ambiguous label stays unresolved even when its sibling is exact.
+        duplicate = {**missing, self.key('choice', '向左。', ''): self.rows[1:2] * 2}
+        labels = next(run for run in bwiki.supported_runs(bwiki.story_segments(self.script)[0], duplicate)
+                      if run[0]['kind'] == 'choice')
+        self.assertEqual([row['id'] for row in bwiki.compile_segment(labels, duplicate)[0]], ['2'])
+
+    def test_isolation_preserves_only_existing_edges_and_stable_evidence(self):
+        chunk = {'segment': '0.1', 'order': ['a', 'gap', 'b', 'c'],
+                 'edges': {'a': ['gap'], 'gap': ['b'], 'b': ['c'], 'c': []},
+                 'evidence': {item: {'talkId': item} for item in ['a', 'gap', 'b', 'c']}}
+        pieces = bwiki.isolate_chunks([chunk], {'gap'})
+        self.assertEqual([item['order'] for item in pieces], [['a'], ['b', 'c']])
+        self.assertEqual([item['edges'] for item in pieces], [{'a': []}, {'b': ['c'], 'c': []}])
+        self.assertEqual(pieces[1]['evidence'], {'b': {'talkId': 'b'}, 'c': {'talkId': 'c'}})
+        self.assertEqual(pieces, bwiki.isolate_chunks([chunk], {'gap'}))
+        self.assertEqual(bwiki.isolate_chunks([chunk], set(chunk['order'])), [])
+        self.assertEqual(bwiki.isolate_chunks([chunk], {'absent'}), [chunk])
+
+    def test_isolation_does_not_move_a_response_to_a_sibling_choice(self):
+        chunk = {'segment': '0', 'order': ['left', 'right', 'reply', 'tail'],
+                 'edges': {'left': ['reply'], 'right': ['tail'], 'reply': ['tail'], 'tail': []},
+                 'evidence': {item: {} for item in ['left', 'right', 'reply', 'tail']}}
+        pieces = bwiki.isolate_chunks([chunk], {'reply'})
+        self.assertEqual([item['edges'] for item in pieces], [{'left': []}, {'right': ['tail'], 'tail': []}])
+
+    def test_display_html_equals_and_official_narration_are_independent(self):
+        self.assertEqual(bwiki.inline('<span style="font-size:18px">甲{{=}}乙</span>'), '甲=乙')
+        row = {**self.rows[0], 'type': 'narration'}
+        index = {**self.index, self.key('line', '场景原文。', ''): [row]}
+        segments = bwiki.story_segments('==剧情内容==\n*角色：左侧回应。\n:场景原文。\n*角色：共同后续。')
+        runs = [run for segment in segments for run in bwiki.supported_runs(segment, index)]
+        matched = [bwiki.compile_segment(run, index) for run in runs]
+        self.assertEqual([edges for _, edges in matched], [{'101': []}, {'100': []}, {'103': []}])
+        index[self.key('line', '场景原文。', '')] = [{**row, 'type': 'dialogue'}]
+        self.assertEqual(bwiki.supported_runs(segments[1], index)[0][0]['kind'], 'unsupported')
+
+    def test_bilingual_review_replays_only_pinned_sentence_speaker_and_source_hashes(self):
+        row = self.rows[0]
+        item = {'text': '官方原文', 'speaker': '角色', 'chineseHash': 'cn', 'speakerHash': 'speaker', 'koreanHash': 'kr'}
+        record = {'rowId': row['id'], 'file': 'target', 'talkId': row['talkId'], 'type': row['type'],
+                  'page': '任務', 'revision': 5, 'pageSha256': 'wiki', 'wikiSpeaker': '角色',
+                  'wikiText': '不同表记', 'translatedKorean': '시작.', 'rationale': '번역 내용이 한국어 원문과 같음',
+                  **{key: item[key] for key in ['chineseHash', 'speakerHash', 'koreanHash']}}
+        sources = {'任務@5': {'sha256': 'wiki'}}
+        valid = bwiki.validated_translation_reviews([record], 'target', [row], {row['id']: item}, sources)
+        self.assertEqual(valid, {row['id']: record})
+        page = {'pageTitle': '任務', 'revision': 5, 'sha256': 'wiki'}
+        alias = self.key('line', '不同表记', '角色')
+        self.assertEqual(bwiki.translated_index({}, valid, page, [row])[alias], [row])
+        self.assertEqual(bwiki.translated_index({}, valid, {**page, 'revision': 6}, [row]), {})
+        conflict = {**row, 'id': 'other'}
+        self.assertEqual(bwiki.translated_index({alias: [conflict]}, valid, page, [row])[alias], [conflict])
+        for key in ['chineseHash', 'speakerHash', 'koreanHash']:
+            evidence = {row['id']: {**item, key: 'changed'}}
+            self.assertEqual(bwiki.validated_translation_reviews([record], 'target', [row], evidence, sources), {})
+        self.assertEqual(bwiki.validated_translation_reviews([record], 'target', [row], {row['id']: item}, {}), {})
+        self.assertEqual(bwiki.validated_translation_reviews([record, record], 'target', [row], {row['id']: item}, sources), {})
+        duplicate = {**row, 'id': 'other'}
+        self.assertEqual(bwiki.validated_translation_reviews([record], 'target', [row, duplicate],
+                         {row['id']: item, duplicate['id']: item}, sources), {})
+        chunk = {'page': '任務', 'revision': 5, 'order': [row['id']], 'edges': {row['id']: []},
+                 'evidence': {row['id']: {'talkId': row['talkId'], 'type': row['type'],
+                     **{key: item[key] for key in ['chineseHash', 'speakerHash', 'koreanHash']},
+                     'translationReviewHash': bwiki.translation_review_hash(record)}}}
+        index = {('line', item['text'], item['speaker']): [row]}
+        self.assertTrue(bwiki.cached_chunk_valid(chunk, {row['id']: row}, {row['id']: item}, index, sources, valid))
+        self.assertFalse(bwiki.cached_chunk_valid(chunk, {row['id']: row}, {row['id']: item}, index, sources))
 
     def test_optional_fold_and_scene_notes_never_connect_independent_conversations(self):
         text = '==剧情内容==\n*角色：开场。\n{{折叠|标题=额外对话|内容=*角色：左侧回应。}}\n*角色：共同后续。'

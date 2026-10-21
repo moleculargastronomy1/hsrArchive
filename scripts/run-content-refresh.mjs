@@ -5,8 +5,11 @@ const read = async (file) => JSON.parse(await fs.readFile(file));
 const watch = await read('.cache/content-watch/check.json');
 const plan = await read('.cache/upstream-content/plan.json');
 const previous = await read('public/content-update.json');
-const mode = contentRefreshMode(plan, previous, watch);
+const title = process.env.HSR_TRAILBLAZE_TITLE?.trim();
+const mode = title ? '--retry' : contentRefreshMode(plan, previous, watch);
 try {
+  if (title && plan.commit !== previous.commit)
+    throw new Error('Targeted BWIKI retry requires the current deployed official input version');
   if (mode === '--site-only') {
     // The workflow validates/tests the restored snapshot before building. Do not
     // collect, project text, or acknowledge newly observed source revisions.
@@ -29,10 +32,14 @@ try {
     );
     console.log('Site-only build: reusing validated content without collection or text projection');
   } else {
-    execFileSync(process.execPath, ['scripts/update-content.mjs', mode], {
-      stdio: 'inherit',
-      env: process.env,
-    });
+    execFileSync(
+      process.execPath,
+      ['scripts/update-content.mjs', mode, ...(title ? ['--title', title] : [])],
+      {
+        stdio: 'inherit',
+        env: process.env,
+      },
+    );
   }
 } catch (error) {
   const file = '.cache/verification-retry/run.json';

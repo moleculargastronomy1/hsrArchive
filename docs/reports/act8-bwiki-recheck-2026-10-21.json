@@ -1,0 +1,151 @@
+{
+  "schema": "hsr-act8-bwiki-recheck.v2",
+  "chapter": "amphoreus-records/yesterdays-tomorrow",
+  "checkedAt": "2026-10-21T04:46:25.527Z",
+  "officialInputCommits": {
+    "deployedBaseline": "74a7b96fba32f00cf495a5c00b0311bd02207aaf",
+    "repository": "312b4597691e0a29cf9828a15b592757dba86949"
+  },
+  "before": {
+    "rows": 1576,
+    "wiki": 1218,
+    "unknown": 356
+  },
+  "after": {
+    "rows": 1576,
+    "wiki": 1390,
+    "unknown": 184,
+    "translated": 11,
+    "comparison": {
+      "newlyVerified": 172,
+      "lostVerification": 0,
+      "remainingUnknown": 14837,
+      "removedRows": 0,
+      "changedCoreRows": 0,
+      "lostFlowVerification": 0,
+      "lostVideoVerification": 0,
+      "conflictingLinks": 0,
+      "conflictingOrder": 0,
+      "lostEventImages": 0,
+      "lostContentRoutes": 0,
+      "changed": true,
+      "digest": "d1861a15b7f23cada7785b787ea08de026a17f0ca5fdba50f75a8aaec654ab8e"
+    }
+  },
+  "additionalMatches": {
+    "total": 172,
+    "exact": 161,
+    "translationReviewed": 11,
+    "dialogue": 136,
+    "choice": 27,
+    "narration": 9,
+    "isolatedChoicesWithoutReplies": 26
+  },
+  "pages": [
+    {
+      "title": "劫火啊，黯于群星的浪潮",
+      "status": "missing",
+      "reason": "BWIKI 임무 문서 없음"
+    },
+    {
+      "title": "故事啊， 完篇于初遇之时",
+      "status": "missing",
+      "reason": "BWIKI 임무 문서 없음"
+    },
+    {
+      "title": "星路长驰，穹宇远征",
+      "pageTitle": "星路长驰，穹宇远征",
+      "status": "available",
+      "revision": 82765,
+      "retrieval": "revision-cache",
+      "metadataCheckedAt": "2026-10-21T04:46:25.527Z"
+    },
+    {
+      "title": "晨曦啊，再抚映遥远地平",
+      "pageTitle": "晨曦啊，再抚映遥远地平",
+      "status": "available",
+      "revision": 77814,
+      "retrieval": "revision-cache",
+      "metadataCheckedAt": "2026-10-21T04:46:25.527Z"
+    },
+    {
+      "title": "纸页啊，镌留记忆的涟漪",
+      "pageTitle": "纸页啊，镌留记忆的涟漪",
+      "status": "available",
+      "revision": 102321,
+      "retrieval": "revision-cache",
+      "metadataCheckedAt": "2026-10-21T04:46:25.527Z"
+    },
+    {
+      "title": "英雄啊，归以凡身向侵晨",
+      "pageTitle": "英雄啊，归以凡身向侵晨",
+      "status": "available",
+      "revision": 95839,
+      "retrieval": "revision-cache",
+      "metadataCheckedAt": "2026-10-21T04:46:25.527Z"
+    },
+    {
+      "title": "落英啊，残芳纷飞留归躅",
+      "pageTitle": "落英啊，残芳纷飞留归躅",
+      "status": "available",
+      "revision": 97872,
+      "retrieval": "revision-cache",
+      "metadataCheckedAt": "2026-10-21T04:46:25.527Z"
+    },
+    {
+      "title": "银辇啊，挽别那人间史诗",
+      "pageTitle": "银辇啊，挽别那人间史诗",
+      "status": "available",
+      "revision": 77819,
+      "retrieval": "revision-cache",
+      "metadataCheckedAt": "2026-10-21T04:46:25.527Z"
+    },
+    {
+      "title": "魔女的孤诣课题",
+      "pageTitle": "魔女的孤诣课题",
+      "status": "available",
+      "revision": 77816,
+      "retrieval": "revision-cache",
+      "metadataCheckedAt": "2026-10-21T04:46:25.527Z"
+    }
+  ],
+  "coverage": {
+    "scope": "Seven available BWIKI documents. Text/speaker/kind coverage, not verified occurrence order or all raw markup. Narration annotations counted separately.",
+    "bwikiOccurrences": {
+      "total": 3114,
+      "linked": 1383,
+      "unlinked": 1731,
+      "reasons": {
+        "no_same_chapter_candidate": 1472,
+        "linked": 1383,
+        "candidate_present_but_unlinked": 259
+      }
+    },
+    "bwikiUniqueTextSpeakerKind": {
+      "total": 2921,
+      "linked": 1378,
+      "unlinked": 1543,
+      "reasons": {
+        "no_same_chapter_candidate": 1452,
+        "linked": 1378,
+        "candidate_present_but_unlinked": 91
+      }
+    },
+    "excludedParserNodes": {
+      "unsupported": 229,
+      "narration_annotations": 162,
+      "barrier": 216
+    },
+    "outsideChapterGlobalLookup": {
+      "official_talk_text_and_speaker_found_outside_imported_rows": 1368,
+      "no_exact_chinese_textmap_text": 13,
+      "textmap_text_found_but_no_exact_talk_speaker": 91
+    },
+    "archiveRows": {
+      "total": 1576,
+      "linked": 1390,
+      "unlinked": 186
+    }
+  },
+  "scope": "Imported rows are not all BWIKI or all chapter TextMap rows. Semantic reviews compare the translation of each utterance against official Korean text, not story context alone."
+}

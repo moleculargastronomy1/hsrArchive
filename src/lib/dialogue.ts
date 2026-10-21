@@ -22,6 +22,7 @@ export interface DialogueRow {
   bwikiRevision?: number;
   bwikiMissionId?: string;
   bwikiMission?: string;
+  bwikiMatchMethod?: 'translation-reviewed';
   videoStatus?: 'caption-matched' | 'screen-matched';
   videoScene?: string;
   videoNextIds?: string[];
@@ -46,6 +47,7 @@ export function isDialogueRows(value: unknown): value is DialogueRow[] {
         (row.bwikiStatus === undefined ||
           ['matched', 'cached', 'review'].includes(row.bwikiStatus)) &&
         (row.bwikiScene === undefined || typeof row.bwikiScene === 'string') &&
+        (row.bwikiMatchMethod === undefined || row.bwikiMatchMethod === 'translation-reviewed') &&
         (row.videoStatus === undefined ||
           ['caption-matched', 'screen-matched'].includes(row.videoStatus)) &&
         (row.videoScene === undefined || typeof row.videoScene === 'string') &&

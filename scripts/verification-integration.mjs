@@ -201,6 +201,7 @@ export function compareVerification(before, after) {
           row.bwikiNextIds,
           row.bwikiReplyToIds,
           row.bwikiMissionId,
+          row.bwikiMatchMethod,
           ['matched', 'cached'].includes(row.bwikiStatus),
           row.videoStatus,
           row.videoId,

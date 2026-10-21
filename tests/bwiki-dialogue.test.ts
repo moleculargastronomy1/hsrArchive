@@ -37,6 +37,8 @@ test('BWIKI navigation is distinct from game execution verification', () => {
     row('reply', 'dialogue', []),
   ];
   assert.equal(isDialogueRows(rows), true);
+  assert.equal(isDialogueRows([{ ...rows[0], bwikiMatchMethod: 'translation-reviewed' }]), true);
+  assert.equal(isDialogueRows([{ ...rows[0], bwikiMatchMethod: 'fuzzy' }]), false);
   assert.deepEqual(
     choiceDialogue(rows, 0).map((row) => row.id),
     ['choice', 'reply'],

@@ -43,7 +43,7 @@ async function hashAlgorithmFiles(root, files) {
   );
 }
 export async function algorithmHash(root = process.cwd()) {
-  return hashAlgorithmFiles(root, [
+  const code = await hashAlgorithmFiles(root, [
     'bwiki-dialogue.py',
     'import-bwiki-chapters.py',
     'import-simulation-events.py',
@@ -60,6 +60,13 @@ export async function algorithmHash(root = process.cwd()) {
     'validate-content-stage.py',
     'import-localizations.py',
   ]);
+  const reviews = await fs
+    .readFile(path.join(root, 'editorial/bwiki-translation-matches.json'))
+    .catch((error) => {
+      if (error.code !== 'ENOENT') throw error;
+      return Buffer.from('no bilingual reviews');
+    });
+  return hash(Buffer.concat([Buffer.from(code), reviews]));
 }
 export async function videoAlgorithmHash(root = process.cwd()) {
   return hashAlgorithmFiles(root, [

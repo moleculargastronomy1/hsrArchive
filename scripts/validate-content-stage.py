@@ -12,6 +12,13 @@ def validate(root):
 
     update = read('public/content-update.json')
     commit = update['commit']
+    wiki = read('public/bwiki-provenance.json')
+    translated = {identity: (chunk, proof) for chunks in wiki.get('chapters', {}).values()
+                  for chunk in chunks for identity, proof in chunk.get('evidence', {}).items()
+                  if proof.get('translationReviewHash')}
+    translation_reviews = {
+        hashlib.sha256(json.dumps(record, ensure_ascii=False, sort_keys=True, separators=(',', ':')).encode()).hexdigest(): record
+        for record in wiki.get('translationReviews', {}).get('reviews', [])}
     for file in ['dialogue-flow-provenance', 'bwiki-provenance', 'video-order-provenance',
                  'video-review-summary']:
         if read('public/' + file + '.json')['commit'] != commit:
@@ -56,6 +63,20 @@ def validate(root):
             raise ValueError('Invalid content descriptor: ' + route)
         by_id = {row['id']: row for row in payload['rows']}
         for row in payload['rows']:
+            if row.get('bwikiMatchMethod') is not None:
+                if row['bwikiMatchMethod'] != 'translation-reviewed' or row['id'] not in translated:
+                    raise ValueError('Missing final bilingual review: ' + row['id'])
+                chunk, proof = translated[row['id']]
+                review = translation_reviews.get(proof['translationReviewHash'], {})
+                source = wiki.get('sources', {}).get(f"{chunk['page']}@{chunk['revision']}", {})
+                if (row.get('bwikiStatus') not in ['matched', 'cached'] or
+                        review.get('file') != file or review.get('rowId') != row['id'] or
+                        review.get('talkId') != row.get('talkId') or review.get('type') != row['type'] or
+                        review.get('page') != chunk['page'] or review.get('revision') != chunk['revision'] or
+                        review.get('pageSha256') != source.get('sha256') or
+                        not review.get('translatedKorean') or not review.get('rationale') or
+                        any(review.get(key) != proof.get(key) for key in ['chineseHash', 'speakerHash', 'koreanHash'])):
+                    raise ValueError('Invalid final bilingual review: ' + row['id'])
             if (row['id'] in rows or row['entryId'] != entry or row['chapterId'] != chapter or
                     row['type'] not in ['dialogue', 'choice', 'narration'] or
                     any(not isinstance(row.get(key), str) for key in

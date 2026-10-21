@@ -128,7 +128,7 @@ if (mode === '--plan') {
       plan.commit
     )
       throw new Error('Retry requires the same official input commit');
-    await retryContent(root, stage, raw, planFile, api, blobs);
+    await retryContent(root, stage, raw, planFile, api, blobs, { title });
     process.exit(0);
   }
   for (const name of [
