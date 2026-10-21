@@ -88,6 +88,7 @@ Node 테스트 103개, 별도 Python 테스트 80개가 통과했다. 두 테스
 - 최종 빌드·동일 산출물 검사: 통과 (11,378개 파생 파일)
 - 현재 복구 스냅샷 전체 체크섬·바이트 검사: 통과
 - 대규모 산출물 해시 검사에서 EMFILE을 재현해 동시 읽기를 8개로 제한했고 실자료 검사로 수정 확인
-- 운영 배포: GitHub Actions 확인 대기
+- 운영 배포: [GitHub Actions #39558190996](https://github.com/moleculargastronomy1/hsrArchive/actions/runs/39558190996) 빌드·동일 산출물 검사·Pages 배포 성공. 구현 커밋 `42dca3d8dc8f099b28878172b2a880b5a319c6ca`.
+- 운영 사이트 확인: 2026-10-21 18:43 KST, 전체 67,150행·신규 3,673개·공식 커밋·검증 코드 해시 일치. 4개 장의 신규 246행에서 ID·한국어 원문·화자·임무 귀속·미확인 순서 경계를 표본 검사해 통과했다. 제8막 신규 148행을 모두 포함한다. 전체 파일 검증은 CI에서 수행했고 운영 조회는 이 표본 범위다.
 
 임무별 조건·문서 공유·출현 수·보류 상태는 [JSON 보고서](trailblaze-source-first-2026-10-21.json)의 `chapters[].missions`에 기록했다. 모든 미확정 후보와 그래프는 Git 제외 `.cache/source-first/results` / `document-results`에 보존한다. 공개 파생 요약은 `public/source-first-provenance.json`이며 원본 전체를 포함하지 않는다.

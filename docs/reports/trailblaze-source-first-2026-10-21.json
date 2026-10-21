@@ -87,7 +87,32 @@
     "largeFileSetSealing": "passed after limiting concurrent file reads to eight"
   },
   "deployment": {
-    "status": "pending-ci"
+    "status": "passed",
+    "repositoryCommit": "42dca3d8dc8f099b28878172b2a880b5a319c6ca",
+    "runId": 39558190996,
+    "runUrl": "https://github.com/moleculargastronomy1/hsrArchive/actions/runs/39558190996",
+    "site": "https://moleculargastronomy1.github.io/hsrArchive/",
+    "sameTestedArtifact": true,
+    "liveVerification": {
+      "status": "passed",
+      "checkedAt": "2026-10-21T09:43:27.913Z",
+      "officialCommit": "74a7b96fba32f00cf495a5c00b0311bd02207aaf",
+      "codeHash": "ff8f2f67306c025d301134406d1a77cd12078d2296036c9a8cd16a90f6ea5e63",
+      "totalRows": 67150,
+      "totalAdditions": 3673,
+      "sampledPayloads": 4,
+      "checkedAddedRows": 246,
+      "checkedFields": [
+        "rowId",
+        "TalkSentenceID",
+        "koreanText",
+        "speaker",
+        "missionOwnership",
+        "flowBoundary",
+        "flowStatus"
+      ],
+      "scope": "Full artifact validation passed in CI; live checks sampled all added rows in four payloads."
+    }
   },
   "catalogReview": [
     {
