@@ -1,0 +1,96 @@
+{
+  "schema": "hsr-scheduled-verification-recheck.v1",
+  "failedRun": {
+    "id": 39558388164,
+    "url": "https://github.com/moleculargastronomy1/hsrArchive/actions/runs/39558388164",
+    "lostVerification": 29,
+    "conflictingLinks": 20,
+    "affectedFile": "content/paradise-records--before-moonrise.json",
+    "narrationTalkRows": 2,
+    "narrationTextMapRows": 27,
+    "publicationStopped": true
+  },
+  "fix": {
+    "commit": "ef64e9c39e202ea5463df3315d7f062f0fb74c1c",
+    "mode": "existing-only-revalidated",
+    "newRowsAllowed": false,
+    "newOwnershipAllowed": false,
+    "newEdgesAllowed": false,
+    "preservationGuardRetained": true
+  },
+  "frozenReplay": {
+    "before": {
+      "lostVerification": 29,
+      "conflictingLinks": 20
+    },
+    "after": {
+      "lostVerification": 0,
+      "conflictingLinks": 0,
+      "removedRows": 0,
+      "changedCoreRows": 0,
+      "conflictingOrder": 0
+    },
+    "published": false
+  },
+  "actualRetry": {
+    "id": 39580931698,
+    "url": "https://github.com/moleculargastronomy1/hsrArchive/actions/runs/39580931698",
+    "status": "success",
+    "trigger": "workflow_dispatch",
+    "detectChanges": true,
+    "usesScheduledVerificationPath": true,
+    "mode": "retry",
+    "checkedAt": "2026-10-21T10:04:57.019Z",
+    "upstreamCommit": "74a7b96fba32f00cf495a5c00b0311bd02207aaf",
+    "algorithm": "ff80ea1b15ed96e96a0a276f93e34808eb7865c72aedc32e8377b86fa739bd48",
+    "videoAlgorithm": "d1f548255f676bbedda1cb4c5699099f1a63be90a9c812f2f87d5c59b99855da",
+    "digest": "349c2d4b2a2fcd3fcd8f1acbe925002e96d97123a36334c9681a5479b886a69a",
+    "newlyVerified": 2137,
+    "newlyVideoVerified": 0,
+    "lostVerification": 0,
+    "changedCoreRows": 0,
+    "removedRows": 0,
+    "lostFlowVerification": 0,
+    "lostVideoVerification": 0,
+    "conflictingLinks": 0,
+    "conflictingOrder": 0,
+    "remainingUnknown": 16373,
+    "bodyDownloads": 0,
+    "cachedDocuments": 430,
+    "collectionFailures": {
+      "BWIKI 요청 대기 · 이전 검증 보존": 29
+    }
+  },
+  "sourceFirst": {
+    "commit": "74a7b96fba32f00cf495a5c00b0311bd02207aaf",
+    "codeHash": "a4b12b58f2708bdcb1e56842c95757e60998a555cad479546725a7360e174574",
+    "policyHash": "e1c9e9b4490338a86d24bb9bbdad1872cb55765c5e7e087d8c2fb7fb6a0da9e1",
+    "registeredChapters": 36,
+    "officialMissions": 442,
+    "candidateAdditions": 0
+  },
+  "validation": {
+    "nodeTests": 104,
+    "contracts": {
+      "payloads": 2840,
+      "rows": 67150
+    },
+    "sealedFiles": 11378,
+    "recoverySnapshot": "saved",
+    "sameBuiltArtifact": "passed",
+    "pagesDeployment": "success"
+  },
+  "liveVerification": {
+    "status": "passed",
+    "checkedAt": "2026-10-21T10:06:20.303Z",
+    "site": "https://moleculargastronomy1.github.io/hsrArchive/",
+    "file": "content/paradise-records--before-moonrise.json",
+    "checkedRows": 1393,
+    "liveRows": 1393,
+    "recoveredVerificationRows": 29,
+    "restoredLinkRows": 20,
+    "officialCommit": "74a7b96fba32f00cf495a5c00b0311bd02207aaf",
+    "siteRows": 67150,
+    "verificationMode": "existing-only-revalidated"
+  }
+}
