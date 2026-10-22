@@ -209,6 +209,10 @@ test('legacy journal recovery only acknowledges the exact published content dige
   assert.equal(recovered.status, 'partial');
   assert.deepEqual(recovered.retry.pages, state.pages);
   assert.deepEqual(recovered.quarantinedChapters, state.lastRun.quarantinedChapters);
+  assert.deepEqual(
+    recoverVerificationProgress({ ...state, pendingDigest: undefined }, 'published'),
+    recovered,
+  );
   assert.equal(recoverVerificationProgress(state, 'different-content'), undefined);
   assert.equal(
     recoverVerificationProgress({ ...state, pendingDigest: 'unpublished-candidate' }, 'published'),

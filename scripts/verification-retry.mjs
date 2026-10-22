@@ -126,7 +126,11 @@ export function verificationProgress(state, result = state.lastRun) {
 export function recoverVerificationProgress(state, digest) {
   // Old snapshots omitted this derived file. An unpublished or unrelated cache
   // must never acknowledge a different successfully deployed content snapshot.
-  if (!state.lastRun || state.lastRun.digest !== digest || state.pendingDigest !== digest)
+  if (
+    !state.lastRun ||
+    state.lastRun.digest !== digest ||
+    (state.pendingDigest && state.pendingDigest !== digest)
+  )
     return undefined;
   return verificationProgress(state);
 }
