@@ -17,7 +17,7 @@ import {
   orderUnknown,
 } from './verification-integration.mjs';
 import { fetchBwiki } from './fetch-bwiki.mjs';
-import { stateFiles } from './verification-state.mjs';
+import { stateFiles, hash } from './verification-state.mjs';
 import {
   algorithmHash,
   readRetry,
@@ -31,6 +31,202 @@ import { verifySourceFirst } from './source-first.mjs';
 
 const read = async (file) => JSON.parse(await fs.readFile(file));
 const write = (file, data) => fs.writeFile(file, JSON.stringify(data));
+
+// A new BWIKI interpretation is a candidate, not permission to replace a
+// published branch. Quarantine the complete chapter so revisions, reciprocal
+// links, wiki positions and execution placements cannot become a mixed graph.
+export async function quarantineRetryChapters(root, stage, before, manifest) {
+  const after = await verificationRows(stage);
+  const comparison = compareVerification(before, after);
+  const work = path.join(root, '.cache/verification-retry/quarantine');
+  await fs.mkdir(work, { recursive: true });
+  await write(path.join(work, 'comparison.json'), comparison);
+  const candidateFaults = [
+    'lostVerification',
+    'conflictingLinks',
+    'conflictingOrder',
+    'lostReadingPositions',
+    'lostReadingLinks',
+    'conflictingReadingPositions',
+  ];
+  // Canonical, official execution, video, routing and image failures still stop
+  // publication. Do not turn a shared validator failure into a successful retry.
+  assertVerificationPreserved(
+    { ...comparison, ...Object.fromEntries(candidateFaults.map((key) => [key, []])) },
+    'Retry shared contracts',
+  );
+  for (const [id, row] of before) {
+    const current = after.get(id);
+    for (const [status, keys] of [
+      [row.flowStatus === 'verified', ['nextIds', 'replyToIds']],
+      [
+        ['caption-matched', 'screen-matched'].includes(row.videoStatus),
+        ['videoNextIds', 'videoReplyToIds'],
+      ],
+    ])
+      if (
+        status &&
+        keys.some((key) => (row[key] ?? []).some((target) => !current?.[key]?.includes(target)))
+      )
+        throw Error('Retry changed a verified official/video edge: ' + id);
+  }
+  for (const [file, reading] of Object.entries(before.executionReadings ?? {})) {
+    const nodes = new Map(
+      (after.executionReadings?.[file]?.occurrences ?? []).map((p) => [p.id, p]),
+    );
+    for (const p of reading.occurrences) {
+      const q = nodes.get(p.id);
+      if (
+        !q ||
+        ['rowId', 'missionId', 'source', 'pointer', 'conditionsHash', 'sceneId', 'conditions'].some(
+          (key) => JSON.stringify(p[key]) !== JSON.stringify(q[key]),
+        ) ||
+        p.nextIds.some((id) => !q.nextIds.includes(id))
+      )
+        throw Error('Retry changed a confirmed execution occurrence: ' + file + ':' + p.id);
+    }
+  }
+  const files = new Set();
+  for (const key of candidateFaults)
+    for (const id of comparison[key]) {
+      const file = before.get(id)?.file ?? after.get(id)?.file ?? id.split(':')[0];
+      if (!/^content\/[\w-]+\.json$/.test(file)) throw Error('Unscoped retry regression: ' + id);
+      files.add(file);
+    }
+  if (!files.size) return [];
+  const update = await read(path.join(root, 'public/content-update.json'));
+  if (update.commit !== (await read(path.join(stage, 'public/content-update.json'))).commit)
+    throw Error('Retry quarantine requires the same official input version');
+  const restored = new Map(),
+    records = [];
+  const proofFiles = [
+    'bwiki-provenance',
+    'source-first-provenance',
+    'dialogue-flow-provenance',
+    'video-order-provenance',
+    'video-review-summary',
+  ];
+  const proofs = await Promise.all(
+    proofFiles.map(async (name) => ({
+      name,
+      old: await read(path.join(root, 'public/' + name + '.json')),
+      candidate: await read(path.join(stage, 'public/' + name + '.json')),
+    })),
+  );
+  // Preflight all files before restoring any. New canonical rows in a rejected
+  // chapter need a separate admission review, not an implicit metadata rollback.
+  for (const file of files) {
+    const original = await read(path.join(root, 'public', file));
+    const candidate = await read(path.join(stage, 'public', file));
+    const ids = new Set(original.rows.map((r) => r.id));
+    if (candidate.rows.length !== ids.size || candidate.rows.some((r) => !ids.has(r.id)))
+      throw Error('Retry regression also changes chapter admissions: ' + file);
+    restored.set(file, { original, candidate });
+  }
+  for (const [file, { original, candidate }] of restored) {
+    const evidence = path.join(work, hash(JSON.stringify(candidate)), path.basename(file));
+    await fs.mkdir(path.dirname(evidence), { recursive: true });
+    await write(evidence, {
+      candidate,
+      provenance: Object.fromEntries(
+        proofs.map(({ name, candidate: p }) => [
+          name,
+          p.chapters?.[file] ?? p.executionAudit?.chapters?.find((c) => c.file === file),
+        ]),
+      ),
+    });
+    const pages = [
+      ...new Set([
+        ...(original.wikiReading?.sources ?? []).map((s) => s.pageTitle),
+        ...original.rows.map((r) => r.bwikiPage).filter(Boolean),
+      ]),
+    ];
+    records.push({
+      file,
+      pages,
+      reason: 'candidate-regression; published-chapter-retained',
+      evidence: path.relative(root, evidence).split(path.sep).join('/'),
+      failures: Object.fromEntries(
+        candidateFaults.map((key) => [
+          key,
+          comparison[key].filter(
+            (id) => (before.get(id)?.file ?? after.get(id)?.file ?? id.split(':')[0]) === file,
+          ),
+        ]),
+      ),
+    });
+    await fs.copyFile(path.join(root, 'public', file), path.join(stage, 'public', file));
+    for (const { name, old, candidate: report } of proofs) {
+      for (const key of ['chapters', 'imports', 'missionCatalog', 'missionOrder']) {
+        if (!report[key] || Array.isArray(report[key])) continue;
+        if (old[key]?.[file] !== undefined) report[key][file] = structuredClone(old[key][file]);
+        else delete report[key][file];
+      }
+      if (report.executionAudit?.chapters) {
+        report.executionAudit.chapters = report.executionAudit.chapters.filter(
+          (c) => c.file !== file,
+        );
+        const prior = old.executionAudit?.chapters?.find((c) => c.file === file);
+        if (prior) report.executionAudit.chapters.push(structuredClone(prior));
+      }
+      for (const key of ['evidence', 'screenEvidence'])
+        if (Array.isArray(report[key]))
+          report[key] = [
+            ...report[key].filter((item) => item.file !== file),
+            ...(old[key] ?? []).filter((item) => item.file === file),
+          ];
+      if (name === 'bwiki-provenance')
+        for (const key of Object.keys(report.totals))
+          report.totals[key] += (original.bwiki?.[key] ?? 0) - (candidate.bwiki?.[key] ?? 0);
+      report.retainedChapters = {
+        ...report.retainedChapters,
+        [file]: {
+          reason: records.at(-1).reason,
+          priorCommit: old.commit,
+          priorCodeHash: old.codeHash ?? old.executionAudit?.codeHash,
+          priorPolicyHash: old.policyHash ?? old.executionAudit?.policyHash,
+        },
+      };
+    }
+  }
+  for (const { name, candidate } of proofs)
+    await write(path.join(stage, 'public/' + name + '.json'), candidate);
+  const oldSearch = await read(path.join(root, 'public/content/search-index.json'));
+  const search = await read(path.join(stage, 'public/content/search-index.json'));
+  for (const { original } of restored.values()) {
+    const ids = new Set(original.rows.map((r) => r.id));
+    const rows = oldSearch.rows.filter((r) => ids.has(r.id));
+    const slots = search.rows.flatMap((r, i) => (ids.has(r.id) ? [i] : []));
+    if (rows.length !== ids.size || slots.length !== rows.length)
+      throw Error('Retry quarantine search identity mismatch');
+    slots.forEach((slot, i) => {
+      search.rows[slot] = rows[i];
+    });
+  }
+  await write(path.join(stage, 'public/content/search-index.json'), search);
+  const receipt = await read(path.join(stage, 'receipt.json'));
+  receipt.files = [
+    ...new Set([
+      ...receipt.files,
+      ...proofFiles.map((n) => 'public/' + n + '.json'),
+      'public/content/search-index.json',
+      ...[...files].map((f) => 'public/' + f),
+    ]),
+  ];
+  await write(path.join(stage, 'receipt.json'), receipt);
+  manifest.quarantinedChapters = records;
+  await write(path.join(work, 'latest.json'), {
+    schema: 'hsr-retry-quarantine.v1',
+    commit: update.commit,
+    checkedAt: new Date().toISOString(),
+    records,
+  });
+  assertVerificationPreserved(
+    compareVerification(before, await verificationRows(stage)),
+    'Retry after quarantine',
+  );
+  return records;
+}
 export async function finishVerification(
   root,
   before,
@@ -55,8 +251,16 @@ export async function finishVerification(
   const latestRetry = await readRetry(root);
   state.videoChecks = latestRetry.videoChecks ?? state.videoChecks;
   state.videoAlgorithm = latestRetry.videoAlgorithm ?? state.videoAlgorithm;
+  const quarantinedPages = new Set(
+    (manifest.quarantinedChapters ?? []).flatMap((item) => item.pages),
+  );
   for (const page of manifest.pages)
-    if (page.status === 'available' && page.alignmentKey && page.needsAlignment) {
+    if (
+      !quarantinedPages.has(page.pageTitle ?? page.title) &&
+      page.status === 'available' &&
+      page.alignmentKey &&
+      page.needsAlignment
+    ) {
       const previous = state.pages[page.title];
       state.pages[page.title] = {
         ...previous,
@@ -84,6 +288,16 @@ export async function finishVerification(
       .flatMap((row) => [row.missionId, row.bwikiMissionId]),
   );
   for (const page of manifest.pages) {
+    if (quarantinedPages.has(page.pageTitle ?? page.title)) {
+      state.pages[page.title] = {
+        ...state.pages[page.title],
+        unresolved: true,
+        reason: 'verification-regression; candidate-quarantined',
+        lastReviewedAt: manifest.checkedAt,
+        nextRetryAt: new Date(Date.parse(manifest.checkedAt) + REVIEW_INTERVAL).toISOString(),
+      };
+      continue;
+    }
     const unresolved =
       (page.eventFiles ?? []).some((file) => report.events?.[file]?.remaining > 0) ||
       (page.missionIds ?? [page.missionId]).some((id) => unresolvedMissions.has('quest-' + id));
@@ -132,6 +346,8 @@ export async function finishVerification(
     schema: 'hsr-verification-run.v1',
     checkedAt: new Date().toISOString(),
     mode,
+    status: manifest.quarantinedChapters?.length ? 'partial' : 'passed',
+    quarantinedChapters: manifest.quarantinedChapters ?? [],
     algorithm: state.algorithm,
     videoAlgorithm: state.videoAlgorithm,
     upstreamCommit: manifest.commit,
@@ -362,6 +578,12 @@ export async function publishRetryStage(
   const run = pythonRunner(root, stage);
   if (manifest.targetSources?.[0] !== 'youtube')
     await verifySourceFirst(root, stage, raw, planFile, { apply: true, previous: before });
+  const quarantined = await quarantineRetryChapters(root, stage, before, manifest);
+  if (quarantined.length)
+    console.log(
+      'Quarantined retry chapters; published evidence retained: ' +
+        JSON.stringify(quarantined.map(({ file, reason }) => ({ file, reason }))),
+    );
   const comparison = compareVerification(before, await verificationRows(stage));
   assertVerificationPreserved(comparison, 'Retry');
   const sourceReport = await read(path.join(stage, 'public/source-first-provenance.json')).catch(

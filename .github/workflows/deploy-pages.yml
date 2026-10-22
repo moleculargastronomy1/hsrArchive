@@ -166,6 +166,7 @@ jobs:
           path: |
             .cache/content-watch/check.json
             .cache/verification-retry/run.json
+            .cache/verification-retry/quarantine
             .cache/source-first/report.json
             .cache/source-first/validator-health.json
             .cache/source-first/artifact-seal.json
