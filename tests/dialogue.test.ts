@@ -51,6 +51,8 @@ test('dialogue schema rejects malformed rows before rendering', () => {
   assert.equal(isDialogueRows([row('valid')]), true);
   assert.equal(isDialogueRows([{ ...row('invalid'), text: null }]), false);
   assert.equal(isDialogueRows([{ ...row('invalid'), type: 'html' }]), false);
+  assert.equal(isDialogueRows([{ ...row('wiki'), bwikiMissionId: 'wiki-mission-' + 'a'.repeat(24) }]), true);
+  assert.equal(isDialogueRows([{ ...row('invalid'), bwikiMissionId: 'wiki-mission-arbitrary' }]), false);
 });
 test('published metadata resolves to matching Korean payloads and unique global row IDs', () => {
   assert.deepEqual(

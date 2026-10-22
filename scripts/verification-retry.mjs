@@ -1,10 +1,67 @@
 import fs from 'node:fs/promises';
 import path from 'node:path';
+import { pathToFileURL } from 'node:url';
 import { hash } from './verification-state.mjs';
 
 export const RETRY_FILE = '.cache/verification-retry/state.json';
 export const HOUR = 3600000;
 export const REVIEW_INTERVAL = 24 * HOUR;
+
+export function workflowProgress({ run, audit, execution, state, status, runId, attempt, commit, now = new Date().toISOString() }) {
+  return {
+    schema: 'hsr-workflow-progress.v1', checkedAt: now, runId, attempt, codeCommit: commit,
+    pipelineStatus: status, publicationStatus: 'see-deploy-job; checkpoint-is-not-publication-approval',
+    verification: run ?? null,
+    audit: audit ? {
+      currentRun: audit.runId === runId, status: audit.status, codeHash: audit.codeHash,
+      policyHash: audit.policyHash, policyVersion: audit.policyVersion, officialCommit: audit.commit,
+      startedAt: audit.startedAt, updatedAt: audit.updatedAt,
+      registeredChapters: audit.registeredChapters, processedChapters: audit.chapters?.length ?? 0,
+      lastProcessedChapter: audit.lastProcessedChapter, pendingChapters: audit.pendingChapters ?? [],
+      chapters: (audit.chapters ?? []).map(c => ({ file: c.file, title: c.title, reused: c.reused,
+        candidateAdditions: c.candidateAdditions, counts: c.counts, reading: c.reading,
+        orderComparisonCounts: c.orderComparisonCounts, review: c.review })),
+    } : null,
+    execution: execution ? { status: execution.status, processedChapters: execution.chapters?.length ?? 0,
+      codeHash: execution.codeHash, policyHash: execution.policyHash } : null,
+    retry: { nextRequestAt: state?.nextRequestAt, pendingDigest: state?.pendingDigest,
+      pendingPages: Object.entries(state?.pages ?? {}).filter(([, p]) => p.reason || p.unresolved)
+        .map(([title, p]) => ({ title, reason: p.reason, nextRetryAt: p.nextRetryAt, unresolved: p.unresolved })) },
+  };
+}
+
+export async function recordWorkflowProgress(root = process.cwd(), env = process.env) {
+  const optional = async file => {
+    const bytes = await fs.readFile(path.join(root, file)).catch(error => {
+      if (error.code !== 'ENOENT') throw error;
+    });
+    return bytes ? JSON.parse(bytes) : undefined;
+  };
+  const [run, audit, execution, state] = await Promise.all([
+    optional('.cache/verification-retry/run.json'), optional('.cache/source-first/progress.json'),
+    optional('.cache/source-first/execution-progress.json'), optional(RETRY_FILE),
+  ]);
+  const recoveredAudit = audit ?? run?.sourceAudit ?? state?.lastRun?.sourceAudit;
+  const result = workflowProgress({ run, audit: recoveredAudit,
+    execution, state, status: env.HSR_JOB_STATUS,
+    runId: env.GITHUB_RUN_ID, attempt: env.GITHUB_RUN_ATTEMPT, commit: env.GITHUB_SHA });
+  const target = path.join(root, '.cache/verification-retry/workflow-progress.json');
+  await fs.mkdir(path.dirname(target), { recursive: true });
+  await fs.writeFile(target, JSON.stringify(result, null, 2));
+  if (env.GITHUB_STEP_SUMMARY) {
+    const cell = value => String(value ?? '—').replace(/[\r\n|]/g, ' ');
+    const lines = ['\n### 자동 갱신 진행 기록\n',
+      `- 파이프라인: ${cell(result.pipelineStatus)} / 대조: ${cell(run?.status)}`,
+      `- 기록은 체크포인트이며 게시 성공은 deploy 작업에서 확인합니다.`,
+      `- 마지막 조사: ${cell(recoveredAudit?.updatedAt)} / 이번 실행: ${result.audit?.currentRun ? '예' : '이전 체크포인트'}`,
+      `- 처리한 장: ${result.audit?.processedChapters ?? 0}/${recoveredAudit?.registeredChapters ?? '—'} / 재시도 대기 문서: ${result.retry.pendingPages.length}`,
+      '\n| 장 | 새 원문 후보 | 배치 행 | 순서 미확인 행 | 체크포인트 재사용 |', '| --- | ---: | ---: | ---: | --- |'];
+    for (const chapter of result.audit?.chapters ?? []) lines.push(
+      `| ${cell(chapter.title)} | ${cell(chapter.candidateAdditions)} | ${cell(chapter.reading?.placedRows)} | ${cell(chapter.reading?.unplacedRows)} | ${chapter.reused ? '예' : '아니오'} |`);
+    await fs.appendFile(env.GITHUB_STEP_SUMMARY, lines.join('\n') + '\n');
+  }
+  return result;
+}
 
 export function prioritizeBwikiRequests(requests, state, waiting = new Map(), now = Date.now()) {
   const pending = (item) =>
@@ -172,4 +229,9 @@ export function retryDecision(state, algorithm, published, now = Date.now()) {
     reason: due.length ? 'failed-pages-due' : 'unchanged-processed-inputs',
     due,
   };
+}
+
+if (process.argv[1] && import.meta.url === pathToFileURL(path.resolve(process.argv[1])).href) {
+  if (process.argv[2] !== '--journal') throw Error('Expected --journal');
+  await recordWorkflowProgress();
 }

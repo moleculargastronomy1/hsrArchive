@@ -64,16 +64,15 @@ test('partial official execution supports barriers, explicit signals and distinc
   );
 });
 
-test('official occurrence projection retains canonical IDs and branch-specific context without changing original rows', () => {
+test('official execution evidence cannot reorder or duplicate the archive display', () => {
   const before = JSON.stringify(canonical);
   assert.ok(isExecutionReading(execution, canonical));
   const rows = readingRows(canonical, undefined, execution);
   assert.equal(JSON.stringify(canonical), before);
-  assert.deepEqual(rows.map(positionKey), ['l', 'r', 'a', 'b', 'c']);
-  assert.equal(rows.filter((r) => r.id === 'response').length, 2);
-  assert.deepEqual(choiceDialogue(rows, 0).map(positionKey), ['l', 'a', 'c']);
-  assert.deepEqual(choiceDialogue(rows, 1).map(positionKey), ['r', 'b', 'c']);
-  assert.deepEqual(nearbyDialogue(rows, 2).map(positionKey), ['a', 'c']);
+  assert.deepEqual(rows.map(positionKey), canonical.map(r => r.id));
+  assert.equal(rows.filter((r) => r.id === 'response').length, 1);
+  assert.deepEqual(choiceDialogue(rows, 0).map(positionKey), ['right']);
+  assert.deepEqual(nearbyDialogue(rows, 2).map(positionKey), ['left']);
   const broken = structuredClone(execution);
   broken.occurrences[0].nextIds = ['absent'];
   assert.equal(isExecutionReading(broken, canonical), false);
@@ -97,4 +96,7 @@ test('restoration rejects lost official positions, display placement or response
     () => assertVerificationPreserved(compareVerification(old, without), 'changed'),
     /lostReadingPositions/,
   );
+  const migrated = map({ ...execution, placements: [], displayOrderPolicy: 'bwiki-only',
+    legacyDisplayPlacements: structuredClone(execution.placements) } as ExecutionReading);
+  assertVerificationPreserved(compareVerification(old, migrated), 'wiki-only migration retains evidence');
 });

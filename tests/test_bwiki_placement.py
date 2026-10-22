@@ -38,6 +38,17 @@ class PlacementTest(unittest.TestCase):
         self.assertEqual(self.rows,before)
         s.placement.validate(reading,self.rows,'c'*40)
 
+    def test_wiki_display_does_not_require_or_mutate_official_mission_ownership(self):
+        self.owners = {}
+        for row in self.rows:
+            row['missionId'] = 'quest-99'
+        before = copy.deepcopy(self.rows)
+        reading = self.build('*角色：开始\n{{剧情选项|选项1=左|剧情1=*角色：回应}}\n*角色：结束')
+        self.assertEqual({p['rowId'] for p in reading['occurrences']}, {'100','101','102','201'})
+        self.assertTrue(any(p['replyToIds'] for p in reading['occurrences']))
+        self.assertEqual(self.rows, before)
+        s.placement.validate(reading, self.rows, 'c'*40)
+
     def test_explicit_responses_are_separate_and_an_empty_choice_gets_no_guessed_response(self):
         reading=self.build('*角色：开始\n{{剧情选项|选项1=左|剧情1=*角色：回应|选项2=右|剧情2=}}\n*角色：结束')
         by_row={p['rowId']:p for p in reading['occurrences']}

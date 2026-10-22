@@ -19,7 +19,7 @@ const coreKeys = [
   'scene',
   'variant',
 ];
-const wikiVerified = (row) => ['matched', 'cached'].includes(row?.bwikiStatus);
+const wikiVerified = (row) => row?.wikiPositionVerified === true || ['matched', 'cached'].includes(row?.bwikiStatus);
 const flowVerified = (row) => row?.flowStatus === 'verified';
 const containsLinks = (current, old, key) =>
   (old[key] ?? []).every((id) => (current[key] ?? []).includes(id));
@@ -46,6 +46,7 @@ export function assertVerificationPreserved(comparison, context) {
 }
 
 export function orderUnknown(row) {
+  if (typeof row.wikiPositionVerified === 'boolean') return !row.wikiPositionVerified;
   return (
     (row.bwikiStatus === 'review' || row.flowStatus === 'review') &&
     row.flowStatus !== 'verified' &&
@@ -115,9 +116,12 @@ export async function verificationRows(root, { referencedOnly = false } = {}) {
     if (payload.wikiReading) rows.wikiReadings['content/' + name] = payload.wikiReading;
     if (payload.executionReading)
       rows.executionReadings['content/' + name] = payload.executionReading;
+    const wikiPositions = payload.wikiReading
+      ? new Set(payload.wikiReading.occurrences.map(p => p.rowId)) : undefined;
     for (const row of payload.rows) {
       if (rows.has(row.id)) throw new Error('Duplicate verification row identity: ' + row.id);
-      rows.set(row.id, { ...row, file: 'content/' + name });
+      rows.set(row.id, { ...row, file: 'content/' + name,
+        ...(wikiPositions ? { wikiPositionVerified: wikiPositions.has(row.id) } : {}) });
     }
   }
   return rows;
@@ -190,8 +194,11 @@ export function compareVerification(before, after) {
         if (!q.nextIds.includes(target)) lostReadingLinks.push(file + ':' + p.id + ':' + target);
     }
     const displayed = new Set((current?.placements ?? []).flatMap((g) => g.occurrenceIds));
+    const retainedLegacy = current?.displayOrderPolicy === 'bwiki-only' &&
+      (reading.displayOrderPolicy === 'bwiki-only' || reading.placements.every(g =>
+        current.legacyDisplayPlacements?.some(p => JSON.stringify(p) === JSON.stringify(g))));
     for (const id of reading.placements.flatMap((g) => g.occurrenceIds))
-      if (!displayed.has(id)) lostReadingPositions.push(file + ':display:' + id);
+      if (!displayed.has(id) && !retainedLegacy) lostReadingPositions.push(file + ':display:' + id);
   }
   const routes = new Set(after.contentRoutes ?? []);
   const lostContentRoutes = (before.contentRoutes ?? []).filter((file) => !routes.has(file));

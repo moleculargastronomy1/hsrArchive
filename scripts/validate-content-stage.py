@@ -174,6 +174,7 @@ def validate(root):
             if len(nodes) != len(chapter['occurrences']) or seen_occurrences.intersection(nodes):
                 raise ValueError('Duplicate source-first occurrence')
             seen_occurrences.update(nodes)
+            reading = read('public/' + file).get('wikiReading', {})
             for left, targets in chapter['wikiGraph'].items():
                 for target in targets:
                     a, z = nodes[left], nodes[target]
@@ -185,13 +186,16 @@ def validate(root):
                 row = rows.get(addition['rowId'])
                 proof, content = addition['proof'], addition['content']
                 node = nodes.get(addition['occurrence'])
+                if proof.get('kind') == 'bwiki-mission':
+                    placement.validate_admission(addition, row, node, chapter, reading)
+                    continue
                 owner = re.fullmatch(r'(?:Config/Level/Mission|Story/(?:Discussion/)?Mission)/(\d+)/[\w./-]+\.json', proof['source'])
                 if (not row or not owner or int(owner[1]) != addition['missionId'] or
                         row['missionId'] != 'quest-' + str(addition['missionId']) or
                         row['source'] != proof['source'] or row.get('talkId') != content['talkId'] or
                         row['text'] != content['text'] or row['speaker'] != content['speaker'] or
                         hashlib.sha256(row['text'].encode()).hexdigest() != content['koreanHash'] or
-                        not node or node['status'] != 'confirmed' or node['officialIds'] != [row['talkId']] or
+                        not node or node['status'] not in ['confirmed', 'wiki-confirmed'] or node['officialIds'] != [row['talkId']] or
                         not re.fullmatch(r'[a-f0-9]{40}', proof.get('gitBlob', '')) or
                         not re.fullmatch(r'[a-f0-9]{64}', proof.get('sha256', ''))):
                     raise ValueError('Invalid source-first explicit mission/text proof')

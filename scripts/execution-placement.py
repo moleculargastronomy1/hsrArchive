@@ -165,6 +165,9 @@ def build(payload, record, executions, valid_rows, version, invocations=None, re
         mapped = {}
         for pointer, node in graph['nodes'].items():
             candidates = by_talk.get(('quest-' + str(proof['missionId']), node['talkId'], node['type']), [])
+            if not candidates:
+                candidates = [r for r in other_missions.get((node['talkId'], node['type']), [])
+                              if r.get('missionEvidence') == 'bwiki']
             exact_source = [r for r in candidates if r.get('source', '').split('#')[0] == source]
             if len(candidates) != 1 and len(exact_source) == 1:
                 candidates = exact_source
@@ -183,7 +186,7 @@ def build(payload, record, executions, valid_rows, version, invocations=None, re
             mapped[pointer] = identity
             nodes[identity] = {**node, 'id': identity, 'rowId': row['id'], 'source': source,
                 'conditions': conditions, 'conditionsHash': digest(conditions),
-                'missionId': row.get('missionId'), 'mission': row['mission'],
+                'missionId': 'quest-' + str(proof['missionId']), 'mission': row['mission'],
                 'sceneId': 'execution-' + digest([source, node['phase'], conditions])[:24],
                 'nextIds': [], 'replyToIds': [], 'branch': [],
                 'evidenceHash': digest([canonical(row), proof['sha256'], pointer])}
@@ -284,7 +287,7 @@ def build(payload, record, executions, valid_rows, version, invocations=None, re
         rows[r].get('bwikiStatus') not in ['matched', 'cached'] and
         rows[r].get('videoStatus') not in ['caption-matched', 'screen-matched']}
     placements, displayed = [], set()
-    for i, component in enumerate(components):
+    for i, component in enumerate(components if version.get('displayOrder') != 'bwiki-only' else []):
         if disputed.intersection(component):
             review.append({'source': nodes[component[0]]['source'], 'status': 'tentative',
                 'reason': 'existing-wiki-order-preserved; conflicting-local-component-isolated'})
@@ -371,7 +374,8 @@ def validate(reading, rows, commit, wiki=None):
         require(p['talkId'] == row.get('talkId') and (p['type'] == 'choice') == (row['type'] == 'choice'), 'official ID/role')
         require(bool(re.fullmatch('[a-f0-9]{40}', proof.get('gitBlob', ''))) and
                 bool(re.fullmatch('[a-f0-9]{64}', proof.get('sha256', ''))), 'input hashes')
-        require(row.get('missionId') == p['missionId'] == 'quest-' + str(proof['missionId']), 'mission ownership')
+        require(p['missionId'] == 'quest-' + str(proof['missionId']) and
+                (row.get('missionEvidence') == 'bwiki' or row.get('missionId') == p['missionId']), 'mission ownership')
         require(p['evidenceHash'] == digest([canonical(row), proof['sha256'], p['pointer']]), 'proof checksum')
         for target in p['nextIds'] + p['replyToIds']:
             q = nodes.get(target)

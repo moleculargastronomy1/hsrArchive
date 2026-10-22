@@ -82,7 +82,7 @@ test('reading schema rejects lost canonical IDs and links to unknown occurrences
   assert.equal(isWikiReading(lost, rows), false);
 });
 
-test('a finer position still pending cannot revoke an existing verified scope', () => {
+test('missing BWIKI positions stay in their mission unknown area with original evidence preserved', () => {
   const canonical = [
     row('left', 'choice'),
     row('right', 'choice'),
@@ -90,10 +90,17 @@ test('a finer position still pending cannot revoke an existing verified scope', 
     { ...row('unknown'), bwikiStatus: 'cached' as const },
   ];
   const display = readingRows(canonical, reading);
-  assert.equal(display[4].wikiUnplaced, undefined);
-  assert.equal(display[4].wikiLegacy?.id, 'quest-11');
+  assert.equal(display[4].wikiUnplaced?.id, 'quest-11');
+  assert.equal(display[4].wikiLegacy, undefined);
   assert.equal(display[4].bwikiStatus, 'cached');
   assert.deepEqual(canonical[3].bwikiStatus, 'cached');
+});
+
+test('BWIKI positions and branch replies are invariant under opposing official execution order', () => {
+  const canonical = [row('left', 'choice'), row('right', 'choice'), row('shared'), row('unknown')];
+  const opposed = { schema: 'hsr-execution-reading.v1' as const,
+    occurrences: [], placements: [{ beforeRowId: 'left', contextIds: [], occurrenceIds: [] }] };
+  assert.deepEqual(readingRows(canonical, reading, opposed), readingRows(canonical, reading));
 });
 
 test('placement rejects unimported ambiguity, cross-boundary replies and canonical text mutation', () => {

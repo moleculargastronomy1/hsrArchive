@@ -324,7 +324,7 @@ export async function finishVerification(
   state.videoChecks = latestRetry.videoChecks ?? state.videoChecks;
   state.videoAlgorithm = latestRetry.videoAlgorithm ?? state.videoAlgorithm;
   const quarantinedPages = new Set(
-    (manifest.quarantinedChapters ?? []).flatMap((item) => item.pages),
+    [...(manifest.quarantinedChapters ?? []), ...(manifest.retainedLegacyChapters ?? [])].flatMap((item) => item.pages),
   );
   for (const page of manifest.pages)
     if (
@@ -414,11 +414,15 @@ export async function finishVerification(
     path.join(reviewRoot, 'public/simulation-events-provenance.json'),
   ).catch(() => undefined);
   const eventRecords = Object.values(events?.records ?? {});
+  const sourceAudit = await read(path.join(reviewRoot, 'public/source-first-provenance.json')).catch(error => {
+    if (error.code !== 'ENOENT') throw error;
+  });
   const result = {
     schema: 'hsr-verification-run.v1',
     checkedAt: new Date().toISOString(),
     mode,
-    status: manifest.quarantinedChapters?.length ? 'partial' : 'passed',
+    status: manifest.quarantinedChapters?.length || manifest.retainedLegacyChapters?.length ? 'partial' : 'passed',
+    retainedLegacyChapters: manifest.retainedLegacyChapters ?? [],
     quarantinedChapters: manifest.quarantinedChapters ?? [],
     withheldNewRows: (manifest.quarantinedChapters ?? []).reduce(
       (n, item) => n + (item.withheldRowIds?.length ?? 0),
@@ -427,6 +431,17 @@ export async function finishVerification(
     algorithm: state.algorithm,
     videoAlgorithm: state.videoAlgorithm,
     upstreamCommit: manifest.commit,
+    sourceAudit: sourceAudit ? {
+      status: 'contract-checked-candidate; publication-requires-deploy-success', commit: sourceAudit.commit,
+      codeHash: sourceAudit.codeHash, policyHash: sourceAudit.policyHash, policyVersion: sourceAudit.policyVersion,
+      updatedAt: new Date().toISOString(), registeredChapters: Object.keys(sourceAudit.chapters).length,
+      pendingChapters: [], chapters: Object.entries(sourceAudit.chapters).map(([file, c]) => ({
+        file, title: c.title ?? file,
+        counts: c.counts, reading: c.reading, missions: c.missions,
+        sources: c.sources?.map(s => ({ page: s.pageTitle, revision: s.revision, sha256: s.sha256 })),
+        candidateAdditions: c.additions?.length ?? 0, review: c.review,
+      })),
+    } : undefined,
     digest: comparison.digest,
     newlyVerified: comparison.newlyVerified.length,
     newlyVerifiedRowIds: comparison.newlyVerified,
@@ -650,6 +665,14 @@ export async function publishRetryStage(
   algorithm,
 ) {
   const run = pythonRunner(root, stage);
+  // Rejected legacy row links do not block the independent BWIKI occurrence audit.
+  const legacy = await quarantineRetryChapters(root, stage, before, manifest);
+  if (legacy.length) {
+    manifest.retainedLegacyChapters = legacy.map(item => ({ ...item,
+      scope: 'legacy-canonical-links',
+      reason: 'legacy-candidate-rejected; wiki-occurrence-audit-continued' }));
+    delete manifest.quarantinedChapters;
+  }
   if (manifest.targetSources?.[0] !== 'youtube')
     await verifySourceFirst(root, stage, raw, planFile, { apply: true, previous: before });
   const quarantined = await quarantineRetryChapters(root, stage, before, manifest);

@@ -66,7 +66,7 @@ export function isDialogueRows(value: unknown): value is DialogueRow[] {
         (row.bwikiPage === undefined || typeof row.bwikiPage === 'string') &&
         (row.bwikiMissionId === undefined ||
           (typeof row.bwikiMissionId === 'string' &&
-            /^(?:quest|bwiki-page)-\d+$/.test(row.bwikiMissionId))) &&
+            /^(?:(?:quest|bwiki-page)-\d+|wiki-mission-[a-f0-9]{24})$/.test(row.bwikiMissionId))) &&
         (row.bwikiMission === undefined || typeof row.bwikiMission === 'string') &&
         (row.bwikiRevision === undefined ||
           (Number.isSafeInteger(row.bwikiRevision) && row.bwikiRevision > 0)) &&

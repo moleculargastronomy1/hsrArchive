@@ -143,6 +143,7 @@ if (mode === '--record') {
       unknownCountAvailable: Number.isInteger(
         state.lastRun?.remainingUnknown ?? published?.remainingUnknown,
       ),
+      sourceAudit: published?.sourceAudit ?? state.lastRun?.sourceAudit,
     };
     await fs.writeFile('.cache/verification-retry/run.json', JSON.stringify(journal, null, 2));
   }

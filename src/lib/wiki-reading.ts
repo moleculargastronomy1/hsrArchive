@@ -143,30 +143,16 @@ export function isWikiReading(value: unknown, rows: DialogueRow[]): value is Wik
 export function readingRows(
   rows: DialogueRow[],
   reading?: WikiReading,
-  execution?: ExecutionReading,
+  _execution?: ExecutionReading,
 ): DialogueRow[] {
-  if (!reading) return mergeExecutionRows(rows, rows, execution);
+  if (!reading) return rows;
   const byId = new Map(rows.map((row) => [row.id, row]));
   const result: DialogueRow[] = [];
   const consumed = new Set<string>();
   const appendUnknown = (group: WikiReading['unplaced'][number]) => {
     consumed.add(group.id);
-    const existing = group.rowIds
-      .map((id) => byId.get(id)!)
-      .filter(
-        (row) =>
-          row.flowStatus === 'verified' ||
-          ['matched', 'cached'].includes(row.bwikiStatus ?? '') ||
-          ['caption-matched', 'screen-matched'].includes(row.videoStatus ?? ''),
-      );
-    const known = new Set(existing.map((row) => row.id));
-    // Failure to reconstruct a finer wiki position cannot revoke an existing
-    // proof. Keep that original scope separate from genuinely unknown rows.
-    for (const row of existing)
-      result.push({ ...row, wikiLegacy: { id: group.id, title: group.title } });
     for (const id of group.rowIds)
-      if (!known.has(id))
-        result.push({ ...byId.get(id)!, wikiUnplaced: { id: group.id, title: group.title } });
+      result.push({ ...byId.get(id)!, wikiUnplaced: { id: group.id, title: group.title } });
   };
   for (const mission of reading.missions) {
     result.push(
@@ -186,37 +172,7 @@ export function readingRows(
     }
   }
   for (const group of reading.unplaced) if (!consumed.has(group.id)) appendUnknown(group);
-  return mergeExecutionRows(result, rows, execution);
-}
-
-function mergeExecutionRows(
-  base: DialogueRow[],
-  canonical: DialogueRow[],
-  execution?: ExecutionReading,
-) {
-  if (!execution) return base;
-  const byId = new Map(canonical.map((row) => [row.id, row]));
-  const positions = new Map(
-    execution.occurrences.map(
-      (p) => [p.id, { ...byId.get(p.rowId)!, executionPosition: p }] as const,
-    ),
-  );
-  const insertions = new Map<string, DialogueRow[]>();
-  const moved = new Set<string>();
-  for (const group of execution.placements) {
-    const peers = group.contextIds.map((id) => positions.get(id)!);
-    const placed = group.occurrenceIds.map((id) => ({
-      ...positions.get(id)!,
-      executionPeers: peers,
-    }));
-    for (const row of placed) moved.add(row.id);
-    const insertion = group.beforeWikiId ?? group.beforeRowId;
-    insertions.set(insertion, [...(insertions.get(insertion) ?? []), ...placed]);
-  }
-  return base.flatMap((row) => [
-    ...(insertions.get(positionKey(row)) ?? insertions.get(row.id) ?? []),
-    ...(moved.has(row.id) ? [] : [row]),
-  ]);
+  return result;
 }
 
 export function positionKey(row: DialogueRow) {

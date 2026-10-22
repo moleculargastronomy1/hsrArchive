@@ -1,7 +1,7 @@
 """Resumable source-first audit. Raw input and checkpoints stay outside publication.
 
 Content, explicit mission ownership and execution order are separate claims.
-The only automatic additions have a typed reference in a hash-verified mission file.
+BWIKI mission placement and official execution ownership are independent evidence.
 No reference TXT, similarity model, ID range or source-array ordering is an input.
 """
 import argparse
@@ -9,8 +9,10 @@ import copy
 import hashlib
 import importlib.util
 import json
+import os
 import re
 import sys
+from datetime import datetime, timezone
 from collections import Counter, defaultdict
 from pathlib import Path
 
@@ -254,7 +256,7 @@ def global_candidates(talks, cn, kr):
                   'chineseHash': b.digest(b.canonical(cn[th])), 'speakerHash': b.digest(b.canonical(name)),
                   'koreanHash': b.digest(b._localizations.plain(kr[th]))}
         result[('line', b.comparable(cn[th]), b.normalized(name))].append(record)
-        if not name or name == '开拓者':
+        if not name or b.normalized(name) == '开拓者':
             result[('choice', b.comparable(cn[th]), '')].append(record)
     return result
 
@@ -291,7 +293,7 @@ def classify_order(left, right, owners, graphs):
     return 'execution-scope-unverified'
 
 
-def match_occurrence(node, index, owners, mission_ids, existing):
+def match_occurrence(node, index, owners, mission_ids, existing, wiki_scope=None):
     if node['kind'] in ['barrier', 'unsupported']:
         node.update(status='boundary' if node['kind'] == 'barrier' else 'unsupported')
         return
@@ -316,7 +318,20 @@ def match_occurrence(node, index, owners, mission_ids, existing):
     proofs = owners.get((record['talkId'], node['kind']), [])
     matching = [p for p in proofs if p['missionId'] in mission_ids]
     owned = {p['missionId'] for p in matching}
-    # Even a globally unique sentence and a verified wiki chapter do not establish its mission.
+    node['officialMissionIds'] = sorted({p['missionId'] for p in proofs})
+    if wiki_scope is not None:
+        # This scope is supplied only after page hash, mission title and official
+        # chapter-series validation. It never asserts an official execution call.
+        if not mission_ids:
+            node.update(status='content-only', reason='ambiguous-wiki-mission', ownership=matching)
+            return
+        mission = placement.mission_group(wiki_scope['chapterId'], wiki_scope['page'])
+        node.update(status='wiki-confirmed', missionId=mission, missionEvidence='bwiki',
+                    ownership=matching, wikiProof={**wiki_scope, 'missionId': mission, 'catalogMissionIds': sorted(mission_ids),
+                        'location': node['location'], 'branch': node['branch'], 'conditions': node['context']},
+                    officialOwnershipStatus='confirmed' if len(owned) == 1 else
+                        'disagrees' if proofs and not owned else 'unverified')
+        return
     if len(owned) != 1:
         node.update(status='content-only', reason='official-mission-ownership-unverified', ownership=matching)
         return
@@ -381,7 +396,10 @@ def audit_chapter(record, payload, pages, index, owners, graphs, reviewed=None, 
             document_reviews.append({'page': title, 'reason': 'live-revision-unavailable-pinned-snapshot-only'})
             reviews.extend(document_reviews)
         for node in nodes:
-            match_occurrence(node, index, owners, mission_ids, existing)
+            wiki_scope = {'kind': 'bwiki-mission', 'chapterId': record['id'],
+                          'page': page['pageTitle'], 'pageId': page['pageId'], 'revision': page['revision'],
+                          'sha256': page['sha256'], 'source': source['sourceUrl']}
+            match_occurrence(node, index, owners, mission_ids, existing, wiki_scope)
             # Only prior human-reviewed, fully pinned correspondences can be replayed.
             candidates = [r for r in (reviewed or {}).values() if r['page'] == page['pageTitle'] and
                           r['revision'] == page['revision'] and r['pageSha256'] == page['sha256'] and
@@ -395,7 +413,7 @@ def audit_chapter(record, payload, pages, index, owners, graphs, reviewed=None, 
                             'text': row['text'], 'speaker': row['speaker'],
                             **{k: review[k] for k in ['chineseHash', 'speakerHash', 'koreanHash']}}
                 temporary = {**node, 'chinese': 'pinnedreview'}
-                match_occurrence(temporary, {(node['kind'], 'pinnedreview', b.normalized(node['speaker'])): [official]}, owners, mission_ids, existing)
+                match_occurrence(temporary, {(node['kind'], 'pinnedreview', b.normalized(node['speaker'])): [official]}, owners, mission_ids, existing, wiki_scope)
                 node.update({k: v for k, v in temporary.items() if k != 'chinese'})
                 node.update(method='translation-reviewed-pinned', translationReviewHash=b.translation_review_hash(review))
         occurrences.extend(nodes)
@@ -409,18 +427,18 @@ def audit_chapter(record, payload, pages, index, owners, graphs, reviewed=None, 
                'officialComparison': classify_order(by_id[a], by_id[z], owners, graphs)}
               for a, targets in edges.items() for z in targets]
     # Unresolved endpoints are retained in the source graph, never bridged.
-    confirmed = {o['id'] for o in occurrences if o['status'] == 'confirmed'}
+    confirmed = {o['id'] for o in occurrences if o['status'] in ['confirmed', 'wiki-confirmed']}
     safe_edges = {a: [z for z in targets if z in confirmed] for a, targets in edges.items() if a in confirmed}
     speech = [o for o in occurrences if o['kind'] in ['line', 'choice', 'narration']]
     counts = Counter(o['status'] for o in speech)
     mission_reports = []
     for m in record['missions']:
         page_nodes = [n for n in speech if n['page'] == pages.get(m['chineseTitle'], {}).get('pageTitle')]
-        local = [n for n in page_nodes if n.get('missionId') == m['id']]
+        local = [n for n in page_nodes if m['id'] in n.get('wikiProof', {}).get('catalogMissionIds', [])]
         mission_reports.append({**m, 'baselineRows': sum(r.get('missionId') == 'quest-' + str(m['id']) for r in payload['rows']),
                                 'documentShared': len(grouped[m['chineseTitle']]) > 1,
                                 'documentOccurrences': len(page_nodes), 'confirmedOccurrences': len(local),
-                                'pendingOrContentOnlyOccurrences': sum(n['status'] != 'confirmed' for n in page_nodes),
+                                'pendingOrContentOnlyOccurrences': sum(n['status'] not in ['confirmed', 'wiki-confirmed'] for n in page_nodes),
                                 'status': 'audited-partial' if page_nodes else 'pending-document',
                                 'localOrder': 'partial', 'wholePath': 'unverified'})
     return {'schema': 'hsr-source-first-chapter.v1', 'chapter': record, 'baselineRows': len(payload['rows']),
@@ -432,7 +450,7 @@ def audit_chapter(record, payload, pages, index, owners, graphs, reviewed=None, 
                        'unsupported': sum(o['kind'] == 'unsupported' for o in occurrences),
                        'unavailableDocuments': sum('missionIds' in r for r in reviews),
                        'uniqueOfficialContentIds': len({r['talkId'] for o in speech for r in o['official']}),
-                       'newConfirmedIds': len({o['official'][0]['talkId'] for o in speech if o['status'] == 'confirmed' and not existing.get(o['official'][0]['talkId'])})},
+                       'newConfirmedIds': len({o['official'][0]['talkId'] for o in speech if o['status'] in ['confirmed', 'wiki-confirmed'] and not existing.get(o['official'][0]['talkId'])})},
             'verification': {'content': 'partial', 'localOrder': 'partial', 'wholePath': 'unverified',
                              'referenceTxtUsed': False, 'crossBoundaryEdges': 0}}
 
@@ -444,25 +462,32 @@ def add_confirmed(payload, result):
     additions = []
     blocked = {edge[k] for edge in result['orderComparisons'] if edge['officialComparison'] == 'potential-order-conflict' for k in ['from', 'to']}
     for node in result['occurrences']:
-        if node['status'] != 'confirmed' or node['id'] in blocked:
+        wiki = node['status'] == 'wiki-confirmed'
+        if (not wiki and node['status'] != 'confirmed') or (not wiki and node['id'] in blocked):
             continue
         r = node['official'][0]
         if r['talkId'] in present:
             continue
-        proof = node['ownership'][0]
-        mission = next(m for m in result['chapter']['missions'] if m['id'] == node['missionId'])
+        proof = node['wikiProof'] if wiki else node['ownership'][0]
+        mission_title = (' / '.join(dict.fromkeys(m['title'] for m in result['chapter']['missions']
+                         if m['id'] in proof['catalogMissionIds'])) if wiki else
+                         next(m['title'] for m in result['chapter']['missions'] if m['id'] == node['missionId']))
         identity = f"official-{value['entryId']}-{value['chapterId']}-talk-{r['talkId']}"
         row = {'id': identity, 'entryId': value['entryId'], 'chapterId': value['chapterId'],
-               'missionId': 'quest-' + str(node['missionId']), 'mission': mission['title'],
-               'scene': mission['title'] + ' · 추가 원문 · 순서 미확인',
+               'missionId': node['missionId'] if wiki else 'quest-' + str(node['missionId']), 'mission': mission_title,
+               'scene': mission_title + ' · 추가 원문 · 순서 미확인',
                'type': 'choice' if node['kind'] == 'choice' else 'dialogue' if r['speaker'] else 'narration', 'talkId': r['talkId'],
-               'textHash': r['textHash'], 'text': r['text'], 'speaker': r['speaker'], 'source': proof['source'],
+               'textHash': r['textHash'], 'text': r['text'], 'speaker': r['speaker'],
+               'source': f"ExcelOutput/TalkSentenceConfig.json#TalkSentenceID={r['talkId']}" if wiki else proof['source'],
                'flowStatus': 'review', 'flowBoundary': True, 'bwikiStatus': 'review'}
+        if wiki:
+            row.update(missionEvidence='bwiki', bwikiMissionId=row['missionId'], bwikiMission=row['mission'])
         value['rows'].append(row)
         present.add(r['talkId'])
         additions.append({'rowId': identity, 'talkId': r['talkId'], 'missionId': node['missionId'],
                           'occurrence': node['id'], 'proof': proof, 'content': r})
-    # New records are isolated until a matching execution invocation is established.
+    # Canonical rows stay stable; occurrence-level BWIKI layout supplies display
+    # order and responses, independently of the optional execution projection.
     for field in ['referenceOrder', 'bwikiBaseOrder']:
         if field in value:
             value[field] += [a['rowId'] for a in additions]
@@ -558,7 +583,8 @@ def audit_execution_only(args, cat, plan, talks, cn, kr):
     policy = validated_policy()
     owners, graphs, proofs, issues = structure_index(read(args.work / 'structures.json'), plan['commit'])
     version = {'commit': plan['commit'], 'codeHash': code_hash(), 'policyHash': digest(policy),
-        'policyVersion': policy['version'], 'officialInputs': cat['inputHashes'], 'structureHashes': digest(proofs)}
+        'policyVersion': policy['version'], 'displayOrder': policy['displayOrder'],
+        'officialInputs': cat['inputHashes'], 'structureHashes': digest(proofs)}
     talk_table = {t['TalkSentenceID']: t for t in talks if t}
     report = {'schema': 'hsr-execution-audit.v1', **version, 'status': 'running', 'chapters': [],
               'structureReview': issues, 'referenceTxtUsed': False, 'wikiRematched': False}
@@ -575,6 +601,9 @@ def audit_execution_only(args, cat, plan, talks, cn, kr):
         valid = valid_execution_rows(payload['rows'], talk_table, cn, kr)
         reading, review = execution_placement.build(payload, record, graphs.executions, valid, version,
             graphs.invocations, graphs.mission_relations, added)
+        previous_execution = payload.get('executionReading', {})
+        reading['displayOrderPolicy'] = 'bwiki-only'
+        reading['legacyDisplayPlacements'] = previous_execution.get('legacyDisplayPlacements', previous_execution.get('placements', []))
         review['missingOriginals'] = []
         for item in review['review']:
             if item.get('reason') != 'official-row-missing':
@@ -612,7 +641,10 @@ def audit_execution_only(args, cat, plan, talks, cn, kr):
 
 def validated_policy():
     policy = read(CODE.parent / 'editorial/source-first-policy.json')
-    if (policy.get('version') != 3 or not policy.get('requireExplicitMissionOwnership') or
+    if (policy.get('version') != 4 or policy.get('requireExplicitMissionOwnership') is not False or
+            policy.get('admissionEvidence') != 'exact-official-content-and-validated-bwiki-mission' or
+            policy.get('missionAttribution') != 'bwiki-display-separate-from-official-execution' or
+            policy.get('displayOrder') != 'bwiki-only' or
             policy.get('newSemanticMatches') != 'candidate-only' or
             policy.get('wikiPositionEdges') != 'wiki-display-only-never-official-execution' or
             policy.get('publishUnknownEdges') is not False):
@@ -649,11 +681,15 @@ def main():
     index = global_candidates(talks, cn, kr)
     pages = {p['title']: p for p in manifest['pages']}
     version = {'codeHash': code_hash(), 'policyHash': digest(policy), 'policyVersion': policy['version'],
+               'displayOrder': policy['displayOrder'],
                'officialInputs': cat['inputHashes'], 'commit': plan['commit'], 'structureHashes': digest(structure_proofs),
                'reviewRegistryHash': hashlib.sha256((CODE.parent / 'editorial/bwiki-translation-matches.json').read_bytes()).hexdigest()}
     summary = {'schema': 'hsr-source-first-run.v1', **version, 'chapters': [], 'catalogReview': cat['review'],
                'structureReview': structure_review, 'collectionReview': structures.get('review', []),
-               'referenceTxtUsed': False, 'productionWritten': False, 'status': 'running'}
+               'referenceTxtUsed': False, 'productionWritten': False, 'status': 'running',
+               'startedAt': datetime.now(timezone.utc).isoformat(), 'runId': os.environ.get('GITHUB_RUN_ID'),
+               'registeredChapters': len(cat['chapters']),
+               'officialMissions': sum(len(c['missions']) for c in cat['chapters'])}
     progress = args.work / 'progress.json'
     public = {'schema': 'hsr-source-first-provenance.v1', 'commit': plan['commit'], **version,
               'license': manifest.get('license'), 'chapters': {}}
@@ -686,19 +722,22 @@ def main():
             write(target, {'key': key, 'sha256': digest(result), 'result': result})
         candidate, added = add_confirmed(payload, result)
         candidate['wikiReading'] = placement.build(record, candidate, result, talks, cn, kr, owners,
-            previous_wiki.get('chapters', {}).get(record['file'], []), b, imports, {**version, 'commit': plan['commit']})
+            previous_wiki.get('chapters', {}).get(record['file'], []), b, imports, {**version, 'commit': plan['commit']}, content_index=index)
         retained_proofs, unverified_prior = [], []
         by_id = {r['id']: r for r in payload['rows']}
         for prior in previous.get('chapters', {}).get(record['file'], {}).get('additions', []):
             row = by_id.get(prior['rowId'])
-            node = next((o for o in result['occurrences'] if o['status'] == 'confirmed' and
-                         o['official'][0]['talkId'] == prior['talkId'] and o['missionId'] == prior['missionId']), None)
-            if row and node and row['text'] == node['official'][0]['text'] and row['source'] in {p['source'] for p in node['ownership']}:
+            node = next((o for o in result['occurrences'] if o['status'] in ['confirmed', 'wiki-confirmed'] and
+                         o['official'][0]['talkId'] == prior['talkId'] and
+                         (o['missionId'] == prior['missionId'] or prior['missionId'] in o.get('wikiProof', {}).get('catalogMissionIds', []))), None)
+            if row and node and row.get('missionEvidence') == 'bwiki' and node['status'] == 'wiki-confirmed' and row['text'] == node['official'][0]['text'] and row['speaker'] == node['official'][0]['speaker']:
+                retained_proofs.append({**prior, 'occurrence': node['id'], 'content': node['official'][0], 'proof': node['wikiProof']})
+            elif row and node and row['text'] == node['official'][0]['text'] and row['source'] in {p['source'] for p in node['ownership']}:
                 retained_proofs.append({**prior, 'occurrence': node['id'], 'content': node['official'][0],
                                         'proof': next(p for p in node['ownership'] if p['source'] == row['source'])})
             elif row:
                 unverified_prior.append({'rowId': row['id'], 'reason': 'previous-source-first-proof-not-currently-reproducible',
-                                         'previousCommit': previous.get('commit')})
+                                         'previousCommit': previous.get('commit'), 'previousProof': prior})
         summary['chapters'].append({'id': record['id'], 'file': record['file'], 'title': record['title'],
                                     'missionCount': len(record['missions']), 'baselineRows': len(payload['rows']),
                                     'counts': result['counts'], 'candidateAdditions': len(added),
@@ -707,12 +746,14 @@ def main():
                                     'missions': result['missions'],
                                     'reading': candidate['wikiReading']['summary'],
                                     'review': result['review']})
+        summary.update(updatedAt=datetime.now(timezone.utc).isoformat(), lastProcessedChapter=record['file'],
+                       pendingChapters=[c['file'] for c in cat['chapters'][len(summary['chapters']):]])
         write(progress, summary)
         # Keep the complete candidate inventory/graph in resumable checkpoints.
         # Public provenance contains every added row's location/proof and aggregate
         # pending counts, without shipping the full raw-candidate index to readers.
         published_occurrences = {a['occurrence'] for a in retained_proofs + added}
-        public['chapters'][record['file']] = {'chapterId': record['id'], 'sources': result['sources'], 'counts': result['counts'],
+        public['chapters'][record['file']] = {'chapterId': record['id'], 'title': record['title'], 'sources': result['sources'], 'counts': result['counts'],
             'missions': result['missions'],
             'verification': result['verification'], 'additions': retained_proofs + added, 'retainedUnverifiedRows': unverified_prior,
             'reading': candidate['wikiReading']['summary'],

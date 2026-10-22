@@ -61,6 +61,7 @@ jobs:
             .cache/source-first/execution-results
             .cache/source-first/execution-report.json
             .cache/source-first/execution-progress.json
+            .cache/source-first/progress.json
           key: hsr-source-first-v1-${{ github.run_id }}-${{ github.run_attempt }}
           restore-keys: hsr-source-first-v1-
       - name: Check source metadata before processing
@@ -147,6 +148,11 @@ jobs:
         uses: actions/upload-pages-artifact@v4
         with:
           path: dist
+      - name: Record resumable workflow progress
+        if: always()
+        run: node scripts/verification-retry.mjs --journal
+        env:
+          HSR_JOB_STATUS: ${{ job.status }}
       - name: Save BWIKI snapshots
         if: always() && steps.baseline.outputs.ready == 'true'
         uses: actions/cache/save@v4
@@ -167,9 +173,11 @@ jobs:
           path: |
             .cache/content-watch/check.json
             .cache/verification-retry/run.json
+            .cache/verification-retry/workflow-progress.json
             .cache/verification-retry/quarantine
             .cache/verification-retry/restore-conflict.json
             .cache/source-first/report.json
+            .cache/source-first/progress.json
             .cache/source-first/validator-health.json
             .cache/source-first/artifact-seal.json
             .cache/source-first/execution-report.json
@@ -190,6 +198,7 @@ jobs:
             .cache/source-first/execution-results
             .cache/source-first/execution-report.json
             .cache/source-first/execution-progress.json
+            .cache/source-first/progress.json
           key: hsr-source-first-v1-${{ github.run_id }}-${{ github.run_attempt }}
 
   deploy:

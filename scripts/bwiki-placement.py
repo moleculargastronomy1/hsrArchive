@@ -13,7 +13,11 @@ def canonical(row):
     return {key: row.get(key) for key in ['id', 'talkId', 'textHash', 'text', 'speaker', 'type', 'missionId', 'source']}
 
 
-def build(record, payload, audit, talks, chinese, korean, owners, previous_chunks, b, imports, version):
+def mission_group(chapter_id, page):
+    return 'wiki-mission-' + digest([chapter_id, page])[:24]
+
+
+def build(record, payload, audit, talks, chinese, korean, owners, previous_chunks, b, imports, version, content_index=None):
     rows = {r['id']: r for r in payload['rows']}
     table = {t['TalkSentenceID']: t for t in talks if t}
     missions = {m['id']: m for m in record['missions']}
@@ -64,6 +68,8 @@ def build(record, payload, audit, talks, chinese, korean, owners, previous_chunk
         th, sh = str(talk.get('TalkSentenceText', {}).get('Hash')), str(talk.get('TextmapTalkSentenceName', {}).get('Hash'))
         if not chinese.get(th) or not korean.get(th):
             continue
+        if sh not in ['None', '0'] and (not chinese.get(sh) or not korean.get(sh)):
+            continue
         name = b.normalized(chinese.get(sh, ''))
         keys = [('line', b.comparable(chinese[th]), name)]
         if not name or name == '开拓者':
@@ -71,6 +77,9 @@ def build(record, payload, audit, talks, chinese, korean, owners, previous_chunk
         for key in keys:
             if key in wanted_keys:
                 official_candidates[key].add(talk['TalkSentenceID'])
+    if content_index is not None:
+        official_candidates = defaultdict(set, {key: {r['talkId'] for r in values}
+                                                for key, values in content_index.items() if key in wanted_keys})
     doubtful = {}
     page_groups = {s['pageTitle']: groups.get(s.get('title', s['pageTitle']), groups.get(s['pageTitle'], [])) for s in audit['sources']}
     # A requested title may be a verified redirect to another page title.
@@ -88,7 +97,7 @@ def build(record, payload, audit, talks, chinese, korean, owners, previous_chunk
             referenced = any(p['missionId'] in allowed for p in owners.get((row.get('talkId'), node['kind'] if node['kind'] == 'choice' else 'line'), []))
             old_position = (row.get('bwikiPage') == node['page'] and row.get('bwikiRevision') == node['revision'] and
                             row.get('bwikiStatus') in ['matched', 'cached']) or (node['page'], row['id']) in pinned
-            if owned or referenced or old_position:
+            if group or owned or referenced or old_position:
                 values.append(row['id'])
         # Existing explicitly reviewed translations retain their original pinned
         # review, never a new runtime semantic correspondence.
@@ -100,14 +109,33 @@ def build(record, payload, audit, talks, chinese, korean, owners, previous_chunk
             # A missing official alternative must not look unique merely because
             # its Korean row has not been imported. A prior page-level binding
             # cannot establish which repeated occurrence uses that official ID.
-            possible = {identity for identity in official_candidates[key] if
-                not owners.get((identity, key[0])) or any(p['missionId'] in allowed for p in owners[(identity, key[0])])}
             prior_binding = row.get('bwikiStatus') in ['matched', 'cached'] and row.get('bwikiPage') == node['page'] and row.get('bwikiRevision') == node['revision']
+            referenced = any(p['missionId'] in allowed for p in owners.get((row.get('talkId'), key[0]), []))
+            possible = {identity for identity in official_candidates[key] if
+                        not owners.get((identity, key[0])) or
+                        any(p['missionId'] in allowed for p in owners[(identity, key[0])])} if referenced else official_candidates[key]
             if len(possible) > 1:
                 doubtful[node['id']] = possible
             else:
                 mapped[node['id']] = candidates[node['id']][0]
-                methods[node['id']] = 'prior-pinned-binding' if prior_binding else 'exact-content-and-owned-scope'
+                methods[node['id']] = 'prior-pinned-binding' if prior_binding else 'exact-content-and-wiki-scope'
+
+    # Preserve already verified occurrence bindings at the exact same revision
+    # and canonical bytes. This is retained evidence, never a fresh ambiguous match.
+    previous = payload.get('wikiReading', {})
+    prior_positions = {p['id']: p for p in previous.get('occurrences', [])}
+    prior_sources = {(s['pageTitle'], s['revision']): s for s in previous.get('sources', [])}
+    for node in nodes:
+        prior = prior_positions.get(node['id'])
+        source = documents.get(node['page'])
+        if not prior or not source or prior['rowId'] not in candidates.get(node['id'], []):
+            continue
+        old_source = prior_sources.get((node['page'], node['revision']), {})
+        if (source['sha256'] == old_source.get('sha256') and
+                prior['location'] == node['location'] and prior['branch'] == node['branch'] and
+                prior['conditions'] == node['context'] and
+                prior['evidenceHash'] == digest([canonical(rows[prior['rowId']]), source['sha256'], node['location']])):
+            mapped[node['id']], methods[node['id']] = prior['rowId'], 'retained-pinned-position'
 
     # Disambiguation needs two already unique anchors in one explicit source
     # array and the same gate. Cross-file/Act/Discussion adjacency is insufficient.
@@ -162,8 +190,8 @@ def build(record, payload, audit, talks, chinese, korean, owners, previous_chunk
     ordered_pages, _ = b.mission_order(page_order, structures)
     for page in ordered_pages:
         group = page_groups.get(page, [])
-        group_id = 'wiki-mission-' + digest([record['id'], page])[:24]
-        title = group[0]['title'] if group else page
+        group_id = mission_group(record['id'], page)
+        title = ' / '.join(dict.fromkeys(m['title'] for m in group)) if group else page
         section = ''
         for node in [n for n in nodes if n['page'] == page]:
             if node['kind'] in ['barrier', 'unsupported']:
@@ -209,6 +237,45 @@ def build(record, payload, audit, talks, chinese, korean, owners, previous_chunk
             'officialExecutionVerifiedRows': sum(r.get('flowStatus') == 'verified' for r in rows.values())},
         'review': [{'occurrenceId': n['id'], 'candidateRowIds': candidates.get(n['id'], []),
                     'reason': 'no-unique-owned-official-row'} for n in nodes if n['kind'] in ['line', 'choice', 'narration'] and n['id'] not in mapped]}
+
+
+def validate_admission(addition, row, node, chapter, reading):
+    """Validate a BWIKI admission without asserting official mission ownership."""
+    def require(ok, reason):
+        if not ok:
+            raise ValueError('Invalid BWIKI original admission: ' + reason)
+    proof, content = addition['proof'], addition['content']
+    mission = addition['missionId']
+    source = next((s for s in chapter['sources'] if s['pageTitle'] == proof.get('page') and
+                   s['revision'] == proof.get('revision')), None)
+    require(proof.get('kind') == 'bwiki-mission' and source is not None, 'pinned mission document')
+    group = next((m for m in reading['missions'] if m['id'] == mission), None)
+    require(proof.get('chapterId') == chapter['chapterId'] and group is not None and
+            set(proof.get('catalogMissionIds', [])) == set(group['officialMissionIds']) and
+            set(proof['catalogMissionIds']) <= {m['id'] for m in chapter['missions']} and
+            mission == mission_group(chapter['chapterId'], proof['page']) == proof.get('missionId'),
+            'chapter/mission scope')
+    require(source.get('pageId') == proof.get('pageId') and source['sha256'] == proof.get('sha256') and
+            source.get('sourceUrl') == proof.get('source') and
+            bool(re.fullmatch(r'[a-f0-9]{64}', proof.get('sha256', ''))), 'document evidence')
+    require(row is not None and row.get('missionEvidence') == 'bwiki' and
+            row.get('missionId') == row.get('bwikiMissionId') == mission, 'display attribution')
+    require(row.get('talkId') == addition['talkId'] == content['talkId'] and
+            row.get('textHash') == content['textHash'] and row['text'] == content['text'] and
+            row['speaker'] == content['speaker'] and
+            hashlib.sha256(row['text'].encode()).hexdigest() == content['koreanHash'] and
+            all(re.fullmatch(r'[a-f0-9]{64}', content.get(k, '')) for k in ['chineseHash', 'speakerHash']),
+            'official text/ID/speaker')
+    require(row['source'] == f"ExcelOutput/TalkSentenceConfig.json#TalkSentenceID={row['talkId']}", 'official content source')
+    require(node is not None and node['status'] == 'wiki-confirmed' and node['method'] == 'exact-official' and
+            node['officialIds'] == [row['talkId']] and
+            (node['kind'] == 'choice') == (row['type'] == 'choice'), 'unique exact role match')
+    require(node['page'] == proof['page'] and node['pageId'] == proof['pageId'] and
+            node['revision'] == proof['revision'] and node['location'] == proof['location'] and
+            node['branch'] == proof['branch'] and node['context'] == proof['conditions'], 'occurrence scope')
+    position = next((p for p in reading['occurrences'] if p['id'] == node['id']), None)
+    require(position is not None and position['rowId'] == row['id'] and position['page'] == node['page'] and
+            position['revision'] == node['revision'] and position['location'] == node['location'], 'display position')
 
 
 def validate(reading, rows, commit):
