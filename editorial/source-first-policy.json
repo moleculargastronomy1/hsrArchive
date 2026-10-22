@@ -1,6 +1,7 @@
 {
   "schema": "hsr-source-first-policy.v1",
-  "version": 4,
+  "version": 5,
+  "narrationEvidence": "exact-official-unnamed-text-and-validated-bwiki-position",
   "executionPositions": "explicit-typed-occurrences-with-local-edges-and-condition-scopes",
   "executionBarriers": "missing-timeline-unknown-task-and-unresolved-signal-never-bridged",
   "tentativeExecution": "isolated-report-only; never-authoritative-reader-edges",

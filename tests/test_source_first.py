@@ -112,6 +112,40 @@ class SourceFirstTests(unittest.TestCase):
         s.match_occurrence(node, {self.key: [self.record]}, {(10, 'line'): [self.proof]}, {1}, {})
         self.assertEqual(node['status'], 'pending')
 
+    def test_exact_unnamed_narration_is_admitted_without_execution_reference(self):
+        talks = [{'TalkSentenceID': 10, 'TalkSentenceText': {'Hash': 99}}]
+        index = s.global_candidates(talks, {'99': '一句话。'}, {'99': '한국어 원문'})
+        node, scope = self.wiki_node()
+        node.update(kind='narration', speaker='', official=[], rowRefs=[], status='pending')
+        s.match_occurrence(node, index, {}, {1}, {}, scope)
+        self.assertEqual(node['status'], 'wiki-confirmed')
+        self.assertEqual(node['ownership'], [])
+        payload = {'entryId': 'e', 'chapterId': 'c', 'rows': []}
+        result = {'chapter': {'missions': [{'id': 1, 'title': '임무'}]}, 'occurrences': [node], 'orderComparisons': []}
+        changed, additions = s.add_confirmed(payload, result)
+        row = changed['rows'][0]
+        self.assertEqual((row['type'], row['speaker']), ('narration', ''))
+        self.assertNotIn('nextIds', row)
+        chapter = {'chapterId': 7, 'missions': [{'id': 1}], 'sources': [
+            {'pageTitle': '任务', 'pageId': 3, 'revision': 9, 'sha256': 'a'*64, 'sourceUrl': scope['source']}]}
+        reading = {'missions': [{'id': node['missionId'], 'officialMissionIds': [1]}],
+                   'occurrences': [{'id': node['id'], 'rowId': row['id'], 'page': '任务', 'revision': 9, 'location': [0, 0]}]}
+        public_node = {**node, 'officialIds': [10]}
+        s.placement.validate_admission(additions[0], row, public_node, chapter, reading)
+        with self.assertRaisesRegex(ValueError, 'role match'):
+            s.placement.validate_admission(additions[0], {**row, 'type': 'dialogue'}, public_node, chapter, reading)
+
+    def test_narration_keeps_ambiguous_ids_named_speech_and_non_game_directions_pending(self):
+        _, scope = self.wiki_node()
+        talk = {'TalkSentenceID': 10, 'TalkSentenceText': {'Hash': 99}}
+        for talks in [[talk, {**talk, 'TalkSentenceID': 11}],
+                      [{**talk, 'TextmapTalkSentenceName': {'Hash': 9}}], []]:
+            index = s.global_candidates(talks, {'99': '一句话。', '9': '角色'}, {'99': '한국어 원문', '9': '화자'})
+            node = {**copy.deepcopy(self.node), 'kind': 'narration', 'speaker': '', 'location': [0, 0]}
+            s.match_occurrence(node, index, {}, {1}, {}, scope)
+            self.assertEqual(node['status'], 'pending')
+            self.assertEqual(node['official'], [])
+
     def test_unknown_nodes_are_never_bridged(self):
         nodes, edges = s.inventory([[{'kind': 'line', 'text': '前', 'speaker': '甲'},
                                     {'kind': 'unsupported'}, {'kind': 'line', 'text': '后', 'speaker': '甲'}]], self.page, 1)

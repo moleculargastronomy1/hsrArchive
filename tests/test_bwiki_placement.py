@@ -49,6 +49,21 @@ class PlacementTest(unittest.TestCase):
         self.assertEqual(self.rows, before)
         s.placement.validate(reading, self.rows, 'c'*40)
 
+    def test_unnamed_narration_uses_wiki_position_and_preserves_branch_boundaries(self):
+        self.cn['300'], self.kr['300'] = '旁白原文', '내레이션 원문'
+        self.talks.append({'TalkSentenceID': 300, 'TalkSentenceText': {'Hash': 300}})
+        self.rows.append({'id': '300', 'talkId': 300, 'textHash': '300', 'text': '내레이션 원문',
+            'speaker': '', 'type': 'narration', 'missionId': 'quest-11', 'mission': '임무', 'source': 'official'})
+        self.owners = {}
+        reading = self.build('*角色：开始\n:旁白原文\n{{剧情选项|选项1=左|剧情1=:旁白原文|选项2=右|剧情2=}}\n*角色：结束')
+        positions = [p for p in reading['occurrences'] if p['rowId'] == '300']
+        self.assertEqual(len(positions), 2)
+        self.assertNotEqual(positions[0]['id'], positions[1]['id'])
+        self.assertNotEqual(positions[0]['branch'], positions[1]['branch'])
+        right = next(p for p in reading['occurrences'] if p['rowId'] == '202')
+        self.assertEqual(right['nextIds'], [])
+        s.placement.validate(reading, self.rows, 'c'*40)
+
     def test_explicit_responses_are_separate_and_an_empty_choice_gets_no_guessed_response(self):
         reading=self.build('*角色：开始\n{{剧情选项|选项1=左|剧情1=*角色：回应|选项2=右|剧情2=}}\n*角色：结束')
         by_row={p['rowId']:p for p in reading['occurrences']}

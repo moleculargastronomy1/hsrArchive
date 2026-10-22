@@ -256,6 +256,8 @@ def global_candidates(talks, cn, kr):
                   'chineseHash': b.digest(b.canonical(cn[th])), 'speakerHash': b.digest(b.canonical(name)),
                   'koreanHash': b.digest(b._localizations.plain(kr[th]))}
         result[('line', b.comparable(cn[th]), b.normalized(name))].append(record)
+        if not b.normalized(name) and not record['speaker']:
+            result[('narration', b.comparable(cn[th]), '')].append(record)
         if not name or b.normalized(name) == '开拓者':
             result[('choice', b.comparable(cn[th]), '')].append(record)
     return result
@@ -280,8 +282,8 @@ def classify_order(left, right, owners, graphs):
     if not left.get('official') or not right.get('official'):
         return 'unresolved-endpoint'
     a, z = left['official'][0]['talkId'], right['official'][0]['talkId']
-    ls = {p['source'] for p in owners.get((a, left['kind']), []) if not p['conditions']}
-    rs = {p['source'] for p in owners.get((z, right['kind']), []) if not p['conditions']}
+    ls = {p['source'] for p in owners.get((a, 'line' if left['kind'] == 'narration' else left['kind']), []) if not p['conditions']}
+    rs = {p['source'] for p in owners.get((z, 'line' if right['kind'] == 'narration' else right['kind']), []) if not p['conditions']}
     common = ls & rs & graphs.keys()
     # A choice branch/condition must have its execution condition mapped first.
     if not common or left['branch'] != right['branch'] or left['context'] != right['context']:
@@ -297,9 +299,6 @@ def match_occurrence(node, index, owners, mission_ids, existing, wiki_scope=None
     if node['kind'] in ['barrier', 'unsupported']:
         node.update(status='boundary' if node['kind'] == 'barrier' else 'unsupported')
         return
-    if node['kind'] == 'narration':
-        node.update(status='pending', reason='stage-direction-or-narration-role-unverified')
-        return
     key = (node['kind'], b.comparable(node['chinese']), b.normalized(node['speaker']))
     # Empty normalized punctuation must never match or merge with a neighbour.
     if not key[1]:
@@ -314,8 +313,9 @@ def match_occurrence(node, index, owners, mission_ids, existing, wiki_scope=None
     node.update(official=[record], contentStatus='exact-official', method='exact-official')
     node['rowRefs'] = [r['id'] for r in existing.get(record['talkId'], [])
                        if r['text'] == record['text'] and r['speaker'] == record['speaker'] and
-                       (r['type'] == 'choice') == (node['kind'] == 'choice')]
-    proofs = owners.get((record['talkId'], node['kind']), [])
+                       (r['type'] == 'choice') == (node['kind'] == 'choice') and
+                       (node['kind'] != 'narration' or r['type'] == 'narration')]
+    proofs = owners.get((record['talkId'], 'line' if node['kind'] == 'narration' else node['kind']), [])
     matching = [p for p in proofs if p['missionId'] in mission_ids]
     owned = {p['missionId'] for p in matching}
     node['officialMissionIds'] = sorted({p['missionId'] for p in proofs})
@@ -641,7 +641,8 @@ def audit_execution_only(args, cat, plan, talks, cn, kr):
 
 def validated_policy():
     policy = read(CODE.parent / 'editorial/source-first-policy.json')
-    if (policy.get('version') != 4 or policy.get('requireExplicitMissionOwnership') is not False or
+    if (policy.get('version') != 5 or policy.get('requireExplicitMissionOwnership') is not False or
+            policy.get('narrationEvidence') != 'exact-official-unnamed-text-and-validated-bwiki-position' or
             policy.get('admissionEvidence') != 'exact-official-content-and-validated-bwiki-mission' or
             policy.get('missionAttribution') != 'bwiki-display-separate-from-official-execution' or
             policy.get('displayOrder') != 'bwiki-only' or

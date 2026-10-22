@@ -269,7 +269,8 @@ def validate_admission(addition, row, node, chapter, reading):
     require(row['source'] == f"ExcelOutput/TalkSentenceConfig.json#TalkSentenceID={row['talkId']}", 'official content source')
     require(node is not None and node['status'] == 'wiki-confirmed' and node['method'] == 'exact-official' and
             node['officialIds'] == [row['talkId']] and
-            (node['kind'] == 'choice') == (row['type'] == 'choice'), 'unique exact role match')
+            (node['kind'] == 'choice') == (row['type'] == 'choice') and
+            (node['kind'] != 'narration' or (row['type'] == 'narration' and not row['speaker'])), 'unique exact role match')
     require(node['page'] == proof['page'] and node['pageId'] == proof['pageId'] and
             node['revision'] == proof['revision'] and node['location'] == proof['location'] and
             node['branch'] == proof['branch'] and node['context'] == proof['conditions'], 'occurrence scope')
