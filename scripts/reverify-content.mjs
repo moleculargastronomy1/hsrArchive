@@ -24,6 +24,7 @@ import {
   saveRetry,
   REVIEW_INTERVAL,
   prioritizeBwikiRequests,
+  verificationProgress,
 } from './verification-retry.mjs';
 import { prepareSimulationEvents } from './simulation-events.mjs';
 import { collectEventImages } from './event-images.mjs';
@@ -405,15 +406,10 @@ export async function finishVerification(
     ),
     result,
   );
-  await write(path.join(root, 'public/verification-progress.json'), {
-    ...result,
-    retry: {
-      pages: state.pages,
-      nextRequestAt: state.nextRequestAt,
-      requestFailures: state.requestFailures,
-      lastRequestError: state.lastRequestError,
-    },
-  });
+  await write(
+    path.join(root, 'public/verification-progress.json'),
+    verificationProgress(state, result),
+  );
   if (process.env.GITHUB_OUTPUT)
     await fs.appendFile(
       process.env.GITHUB_OUTPUT,

@@ -12,6 +12,7 @@ import {
   retryDecision,
   algorithmHash,
   videoAlgorithmHash,
+  recoverVerificationProgress,
 } from '../scripts/verification-retry.mjs';
 import { fetchBwiki } from '../scripts/fetch-bwiki.mjs';
 import { finishVerification } from '../scripts/reverify-content.mjs';
@@ -151,6 +152,11 @@ test('published snapshots preserve exact integer bytes and validate every path/c
     const exact = '{"hash":18446744073709551615}';
     await fs.writeFile(path.join(root, 'src/data/trailblaze.json'), exact);
     await fs.writeFile(path.join(root, 'public/content-update.json'), JSON.stringify({ commit }));
+    const progress = JSON.stringify({
+      status: 'partial',
+      quarantinedChapters: [{ file: 'content/held.json' }],
+    });
+    await fs.writeFile(path.join(root, 'public/verification-progress.json'), progress);
     const descriptor = await packState(root);
     const bytes = await fs.readFile(path.join(root, 'public', descriptor.file));
     assert.equal(
@@ -158,6 +164,12 @@ test('published snapshots preserve exact integer bytes and validate every path/c
         .find((item) => item.path === 'src/data/trailblaze.json')
         ?.bytes.toString(),
       exact,
+    );
+    assert.equal(
+      unpackState(bytes, descriptor)
+        .find((item) => item.path === 'public/verification-progress.json')
+        ?.bytes.toString(),
+      progress,
     );
     assert.throws(() => unpackState(Buffer.from('corrupt'), descriptor));
     const evil = gzipSync(
@@ -181,6 +193,31 @@ test('published snapshots preserve exact integer bytes and validate every path/c
   } finally {
     await cleanup(root);
   }
+});
+
+test('legacy journal recovery only acknowledges the exact published content digest', () => {
+  const state = {
+    pendingDigest: 'published',
+    lastRun: {
+      digest: 'published',
+      status: 'partial',
+      quarantinedChapters: [{ file: 'content/held.json' }],
+    },
+    pages: { held: { reason: 'verification-regression; candidate-quarantined' } },
+  };
+  const recovered = recoverVerificationProgress(state, 'published');
+  assert.equal(recovered.status, 'partial');
+  assert.deepEqual(recovered.retry.pages, state.pages);
+  assert.deepEqual(recovered.quarantinedChapters, state.lastRun.quarantinedChapters);
+  assert.equal(recoverVerificationProgress(state, 'different-content'), undefined);
+  assert.equal(
+    recoverVerificationProgress({ ...state, pendingDigest: 'unpublished-candidate' }, 'published'),
+    undefined,
+  );
+  assert.equal(
+    recoverVerificationProgress({ ...state, lastRun: undefined }, 'published'),
+    undefined,
+  );
 });
 
 test('failure retries back off, honor Retry-After, replay changed algorithms, and leave stable ambiguity idle', () => {

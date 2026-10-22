@@ -8,7 +8,12 @@ import {
   stateFiles,
   writeDerived,
 } from './verification-state.mjs';
-import { baselineChoice, verificationRows } from './verification-integration.mjs';
+import {
+  baselineChoice,
+  verificationRows,
+  compareVerification,
+} from './verification-integration.mjs';
+import { readRetry, recoverVerificationProgress } from './verification-retry.mjs';
 
 if (process.argv[2] === '--pack') {
   const result = await packState(process.cwd());
@@ -85,6 +90,21 @@ if (process.argv[2] === '--pack') {
       console.log(
         'Preserved repository improvements containing every deployed row and verified ID',
       );
+    }
+  }
+  const progressFile = 'public/verification-progress.json';
+  const existing = await fs.readFile(progressFile).catch((error) => {
+    if (error.code !== 'ENOENT') throw error;
+  });
+  if (!existing) {
+    const rows = await verificationRows(process.cwd());
+    const progress = recoverVerificationProgress(
+      await readRetry(),
+      compareVerification(rows, rows).digest,
+    );
+    if (progress) {
+      await writeDerived(process.cwd(), progressFile, Buffer.from(JSON.stringify(progress)));
+      console.log('Recovered verification journal matching the restored content digest');
     }
   }
 } else throw new Error('Expected --restore or --pack');

@@ -112,6 +112,24 @@ export async function saveRetry(state, root = process.cwd()) {
   await fs.writeFile(file + '.tmp', JSON.stringify(state));
   await fs.rename(file + '.tmp', file);
 }
+export function verificationProgress(state, result = state.lastRun) {
+  return {
+    ...result,
+    retry: {
+      pages: state.pages,
+      nextRequestAt: state.nextRequestAt,
+      requestFailures: state.requestFailures,
+      lastRequestError: state.lastRequestError,
+    },
+  };
+}
+export function recoverVerificationProgress(state, digest) {
+  // Old snapshots omitted this derived file. An unpublished or unrelated cache
+  // must never acknowledge a different successfully deployed content snapshot.
+  if (!state.lastRun || state.lastRun.digest !== digest || state.pendingDigest !== digest)
+    return undefined;
+  return verificationProgress(state);
+}
 export function retryDelay(failures, retryAfter, now = Date.now()) {
   const seconds = Number(retryAfter);
   const server =
