@@ -58,6 +58,7 @@ async function fixture(t) {
       'dialogue-flow-provenance',
       'video-order-provenance',
       'video-review-summary',
+      'simulation-events-provenance',
     ])
       await write(base, 'public/' + name + '.json', {
         commit: 'same-release',
@@ -113,6 +114,87 @@ test('retry quarantines a rejected chapter and retains independent improvements 
     f.rejected.rows,
   );
   assert.deepEqual(await f.read(f.root, 'public/' + f.files[0]), f.rejected);
+});
+
+test("registered admissions in a rejected chapter are withheld without losing another chapter's additions", async (t) => {
+  const f = await fixture(t);
+  const original = { ...f.rejected, entryId: 'entry', chapterId: 'chapter' };
+  const candidate = {
+    ...f.candidate,
+    entryId: 'entry',
+    chapterId: 'chapter',
+    rows: [...f.candidate.rows, { ...f.rejected.rows[1], id: 'new-admission' }],
+  };
+  const good = await f.read(f.stage, 'public/' + f.files[1]);
+  good.rows.push({ ...good.rows[0], id: 'other-admission' });
+  const metadata = {
+    'entry/chapter': { file: f.files[0], rows: 2 },
+    'entry/other': { file: f.files[1], rows: 1 },
+  };
+  for (const base of [f.root, f.stage]) {
+    await f.write(base, 'public/' + f.files[0], base === f.root ? original : candidate);
+    const descriptors = structuredClone(metadata);
+    if (base === f.stage) {
+      descriptors['entry/chapter'].rows = 3;
+      descriptors['entry/other'].rows = 2;
+    }
+    await f.write(base, 'src/data/imported-content.json', descriptors);
+    await f.write(base, 'src/data/trailblaze.json', [
+      {
+        id: 'entry',
+        chapters: [
+          { id: 'chapter', content: descriptors['entry/chapter'] },
+          { id: 'other', content: descriptors['entry/other'] },
+        ],
+      },
+    ]);
+    await f.write(base, 'public/content-update.json', {
+      commit: 'same-release',
+      rows: base === f.root ? 3 : 5,
+      verifiedTextRows: base === f.root ? 3 : 5,
+    });
+  }
+  await f.write(f.stage, 'public/' + f.files[1], good);
+  await f.write(f.stage, 'public/content/search-index.json', {
+    rows: [...candidate.rows, ...good.rows],
+  });
+  const report = await f.read(f.stage, 'public/source-first-provenance.json');
+  report.chapters[f.files[0]].additions = [{ rowId: 'new-admission' }];
+  await f.write(f.stage, 'public/source-first-provenance.json', report);
+  const records = await quarantineRetryChapters(
+    f.root,
+    f.stage,
+    await verificationRows(f.root),
+    f.manifest,
+  );
+  assert.deepEqual(records[0].withheldRowIds, ['new-admission']);
+  assert.deepEqual(await f.read(f.stage, 'public/' + f.files[0]), original);
+  assert.equal((await f.read(f.stage, 'public/' + f.files[1])).rows.at(-1).id, 'other-admission');
+  assert.deepEqual(
+    (await f.read(f.stage, 'public/content/search-index.json')).rows.map((r) => r.id),
+    ['choice', 'reply', 'other', 'other-admission'],
+  );
+  const update = await f.read(f.stage, 'public/content-update.json');
+  assert.equal(update.rows, 4);
+  assert.equal(update.verifiedTextRows, 4);
+  const result = await f.read(f.stage, 'src/data/imported-content.json');
+  assert.equal(result['entry/chapter'].rows, 2);
+  assert.equal(result['entry/other'].rows, 2);
+  assert.equal((await f.read(f.stage, 'src/data/trailblaze.json'))[0].chapters[0].content.rows, 2);
+  assert.equal(
+    (await f.read(f.root, records[0].evidence)).candidate.rows.at(-1).id,
+    'new-admission',
+  );
+});
+
+test('a malformed rejected chapter remains a shared-contract failure', async (t) => {
+  const f = await fixture(t);
+  f.candidate.rows.push(structuredClone(f.candidate.rows[1]));
+  await f.write(f.stage, 'public/' + f.files[0], f.candidate);
+  await assert.rejects(
+    quarantineRetryChapters(f.root, f.stage, await verificationRows(f.root), f.manifest),
+    /Duplicate verification row identity/,
+  );
 });
 
 test('canonical mutation and official/video link loss remain hard failures', async (t) => {

@@ -5,6 +5,31 @@ import { gzipSync, gunzipSync } from 'node:zlib';
 
 export const SITE = 'https://moleculargastronomy1.github.io/hsrArchive/';
 export const hash = (bytes) => crypto.createHash('sha256').update(bytes).digest('hex');
+export class PublishedStateUnavailable extends Error {
+  constructor(message, options) {
+    super(message, options);
+    this.code = 'PUBLISHED_STATE_UNAVAILABLE';
+  }
+}
+
+async function publishedRequest(operation) {
+  try {
+    return await operation();
+  } catch (cause) {
+    if (cause instanceof TypeError || ['AbortError', 'TimeoutError'].includes(cause?.name))
+      throw new PublishedStateUnavailable('Published state request deferred', { cause });
+    throw cause;
+  }
+}
+
+async function fetchPublished(fetcher, url, options) {
+  const response = await publishedRequest(() => fetcher(url, options));
+  if ([408, 429, 500, 502, 503, 504].includes(response.status))
+    throw new PublishedStateUnavailable(
+      'Published state HTTP ' + response.status + '; retry later',
+    );
+  return response;
+}
 export async function writeDerived(root, relative, bytes) {
   if (!statePath(relative)) throw new Error('Unsafe derived publication path');
   const file = path.join(root, relative);
@@ -26,9 +51,54 @@ export async function writeDerived(root, relative, bytes) {
   }
 }
 export const statePath = (file) =>
-  /^(?:src\/data\/(?:codex|simulation|imported-content|train-databank|astropolis-intro|books|trailblaze)\.json|public\/(?:content-update|books-provenance|trailblaze-provenance|dialogue-flow-provenance|bwiki-provenance|source-first-provenance|simulation-events-provenance|video-order-provenance|video-review-summary|verification-progress)\.json|public\/content\/[A-Za-z0-9_-]+\.json|public\/content\/locales\/(?:manifest|(?:en|zh-CN|ja)\/[A-Za-z0-9_-]+)\.json)$/.test(
+  /^(?:src\/data\/(?:codex|simulation|imported-content|train-databank|astropolis-intro|books|trailblaze)\.json|public\/(?:content-update|content-watch|official-videos|books-provenance|trailblaze-provenance|dialogue-flow-provenance|bwiki-provenance|source-first-provenance|simulation-events-provenance|video-order-provenance|video-review-summary|verification-progress)\.json|public\/content\/[A-Za-z0-9_-]+\.json|public\/content\/locales\/(?:manifest|(?:en|zh-CN|ja)\/[A-Za-z0-9_-]+)\.json)$/.test(
     file,
   );
+
+// One transaction boundary for both published snapshots and new derived data.
+// Read every target first; a later write failure restores exact previous bytes.
+export async function applyDerivedChanges(
+  root,
+  entries,
+  { write = writeDerived, unchanged = (previous, bytes) => previous?.equals(bytes) } = {},
+) {
+  const seen = new Set(),
+    changes = [];
+  for (const entry of entries) {
+    if (!statePath(entry.path) || seen.has(entry.path) || !Buffer.isBuffer(entry.bytes))
+      throw new Error('Unsafe or duplicate derived transaction entry');
+    seen.add(entry.path);
+    const previous = await fs.readFile(path.join(root, entry.path)).catch((error) => {
+      if (error.code !== 'ENOENT') throw error;
+    });
+    if (!unchanged(previous, entry.bytes)) changes.push({ ...entry, previous });
+  }
+  const attempted = [];
+  try {
+    for (const entry of changes) {
+      attempted.push(entry);
+      await write(root, entry.path, entry.bytes);
+    }
+  } catch (error) {
+    const rollbackErrors = [];
+    for (const entry of attempted.reverse()) {
+      try {
+        if (entry.previous) await write(root, entry.path, entry.previous);
+        else await fs.rm(path.join(root, entry.path), { force: true });
+        await fs.rm(path.join(root, entry.path + '.tmp'), { force: true });
+      } catch (rollbackError) {
+        rollbackErrors.push(rollbackError);
+      }
+    }
+    if (rollbackErrors.length)
+      throw new AggregateError(
+        [error, ...rollbackErrors],
+        'Derived transaction and rollback failed',
+      );
+    throw error;
+  }
+  return changes.map((entry) => entry.path);
+}
 
 export async function stateFiles(root) {
   const found = [];
@@ -102,22 +172,33 @@ export function unpackState(bytes, descriptor) {
   });
 }
 
-export async function restoreState(root, fetcher = fetch) {
-  const response = await fetcher(SITE + 'verification-state.json', {
+export async function fetchState(fetcher = fetch) {
+  const response = await fetchPublished(fetcher, SITE + 'verification-state.json', {
     cache: 'no-store',
     signal: AbortSignal.timeout(30000),
   });
-  if (response.status === 404) return false;
+  if (response.status === 404) return undefined;
   if (!response.ok)
     throw new Error('Last deployed verification state unavailable; refusing to overwrite it');
-  const descriptor = await response.json();
+  const descriptor = await publishedRequest(() => response.json());
   if (!/^verification-state-[a-f0-9]{64}\.json\.gz$/.test(descriptor.file ?? ''))
     throw new Error('Invalid snapshot URL');
-  const body = await fetcher(SITE + descriptor.file, { signal: AbortSignal.timeout(120000) });
+  const body = await fetchPublished(fetcher, SITE + descriptor.file, {
+    signal: AbortSignal.timeout(120000),
+  });
+  if (body.status === 404)
+    throw new PublishedStateUnavailable('Published snapshot unavailable; retry later');
   if (!body.ok) throw new Error('Last deployed verification snapshot unavailable');
-  const entries = unpackState(Buffer.from(await body.arrayBuffer()), descriptor);
-  for (const item of entries) {
-    await writeDerived(root, item.path, item.bytes);
-  }
+  const entries = unpackState(
+    Buffer.from(await publishedRequest(() => body.arrayBuffer())),
+    descriptor,
+  );
+  return { descriptor, entries };
+}
+
+export async function restoreState(root, fetcher = fetch, options = {}) {
+  const state = await fetchState(fetcher);
+  if (!state) return false;
+  await applyDerivedChanges(root, state.entries, options);
   return true;
 }

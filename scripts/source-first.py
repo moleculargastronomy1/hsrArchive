@@ -67,7 +67,7 @@ def code_hash():
     files = ['source-first.py', 'source-first.mjs', 'bwiki-dialogue.py', 'bwiki-placement.py',
              'import-bwiki-chapters.py', 'import-localizations.py', 'restore-dialogue-flow.py',
              'validate-content-stage.py', 'source-first-publication.mjs', 'content-publication.mjs', 'import-trailblaze.py',
-             'execution-placement.py']
+             'execution-placement.py', 'verification-state.mjs']
     return digest({name: hashlib.sha256((CODE / name).read_bytes()).hexdigest() for name in files})
 
 

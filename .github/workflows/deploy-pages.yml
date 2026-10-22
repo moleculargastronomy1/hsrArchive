@@ -71,28 +71,29 @@ jobs:
           GITHUB_TOKEN: ${{ github.token }}
       - name: Restore last successfully deployed derived data
         if: steps.watch.outputs.changed == 'true'
+        id: baseline
         run: node scripts/prepare-verification.mjs --restore
       - name: Set up pnpm
-        if: steps.watch.outputs.changed == 'true'
+        if: steps.baseline.outputs.ready == 'true'
         uses: pnpm/action-setup@v6
         with:
           version: 11.25.0
       - name: Install dependencies
-        if: steps.watch.outputs.changed == 'true'
+        if: steps.baseline.outputs.ready == 'true'
         run: pnpm install --frozen-lockfile
       - name: Set up Python
-        if: steps.watch.outputs.changed == 'true'
+        if: steps.baseline.outputs.ready == 'true'
         uses: actions/setup-python@v6
         with:
           python-version: '3.12'
       - name: Resolve latest released text source
-        if: steps.watch.outputs.changed == 'true'
+        if: steps.baseline.outputs.ready == 'true'
         id: upstream
         run: node scripts/update-content.mjs --plan
         env:
           GITHUB_TOKEN: ${{ github.token }}
       - name: Cache verified source blobs
-        if: steps.watch.outputs.changed == 'true'
+        if: steps.baseline.outputs.ready == 'true'
         uses: actions/cache@v4
         with:
           path: .cache/upstream-content/blobs
@@ -101,14 +102,14 @@ jobs:
             hsr-upstream-v2-
             hsr-upstream-v1-
       - name: Restore content-addressed BWIKI snapshots
-        if: steps.watch.outputs.changed == 'true'
+        if: steps.baseline.outputs.ready == 'true'
         uses: actions/cache/restore@v4
         with:
           path: .cache/upstream-content/bwiki
           key: hsr-bwiki-snapshots-v1-${{ github.run_id }}-${{ github.run_attempt }}
           restore-keys: hsr-bwiki-snapshots-v1-
       - name: Refresh changed sources or retry unresolved BWIKI and YouTube sections
-        if: steps.watch.outputs.changed == 'true'
+        if: steps.baseline.outputs.ready == 'true'
         id: refresh
         run: node scripts/run-content-refresh.mjs
         env:
@@ -117,6 +118,9 @@ jobs:
       - name: Refresh official YouTube video
         if: steps.refresh.outputs.publish == 'true' && steps.refresh.outputs.site_only != 'true'
         run: node scripts/update-official-videos.mjs
+      - name: Record processed revisions
+        if: steps.baseline.outputs.ready == 'true' && steps.refresh.outputs.site_only != 'true' && success()
+        run: node scripts/check-content-changes.mjs --record
       - name: Validate final content contracts
         if: steps.refresh.outputs.publish == 'true'
         run: |
@@ -125,9 +129,6 @@ jobs:
       - name: Test archive behavior
         if: steps.refresh.outputs.publish == 'true'
         run: pnpm test
-      - name: Record processed revisions
-        if: steps.watch.outputs.changed == 'true' && steps.refresh.outputs.site_only != 'true' && success()
-        run: node scripts/check-content-changes.mjs --record
       - name: Preserve validated derived data for the next deployment
         if: steps.refresh.outputs.publish == 'true'
         run: node scripts/prepare-verification.mjs --pack
@@ -147,7 +148,7 @@ jobs:
         with:
           path: dist
       - name: Save BWIKI snapshots
-        if: always() && steps.watch.outputs.changed == 'true'
+        if: always() && steps.baseline.outputs.ready == 'true'
         uses: actions/cache/save@v4
         with:
           path: .cache/upstream-content/bwiki
@@ -167,6 +168,7 @@ jobs:
             .cache/content-watch/check.json
             .cache/verification-retry/run.json
             .cache/verification-retry/quarantine
+            .cache/verification-retry/restore-conflict.json
             .cache/source-first/report.json
             .cache/source-first/validator-health.json
             .cache/source-first/artifact-seal.json

@@ -59,6 +59,8 @@ export async function algorithmHash(root = process.cwd()) {
     'verification-integration.mjs',
     'content-process.mjs',
     'content-publication.mjs',
+    'verification-state.mjs',
+    'prepare-verification.mjs',
     'validate-content-stage.py',
     'import-localizations.py',
     'source-first.py',
@@ -88,6 +90,7 @@ export async function videoAlgorithmHash(root = process.cwd()) {
     'verification-integration.mjs',
     'verification-retry.mjs',
     'content-publication.mjs',
+    'verification-state.mjs',
     'validate-content-stage.py',
   ]);
 }

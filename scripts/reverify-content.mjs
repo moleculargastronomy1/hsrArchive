@@ -17,7 +17,7 @@ import {
   orderUnknown,
 } from './verification-integration.mjs';
 import { fetchBwiki } from './fetch-bwiki.mjs';
-import { stateFiles, hash } from './verification-state.mjs';
+import { stateFiles, hash, applyDerivedChanges } from './verification-state.mjs';
 import {
   algorithmHash,
   readRetry,
@@ -106,6 +106,7 @@ export async function quarantineRetryChapters(root, stage, before, manifest) {
     'dialogue-flow-provenance',
     'video-order-provenance',
     'video-review-summary',
+    'simulation-events-provenance',
   ];
   const proofs = await Promise.all(
     proofFiles.map(async (name) => ({
@@ -114,17 +115,34 @@ export async function quarantineRetryChapters(root, stage, before, manifest) {
       candidate: await read(path.join(stage, 'public/' + name + '.json')),
     })),
   );
-  // Preflight all files before restoring any. New canonical rows in a rejected
-  // chapter need a separate admission review, not an implicit metadata rollback.
+  // New, explicitly recorded source-first admissions can be withheld with the
+  // rejected chapter. Unknown producers still require an admission review.
   for (const file of files) {
     const original = await read(path.join(root, 'public', file));
     const candidate = await read(path.join(stage, 'public', file));
     const ids = new Set(original.rows.map((r) => r.id));
-    if (candidate.rows.length !== ids.size || candidate.rows.some((r) => !ids.has(r.id)))
-      throw Error('Retry regression also changes chapter admissions: ' + file);
-    restored.set(file, { original, candidate });
+    if (
+      new Set(candidate.rows.map((r) => r.id)).size !== candidate.rows.length ||
+      ['schema', 'entryId', 'chapterId', 'referenceCommit', 'textReferenceCommit'].some(
+        (key) => candidate[key] !== original[key],
+      )
+    )
+      throw Error('Retry chapter identity or input version changed: ' + file);
+    const newRows = candidate.rows.filter((r) => !ids.has(r.id));
+    const registered = new Set(
+      [
+        ...(candidate.executionReading?.additions ?? []),
+        ...(proofs.find((p) => p.name === 'source-first-provenance').candidate.chapters?.[file]
+          ?.additions ?? []),
+      ].map((a) => a.rowId),
+    );
+    if (newRows.some((r) => !registered.has(r.id)))
+      throw Error('Retry regression includes untracked chapter admissions: ' + file);
+    restored.set(file, { original, candidate, newRows });
   }
-  for (const [file, { original, candidate }] of restored) {
+  const changes = new Map();
+  const stageJson = (file, value) => changes.set(file, Buffer.from(JSON.stringify(value)));
+  for (const [file, { original, candidate, newRows }] of restored) {
     const evidence = path.join(work, hash(JSON.stringify(candidate)), path.basename(file));
     await fs.mkdir(path.dirname(evidence), { recursive: true });
     await write(evidence, {
@@ -146,6 +164,7 @@ export async function quarantineRetryChapters(root, stage, before, manifest) {
       file,
       pages,
       reason: 'candidate-regression; published-chapter-retained',
+      withheldRowIds: newRows.map((r) => r.id),
       evidence: path.relative(root, evidence).split(path.sep).join('/'),
       failures: Object.fromEntries(
         candidateFaults.map((key) => [
@@ -156,9 +175,16 @@ export async function quarantineRetryChapters(root, stage, before, manifest) {
         ]),
       ),
     });
-    await fs.copyFile(path.join(root, 'public', file), path.join(stage, 'public', file));
+    changes.set('public/' + file, await fs.readFile(path.join(root, 'public', file)));
     for (const { name, old, candidate: report } of proofs) {
-      for (const key of ['chapters', 'imports', 'missionCatalog', 'missionOrder']) {
+      for (const key of [
+        'chapters',
+        'imports',
+        'missionCatalog',
+        'missionOrder',
+        'records',
+        'events',
+      ]) {
         if (!report[key] || Array.isArray(report[key])) continue;
         if (old[key]?.[file] !== undefined) report[key][file] = structuredClone(old[key][file]);
         else delete report[key][file];
@@ -190,21 +216,58 @@ export async function quarantineRetryChapters(root, stage, before, manifest) {
       };
     }
   }
-  for (const { name, candidate } of proofs)
-    await write(path.join(stage, 'public/' + name + '.json'), candidate);
+  for (const { name, candidate } of proofs) stageJson('public/' + name + '.json', candidate);
   const oldSearch = await read(path.join(root, 'public/content/search-index.json'));
   const search = await read(path.join(stage, 'public/content/search-index.json'));
-  for (const { original } of restored.values()) {
+  let withheldRows = 0;
+  for (const { original, newRows } of restored.values()) {
     const ids = new Set(original.rows.map((r) => r.id));
+    const added = new Set(newRows.map((r) => r.id));
     const rows = oldSearch.rows.filter((r) => ids.has(r.id));
     const slots = search.rows.flatMap((r, i) => (ids.has(r.id) ? [i] : []));
-    if (rows.length !== ids.size || slots.length !== rows.length)
+    if (
+      rows.length !== ids.size ||
+      slots.length !== rows.length ||
+      search.rows.filter((r) => added.has(r.id)).length !== added.size
+    )
       throw Error('Retry quarantine search identity mismatch');
     slots.forEach((slot, i) => {
       search.rows[slot] = rows[i];
     });
+    search.rows = search.rows.filter((r) => !added.has(r.id));
+    withheldRows += added.size;
   }
-  await write(path.join(stage, 'public/content/search-index.json'), search);
+  stageJson('public/content/search-index.json', search);
+  if (withheldRows) {
+    const metadata = await read(path.join(stage, 'src/data/imported-content.json'));
+    const previousMetadata = await read(path.join(root, 'src/data/imported-content.json'));
+    const entries = await read(path.join(stage, 'src/data/trailblaze.json'));
+    for (const [file, { original, newRows }] of restored) {
+      if (!newRows.length) continue;
+      const route = original.entryId + '/' + original.chapterId;
+      const descriptor = previousMetadata[route];
+      if (descriptor?.file !== file || descriptor.rows !== original.rows.length)
+        throw Error('Retry admission rollback lacks original metadata: ' + file);
+      metadata[route] = structuredClone(descriptor);
+      const chapter = entries
+        .find((e) => e.id === original.entryId)
+        ?.chapters.find((c) => c.id === original.chapterId);
+      if (!chapter || chapter.content?.file !== file)
+        throw Error('Retry admission rollback lost route: ' + route);
+      chapter.content = structuredClone(descriptor);
+    }
+    const contentUpdate = await read(path.join(stage, 'public/content-update.json'));
+    if (
+      !Number.isSafeInteger(contentUpdate.verifiedTextRows) ||
+      contentUpdate.verifiedTextRows < withheldRows
+    )
+      throw Error('Invalid retry admission counter');
+    contentUpdate.rows = search.rows.length;
+    contentUpdate.verifiedTextRows -= withheldRows;
+    stageJson('src/data/imported-content.json', metadata);
+    stageJson('src/data/trailblaze.json', entries);
+    stageJson('public/content-update.json', contentUpdate);
+  }
   const receipt = await read(path.join(stage, 'receipt.json'));
   receipt.files = [
     ...new Set([
@@ -212,20 +275,28 @@ export async function quarantineRetryChapters(root, stage, before, manifest) {
       ...proofFiles.map((n) => 'public/' + n + '.json'),
       'public/content/search-index.json',
       ...[...files].map((f) => 'public/' + f),
+      ...changes.keys(),
     ]),
   ];
+  // Receipt publication follows a successful, rollback-capable data transaction.
+  await applyDerivedChanges(
+    stage,
+    [...changes].map(([path, bytes]) => ({ path, bytes })),
+  );
+  receipt.rows = search.rows.length;
   await write(path.join(stage, 'receipt.json'), receipt);
   manifest.quarantinedChapters = records;
+  const publicationComparison = compareVerification(before, await verificationRows(stage));
   await write(path.join(work, 'latest.json'), {
     schema: 'hsr-retry-quarantine.v1',
     commit: update.commit,
     checkedAt: new Date().toISOString(),
     records,
+    withheldRows,
+    candidateComparison: comparison,
+    publicationComparison,
   });
-  assertVerificationPreserved(
-    compareVerification(before, await verificationRows(stage)),
-    'Retry after quarantine',
-  );
+  assertVerificationPreserved(publicationComparison, 'Retry after quarantine');
   return records;
 }
 export async function finishVerification(
@@ -349,6 +420,10 @@ export async function finishVerification(
     mode,
     status: manifest.quarantinedChapters?.length ? 'partial' : 'passed',
     quarantinedChapters: manifest.quarantinedChapters ?? [],
+    withheldNewRows: (manifest.quarantinedChapters ?? []).reduce(
+      (n, item) => n + (item.withheldRowIds?.length ?? 0),
+      0,
+    ),
     algorithm: state.algorithm,
     videoAlgorithm: state.videoAlgorithm,
     upstreamCommit: manifest.commit,
@@ -372,6 +447,9 @@ export async function finishVerification(
     lostVideoVerification: comparison.lostVideoVerification.length,
     conflictingLinks: comparison.conflictingLinks.length,
     conflictingOrder: comparison.conflictingOrder.length,
+    lostReadingPositions: comparison.lostReadingPositions.length,
+    lostReadingLinks: comparison.lostReadingLinks.length,
+    conflictingReadingPositions: comparison.conflictingReadingPositions.length,
     changed: comparison.changed,
     collectionFailures: reasons,
     matchingReviewRecords: matchingReasons,
