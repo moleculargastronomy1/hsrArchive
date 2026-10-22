@@ -1,0 +1,2297 @@
+{
+  "officialRepository": "DimbreathBot/TurnBasedGameData",
+  "officialCommit": "74a7b96fba32f00cf495a5c00b0311bd02207aaf",
+  "policyVersion": 3,
+  "codeHash": "7296135985659046eee1a04a78675d37648afc134cf139ba62c8195f55efc8c2",
+  "policyHash": "0010823042bef4d103b06b1a206d2329ebfb548dafe0de74704b505cb3f92468",
+  "chapters": 36,
+  "officialMissions": 442,
+  "beforeCanonicalRows": 61597,
+  "afterCanonicalRows": 61760,
+  "totals": {
+    "confirmedRows": 17668,
+    "confirmedOccurrences": 19174,
+    "confirmedEdges": 8960,
+    "confirmedChoiceResponses": 1041,
+    "previousUnknownRows": 8037,
+    "newlyPlacedRows": 1355,
+    "totalExecutionPlacedRows": 1355,
+    "newlyPlacedExistingRows": 1199,
+    "newOfficialRows": 163,
+    "newlyPlacedNewRows": 156,
+    "remainingPreviousUnknownRows": 6838,
+    "remainingUnknownRows": 6845,
+    "placedBetweenWikiAnchors": 38,
+    "tentativeItems": 13931
+  },
+  "priorOfficialFlowRows": 5621,
+  "rowsParticipatingInConfirmedLocalEdges": 9874,
+  "unionOfPriorFlowAndNewLocalEdgeRows": 10402,
+  "newOfficialChoiceResponsePairsVsOldFlow": 572,
+  "readerChoiceResponsePairsInNewPlacements": 83,
+  "potentialOrderDisagreements": [
+    {
+      "file": "content/penacony-records--our-time.json",
+      "from": "exec-c8b993595d34d247ac5352bb",
+      "to": "exec-c851743e1ac568a8eda1e949",
+      "method": "explicit-talk-list",
+      "status": "confirmed",
+      "source": "Config/Level/Mission/1032901/Act/Act103290105.json",
+      "wikiFrom": "occ-bd80d6b9283a7132cc8965d1",
+      "wikiTo": "occ-f795e92c92851c10f53aad74",
+      "result": "potential-order-conflict; invocation-scope-review-required"
+    },
+    {
+      "file": "content/amphoreus-records--journey.json",
+      "from": "exec-53d0669f91554e42710287c8",
+      "to": "exec-ac31a95f923ac2c49cdfe15f",
+      "method": "blocking-task-continuation",
+      "status": "confirmed",
+      "source": "Config/Level/Mission/1040105/Act/Act104010521.json",
+      "wikiFrom": "occ-55f43bfc16f7e10712522750",
+      "wikiTo": "occ-2969a8c6593592c35660a87d",
+      "result": "potential-order-conflict; invocation-scope-review-required"
+    },
+    {
+      "file": "content/amphoreus-records--journey.json",
+      "from": "exec-53d0669f91554e42710287c8",
+      "to": "exec-47b8f46f5debdc2ac849ec5e",
+      "method": "blocking-task-continuation",
+      "status": "confirmed",
+      "source": "Config/Level/Mission/1040105/Act/Act104010521.json",
+      "wikiFrom": "occ-55f43bfc16f7e10712522750",
+      "wikiTo": "occ-324eba80e2a67cea6f5df605",
+      "result": "potential-order-conflict; invocation-scope-review-required"
+    }
+  ],
+  "tentativeReasons": {
+    "endpoint-gate-or-loop-unverified": 6132,
+    "official-mission-attribution-disagreement": 2799,
+    "opaque-execution-boundary": 9700,
+    "row-or-role-not-unique-or-original-not-valid": 762,
+    "official-row-missing": 2534,
+    "inactive-or-unsupported-container": 45,
+    "signal-target-unresolved": 8218,
+    "multiple-official-invocations": 35,
+    "existing-wiki-order-preserved; conflicting-local-component-isolated": 2
+  },
+  "oldCanonicalRowsExactlyPreserved": true,
+  "oldCanonicalOrderPreserved": true,
+  "oldWikiOccurrencesExactlyPreserved": true,
+  "oldSearchRowsExactlyPreserved": true,
+  "oldTranslationsExactlyPreserved": true,
+  "wholeGameExecutionVerified": false,
+  "referenceTxtUsed": false,
+  "chaptersDetail": [
+    {
+      "file": "content/station-departure--arrival.json",
+      "title": "제1막: 오늘은 어제의 내일",
+      "beforeRows": 1245,
+      "afterRows": 1284,
+      "confirmedRows": 298,
+      "confirmedOccurrences": 393,
+      "confirmedEdges": 204,
+      "confirmedChoiceResponses": 17,
+      "previousUnknownRows": 437,
+      "newlyPlacedRows": 54,
+      "totalExecutionPlacedRows": 54,
+      "newlyPlacedExistingRows": 21,
+      "newOfficialRows": 39,
+      "newlyPlacedNewRows": 33,
+      "remainingPreviousUnknownRows": 416,
+      "remainingUnknownRows": 422,
+      "placedBetweenWikiAnchors": 0,
+      "orderComparisons": {
+        "compatible-local-order": 90,
+        "no-comparable-wiki-path": 5
+      },
+      "tentativeItems": 1792
+    },
+    {
+      "file": "content/station-departure--platform.json",
+      "title": "개척 후문: 인간과 신의 면류관",
+      "beforeRows": 882,
+      "afterRows": 898,
+      "confirmedRows": 515,
+      "confirmedOccurrences": 605,
+      "confirmedEdges": 409,
+      "confirmedChoiceResponses": 72,
+      "previousUnknownRows": 206,
+      "newlyPlacedRows": 91,
+      "totalExecutionPlacedRows": 91,
+      "newlyPlacedExistingRows": 75,
+      "newOfficialRows": 16,
+      "newlyPlacedNewRows": 16,
+      "remainingPreviousUnknownRows": 131,
+      "remainingUnknownRows": 131,
+      "placedBetweenWikiAnchors": 5,
+      "orderComparisons": {
+        "compatible-local-order": 153,
+        "no-comparable-wiki-path": 29
+      },
+      "tentativeItems": 285
+    },
+    {
+      "file": "content/jarilo-records--snowfield.json",
+      "title": "제1막: 시들어가는 겨울밤",
+      "beforeRows": 2634,
+      "afterRows": 2646,
+      "confirmedRows": 1421,
+      "confirmedOccurrences": 1512,
+      "confirmedEdges": 530,
+      "confirmedChoiceResponses": 15,
+      "previousUnknownRows": 351,
+      "newlyPlacedRows": 203,
+      "totalExecutionPlacedRows": 203,
+      "newlyPlacedExistingRows": 191,
+      "newOfficialRows": 12,
+      "newlyPlacedNewRows": 12,
+      "remainingPreviousUnknownRows": 160,
+      "remainingUnknownRows": 160,
+      "placedBetweenWikiAnchors": 0,
+      "orderComparisons": {
+        "compatible-local-order": 314
+      },
+      "tentativeItems": 2126
+    },
+    {
+      "file": "content/jarilo-records--city.json",
+      "title": "제2막: 동트는 태양 아래",
+      "beforeRows": 1494,
+      "afterRows": 1494,
+      "confirmedRows": 1229,
+      "confirmedOccurrences": 1315,
+      "confirmedEdges": 697,
+      "confirmedChoiceResponses": 80,
+      "previousUnknownRows": 189,
+      "newlyPlacedRows": 84,
+      "totalExecutionPlacedRows": 84,
+      "newlyPlacedExistingRows": 84,
+      "newOfficialRows": 0,
+      "newlyPlacedNewRows": 0,
+      "remainingPreviousUnknownRows": 105,
+      "remainingUnknownRows": 105,
+      "placedBetweenWikiAnchors": 1,
+      "orderComparisons": {
+        "compatible-local-order": 477,
+        "no-comparable-wiki-path": 22
+      },
+      "tentativeItems": 663
+    },
+    {
+      "file": "content/jarilo-records--winter-dream.json",
+      "title": "개척 후문: 겨울꿈에서 깨어난 순간",
+      "beforeRows": 1116,
+      "afterRows": 1118,
+      "confirmedRows": 658,
+      "confirmedOccurrences": 693,
+      "confirmedEdges": 568,
+      "confirmedChoiceResponses": 74,
+      "previousUnknownRows": 204,
+      "newlyPlacedRows": 85,
+      "totalExecutionPlacedRows": 85,
+      "newlyPlacedExistingRows": 83,
+      "newOfficialRows": 2,
+      "newlyPlacedNewRows": 2,
+      "remainingPreviousUnknownRows": 121,
+      "remainingUnknownRows": 121,
+      "placedBetweenWikiAnchors": 11,
+      "orderComparisons": {
+        "compatible-local-order": 269,
+        "no-comparable-wiki-path": 5
+      },
+      "tentativeItems": 43
+    },
+    {
+      "file": "content/luofu-records--harbor.json",
+      "title": "제1막: 바람 따라 즐기는 선경",
+      "beforeRows": 2118,
+      "afterRows": 2119,
+      "confirmedRows": 1596,
+      "confirmedOccurrences": 1735,
+      "confirmedEdges": 1065,
+      "confirmedChoiceResponses": 165,
+      "previousUnknownRows": 324,
+      "newlyPlacedRows": 118,
+      "totalExecutionPlacedRows": 118,
+      "newlyPlacedExistingRows": 117,
+      "newOfficialRows": 1,
+      "newlyPlacedNewRows": 1,
+      "remainingPreviousUnknownRows": 207,
+      "remainingUnknownRows": 207,
+      "placedBetweenWikiAnchors": 5,
+      "orderComparisons": {
+        "compatible-local-order": 649,
+        "no-comparable-wiki-path": 54
+      },
+      "tentativeItems": 1196
+    },
+    {
+      "file": "content/luofu-records--clouds.json",
+      "title": "제2막: 구름에 가려진 탑",
+      "beforeRows": 686,
+      "afterRows": 688,
+      "confirmedRows": 473,
+      "confirmedOccurrences": 575,
+      "confirmedEdges": 356,
+      "confirmedChoiceResponses": 19,
+      "previousUnknownRows": 25,
+      "newlyPlacedRows": 6,
+      "totalExecutionPlacedRows": 6,
+      "newlyPlacedExistingRows": 4,
+      "newOfficialRows": 2,
+      "newlyPlacedNewRows": 2,
+      "remainingPreviousUnknownRows": 21,
+      "remainingUnknownRows": 21,
+      "placedBetweenWikiAnchors": 0,
+      "orderComparisons": {
+        "compatible-local-order": 290,
+        "no-comparable-wiki-path": 8
+      },
+      "tentativeItems": 101
+    },
+    {
+      "file": "content/luofu-records--aftermath.json",
+      "title": "제3막: 재앙이 지나간 자리",
+      "beforeRows": 489,
+      "afterRows": 490,
+      "confirmedRows": 441,
+      "confirmedOccurrences": 461,
+      "confirmedEdges": 268,
+      "confirmedChoiceResponses": 48,
+      "previousUnknownRows": 40,
+      "newlyPlacedRows": 28,
+      "totalExecutionPlacedRows": 28,
+      "newlyPlacedExistingRows": 27,
+      "newOfficialRows": 1,
+      "newlyPlacedNewRows": 1,
+      "remainingPreviousUnknownRows": 13,
+      "remainingUnknownRows": 13,
+      "placedBetweenWikiAnchors": 2,
+      "orderComparisons": {
+        "compatible-local-order": 149,
+        "no-comparable-wiki-path": 25
+      },
+      "tentativeItems": 110
+    },
+    {
+      "file": "content/luofu-records--foxian-tale.json",
+      "title": "개척 후문: 호재지이",
+      "beforeRows": 2055,
+      "afterRows": 2071,
+      "confirmedRows": 1538,
+      "confirmedOccurrences": 1722,
+      "confirmedEdges": 767,
+      "confirmedChoiceResponses": 106,
+      "previousUnknownRows": 263,
+      "newlyPlacedRows": 195,
+      "totalExecutionPlacedRows": 195,
+      "newlyPlacedExistingRows": 179,
+      "newOfficialRows": 16,
+      "newlyPlacedNewRows": 16,
+      "remainingPreviousUnknownRows": 84,
+      "remainingUnknownRows": 84,
+      "placedBetweenWikiAnchors": 1,
+      "orderComparisons": {
+        "compatible-local-order": 482,
+        "no-comparable-wiki-path": 42
+      },
+      "tentativeItems": 893
+    },
+    {
+      "file": "content/luofu-records--swords-upper.json",
+      "title": "개척 후문: 청천 위 교차하는 칼끝·상",
+      "beforeRows": 1615,
+      "afterRows": 1615,
+      "confirmedRows": 479,
+      "confirmedOccurrences": 518,
+      "confirmedEdges": 356,
+      "confirmedChoiceResponses": 43,
+      "previousUnknownRows": 196,
+      "newlyPlacedRows": 13,
+      "totalExecutionPlacedRows": 13,
+      "newlyPlacedExistingRows": 13,
+      "newOfficialRows": 0,
+      "newlyPlacedNewRows": 0,
+      "remainingPreviousUnknownRows": 183,
+      "remainingUnknownRows": 183,
+      "placedBetweenWikiAnchors": 0,
+      "orderComparisons": {
+        "compatible-local-order": 250,
+        "no-comparable-wiki-path": 4
+      },
+      "tentativeItems": 440
+    },
+    {
+      "file": "content/luofu-records--swords-lower.json",
+      "title": "개척 후문: 청천 위 교차하는 칼끝·하",
+      "beforeRows": 1283,
+      "afterRows": 1283,
+      "confirmedRows": 293,
+      "confirmedOccurrences": 315,
+      "confirmedEdges": 117,
+      "confirmedChoiceResponses": 7,
+      "previousUnknownRows": 108,
+      "newlyPlacedRows": 2,
+      "totalExecutionPlacedRows": 2,
+      "newlyPlacedExistingRows": 2,
+      "newOfficialRows": 0,
+      "newlyPlacedNewRows": 0,
+      "remainingPreviousUnknownRows": 106,
+      "remainingUnknownRows": 106,
+      "placedBetweenWikiAnchors": 0,
+      "orderComparisons": {
+        "compatible-local-order": 94,
+        "no-comparable-wiki-path": 4
+      },
+      "tentativeItems": 72
+    },
+    {
+      "file": "content/penacony-records--invitation.json",
+      "title": "제1막: 음향과 분노",
+      "beforeRows": 2408,
+      "afterRows": 2427,
+      "confirmedRows": 1340,
+      "confirmedOccurrences": 1611,
+      "confirmedEdges": 1101,
+      "confirmedChoiceResponses": 191,
+      "previousUnknownRows": 453,
+      "newlyPlacedRows": 103,
+      "totalExecutionPlacedRows": 103,
+      "newlyPlacedExistingRows": 84,
+      "newOfficialRows": 19,
+      "newlyPlacedNewRows": 19,
+      "remainingPreviousUnknownRows": 369,
+      "remainingUnknownRows": 369,
+      "placedBetweenWikiAnchors": 3,
+      "orderComparisons": {
+        "compatible-local-order": 522,
+        "no-comparable-wiki-path": 65
+      },
+      "tentativeItems": 1269
+    },
+    {
+      "file": "content/penacony-records--dream.json",
+      "title": "제2막: 비둘기 속의 고양이",
+      "beforeRows": 1843,
+      "afterRows": 1848,
+      "confirmedRows": 673,
+      "confirmedOccurrences": 800,
+      "confirmedEdges": 373,
+      "confirmedChoiceResponses": 16,
+      "previousUnknownRows": 302,
+      "newlyPlacedRows": 18,
+      "totalExecutionPlacedRows": 18,
+      "newlyPlacedExistingRows": 13,
+      "newOfficialRows": 5,
+      "newlyPlacedNewRows": 5,
+      "remainingPreviousUnknownRows": 289,
+      "remainingUnknownRows": 289,
+      "placedBetweenWikiAnchors": 1,
+      "orderComparisons": {
+        "compatible-local-order": 255,
+        "no-comparable-wiki-path": 3
+      },
+      "tentativeItems": 1665
+    },
+    {
+      "file": "content/penacony-records--our-time.json",
+      "title": "제3막: 우리들의 시대에",
+      "beforeRows": 2407,
+      "afterRows": 2408,
+      "confirmedRows": 472,
+      "confirmedOccurrences": 483,
+      "confirmedEdges": 248,
+      "confirmedChoiceResponses": 15,
+      "previousUnknownRows": 247,
+      "newlyPlacedRows": 38,
+      "totalExecutionPlacedRows": 38,
+      "newlyPlacedExistingRows": 37,
+      "newOfficialRows": 1,
+      "newlyPlacedNewRows": 1,
+      "remainingPreviousUnknownRows": 210,
+      "remainingUnknownRows": 210,
+      "placedBetweenWikiAnchors": 2,
+      "orderComparisons": {
+        "compatible-local-order": 62,
+        "potential-order-conflict; invocation-scope-review-required": 1,
+        "no-comparable-wiki-path": 1
+      },
+      "tentativeItems": 331
+    },
+    {
+      "file": "content/penacony-records--farewell.json",
+      "title": "제4막: 안녕, 페나코니",
+      "beforeRows": 987,
+      "afterRows": 987,
+      "confirmedRows": 234,
+      "confirmedOccurrences": 269,
+      "confirmedEdges": 82,
+      "confirmedChoiceResponses": 7,
+      "previousUnknownRows": 171,
+      "newlyPlacedRows": 8,
+      "totalExecutionPlacedRows": 8,
+      "newlyPlacedExistingRows": 8,
+      "newOfficialRows": 0,
+      "newlyPlacedNewRows": 0,
+      "remainingPreviousUnknownRows": 163,
+      "remainingUnknownRows": 163,
+      "placedBetweenWikiAnchors": 0,
+      "orderComparisons": {
+        "compatible-local-order": 20,
+        "no-comparable-wiki-path": 2
+      },
+      "tentativeItems": 120
+    },
+    {
+      "file": "content/penacony-records--nana-outrage.json",
+      "title": "개척 후문: 나나웃레이지·인의(忍義) 없는 전쟁",
+      "beforeRows": 2228,
+      "afterRows": 2247,
+      "confirmedRows": 456,
+      "confirmedOccurrences": 488,
+      "confirmedEdges": 102,
+      "confirmedChoiceResponses": 11,
+      "previousUnknownRows": 249,
+      "newlyPlacedRows": 35,
+      "totalExecutionPlacedRows": 35,
+      "newlyPlacedExistingRows": 16,
+      "newOfficialRows": 19,
+      "newlyPlacedNewRows": 19,
+      "remainingPreviousUnknownRows": 233,
+      "remainingUnknownRows": 233,
+      "placedBetweenWikiAnchors": 0,
+      "orderComparisons": {
+        "compatible-local-order": 59,
+        "no-comparable-wiki-path": 9
+      },
+      "tentativeItems": 269
+    },
+    {
+      "file": "content/penacony-records--eighth-day.json",
+      "title": "제5막: 여덟째 날에 오르는 여정",
+      "beforeRows": 914,
+      "afterRows": 914,
+      "confirmedRows": 103,
+      "confirmedOccurrences": 104,
+      "confirmedEdges": 42,
+      "confirmedChoiceResponses": 2,
+      "previousUnknownRows": 75,
+      "newlyPlacedRows": 0,
+      "totalExecutionPlacedRows": 0,
+      "newlyPlacedExistingRows": 0,
+      "newOfficialRows": 0,
+      "newlyPlacedNewRows": 0,
+      "remainingPreviousUnknownRows": 75,
+      "remainingUnknownRows": 75,
+      "placedBetweenWikiAnchors": 0,
+      "orderComparisons": {
+        "compatible-local-order": 37,
+        "no-comparable-wiki-path": 4
+      },
+      "tentativeItems": 53
+    },
+    {
+      "file": "content/penacony-records--dream-grail.json",
+      "title": "개척 후문: 좋은꿈과 성배",
+      "beforeRows": 1528,
+      "afterRows": 1538,
+      "confirmedRows": 262,
+      "confirmedOccurrences": 265,
+      "confirmedEdges": 12,
+      "confirmedChoiceResponses": 0,
+      "previousUnknownRows": 191,
+      "newlyPlacedRows": 48,
+      "totalExecutionPlacedRows": 48,
+      "newlyPlacedExistingRows": 38,
+      "newOfficialRows": 10,
+      "newlyPlacedNewRows": 10,
+      "remainingPreviousUnknownRows": 153,
+      "remainingUnknownRows": 153,
+      "placedBetweenWikiAnchors": 0,
+      "orderComparisons": {
+        "compatible-local-order": 11
+      },
+      "tentativeItems": 140
+    },
+    {
+      "file": "content/penacony-records--memories-opening.json",
+      "title": "종말 임무: 기억은 꿈의 오프닝",
+      "beforeRows": 1803,
+      "afterRows": 1803,
+      "confirmedRows": 106,
+      "confirmedOccurrences": 108,
+      "confirmedEdges": 9,
+      "confirmedChoiceResponses": 0,
+      "previousUnknownRows": 190,
+      "newlyPlacedRows": 4,
+      "totalExecutionPlacedRows": 4,
+      "newlyPlacedExistingRows": 4,
+      "newOfficialRows": 0,
+      "newlyPlacedNewRows": 0,
+      "remainingPreviousUnknownRows": 186,
+      "remainingUnknownRows": 186,
+      "placedBetweenWikiAnchors": 0,
+      "orderComparisons": {
+        "compatible-local-order": 6
+      },
+      "tentativeItems": 74
+    },
+    {
+      "file": "content/amphoreus-records--journey.json",
+      "title": "제1막: 불을 쫓는 낙목의 영웅기",
+      "beforeRows": 3769,
+      "afterRows": 3769,
+      "confirmedRows": 1038,
+      "confirmedOccurrences": 1062,
+      "confirmedEdges": 425,
+      "confirmedChoiceResponses": 50,
+      "previousUnknownRows": 555,
+      "newlyPlacedRows": 42,
+      "totalExecutionPlacedRows": 42,
+      "newlyPlacedExistingRows": 42,
+      "newOfficialRows": 0,
+      "newlyPlacedNewRows": 0,
+      "remainingPreviousUnknownRows": 513,
+      "remainingUnknownRows": 513,
+      "placedBetweenWikiAnchors": 0,
+      "orderComparisons": {
+        "compatible-local-order": 209,
+        "no-comparable-wiki-path": 20,
+        "potential-order-conflict; invocation-scope-review-required": 2
+      },
+      "tentativeItems": 595
+    },
+    {
+      "file": "content/amphoreus-records--gate-throne.json",
+      "title": "제2막: 문의 시작, 왕좌의 종말",
+      "beforeRows": 2652,
+      "afterRows": 2654,
+      "confirmedRows": 647,
+      "confirmedOccurrences": 677,
+      "confirmedEdges": 321,
+      "confirmedChoiceResponses": 38,
+      "previousUnknownRows": 298,
+      "newlyPlacedRows": 22,
+      "totalExecutionPlacedRows": 22,
+      "newlyPlacedExistingRows": 20,
+      "newOfficialRows": 2,
+      "newlyPlacedNewRows": 2,
+      "remainingPreviousUnknownRows": 278,
+      "remainingUnknownRows": 278,
+      "placedBetweenWikiAnchors": 3,
+      "orderComparisons": {
+        "compatible-local-order": 204,
+        "no-comparable-wiki-path": 7
+      },
+      "tentativeItems": 677
+    },
+    {
+      "file": "content/amphoreus-records--flowers.json",
+      "title": "제3막: 안식의 땅의 꽃밭을 지나",
+      "beforeRows": 2737,
+      "afterRows": 2741,
+      "confirmedRows": 368,
+      "confirmedOccurrences": 377,
+      "confirmedEdges": 83,
+      "confirmedChoiceResponses": 8,
+      "previousUnknownRows": 239,
+      "newlyPlacedRows": 27,
+      "totalExecutionPlacedRows": 27,
+      "newlyPlacedExistingRows": 23,
+      "newOfficialRows": 4,
+      "newlyPlacedNewRows": 4,
+      "remainingPreviousUnknownRows": 216,
+      "remainingUnknownRows": 216,
+      "placedBetweenWikiAnchors": 0,
+      "orderComparisons": {
+        "compatible-local-order": 58,
+        "no-comparable-wiki-path": 1
+      },
+      "tentativeItems": 79
+    },
+    {
+      "file": "content/amphoreus-records--dawn-fall.json",
+      "title": "제4막: 여명이 틀 무렵의 추락",
+      "beforeRows": 2612,
+      "afterRows": 2613,
+      "confirmedRows": 255,
+      "confirmedOccurrences": 256,
+      "confirmedEdges": 111,
+      "confirmedChoiceResponses": 1,
+      "previousUnknownRows": 967,
+      "newlyPlacedRows": 31,
+      "totalExecutionPlacedRows": 31,
+      "newlyPlacedExistingRows": 30,
+      "newOfficialRows": 1,
+      "newlyPlacedNewRows": 1,
+      "remainingPreviousUnknownRows": 937,
+      "remainingUnknownRows": 937,
+      "placedBetweenWikiAnchors": 0,
+      "orderComparisons": {
+        "compatible-local-order": 15
+      },
+      "tentativeItems": 146
+    },
+    {
+      "file": "content/amphoreus-records--sun-destruction.json",
+      "title": "제5막: 태양이 파멸로 향하기에",
+      "beforeRows": 1554,
+      "afterRows": 1554,
+      "confirmedRows": 181,
+      "confirmedOccurrences": 181,
+      "confirmedEdges": 16,
+      "confirmedChoiceResponses": 0,
+      "previousUnknownRows": 138,
+      "newlyPlacedRows": 5,
+      "totalExecutionPlacedRows": 5,
+      "newlyPlacedExistingRows": 5,
+      "newOfficialRows": 0,
+      "newlyPlacedNewRows": 0,
+      "remainingPreviousUnknownRows": 133,
+      "remainingUnknownRows": 133,
+      "placedBetweenWikiAnchors": 0,
+      "orderComparisons": {
+        "compatible-local-order": 16
+      },
+      "tentativeItems": 23
+    },
+    {
+      "file": "content/amphoreus-records--before-heroes-die.json",
+      "title": "제6막: 영웅은 죽기 전에",
+      "beforeRows": 2149,
+      "afterRows": 2152,
+      "confirmedRows": 272,
+      "confirmedOccurrences": 272,
+      "confirmedEdges": 30,
+      "confirmedChoiceResponses": 0,
+      "previousUnknownRows": 276,
+      "newlyPlacedRows": 3,
+      "totalExecutionPlacedRows": 3,
+      "newlyPlacedExistingRows": 0,
+      "newOfficialRows": 3,
+      "newlyPlacedNewRows": 3,
+      "remainingPreviousUnknownRows": 276,
+      "remainingUnknownRows": 276,
+      "placedBetweenWikiAnchors": 0,
+      "orderComparisons": {
+        "compatible-local-order": 19
+      },
+      "tentativeItems": 102
+    },
+    {
+      "file": "content/amphoreus-records--long-night.json",
+      "title": "제7막: 긴 밤 속에 다시 대지로",
+      "beforeRows": 1649,
+      "afterRows": 1649,
+      "confirmedRows": 152,
+      "confirmedOccurrences": 155,
+      "confirmedEdges": 27,
+      "confirmedChoiceResponses": 4,
+      "previousUnknownRows": 160,
+      "newlyPlacedRows": 9,
+      "totalExecutionPlacedRows": 9,
+      "newlyPlacedExistingRows": 9,
+      "newOfficialRows": 0,
+      "newlyPlacedNewRows": 0,
+      "remainingPreviousUnknownRows": 151,
+      "remainingUnknownRows": 151,
+      "placedBetweenWikiAnchors": 0,
+      "orderComparisons": {
+        "compatible-local-order": 9,
+        "no-comparable-wiki-path": 1
+      },
+      "tentativeItems": 82
+    },
+    {
+      "file": "content/amphoreus-records--yesterdays-tomorrow.json",
+      "title": "제8막: 어제의 내일이 되어",
+      "beforeRows": 1724,
+      "afterRows": 1732,
+      "confirmedRows": 242,
+      "confirmedOccurrences": 252,
+      "confirmedEdges": 28,
+      "confirmedChoiceResponses": 0,
+      "previousUnknownRows": 128,
+      "newlyPlacedRows": 16,
+      "totalExecutionPlacedRows": 16,
+      "newlyPlacedExistingRows": 9,
+      "newOfficialRows": 8,
+      "newlyPlacedNewRows": 7,
+      "remainingPreviousUnknownRows": 119,
+      "remainingUnknownRows": 120,
+      "placedBetweenWikiAnchors": 0,
+      "orderComparisons": {
+        "compatible-local-order": 27
+      },
+      "tentativeItems": 45
+    },
+    {
+      "file": "content/amphoreus-records--as-i-write.json",
+      "title": "모험 임무: 내가 쓰는 대로",
+      "beforeRows": 336,
+      "afterRows": 336,
+      "confirmedRows": 0,
+      "confirmedOccurrences": 0,
+      "confirmedEdges": 0,
+      "confirmedChoiceResponses": 0,
+      "previousUnknownRows": 50,
+      "newlyPlacedRows": 0,
+      "totalExecutionPlacedRows": 0,
+      "newlyPlacedExistingRows": 0,
+      "newOfficialRows": 0,
+      "newlyPlacedNewRows": 0,
+      "remainingPreviousUnknownRows": 50,
+      "remainingUnknownRows": 50,
+      "placedBetweenWikiAnchors": 0,
+      "orderComparisons": {},
+      "tentativeItems": 0
+    },
+    {
+      "file": "content/paradise-records--paradise.json",
+      "title": "제1막: 낙원에 오신 걸 환영합니다",
+      "beforeRows": 2691,
+      "afterRows": 2691,
+      "confirmedRows": 613,
+      "confirmedOccurrences": 625,
+      "confirmedEdges": 148,
+      "confirmedChoiceResponses": 21,
+      "previousUnknownRows": 263,
+      "newlyPlacedRows": 22,
+      "totalExecutionPlacedRows": 22,
+      "newlyPlacedExistingRows": 22,
+      "newOfficialRows": 0,
+      "newlyPlacedNewRows": 0,
+      "remainingPreviousUnknownRows": 241,
+      "remainingUnknownRows": 241,
+      "placedBetweenWikiAnchors": 0,
+      "orderComparisons": {
+        "compatible-local-order": 84,
+        "no-comparable-wiki-path": 12
+      },
+      "tentativeItems": 197
+    },
+    {
+      "file": "content/paradise-records--astropolis.json",
+      "title": "제2막: 새벽에 바치는 폭주",
+      "beforeRows": 2264,
+      "afterRows": 2266,
+      "confirmedRows": 499,
+      "confirmedOccurrences": 501,
+      "confirmedEdges": 65,
+      "confirmedChoiceResponses": 10,
+      "previousUnknownRows": 168,
+      "newlyPlacedRows": 11,
+      "totalExecutionPlacedRows": 11,
+      "newlyPlacedExistingRows": 9,
+      "newOfficialRows": 2,
+      "newlyPlacedNewRows": 2,
+      "remainingPreviousUnknownRows": 159,
+      "remainingUnknownRows": 159,
+      "placedBetweenWikiAnchors": 0,
+      "orderComparisons": {
+        "compatible-local-order": 30,
+        "no-comparable-wiki-path": 7
+      },
+      "tentativeItems": 84
+    },
+    {
+      "file": "content/paradise-records--laughter.json",
+      "title": "제3막: 그리하여, 웃음소리는 멈추지 않으리",
+      "beforeRows": 1546,
+      "afterRows": 1546,
+      "confirmedRows": 243,
+      "confirmedOccurrences": 262,
+      "confirmedEdges": 57,
+      "confirmedChoiceResponses": 3,
+      "previousUnknownRows": 219,
+      "newlyPlacedRows": 13,
+      "totalExecutionPlacedRows": 13,
+      "newlyPlacedExistingRows": 13,
+      "newOfficialRows": 0,
+      "newlyPlacedNewRows": 0,
+      "remainingPreviousUnknownRows": 206,
+      "remainingUnknownRows": 206,
+      "placedBetweenWikiAnchors": 1,
+      "orderComparisons": {
+        "compatible-local-order": 22,
+        "no-comparable-wiki-path": 3
+      },
+      "tentativeItems": 118
+    },
+    {
+      "file": "content/paradise-records--river-of-oblivion.json",
+      "title": "제4막: 산 자의 망천에 잠겨",
+      "beforeRows": 1377,
+      "afterRows": 1377,
+      "confirmedRows": 240,
+      "confirmedOccurrences": 251,
+      "confirmedEdges": 74,
+      "confirmedChoiceResponses": 15,
+      "previousUnknownRows": 83,
+      "newlyPlacedRows": 9,
+      "totalExecutionPlacedRows": 9,
+      "newlyPlacedExistingRows": 9,
+      "newOfficialRows": 0,
+      "newlyPlacedNewRows": 0,
+      "remainingPreviousUnknownRows": 74,
+      "remainingUnknownRows": 74,
+      "placedBetweenWikiAnchors": 0,
+      "orderComparisons": {
+        "compatible-local-order": 38,
+        "no-comparable-wiki-path": 8
+      },
+      "tentativeItems": 39
+    },
+    {
+      "file": "content/paradise-records--silent-horn.json",
+      "title": "제5막: 적막이 깃든 순간, 울리는 경적",
+      "beforeRows": 1238,
+      "afterRows": 1238,
+      "confirmedRows": 328,
+      "confirmedOccurrences": 328,
+      "confirmedEdges": 268,
+      "confirmedChoiceResponses": 3,
+      "previousUnknownRows": 87,
+      "newlyPlacedRows": 12,
+      "totalExecutionPlacedRows": 12,
+      "newlyPlacedExistingRows": 12,
+      "newOfficialRows": 0,
+      "newlyPlacedNewRows": 0,
+      "remainingPreviousUnknownRows": 75,
+      "remainingUnknownRows": 75,
+      "placedBetweenWikiAnchors": 3,
+      "orderComparisons": {
+        "compatible-local-order": 235,
+        "no-comparable-wiki-path": 2
+      },
+      "tentativeItems": 102
+    },
+    {
+      "file": "content/paradise-records--celestial-gambit.json",
+      "title": "제6막: 천성에 던진 승부수",
+      "beforeRows": 1051,
+      "afterRows": 1051,
+      "confirmedRows": 3,
+      "confirmedOccurrences": 3,
+      "confirmedEdges": 1,
+      "confirmedChoiceResponses": 0,
+      "previousUnknownRows": 127,
+      "newlyPlacedRows": 0,
+      "totalExecutionPlacedRows": 0,
+      "newlyPlacedExistingRows": 0,
+      "newOfficialRows": 0,
+      "newlyPlacedNewRows": 0,
+      "remainingPreviousUnknownRows": 127,
+      "remainingUnknownRows": 127,
+      "placedBetweenWikiAnchors": 0,
+      "orderComparisons": {
+        "compatible-local-order": 1
+      },
+      "tentativeItems": 0
+    },
+    {
+      "file": "content/paradise-records--penniless-billionaire.json",
+      "title": "개척 후문: 무일푼 재벌 프로젝트",
+      "beforeRows": 1120,
+      "afterRows": 1120,
+      "confirmedRows": 0,
+      "confirmedOccurrences": 0,
+      "confirmedEdges": 0,
+      "confirmedChoiceResponses": 0,
+      "previousUnknownRows": 57,
+      "newlyPlacedRows": 0,
+      "totalExecutionPlacedRows": 0,
+      "newlyPlacedExistingRows": 0,
+      "newOfficialRows": 0,
+      "newlyPlacedNewRows": 0,
+      "remainingPreviousUnknownRows": 57,
+      "remainingUnknownRows": 57,
+      "placedBetweenWikiAnchors": 0,
+      "orderComparisons": {},
+      "tentativeItems": 0
+    },
+    {
+      "file": "content/paradise-records--before-moonrise.json",
+      "title": "제7막: 달 뜨기 전, 괴수와 춤을",
+      "beforeRows": 1393,
+      "afterRows": 1393,
+      "confirmedRows": 0,
+      "confirmedOccurrences": 0,
+      "confirmedEdges": 0,
+      "confirmedChoiceResponses": 0,
+      "previousUnknownRows": 1,
+      "newlyPlacedRows": 0,
+      "totalExecutionPlacedRows": 0,
+      "newlyPlacedExistingRows": 0,
+      "newOfficialRows": 0,
+      "newlyPlacedNewRows": 0,
+      "remainingPreviousUnknownRows": 1,
+      "remainingUnknownRows": 1,
+      "placedBetweenWikiAnchors": 0,
+      "orderComparisons": {},
+      "tentativeItems": 0
+    }
+  ],
+  "admissions": [
+    {
+      "file": "content/station-departure--arrival.json",
+      "rowId": "official-station-departure-arrival-talk-100050119",
+      "talkId": 100050119,
+      "missionId": 1000501,
+      "source": "Config/Level/Mission/1000501/Act/Act100050125.json",
+      "pointer": "/OnStartSequece/0/TaskList/4/OptionList/1"
+    },
+    {
+      "file": "content/station-departure--arrival.json",
+      "rowId": "official-station-departure-arrival-talk-100040472",
+      "talkId": 100040472,
+      "missionId": 1000501,
+      "source": "Config/Level/Mission/1000501/Act/Act100050125.json",
+      "pointer": "/OnStartSequece/0/TaskList/4/OptionList/3"
+    },
+    {
+      "file": "content/station-departure--arrival.json",
+      "rowId": "official-station-departure-arrival-talk-100050125",
+      "talkId": 100050125,
+      "missionId": 1000501,
+      "source": "Config/Level/Mission/1000501/Act/Act100050125.json",
+      "pointer": "/OnStartSequece/2/TaskList/3/OptionList/1"
+    },
+    {
+      "file": "content/station-departure--arrival.json",
+      "rowId": "official-station-departure-arrival-talk-100050126",
+      "talkId": 100050126,
+      "missionId": 1000501,
+      "source": "Config/Level/Mission/1000501/Act/Act100050125.json",
+      "pointer": "/OnStartSequece/4/TaskList/2/SimpleTalkList/0"
+    },
+    {
+      "file": "content/station-departure--arrival.json",
+      "rowId": "official-station-departure-arrival-talk-100050127",
+      "talkId": 100050127,
+      "missionId": 1000501,
+      "source": "Config/Level/Mission/1000501/Act/Act100050125.json",
+      "pointer": "/OnStartSequece/4/TaskList/2/SimpleTalkList/1"
+    },
+    {
+      "file": "content/station-departure--arrival.json",
+      "rowId": "official-station-departure-arrival-talk-100050128",
+      "talkId": 100050128,
+      "missionId": 1000501,
+      "source": "Config/Level/Mission/1000501/Act/Act100050125.json",
+      "pointer": "/OnStartSequece/4/TaskList/2/SimpleTalkList/2"
+    },
+    {
+      "file": "content/station-departure--arrival.json",
+      "rowId": "official-station-departure-arrival-talk-100050129",
+      "talkId": 100050129,
+      "missionId": 1000501,
+      "source": "Config/Level/Mission/1000501/Act/Act100050125.json",
+      "pointer": "/OnStartSequece/4/TaskList/2/SimpleTalkList/3"
+    },
+    {
+      "file": "content/station-departure--arrival.json",
+      "rowId": "official-station-departure-arrival-talk-100040451",
+      "talkId": 100040451,
+      "missionId": 1000501,
+      "source": "Config/Level/Mission/1000501/Act/Act100050125.json",
+      "pointer": "/OnStartSequece/9/TaskList/1/OptionList/0"
+    },
+    {
+      "file": "content/station-departure--arrival.json",
+      "rowId": "official-station-departure-arrival-talk-100040475",
+      "talkId": 100040475,
+      "missionId": 1000501,
+      "source": "Config/Level/Mission/1000501/Act/Act100050125.json",
+      "pointer": "/OnStartSequece/9/TaskList/1/OptionList/1"
+    },
+    {
+      "file": "content/station-departure--arrival.json",
+      "rowId": "official-station-departure-arrival-talk-100040456",
+      "talkId": 100040456,
+      "missionId": 1000501,
+      "source": "Config/Level/Mission/1000501/Act/Act100050125.json",
+      "pointer": "/OnStartSequece/9/TaskList/1/OptionList/2"
+    },
+    {
+      "file": "content/station-departure--arrival.json",
+      "rowId": "official-station-departure-arrival-talk-100040460",
+      "talkId": 100040460,
+      "missionId": 1000501,
+      "source": "Config/Level/Mission/1000501/Act/Act100050125.json",
+      "pointer": "/OnStartSequece/9/TaskList/1/OptionList/3"
+    },
+    {
+      "file": "content/station-departure--arrival.json",
+      "rowId": "official-station-departure-arrival-talk-100040470",
+      "talkId": 100040470,
+      "missionId": 1000501,
+      "source": "Config/Level/Mission/1000501/Act/Act100050125.json",
+      "pointer": "/OnStartSequece/9/TaskList/1/OptionList/4"
+    },
+    {
+      "file": "content/station-departure--arrival.json",
+      "rowId": "official-station-departure-arrival-talk-100040476",
+      "talkId": 100040476,
+      "missionId": 1000501,
+      "source": "Config/Level/Mission/1000501/Act/Act100050125.json",
+      "pointer": "/OnStartSequece/10/TaskList/2/SimpleTalkList/0"
+    },
+    {
+      "file": "content/station-departure--arrival.json",
+      "rowId": "official-station-departure-arrival-talk-100040477",
+      "talkId": 100040477,
+      "missionId": 1000501,
+      "source": "Config/Level/Mission/1000501/Act/Act100050125.json",
+      "pointer": "/OnStartSequece/10/TaskList/2/SimpleTalkList/1"
+    },
+    {
+      "file": "content/station-departure--arrival.json",
+      "rowId": "official-station-departure-arrival-talk-100040478",
+      "talkId": 100040478,
+      "missionId": 1000501,
+      "source": "Config/Level/Mission/1000501/Act/Act100050125.json",
+      "pointer": "/OnStartSequece/10/TaskList/2/SimpleTalkList/2"
+    },
+    {
+      "file": "content/station-departure--arrival.json",
+      "rowId": "official-station-departure-arrival-talk-100040452",
+      "talkId": 100040452,
+      "missionId": 1000501,
+      "source": "Config/Level/Mission/1000501/Act/Act100050125.json",
+      "pointer": "/OnStartSequece/11/TaskList/2/SimpleTalkList/0"
+    },
+    {
+      "file": "content/station-departure--arrival.json",
+      "rowId": "official-station-departure-arrival-talk-100040453",
+      "talkId": 100040453,
+      "missionId": 1000501,
+      "source": "Config/Level/Mission/1000501/Act/Act100050125.json",
+      "pointer": "/OnStartSequece/11/TaskList/2/SimpleTalkList/1"
+    },
+    {
+      "file": "content/station-departure--arrival.json",
+      "rowId": "official-station-departure-arrival-talk-100040454",
+      "talkId": 100040454,
+      "missionId": 1000501,
+      "source": "Config/Level/Mission/1000501/Act/Act100050125.json",
+      "pointer": "/OnStartSequece/11/TaskList/2/SimpleTalkList/2"
+    },
+    {
+      "file": "content/station-departure--arrival.json",
+      "rowId": "official-station-departure-arrival-talk-100040455",
+      "talkId": 100040455,
+      "missionId": 1000501,
+      "source": "Config/Level/Mission/1000501/Act/Act100050125.json",
+      "pointer": "/OnStartSequece/11/TaskList/2/SimpleTalkList/3"
+    },
+    {
+      "file": "content/station-departure--arrival.json",
+      "rowId": "official-station-departure-arrival-talk-100040457",
+      "talkId": 100040457,
+      "missionId": 1000501,
+      "source": "Config/Level/Mission/1000501/Act/Act100050125.json",
+      "pointer": "/OnStartSequece/12/TaskList/2/SimpleTalkList/0"
+    },
+    {
+      "file": "content/station-departure--arrival.json",
+      "rowId": "official-station-departure-arrival-talk-100040458",
+      "talkId": 100040458,
+      "missionId": 1000501,
+      "source": "Config/Level/Mission/1000501/Act/Act100050125.json",
+      "pointer": "/OnStartSequece/12/TaskList/2/SimpleTalkList/1"
+    },
+    {
+      "file": "content/station-departure--arrival.json",
+      "rowId": "official-station-departure-arrival-talk-100040459",
+      "talkId": 100040459,
+      "missionId": 1000501,
+      "source": "Config/Level/Mission/1000501/Act/Act100050125.json",
+      "pointer": "/OnStartSequece/12/TaskList/2/SimpleTalkList/2"
+    },
+    {
+      "file": "content/station-departure--arrival.json",
+      "rowId": "official-station-departure-arrival-talk-100040461",
+      "talkId": 100040461,
+      "missionId": 1000501,
+      "source": "Config/Level/Mission/1000501/Act/Act100050125.json",
+      "pointer": "/OnStartSequece/13/TaskList/1/SimpleTalkList/0"
+    },
+    {
+      "file": "content/station-departure--arrival.json",
+      "rowId": "official-station-departure-arrival-talk-100040462",
+      "talkId": 100040462,
+      "missionId": 1000501,
+      "source": "Config/Level/Mission/1000501/Act/Act100050125.json",
+      "pointer": "/OnStartSequece/13/TaskList/3/OptionList/0"
+    },
+    {
+      "file": "content/station-departure--arrival.json",
+      "rowId": "official-station-departure-arrival-talk-100040464",
+      "talkId": 100040464,
+      "missionId": 1000501,
+      "source": "Config/Level/Mission/1000501/Act/Act100050125.json",
+      "pointer": "/OnStartSequece/13/TaskList/3/OptionList/1"
+    },
+    {
+      "file": "content/station-departure--arrival.json",
+      "rowId": "official-station-departure-arrival-talk-100040463",
+      "talkId": 100040463,
+      "missionId": 1000501,
+      "source": "Config/Level/Mission/1000501/Act/Act100050125.json",
+      "pointer": "/OnStartSequece/14/TaskList/1/SimpleTalkList/0"
+    },
+    {
+      "file": "content/station-departure--arrival.json",
+      "rowId": "official-station-departure-arrival-talk-100040466",
+      "talkId": 100040466,
+      "missionId": 1000501,
+      "source": "Config/Level/Mission/1000501/Act/Act100050125.json",
+      "pointer": "/OnStartSequece/14/TaskList/3/SimpleTalkList/0"
+    },
+    {
+      "file": "content/station-departure--arrival.json",
+      "rowId": "official-station-departure-arrival-talk-100040467",
+      "talkId": 100040467,
+      "missionId": 1000501,
+      "source": "Config/Level/Mission/1000501/Act/Act100050125.json",
+      "pointer": "/OnStartSequece/14/TaskList/3/SimpleTalkList/1"
+    },
+    {
+      "file": "content/station-departure--arrival.json",
+      "rowId": "official-station-departure-arrival-talk-100040468",
+      "talkId": 100040468,
+      "missionId": 1000501,
+      "source": "Config/Level/Mission/1000501/Act/Act100050125.json",
+      "pointer": "/OnStartSequece/14/TaskList/3/SimpleTalkList/2"
+    },
+    {
+      "file": "content/station-departure--arrival.json",
+      "rowId": "official-station-departure-arrival-talk-100040469",
+      "talkId": 100040469,
+      "missionId": 1000501,
+      "source": "Config/Level/Mission/1000501/Act/Act100050125.json",
+      "pointer": "/OnStartSequece/14/TaskList/3/SimpleTalkList/3"
+    },
+    {
+      "file": "content/station-departure--arrival.json",
+      "rowId": "official-station-departure-arrival-talk-100040465",
+      "talkId": 100040465,
+      "missionId": 1000501,
+      "source": "Config/Level/Mission/1000501/Act/Act100050125.json",
+      "pointer": "/OnStartSequece/15/TaskList/1/SimpleTalkList/0"
+    },
+    {
+      "file": "content/station-departure--arrival.json",
+      "rowId": "official-station-departure-arrival-talk-100050201",
+      "talkId": 100050201,
+      "missionId": 1000502,
+      "source": "Config/Level/Mission/1000502/Act/Act100050202.json",
+      "pointer": "/OnStartSequece/0/TaskList/4/SimpleTalkList/0"
+    },
+    {
+      "file": "content/station-departure--arrival.json",
+      "rowId": "official-station-departure-arrival-talk-100050202",
+      "talkId": 100050202,
+      "missionId": 1000502,
+      "source": "Config/Level/Mission/1000502/Act/Act100050202.json",
+      "pointer": "/OnStartSequece/0/TaskList/4/SimpleTalkList/1"
+    },
+    {
+      "file": "content/station-departure--arrival.json",
+      "rowId": "official-station-departure-arrival-talk-100050203",
+      "talkId": 100050203,
+      "missionId": 1000502,
+      "source": "Config/Level/Mission/1000502/Act/Act100050202.json",
+      "pointer": "/OnStartSequece/0/TaskList/4/SimpleTalkList/2"
+    },
+    {
+      "file": "content/station-departure--arrival.json",
+      "rowId": "official-station-departure-arrival-talk-100050204",
+      "talkId": 100050204,
+      "missionId": 1000502,
+      "source": "Config/Level/Mission/1000502/Act/Act100050202.json",
+      "pointer": "/OnStartSequece/0/TaskList/4/SimpleTalkList/3"
+    },
+    {
+      "file": "content/station-departure--arrival.json",
+      "rowId": "official-station-departure-arrival-talk-100050205",
+      "talkId": 100050205,
+      "missionId": 1000502,
+      "source": "Config/Level/Mission/1000502/Act/Act100050202.json",
+      "pointer": "/OnStartSequece/0/TaskList/4/SimpleTalkList/4"
+    },
+    {
+      "file": "content/station-departure--arrival.json",
+      "rowId": "official-station-departure-arrival-talk-100020302",
+      "talkId": 100020302,
+      "missionId": 1000201,
+      "source": "Story/Mission/1000201/Story100020109.json",
+      "pointer": "/OnStartSequece/0/TaskList/3/OptionList/0"
+    },
+    {
+      "file": "content/station-departure--arrival.json",
+      "rowId": "official-station-departure-arrival-talk-100000417",
+      "talkId": 100000417,
+      "missionId": 1010001,
+      "source": "Story/Mission/1010001/Story101000103.json",
+      "pointer": "/OnStartSequece/6/TaskList/2/OptionList/0"
+    },
+    {
+      "file": "content/station-departure--arrival.json",
+      "rowId": "official-station-departure-arrival-talk-100000419",
+      "talkId": 100000419,
+      "missionId": 1010001,
+      "source": "Story/Mission/1010001/Story101000103.json",
+      "pointer": "/OnStartSequece/6/TaskList/2/OptionList/1"
+    },
+    {
+      "file": "content/station-departure--platform.json",
+      "rowId": "official-station-departure-platform-talk-200090524",
+      "talkId": 200090524,
+      "missionId": 2000902,
+      "source": "Config/Level/Mission/2000902/Mission_200090203.json",
+      "pointer": "/OnStartSequece/0/TaskList/2/SimpleTalkList/0"
+    },
+    {
+      "file": "content/station-departure--platform.json",
+      "rowId": "official-station-departure-platform-talk-200090906",
+      "talkId": 200090906,
+      "missionId": 2000902,
+      "source": "Config/Level/Mission/2000902/Mission_200090209.json",
+      "pointer": "/OnStartSequece/0/TaskList/3/SimpleTalkList/0"
+    },
+    {
+      "file": "content/station-departure--platform.json",
+      "rowId": "official-station-departure-platform-talk-200090851",
+      "talkId": 200090851,
+      "missionId": 2000902,
+      "source": "Config/Level/Mission/2000902/Mission_200090235.json",
+      "pointer": "/OnStartSequece/0/TaskList/1/SimpleTalkList/0"
+    },
+    {
+      "file": "content/station-departure--platform.json",
+      "rowId": "official-station-departure-platform-talk-200090552",
+      "talkId": 200090552,
+      "missionId": 2000902,
+      "source": "Config/Level/Mission/2000902/Mission_200090251.json",
+      "pointer": "/OnStartSequece/0/TaskList/0/SimpleTalkList/0"
+    },
+    {
+      "file": "content/station-departure--platform.json",
+      "rowId": "official-station-departure-platform-talk-200090553",
+      "talkId": 200090553,
+      "missionId": 2000902,
+      "source": "Config/Level/Mission/2000902/Mission_200090253.json",
+      "pointer": "/OnStartSequece/0/TaskList/0/SimpleTalkList/0"
+    },
+    {
+      "file": "content/station-departure--platform.json",
+      "rowId": "official-station-departure-platform-talk-200091414",
+      "talkId": 200091414,
+      "missionId": 2000901,
+      "source": "Story/Discussion/Mission/2000901/DS200090112.json",
+      "pointer": "/OnStartSequece/0/TaskList/2/OptionList/0"
+    },
+    {
+      "file": "content/station-departure--platform.json",
+      "rowId": "official-station-departure-platform-talk-200090304",
+      "talkId": 200090304,
+      "missionId": 2000902,
+      "source": "Story/Discussion/Mission/2000902/DS200090201.json",
+      "pointer": "/OnStartSequece/0/TaskList/2/OptionList/0"
+    },
+    {
+      "file": "content/station-departure--platform.json",
+      "rowId": "official-station-departure-platform-talk-200090663",
+      "talkId": 200090663,
+      "missionId": 2000902,
+      "source": "Story/Discussion/Mission/2000902/DS200090214.json",
+      "pointer": "/OnStartSequece/0/TaskList/2/OptionList/0"
+    },
+    {
+      "file": "content/station-departure--platform.json",
+      "rowId": "official-station-departure-platform-talk-200090666",
+      "talkId": 200090666,
+      "missionId": 2000902,
+      "source": "Story/Discussion/Mission/2000902/DS200090214.json",
+      "pointer": "/OnStartSequece/1/TaskList/2/OptionList/0"
+    },
+    {
+      "file": "content/station-departure--platform.json",
+      "rowId": "official-station-departure-platform-talk-200090671",
+      "talkId": 200090671,
+      "missionId": 2000902,
+      "source": "Story/Discussion/Mission/2000902/DS200090214.json",
+      "pointer": "/OnStartSequece/2/TaskList/3/OptionList/0"
+    },
+    {
+      "file": "content/station-departure--platform.json",
+      "rowId": "official-station-departure-platform-talk-200090674",
+      "talkId": 200090674,
+      "missionId": 2000902,
+      "source": "Story/Discussion/Mission/2000902/DS200090214.json",
+      "pointer": "/OnStartSequece/3/TaskList/3/OptionList/0"
+    },
+    {
+      "file": "content/station-departure--platform.json",
+      "rowId": "official-station-departure-platform-talk-200090676",
+      "talkId": 200090676,
+      "missionId": 2000902,
+      "source": "Story/Discussion/Mission/2000902/DS200090214.json",
+      "pointer": "/OnStartSequece/3/TaskList/3/OptionList/1"
+    },
+    {
+      "file": "content/station-departure--platform.json",
+      "rowId": "official-station-departure-platform-talk-200090680",
+      "talkId": 200090680,
+      "missionId": 2000902,
+      "source": "Story/Discussion/Mission/2000902/DS200090214.json",
+      "pointer": "/OnStartSequece/6/TaskList/2/OptionList/0"
+    },
+    {
+      "file": "content/station-departure--platform.json",
+      "rowId": "official-station-departure-platform-talk-200090154",
+      "talkId": 200090154,
+      "missionId": 2000901,
+      "source": "Story/Mission/2000901/Story200090102.json",
+      "pointer": "/OnStartSequece/0/TaskList/2/OptionList/0"
+    },
+    {
+      "file": "content/station-departure--platform.json",
+      "rowId": "official-station-departure-platform-talk-200090155",
+      "talkId": 200090155,
+      "missionId": 2000901,
+      "source": "Story/Mission/2000901/Story200090102.json",
+      "pointer": "/OnStartSequece/0/TaskList/2/OptionList/1"
+    },
+    {
+      "file": "content/station-departure--platform.json",
+      "rowId": "official-station-departure-platform-talk-200090157",
+      "talkId": 200090157,
+      "missionId": 2000901,
+      "source": "Story/Mission/2000901/Story200090102.json",
+      "pointer": "/OnStartSequece/0/TaskList/2/OptionList/2"
+    },
+    {
+      "file": "content/jarilo-records--snowfield.json",
+      "rowId": "official-jarilo-records-snowfield-talk-101011043",
+      "talkId": 101011043,
+      "missionId": 1010201,
+      "source": "Config/Level/Mission/1010201/Act/Act101020120.json",
+      "pointer": "/OnStartSequece/0/TaskList/1/SimpleTalkList/0"
+    },
+    {
+      "file": "content/jarilo-records--snowfield.json",
+      "rowId": "official-jarilo-records-snowfield-talk-101021903",
+      "talkId": 101021903,
+      "missionId": 1010402,
+      "source": "Config/Level/Mission/1010402/Mission_101040201.json",
+      "pointer": "/OnStartSequece/0/TaskList/0/SimpleTalkList/0"
+    },
+    {
+      "file": "content/jarilo-records--snowfield.json",
+      "rowId": "official-jarilo-records-snowfield-talk-101024801",
+      "talkId": 101024801,
+      "missionId": 1010602,
+      "source": "Config/Level/Mission/1010602/Act101060207.json",
+      "pointer": "/OnStartSequece/0/TaskList/1/SimpleTalkList/0"
+    },
+    {
+      "file": "content/jarilo-records--snowfield.json",
+      "rowId": "official-jarilo-records-snowfield-talk-101025801",
+      "talkId": 101025801,
+      "missionId": 1011001,
+      "source": "Config/Level/Mission/1011001/Act/Act101100103.json",
+      "pointer": "/OnStartSequece/0/TaskList/1/SimpleTalkList/0"
+    },
+    {
+      "file": "content/jarilo-records--snowfield.json",
+      "rowId": "official-jarilo-records-snowfield-talk-100000817",
+      "talkId": 100000817,
+      "missionId": 1010002,
+      "source": "Story/Mission/1010002/Story101000202.json",
+      "pointer": "/OnStartSequece/3/TaskList/2/OptionList/0"
+    },
+    {
+      "file": "content/jarilo-records--snowfield.json",
+      "rowId": "official-jarilo-records-snowfield-talk-100001118",
+      "talkId": 100001118,
+      "missionId": 1010002,
+      "source": "Story/Mission/1010002/Story101000204.json",
+      "pointer": "/OnStartSequece/1/TaskList/2/OptionList/0"
+    },
+    {
+      "file": "content/jarilo-records--snowfield.json",
+      "rowId": "official-jarilo-records-snowfield-talk-100001119",
+      "talkId": 100001119,
+      "missionId": 1010002,
+      "source": "Story/Mission/1010002/Story101000204.json",
+      "pointer": "/OnStartSequece/1/TaskList/2/OptionList/1"
+    },
+    {
+      "file": "content/jarilo-records--snowfield.json",
+      "rowId": "official-jarilo-records-snowfield-talk-100001120",
+      "talkId": 100001120,
+      "missionId": 1010002,
+      "source": "Story/Mission/1010002/Story101000204.json",
+      "pointer": "/OnStartSequece/1/TaskList/2/OptionList/2"
+    },
+    {
+      "file": "content/jarilo-records--snowfield.json",
+      "rowId": "official-jarilo-records-snowfield-talk-201010313",
+      "talkId": 201010313,
+      "missionId": 1010101,
+      "source": "Story/Mission/1010101/Story101010103.json",
+      "pointer": "/OnStartSequece/0/TaskList/2/OptionList/0"
+    },
+    {
+      "file": "content/jarilo-records--snowfield.json",
+      "rowId": "official-jarilo-records-snowfield-talk-101024415",
+      "talkId": 101024415,
+      "missionId": 1010602,
+      "source": "Story/Mission/1010602/Story101060201.json",
+      "pointer": "/OnStartSequece/4/TaskList/2/OptionList/1"
+    },
+    {
+      "file": "content/jarilo-records--snowfield.json",
+      "rowId": "official-jarilo-records-snowfield-talk-201222003",
+      "talkId": 201222003,
+      "missionId": 1010701,
+      "source": "Story/Mission/1010701/Story101070104.json",
+      "pointer": "/OnStartSequece/0/TaskList/2/OptionList/1"
+    },
+    {
+      "file": "content/jarilo-records--snowfield.json",
+      "rowId": "official-jarilo-records-snowfield-talk-201222004",
+      "talkId": 201222004,
+      "missionId": 1010701,
+      "source": "Story/Mission/1010701/Story101070104.json",
+      "pointer": "/OnStartSequece/0/TaskList/2/OptionList/2"
+    },
+    {
+      "file": "content/jarilo-records--winter-dream.json",
+      "rowId": "official-jarilo-records-winter-dream-talk-201020535",
+      "talkId": 201020535,
+      "missionId": 2010201,
+      "source": "Story/Mission/2010201/Story201020107.json",
+      "pointer": "/OnStartSequece/0/TaskList/2/OptionList/0"
+    },
+    {
+      "file": "content/jarilo-records--winter-dream.json",
+      "rowId": "official-jarilo-records-winter-dream-talk-201021272",
+      "talkId": 201021272,
+      "missionId": 2010203,
+      "source": "Story/Mission/2010203/Story201020301.json",
+      "pointer": "/OnStartSequece/2/TaskList/4/OptionList/0"
+    },
+    {
+      "file": "content/luofu-records--harbor.json",
+      "rowId": "official-luofu-records-harbor-talk-202222908",
+      "talkId": 202222908,
+      "missionId": 1021101,
+      "source": "Config/Level/Mission/1021101/Mission_102110104.json",
+      "pointer": "/OnStartSequece/0/TaskList/1/SimpleTalkList/0"
+    },
+    {
+      "file": "content/luofu-records--clouds.json",
+      "rowId": "official-luofu-records-clouds-talk-102120723",
+      "talkId": 102120723,
+      "missionId": 1021201,
+      "source": "Story/Mission/1021201/Story102120122.json",
+      "pointer": "/OnStartSequece/0/TaskList/2/OptionList/1"
+    },
+    {
+      "file": "content/luofu-records--clouds.json",
+      "rowId": "official-luofu-records-clouds-talk-102120709",
+      "talkId": 102120709,
+      "missionId": 1021201,
+      "source": "Story/Mission/1021201/Story102120122.json",
+      "pointer": "/OnStartSequece/1/TaskList/2/OptionList/1"
+    },
+    {
+      "file": "content/luofu-records--aftermath.json",
+      "rowId": "official-luofu-records-aftermath-talk-102170317",
+      "talkId": 102170317,
+      "missionId": 1021702,
+      "source": "Story/Mission/1021702/Story102170211.json",
+      "pointer": "/OnStartSequece/0/TaskList/2/OptionList/0"
+    },
+    {
+      "file": "content/luofu-records--foxian-tale.json",
+      "rowId": "official-luofu-records-foxian-tale-talk-815106601",
+      "talkId": 815106601,
+      "missionId": 8015103,
+      "source": "Config/Level/Mission/8015103/Act/Act801510308.json",
+      "pointer": "/OnStartSequece/0/TaskList/2/SimpleTalkList/0"
+    },
+    {
+      "file": "content/luofu-records--foxian-tale.json",
+      "rowId": "official-luofu-records-foxian-tale-talk-815103905",
+      "talkId": 815103905,
+      "missionId": 8015102,
+      "source": "Story/Discussion/Mission/8015102/DS801510202.json",
+      "pointer": "/OnStartSequece/0/TaskList/2/OptionList/0"
+    },
+    {
+      "file": "content/luofu-records--foxian-tale.json",
+      "rowId": "official-luofu-records-foxian-tale-talk-815103907",
+      "talkId": 815103907,
+      "missionId": 8015102,
+      "source": "Story/Discussion/Mission/8015102/DS801510202.json",
+      "pointer": "/OnStartSequece/0/TaskList/2/OptionList/1"
+    },
+    {
+      "file": "content/luofu-records--foxian-tale.json",
+      "rowId": "official-luofu-records-foxian-tale-talk-815111004",
+      "talkId": 815111004,
+      "missionId": 8015104,
+      "source": "Story/Discussion/Mission/8015104/DS801510402.json",
+      "pointer": "/OnStartSequece/0/TaskList/2/OptionList/0"
+    },
+    {
+      "file": "content/luofu-records--foxian-tale.json",
+      "rowId": "official-luofu-records-foxian-tale-talk-815111006",
+      "talkId": 815111006,
+      "missionId": 8015104,
+      "source": "Story/Discussion/Mission/8015104/DS801510402.json",
+      "pointer": "/OnStartSequece/0/TaskList/2/OptionList/1"
+    },
+    {
+      "file": "content/luofu-records--foxian-tale.json",
+      "rowId": "official-luofu-records-foxian-tale-talk-815111008",
+      "talkId": 815111008,
+      "missionId": 8015104,
+      "source": "Story/Discussion/Mission/8015104/DS801510402.json",
+      "pointer": "/OnStartSequece/0/TaskList/2/OptionList/2"
+    },
+    {
+      "file": "content/luofu-records--foxian-tale.json",
+      "rowId": "official-luofu-records-foxian-tale-talk-815111014",
+      "talkId": 815111014,
+      "missionId": 8015104,
+      "source": "Story/Discussion/Mission/8015104/DS801510402.json",
+      "pointer": "/OnStartSequece/4/TaskList/2/OptionList/0"
+    },
+    {
+      "file": "content/luofu-records--foxian-tale.json",
+      "rowId": "official-luofu-records-foxian-tale-talk-815111016",
+      "talkId": 815111016,
+      "missionId": 8015104,
+      "source": "Story/Discussion/Mission/8015104/DS801510402.json",
+      "pointer": "/OnStartSequece/4/TaskList/2/OptionList/1"
+    },
+    {
+      "file": "content/luofu-records--foxian-tale.json",
+      "rowId": "official-luofu-records-foxian-tale-talk-815111018",
+      "talkId": 815111018,
+      "missionId": 8015104,
+      "source": "Story/Discussion/Mission/8015104/DS801510402.json",
+      "pointer": "/OnStartSequece/4/TaskList/2/OptionList/2"
+    },
+    {
+      "file": "content/luofu-records--foxian-tale.json",
+      "rowId": "official-luofu-records-foxian-tale-talk-815101511",
+      "talkId": 815101511,
+      "missionId": 8015104,
+      "source": "Story/Discussion/Mission/8015104/DS801510415.json",
+      "pointer": "/OnStartSequece/0/TaskList/2/OptionList/1"
+    },
+    {
+      "file": "content/luofu-records--foxian-tale.json",
+      "rowId": "official-luofu-records-foxian-tale-talk-81511103",
+      "talkId": 81511103,
+      "missionId": 8015191,
+      "source": "Story/Discussion/Mission/8015191/DS801519103.json",
+      "pointer": "/OnStartSequece/0/TaskList/2/OptionList/0"
+    },
+    {
+      "file": "content/luofu-records--foxian-tale.json",
+      "rowId": "official-luofu-records-foxian-tale-talk-81511106",
+      "talkId": 81511106,
+      "missionId": 8015191,
+      "source": "Story/Discussion/Mission/8015191/DS801519103.json",
+      "pointer": "/OnStartSequece/0/TaskList/2/OptionList/1"
+    },
+    {
+      "file": "content/luofu-records--foxian-tale.json",
+      "rowId": "official-luofu-records-foxian-tale-talk-81511202",
+      "talkId": 81511202,
+      "missionId": 8015191,
+      "source": "Story/Discussion/Mission/8015191/DS801519104.json",
+      "pointer": "/OnStartSequece/0/TaskList/2/OptionList/0"
+    },
+    {
+      "file": "content/luofu-records--foxian-tale.json",
+      "rowId": "official-luofu-records-foxian-tale-talk-81511203",
+      "talkId": 81511203,
+      "missionId": 8015191,
+      "source": "Story/Discussion/Mission/8015191/DS801519104.json",
+      "pointer": "/OnStartSequece/0/TaskList/2/OptionList/1"
+    },
+    {
+      "file": "content/luofu-records--foxian-tale.json",
+      "rowId": "official-luofu-records-foxian-tale-talk-81511210",
+      "talkId": 81511210,
+      "missionId": 8015191,
+      "source": "Story/Discussion/Mission/8015191/DS801519104.json",
+      "pointer": "/OnStartSequece/1/TaskList/2/OptionList/0"
+    },
+    {
+      "file": "content/luofu-records--foxian-tale.json",
+      "rowId": "official-luofu-records-foxian-tale-talk-81511212",
+      "talkId": 81511212,
+      "missionId": 8015191,
+      "source": "Story/Discussion/Mission/8015191/DS801519104.json",
+      "pointer": "/OnStartSequece/1/TaskList/2/OptionList/1"
+    },
+    {
+      "file": "content/penacony-records--invitation.json",
+      "rowId": "official-penacony-records-invitation-talk-103052508",
+      "talkId": 103052508,
+      "missionId": 1030304,
+      "source": "Config/Level/Mission/1030304/Act/Act103030428.json",
+      "pointer": "/OnStartSequece/0/TaskList/1/SimpleTalkList/0"
+    },
+    {
+      "file": "content/penacony-records--invitation.json",
+      "rowId": "official-penacony-records-invitation-talk-103010402",
+      "talkId": 103010402,
+      "missionId": 1030101,
+      "source": "Story/Discussion/Mission/1030101/DS103010114.json",
+      "pointer": "/OnStartSequece/0/TaskList/2/OptionList/0"
+    },
+    {
+      "file": "content/penacony-records--invitation.json",
+      "rowId": "official-penacony-records-invitation-talk-103010403",
+      "talkId": 103010403,
+      "missionId": 1030101,
+      "source": "Story/Discussion/Mission/1030101/DS103010114.json",
+      "pointer": "/OnStartSequece/0/TaskList/2/OptionList/1"
+    },
+    {
+      "file": "content/penacony-records--invitation.json",
+      "rowId": "official-penacony-records-invitation-talk-103010404",
+      "talkId": 103010404,
+      "missionId": 1030101,
+      "source": "Story/Discussion/Mission/1030101/DS103010114.json",
+      "pointer": "/OnStartSequece/0/TaskList/2/OptionList/2"
+    },
+    {
+      "file": "content/penacony-records--invitation.json",
+      "rowId": "official-penacony-records-invitation-talk-103010405",
+      "talkId": 103010405,
+      "missionId": 1030101,
+      "source": "Story/Discussion/Mission/1030101/DS103010114.json",
+      "pointer": "/OnStartSequece/0/TaskList/2/OptionList/3"
+    },
+    {
+      "file": "content/penacony-records--invitation.json",
+      "rowId": "official-penacony-records-invitation-talk-103030815",
+      "talkId": 103030815,
+      "missionId": 1030301,
+      "source": "Story/Discussion/Mission/1030301/DS103030196.json",
+      "pointer": "/OnStartSequece/0/TaskList/2/OptionList/2"
+    },
+    {
+      "file": "content/penacony-records--invitation.json",
+      "rowId": "official-penacony-records-invitation-talk-103030902",
+      "talkId": 103030902,
+      "missionId": 1030301,
+      "source": "Story/Discussion/Mission/1030301/DS103030197.json",
+      "pointer": "/OnStartSequece/0/TaskList/2/OptionList/0"
+    },
+    {
+      "file": "content/penacony-records--invitation.json",
+      "rowId": "official-penacony-records-invitation-talk-103030909",
+      "talkId": 103030909,
+      "missionId": 1030301,
+      "source": "Story/Discussion/Mission/1030301/DS103030197.json",
+      "pointer": "/OnStartSequece/4/TaskList/2/OptionList/0"
+    },
+    {
+      "file": "content/penacony-records--invitation.json",
+      "rowId": "official-penacony-records-invitation-talk-103030928",
+      "talkId": 103030928,
+      "missionId": 1030301,
+      "source": "Story/Discussion/Mission/1030301/DS103030197.json",
+      "pointer": "/OnStartSequece/12/TaskList/2/OptionList/0"
+    },
+    {
+      "file": "content/penacony-records--invitation.json",
+      "rowId": "official-penacony-records-invitation-talk-103050803",
+      "talkId": 103050803,
+      "missionId": 1030501,
+      "source": "Story/Discussion/Mission/1030501/DS103050136.json",
+      "pointer": "/OnStartSequece/0/TaskList/2/OptionList/0"
+    },
+    {
+      "file": "content/penacony-records--invitation.json",
+      "rowId": "official-penacony-records-invitation-talk-103050805",
+      "talkId": 103050805,
+      "missionId": 1030501,
+      "source": "Story/Discussion/Mission/1030501/DS103050136.json",
+      "pointer": "/OnStartSequece/0/TaskList/2/OptionList/1"
+    },
+    {
+      "file": "content/penacony-records--invitation.json",
+      "rowId": "official-penacony-records-invitation-talk-103050806",
+      "talkId": 103050806,
+      "missionId": 1030501,
+      "source": "Story/Discussion/Mission/1030501/DS103050136.json",
+      "pointer": "/OnStartSequece/0/TaskList/2/OptionList/2"
+    },
+    {
+      "file": "content/penacony-records--invitation.json",
+      "rowId": "official-penacony-records-invitation-talk-103050809",
+      "talkId": 103050809,
+      "missionId": 1030501,
+      "source": "Story/Discussion/Mission/1030501/DS103050136.json",
+      "pointer": "/OnStartSequece/2/TaskList/2/OptionList/0"
+    },
+    {
+      "file": "content/penacony-records--invitation.json",
+      "rowId": "official-penacony-records-invitation-talk-103050810",
+      "talkId": 103050810,
+      "missionId": 1030501,
+      "source": "Story/Discussion/Mission/1030501/DS103050136.json",
+      "pointer": "/OnStartSequece/2/TaskList/2/OptionList/1"
+    },
+    {
+      "file": "content/penacony-records--invitation.json",
+      "rowId": "official-penacony-records-invitation-talk-103050811",
+      "talkId": 103050811,
+      "missionId": 1030501,
+      "source": "Story/Discussion/Mission/1030501/DS103050136.json",
+      "pointer": "/OnStartSequece/2/TaskList/2/OptionList/2"
+    },
+    {
+      "file": "content/penacony-records--invitation.json",
+      "rowId": "official-penacony-records-invitation-talk-103010603",
+      "talkId": 103010603,
+      "missionId": 1030101,
+      "source": "Story/Mission/1030101/Story103010115.json",
+      "pointer": "/OnStartSequece/0/TaskList/2/OptionList/0"
+    },
+    {
+      "file": "content/penacony-records--invitation.json",
+      "rowId": "official-penacony-records-invitation-talk-103010604",
+      "talkId": 103010604,
+      "missionId": 1030101,
+      "source": "Story/Mission/1030101/Story103010115.json",
+      "pointer": "/OnStartSequece/0/TaskList/2/OptionList/1"
+    },
+    {
+      "file": "content/penacony-records--invitation.json",
+      "rowId": "official-penacony-records-invitation-talk-103010609",
+      "talkId": 103010609,
+      "missionId": 1030101,
+      "source": "Story/Mission/1030101/Story103010115.json",
+      "pointer": "/OnStartSequece/1/TaskList/2/OptionList/0"
+    },
+    {
+      "file": "content/penacony-records--invitation.json",
+      "rowId": "official-penacony-records-invitation-talk-103010610",
+      "talkId": 103010610,
+      "missionId": 1030101,
+      "source": "Story/Mission/1030101/Story103010115.json",
+      "pointer": "/OnStartSequece/1/TaskList/2/OptionList/1"
+    },
+    {
+      "file": "content/penacony-records--dream.json",
+      "rowId": "official-penacony-records-dream-talk-103100112",
+      "talkId": 103100112,
+      "missionId": 1031001,
+      "source": "Story/Discussion/Mission/1031001/DS103100101.json",
+      "pointer": "/OnStartSequece/3/TaskList/2/OptionList/0"
+    },
+    {
+      "file": "content/penacony-records--dream.json",
+      "rowId": "official-penacony-records-dream-talk-103100114",
+      "talkId": 103100114,
+      "missionId": 1031001,
+      "source": "Story/Discussion/Mission/1031001/DS103100101.json",
+      "pointer": "/OnStartSequece/3/TaskList/2/OptionList/1"
+    },
+    {
+      "file": "content/penacony-records--dream.json",
+      "rowId": "official-penacony-records-dream-talk-103100117",
+      "talkId": 103100117,
+      "missionId": 1031001,
+      "source": "Story/Discussion/Mission/1031001/DS103100101.json",
+      "pointer": "/OnStartSequece/3/TaskList/2/OptionList/2"
+    },
+    {
+      "file": "content/penacony-records--dream.json",
+      "rowId": "official-penacony-records-dream-talk-103120019",
+      "talkId": 103120019,
+      "missionId": 1031201,
+      "source": "Story/Discussion/Mission/1031201/DS103120102.json",
+      "pointer": "/OnStartSequece/2/TaskList/2/OptionList/0"
+    },
+    {
+      "file": "content/penacony-records--dream.json",
+      "rowId": "official-penacony-records-dream-talk-103120020",
+      "talkId": 103120020,
+      "missionId": 1031201,
+      "source": "Story/Discussion/Mission/1031201/DS103120102.json",
+      "pointer": "/OnStartSequece/2/TaskList/2/OptionList/1"
+    },
+    {
+      "file": "content/penacony-records--our-time.json",
+      "rowId": "official-penacony-records-our-time-talk-103319901",
+      "talkId": 103319901,
+      "missionId": 1033101,
+      "source": "Config/Level/Mission/1033101/Mission_103310101.json",
+      "pointer": "/OnStartSequece/0/TaskList/1/SimpleTalkList/0"
+    },
+    {
+      "file": "content/penacony-records--nana-outrage.json",
+      "rowId": "official-penacony-records-nana-outrage-talk-103431901",
+      "talkId": 103431901,
+      "missionId": 1034202,
+      "source": "Config/Level/Mission/1034202/Mission_103420203.json",
+      "pointer": "/OnStartSequece/0/TaskList/0/SimpleTalkList/0"
+    },
+    {
+      "file": "content/penacony-records--nana-outrage.json",
+      "rowId": "official-penacony-records-nana-outrage-talk-103431902",
+      "talkId": 103431902,
+      "missionId": 1034202,
+      "source": "Config/Level/Mission/1034202/Mission_103420203.json",
+      "pointer": "/OnStartSequece/0/TaskList/0/SimpleTalkList/1"
+    },
+    {
+      "file": "content/penacony-records--nana-outrage.json",
+      "rowId": "official-penacony-records-nana-outrage-talk-301020434",
+      "talkId": 301020434,
+      "missionId": 1034204,
+      "source": "Config/Level/Mission/1034204/Mission_103420413.json",
+      "pointer": "/OnStartSequece/0/TaskList/0/SimpleTalkList/0"
+    },
+    {
+      "file": "content/penacony-records--nana-outrage.json",
+      "rowId": "official-penacony-records-nana-outrage-talk-103438005",
+      "talkId": 103438005,
+      "missionId": 1034204,
+      "source": "Story/Discussion/Mission/1034204/DS103430084.json",
+      "pointer": "/OnStartSequece/1/TaskList/1/OptionList/2"
+    },
+    {
+      "file": "content/penacony-records--nana-outrage.json",
+      "rowId": "official-penacony-records-nana-outrage-talk-103438014",
+      "talkId": 103438014,
+      "missionId": 1034204,
+      "source": "Story/Discussion/Mission/1034204/DS103430084.json",
+      "pointer": "/OnStartSequece/4/TaskList/1/OptionList/2"
+    },
+    {
+      "file": "content/penacony-records--nana-outrage.json",
+      "rowId": "official-penacony-records-nana-outrage-talk-103452952",
+      "talkId": 103452952,
+      "missionId": 1034204,
+      "source": "Story/Discussion/Mission/1034204/DS103430084.json",
+      "pointer": "/OnStartSequece/4/TaskList/1/OptionList/3"
+    },
+    {
+      "file": "content/penacony-records--nana-outrage.json",
+      "rowId": "official-penacony-records-nana-outrage-talk-103438015",
+      "talkId": 103438015,
+      "missionId": 1034204,
+      "source": "Story/Discussion/Mission/1034204/DS103430084.json",
+      "pointer": "/OnStartSequece/4/TaskList/1/OptionList/4"
+    },
+    {
+      "file": "content/penacony-records--nana-outrage.json",
+      "rowId": "official-penacony-records-nana-outrage-talk-103438022",
+      "talkId": 103438022,
+      "missionId": 1034204,
+      "source": "Story/Discussion/Mission/1034204/DS103430084.json",
+      "pointer": "/OnStartSequece/9/TaskList/1/OptionList/2"
+    },
+    {
+      "file": "content/penacony-records--nana-outrage.json",
+      "rowId": "official-penacony-records-nana-outrage-talk-103452953",
+      "talkId": 103452953,
+      "missionId": 1034204,
+      "source": "Story/Discussion/Mission/1034204/DS103430084.json",
+      "pointer": "/OnStartSequece/9/TaskList/1/OptionList/3"
+    },
+    {
+      "file": "content/penacony-records--nana-outrage.json",
+      "rowId": "official-penacony-records-nana-outrage-talk-103438023",
+      "talkId": 103438023,
+      "missionId": 1034204,
+      "source": "Story/Discussion/Mission/1034204/DS103430084.json",
+      "pointer": "/OnStartSequece/9/TaskList/1/OptionList/4"
+    },
+    {
+      "file": "content/penacony-records--nana-outrage.json",
+      "rowId": "official-penacony-records-nana-outrage-talk-103438029",
+      "talkId": 103438029,
+      "missionId": 1034204,
+      "source": "Story/Discussion/Mission/1034204/DS103430084.json",
+      "pointer": "/OnStartSequece/14/TaskList/1/OptionList/1"
+    },
+    {
+      "file": "content/penacony-records--nana-outrage.json",
+      "rowId": "official-penacony-records-nana-outrage-talk-103452954",
+      "talkId": 103452954,
+      "missionId": 1034204,
+      "source": "Story/Discussion/Mission/1034204/DS103430084.json",
+      "pointer": "/OnStartSequece/14/TaskList/1/OptionList/2"
+    },
+    {
+      "file": "content/penacony-records--nana-outrage.json",
+      "rowId": "official-penacony-records-nana-outrage-talk-103438108",
+      "talkId": 103438108,
+      "missionId": 1034204,
+      "source": "Story/Discussion/Mission/1034204/DS103430085.json",
+      "pointer": "/OnStartSequece/0/TaskList/2/OptionList/1"
+    },
+    {
+      "file": "content/penacony-records--nana-outrage.json",
+      "rowId": "official-penacony-records-nana-outrage-talk-103441933",
+      "talkId": 103441933,
+      "missionId": 1034205,
+      "source": "Story/Discussion/Mission/1034205/DS103420510.json",
+      "pointer": "/OnStartSequece/3/TaskList/2/OptionList/1"
+    },
+    {
+      "file": "content/penacony-records--nana-outrage.json",
+      "rowId": "official-penacony-records-nana-outrage-talk-103443420",
+      "talkId": 103443420,
+      "missionId": 1034205,
+      "source": "Story/Discussion/Mission/1034205/DS103420525.json",
+      "pointer": "/OnStartSequece/1/TaskList/2/OptionList/0"
+    },
+    {
+      "file": "content/penacony-records--nana-outrage.json",
+      "rowId": "official-penacony-records-nana-outrage-talk-103451504",
+      "talkId": 103451504,
+      "missionId": 1034210,
+      "source": "Story/Discussion/Mission/1034210/DS103421007.json",
+      "pointer": "/OnStartSequece/0/TaskList/2/OptionList/0"
+    },
+    {
+      "file": "content/penacony-records--nana-outrage.json",
+      "rowId": "official-penacony-records-nana-outrage-talk-103448118",
+      "talkId": 103448118,
+      "missionId": 1034207,
+      "source": "Story/Mission/1034207/Story103420702.json",
+      "pointer": "/OnStartSequece/4/TaskList/2/OptionList/0"
+    },
+    {
+      "file": "content/penacony-records--nana-outrage.json",
+      "rowId": "official-penacony-records-nana-outrage-talk-103448119",
+      "talkId": 103448119,
+      "missionId": 1034207,
+      "source": "Story/Mission/1034207/Story103420702.json",
+      "pointer": "/OnStartSequece/4/TaskList/2/OptionList/1"
+    },
+    {
+      "file": "content/penacony-records--nana-outrage.json",
+      "rowId": "official-penacony-records-nana-outrage-talk-103448120",
+      "talkId": 103448120,
+      "missionId": 1034207,
+      "source": "Story/Mission/1034207/Story103420702.json",
+      "pointer": "/OnStartSequece/4/TaskList/2/OptionList/2"
+    },
+    {
+      "file": "content/penacony-records--dream-grail.json",
+      "rowId": "official-penacony-records-dream-grail-talk-105004559",
+      "talkId": 105004559,
+      "missionId": 1040537,
+      "source": "Config/Level/Mission/1040537/Mission_104053717.json",
+      "pointer": "/OnStartSequece/0/TaskList/0/SimpleTalkList/0"
+    },
+    {
+      "file": "content/penacony-records--dream-grail.json",
+      "rowId": "official-penacony-records-dream-grail-talk-105004562",
+      "talkId": 105004562,
+      "missionId": 1040537,
+      "source": "Config/Level/Mission/1040537/Mission_104053719.json",
+      "pointer": "/OnStartSequece/0/TaskList/0/SimpleTalkList/0"
+    },
+    {
+      "file": "content/penacony-records--dream-grail.json",
+      "rowId": "official-penacony-records-dream-grail-talk-105003134",
+      "talkId": 105003134,
+      "missionId": 1040536,
+      "source": "Story/Discussion/Mission/1040536/DS104053601.json",
+      "pointer": "/OnStartSequece/0/TaskList/2/OptionList/1"
+    },
+    {
+      "file": "content/penacony-records--dream-grail.json",
+      "rowId": "official-penacony-records-dream-grail-talk-105003457",
+      "talkId": 105003457,
+      "missionId": 1040537,
+      "source": "Story/Discussion/Mission/1040537/DS104053701.json",
+      "pointer": "/OnStartSequece/0/TaskList/2/OptionList/2"
+    },
+    {
+      "file": "content/penacony-records--dream-grail.json",
+      "rowId": "official-penacony-records-dream-grail-talk-105003476",
+      "talkId": 105003476,
+      "missionId": 1040537,
+      "source": "Story/Discussion/Mission/1040537/DS104053701.json",
+      "pointer": "/OnStartSequece/10/TaskList/2/OptionList/0"
+    },
+    {
+      "file": "content/penacony-records--dream-grail.json",
+      "rowId": "official-penacony-records-dream-grail-talk-105003477",
+      "talkId": 105003477,
+      "missionId": 1040537,
+      "source": "Story/Discussion/Mission/1040537/DS104053701.json",
+      "pointer": "/OnStartSequece/10/TaskList/2/OptionList/1"
+    },
+    {
+      "file": "content/penacony-records--dream-grail.json",
+      "rowId": "official-penacony-records-dream-grail-talk-105003478",
+      "talkId": 105003478,
+      "missionId": 1040537,
+      "source": "Story/Discussion/Mission/1040537/DS104053701.json",
+      "pointer": "/OnStartSequece/10/TaskList/2/OptionList/2"
+    },
+    {
+      "file": "content/penacony-records--dream-grail.json",
+      "rowId": "official-penacony-records-dream-grail-talk-105004684",
+      "talkId": 105004684,
+      "missionId": 1040538,
+      "source": "Story/Discussion/Mission/1040538/DS104053802.json",
+      "pointer": "/OnStartSequece/0/TaskList/2/OptionList/1"
+    },
+    {
+      "file": "content/penacony-records--dream-grail.json",
+      "rowId": "official-penacony-records-dream-grail-talk-105004685",
+      "talkId": 105004685,
+      "missionId": 1040538,
+      "source": "Story/Discussion/Mission/1040538/DS104053802.json",
+      "pointer": "/OnStartSequece/0/TaskList/2/OptionList/2"
+    },
+    {
+      "file": "content/penacony-records--dream-grail.json",
+      "rowId": "official-penacony-records-dream-grail-talk-105001755",
+      "talkId": 105001755,
+      "missionId": 1040533,
+      "source": "Story/Mission/1040533/Story104053306.json",
+      "pointer": "/OnStartSequece/0/TaskList/2/OptionList/0"
+    },
+    {
+      "file": "content/amphoreus-records--gate-throne.json",
+      "rowId": "official-amphoreus-records-gate-throne-talk-104026163",
+      "talkId": 104026163,
+      "missionId": 1040204,
+      "source": "Config/Level/Mission/1040204/Mission_104020496.json",
+      "pointer": "/OnStartSequece/0/TaskList/1/SimpleTalkList/0"
+    },
+    {
+      "file": "content/amphoreus-records--gate-throne.json",
+      "rowId": "official-amphoreus-records-gate-throne-talk-104021664",
+      "talkId": 104021664,
+      "missionId": 1040202,
+      "source": "Story/Discussion/Mission/1040202/DS104020209.json",
+      "pointer": "/OnStartSequece/3/TaskList/2/OptionList/2"
+    },
+    {
+      "file": "content/amphoreus-records--flowers.json",
+      "rowId": "official-amphoreus-records-flowers-talk-140317403",
+      "talkId": 140317403,
+      "missionId": 1040303,
+      "source": "Config/Level/Mission/1040303/Mission_104030313.json",
+      "pointer": "/OnStartSequece/0/TaskList/0/SimpleTalkList/0"
+    },
+    {
+      "file": "content/amphoreus-records--flowers.json",
+      "rowId": "official-amphoreus-records-flowers-talk-140308112",
+      "talkId": 140308112,
+      "missionId": 1040316,
+      "source": "Config/Level/Mission/1040316/Mission_104031610.json",
+      "pointer": "/OnStartSequece/0/TaskList/0/SimpleTalkList/0"
+    },
+    {
+      "file": "content/amphoreus-records--flowers.json",
+      "rowId": "official-amphoreus-records-flowers-talk-140308115",
+      "talkId": 140308115,
+      "missionId": 1040316,
+      "source": "Config/Level/Mission/1040316/Mission_104031611.json",
+      "pointer": "/OnStartSequece/0/TaskList/0/SimpleTalkList/0"
+    },
+    {
+      "file": "content/amphoreus-records--flowers.json",
+      "rowId": "official-amphoreus-records-flowers-talk-140308118",
+      "talkId": 140308118,
+      "missionId": 1040316,
+      "source": "Config/Level/Mission/1040316/Mission_104031612.json",
+      "pointer": "/OnStartSequece/0/TaskList/0/SimpleTalkList/0"
+    },
+    {
+      "file": "content/amphoreus-records--dawn-fall.json",
+      "rowId": "official-amphoreus-records-dawn-fall-talk-140480916",
+      "talkId": 140480916,
+      "missionId": 1040408,
+      "source": "Config/Level/Mission/1040408/Mission_104040819.json",
+      "pointer": "/OnStartSequece/0/TaskList/0/SimpleTalkList/0"
+    },
+    {
+      "file": "content/amphoreus-records--before-heroes-die.json",
+      "rowId": "official-amphoreus-records-before-heroes-die-talk-146040209",
+      "talkId": 146040209,
+      "missionId": 1040604,
+      "source": "Story/Discussion/Mission/1040604/DS104060402.json",
+      "pointer": "/OnStartSequece/0/TaskList/2/OptionList/2"
+    },
+    {
+      "file": "content/amphoreus-records--before-heroes-die.json",
+      "rowId": "official-amphoreus-records-before-heroes-die-talk-146042014",
+      "talkId": 146042014,
+      "missionId": 1040604,
+      "source": "Story/Discussion/Mission/1040604/DS104060420.json",
+      "pointer": "/OnStartSequece/4/TaskList/2/OptionList/0"
+    },
+    {
+      "file": "content/amphoreus-records--before-heroes-die.json",
+      "rowId": "official-amphoreus-records-before-heroes-die-talk-146042016",
+      "talkId": 146042016,
+      "missionId": 1040604,
+      "source": "Story/Discussion/Mission/1040604/DS104060420.json",
+      "pointer": "/OnStartSequece/4/TaskList/2/OptionList/2"
+    },
+    {
+      "file": "content/amphoreus-records--yesterdays-tomorrow.json",
+      "rowId": "official-amphoreus-records-yesterdays-tomorrow-talk-146791568",
+      "talkId": 146791568,
+      "missionId": 1043704,
+      "source": "Story/Discussion/Mission/1043704/DS104370401.json",
+      "pointer": "/OnStartSequece/1/TaskList/2/OptionList/0"
+    },
+    {
+      "file": "content/amphoreus-records--yesterdays-tomorrow.json",
+      "rowId": "official-amphoreus-records-yesterdays-tomorrow-talk-146791520",
+      "talkId": 146791520,
+      "missionId": 1043704,
+      "source": "Story/Discussion/Mission/1043704/DS104370401.json",
+      "pointer": "/OnStartSequece/2/TaskList/2/OptionList/0"
+    },
+    {
+      "file": "content/amphoreus-records--yesterdays-tomorrow.json",
+      "rowId": "official-amphoreus-records-yesterdays-tomorrow-talk-146791570",
+      "talkId": 146791570,
+      "missionId": 1043704,
+      "source": "Story/Discussion/Mission/1043704/DS104370402.json",
+      "pointer": "/OnStartSequece/0/TaskList/3/OptionList/0"
+    },
+    {
+      "file": "content/amphoreus-records--yesterdays-tomorrow.json",
+      "rowId": "official-amphoreus-records-yesterdays-tomorrow-talk-146791569",
+      "talkId": 146791569,
+      "missionId": 1043704,
+      "source": "Story/Discussion/Mission/1043704/DS104370402.json",
+      "pointer": "/OnStartSequece/1/TaskList/2/OptionList/0"
+    },
+    {
+      "file": "content/amphoreus-records--yesterdays-tomorrow.json",
+      "rowId": "official-amphoreus-records-yesterdays-tomorrow-talk-146791750",
+      "talkId": 146791750,
+      "missionId": 1043704,
+      "source": "Story/Discussion/Mission/1043704/DS104370403.json",
+      "pointer": "/OnStartSequece/0/TaskList/3/OptionList/0"
+    },
+    {
+      "file": "content/amphoreus-records--yesterdays-tomorrow.json",
+      "rowId": "official-amphoreus-records-yesterdays-tomorrow-talk-146791532",
+      "talkId": 146791532,
+      "missionId": 1043704,
+      "source": "Story/Discussion/Mission/1043704/DS104370414.json",
+      "pointer": "/OnStartSequece/3/TaskList/2/OptionList/0"
+    },
+    {
+      "file": "content/amphoreus-records--yesterdays-tomorrow.json",
+      "rowId": "official-amphoreus-records-yesterdays-tomorrow-talk-146791543",
+      "talkId": 146791543,
+      "missionId": 1043704,
+      "source": "Story/Discussion/Mission/1043704/DS104370416.json",
+      "pointer": "/OnStartSequece/0/TaskList/2/OptionList/0"
+    },
+    {
+      "file": "content/amphoreus-records--yesterdays-tomorrow.json",
+      "rowId": "official-amphoreus-records-yesterdays-tomorrow-talk-146791811",
+      "talkId": 146791811,
+      "missionId": 1043704,
+      "source": "Story/Discussion/Mission/1043704/DS104370426.json",
+      "pointer": "/OnStartSequece/0/TaskList/3/OptionList/0"
+    },
+    {
+      "file": "content/paradise-records--astropolis.json",
+      "rowId": "official-paradise-records-astropolis-talk-151090301",
+      "talkId": 151090301,
+      "missionId": 1054109,
+      "source": "Config/Level/Mission/1054109/Mission_105410922.json",
+      "pointer": "/OnStartSequece/0/TaskList/0/SimpleTalkList/0"
+    },
+    {
+      "file": "content/paradise-records--astropolis.json",
+      "rowId": "official-paradise-records-astropolis-talk-151002226",
+      "talkId": 151002226,
+      "missionId": 1054100,
+      "source": "Story/Discussion/Mission/1054100/DS105410023.json",
+      "pointer": "/OnStartSequece/3/TaskList/2/OptionList/0"
+    }
+  ],
+  "choiceExamples": [
+    {
+      "route": "station-departure/platform",
+      "choiceRowId": "station-departure-platform-quest-2000902-110",
+      "occurrenceId": "exec-2a19e15940438560c9d0c3e6",
+      "replyRowId": "station-departure-platform-quest-2000902-111"
+    },
+    {
+      "route": "station-departure/platform",
+      "choiceRowId": "station-departure-platform-quest-2001001-292",
+      "occurrenceId": "exec-b408cdac81d37db54b2472e4",
+      "replyRowId": "station-departure-platform-quest-2001001-296"
+    },
+    {
+      "route": "station-departure/platform",
+      "choiceRowId": "station-departure-platform-quest-2001001-332",
+      "occurrenceId": "exec-2da00a864f02e2c359bd7fae",
+      "replyRowId": "station-departure-platform-quest-2001001-333"
+    },
+    {
+      "route": "station-departure/platform",
+      "choiceRowId": "station-departure-platform-quest-2001001-384",
+      "occurrenceId": "exec-7d0fb91d75e1679edd4e5c6d",
+      "replyRowId": "station-departure-platform-quest-2001001-387"
+    },
+    {
+      "route": "station-departure/platform",
+      "choiceRowId": "station-departure-platform-quest-2001001-474",
+      "occurrenceId": "exec-df48cd18e5e467387bb3670c",
+      "replyRowId": "station-departure-platform-quest-2001001-476"
+    }
+  ],
+  "act8": {
+    "file": "content/amphoreus-records--yesterdays-tomorrow.json",
+    "title": "제8막: 어제의 내일이 되어",
+    "beforeRows": 1724,
+    "afterRows": 1732,
+    "confirmedRows": 242,
+    "confirmedOccurrences": 252,
+    "confirmedEdges": 28,
+    "confirmedChoiceResponses": 0,
+    "previousUnknownRows": 128,
+    "newlyPlacedRows": 16,
+    "totalExecutionPlacedRows": 16,
+    "newlyPlacedExistingRows": 9,
+    "newOfficialRows": 8,
+    "newlyPlacedNewRows": 7,
+    "remainingPreviousUnknownRows": 119,
+    "remainingUnknownRows": 120,
+    "placedBetweenWikiAnchors": 0,
+    "orderComparisons": {
+      "compatible-local-order": 27
+    },
+    "tentativeItems": 45
+  }
+}

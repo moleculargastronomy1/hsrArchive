@@ -85,6 +85,7 @@ export async function verificationRows(root, { referencedOnly = false } = {}) {
   if (referencedOnly && !references.size) throw new Error('Missing authoritative content routes');
   rows.contentRoutes = [...references].sort();
   rows.wikiReadings = {};
+  rows.executionReadings = {};
   const simulation = await fs
     .readFile(path.join(root, 'src/data/simulation.json'))
     .catch((error) => {
@@ -112,6 +113,8 @@ export async function verificationRows(root, { referencedOnly = false } = {}) {
     const payload = JSON.parse(await fs.readFile(path.join(folder, name)));
     if (payload.schema !== 'hsr-dialogue.v1') continue;
     if (payload.wikiReading) rows.wikiReadings['content/' + name] = payload.wikiReading;
+    if (payload.executionReading)
+      rows.executionReadings['content/' + name] = payload.executionReading;
     for (const row of payload.rows) {
       if (rows.has(row.id)) throw new Error('Duplicate verification row identity: ' + row.id);
       rows.set(row.id, { ...row, file: 'content/' + name });
@@ -167,6 +170,28 @@ export function compareVerification(before, after) {
     const currentLinks = links(current);
     for (const key of links(reading))
       if (!currentLinks.has(key)) lostReadingLinks.push(file + ':' + key);
+  }
+  for (const [file, reading] of Object.entries(before.executionReadings ?? {})) {
+    const current = after.executionReadings?.[file];
+    const positions = new Map((current?.occurrences ?? []).map((p) => [p.id, p]));
+    for (const p of reading.occurrences) {
+      const q = positions.get(p.id);
+      if (!q) {
+        lostReadingPositions.push(file + ':' + p.id);
+        continue;
+      }
+      if (
+        ['rowId', 'missionId', 'source', 'pointer', 'conditionsHash', 'sceneId', 'conditions'].some(
+          (k) => JSON.stringify(p[k]) !== JSON.stringify(q[k]),
+        )
+      )
+        conflictingReadingPositions.push(file + ':' + p.id);
+      for (const target of p.nextIds)
+        if (!q.nextIds.includes(target)) lostReadingLinks.push(file + ':' + p.id + ':' + target);
+    }
+    const displayed = new Set((current?.placements ?? []).flatMap((g) => g.occurrenceIds));
+    for (const id of reading.placements.flatMap((g) => g.occurrenceIds))
+      if (!displayed.has(id)) lostReadingPositions.push(file + ':display:' + id);
   }
   const routes = new Set(after.contentRoutes ?? []);
   const lostContentRoutes = (before.contentRoutes ?? []).filter((file) => !routes.has(file));
@@ -243,6 +268,7 @@ export function compareVerification(before, after) {
         eventImages: rows.eventImages ?? [],
         contentRoutes: rows.contentRoutes ?? [],
         wikiReadings: rows.wikiReadings ?? {},
+        executionReadings: rows.executionReadings ?? {},
         rows: [...rows].map(([id, row]) => [
           id,
           ...coreKeys.map((key) => row[key]),

@@ -1,1 +1,45 @@
-{"schema":"hsr-content-update.v1","repository":"DimbreathBot/TurnBasedGameData","commit":"74a7b96fba32f00cf495a5c00b0311bd02207aaf","version":"OSPRODWin4.6.0_D16854589_A16781679_L16781679","checkedAt":"2026-10-19T19:37:59.703Z","latestTrailblaze":{"id":105009,"chapter":5,"act":7,"title":"달 뜨기 전, 괴수와 춤을"},"intervalHours":6,"files":{"TextMapKR_0.json":{"gitBlob":"4c4adcf4ed86c48ebb407442801f3b3dd396eb19","sha256":"2a996609124fd7ab215cbacae43eee098578c6d7cc4c10186bb12d5dfc8fc941"},"TextMapKR_1.json":{"gitBlob":"80eee947e1dc31577209e39d841ad2eb127541e0","sha256":"ceef6b210ebd57f955b26bffa2995487b18627cfd5a30c3b770de803c07d92b8"},"TalkSentenceConfig.json":{"gitBlob":"522b747a5f48546829f17cf3a364ccd642b10fcf","sha256":"db75cb1e7adb6de861a816eb41bfd2da5d3c159efc5163c8bb38217a90a12479"},"MissionChapterConfig.json":{"gitBlob":"3131ed0c02242aa69978f3daa0e6a2f2a8df363b","sha256":"a266987091690891ff495be0bedd0760d447840571adfba5a7d51524ad7be1ec"},"NounAtlas.json":{"gitBlob":"94e9cbdaf840e8bccbe229b923e7ab48d752a7e8","sha256":"099ae20b50beed0ff83c141926809437c51bb65cacc941b14afd2ef752a416ce"},"NounAtlasChangeInfo.json":{"gitBlob":"263c21d468db03252487ba8ce8429f32fbdc381f","sha256":"f81cf26a5f9e043a364e738ad12ab535defeae3e30db3a28028810ecd35bc278"}},"rows":67150,"verifiedTextRows":66826,"changedTextRows":0,"retainedTextRows":324,"scope":"Exact TalkSentence/hash joins, NounAtlas, LocalbookConfig and verified new Trailblaze structures. Unlinked text is retained. New story ownership is not inferred."}
+{
+  "schema": "hsr-content-update.v1",
+  "repository": "DimbreathBot/TurnBasedGameData",
+  "commit": "74a7b96fba32f00cf495a5c00b0311bd02207aaf",
+  "version": "OSPRODWin4.6.0_D16854589_A16781679_L16781679",
+  "checkedAt": "2026-10-19T19:37:59.703Z",
+  "latestTrailblaze": {
+    "id": 105009,
+    "chapter": 5,
+    "act": 7,
+    "title": "달 뜨기 전, 괴수와 춤을"
+  },
+  "intervalHours": 6,
+  "files": {
+    "TextMapKR_0.json": {
+      "gitBlob": "4c4adcf4ed86c48ebb407442801f3b3dd396eb19",
+      "sha256": "2a996609124fd7ab215cbacae43eee098578c6d7cc4c10186bb12d5dfc8fc941"
+    },
+    "TextMapKR_1.json": {
+      "gitBlob": "80eee947e1dc31577209e39d841ad2eb127541e0",
+      "sha256": "ceef6b210ebd57f955b26bffa2995487b18627cfd5a30c3b770de803c07d92b8"
+    },
+    "TalkSentenceConfig.json": {
+      "gitBlob": "522b747a5f48546829f17cf3a364ccd642b10fcf",
+      "sha256": "db75cb1e7adb6de861a816eb41bfd2da5d3c159efc5163c8bb38217a90a12479"
+    },
+    "MissionChapterConfig.json": {
+      "gitBlob": "3131ed0c02242aa69978f3daa0e6a2f2a8df363b",
+      "sha256": "a266987091690891ff495be0bedd0760d447840571adfba5a7d51524ad7be1ec"
+    },
+    "NounAtlas.json": {
+      "gitBlob": "94e9cbdaf840e8bccbe229b923e7ab48d752a7e8",
+      "sha256": "099ae20b50beed0ff83c141926809437c51bb65cacc941b14afd2ef752a416ce"
+    },
+    "NounAtlasChangeInfo.json": {
+      "gitBlob": "263c21d468db03252487ba8ce8429f32fbdc381f",
+      "sha256": "f81cf26a5f9e043a364e738ad12ab535defeae3e30db3a28028810ecd35bc278"
+    }
+  },
+  "rows": 67651,
+  "verifiedTextRows": 67327,
+  "changedTextRows": 0,
+  "retainedTextRows": 324,
+  "scope": "Exact TalkSentence/hash joins, NounAtlas, LocalbookConfig and verified new Trailblaze structures. Unlinked text is retained. New story ownership is not inferred."
+}

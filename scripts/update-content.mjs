@@ -24,7 +24,6 @@ import { discoverBwiki, alignBwiki, limitBwikiToPending } from './bwiki-verifica
 import { prepareSimulationEvents } from './simulation-events.mjs';
 import { collectEventImages } from './event-images.mjs';
 import { verifySourceFirst } from './source-first.mjs';
-import { retainUnavailableWikiPositions } from './wiki-reading-recovery.mjs';
 
 const root = process.cwd();
 const cache = path.resolve('.cache/upstream-content');
@@ -234,12 +233,7 @@ if (mode === '--plan') {
   await collectEventImages(stage, path.join(cache, 'bwiki'), manifest, retryState);
   await saveRetry(retryState, root);
   alignBwiki(run, stage, raw, planFile, root);
-  await verifySourceFirst(root, stage, raw, planFile, { apply: true });
-  await retainUnavailableWikiPositions(
-    stage,
-    before,
-    JSON.parse(await fs.readFile(path.join(root, '.cache/source-first/manifest.json'))),
-  );
+  await verifySourceFirst(root, stage, raw, planFile, { apply: true, previous: before });
   execFileSync(process.execPath, [path.join(root, 'scripts/verify-video-order.mjs'), stage, root], {
     cwd: root,
     stdio: 'inherit',

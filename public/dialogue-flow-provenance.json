@@ -55823,5 +55823,1358 @@
       "source": "Story/Discussion/Mission/8041500/DS80415000204.playable",
       "reason": "실행 구조 미제공 또는 임무 귀속 확인 필요"
     }
-  ]
+  ],
+  "executionAudit": {
+    "commit": "74a7b96fba32f00cf495a5c00b0311bd02207aaf",
+    "codeHash": "7296135985659046eee1a04a78675d37648afc134cf139ba62c8195f55efc8c2",
+    "policyHash": "0010823042bef4d103b06b1a206d2329ebfb548dafe0de74704b505cb3f92468",
+    "policyVersion": 3,
+    "officialInputs": {
+      "ExcelOutput/MainMission.json": {
+        "gitBlob": "255406dd60de8d13fa6e40303e769b74c13b41ba",
+        "sha256": "7d2fc8212d52119c47c3e1cf847f43bc9df74126a5f8290061cc5f61f0b8b967"
+      },
+      "ExcelOutput/TalkSentenceConfig.json": {
+        "gitBlob": "522b747a5f48546829f17cf3a364ccd642b10fcf",
+        "sha256": "db75cb1e7adb6de861a816eb41bfd2da5d3c159efc5163c8bb38217a90a12479"
+      },
+      "TextMap/TextMapCHS.json": {
+        "gitBlob": "799c7ea9309eb6f17eb57c0c4cf219f28483eee3",
+        "sha256": "b442c7a30bbd5c21e5f4393781bfd833e939e5feca6f6612b01b107e94b2ea9c"
+      },
+      "TextMap/TextMapKR_0.json": {
+        "gitBlob": "4c4adcf4ed86c48ebb407442801f3b3dd396eb19",
+        "sha256": "2a996609124fd7ab215cbacae43eee098578c6d7cc4c10186bb12d5dfc8fc941"
+      },
+      "TextMap/TextMapKR_1.json": {
+        "gitBlob": "80eee947e1dc31577209e39d841ad2eb127541e0",
+        "sha256": "ceef6b210ebd57f955b26bffa2995487b18627cfd5a30c3b770de803c07d92b8"
+      },
+      "ExcelOutput/MissionChapterConfig.json": {
+        "gitBlob": "3131ed0c02242aa69978f3daa0e6a2f2a8df363b",
+        "sha256": "a266987091690891ff495be0bedd0760d447840571adfba5a7d51524ad7be1ec"
+      }
+    },
+    "structureHashes": "6f8bf42883faf0c04673146146964f821e47be4091e587a82a2b884c252ff851",
+    "chapters": [
+      {
+        "file": "content/station-departure--arrival.json",
+        "title": "제1막: 오늘은 어제의 내일",
+        "missionCount": 24,
+        "summary": {
+          "confirmedRows": 298,
+          "confirmedOccurrences": 393,
+          "confirmedEdges": 204,
+          "confirmedChoiceResponses": 17,
+          "previousUnknownRows": 437,
+          "newlyPlacedRows": 54,
+          "totalExecutionPlacedRows": 54,
+          "newlyPlacedExistingRows": 21,
+          "newOfficialRows": 39,
+          "newlyPlacedNewRows": 33,
+          "remainingPreviousUnknownRows": 416,
+          "remainingUnknownRows": 422,
+          "placedBetweenWikiAnchors": 0,
+          "orderComparisons": {
+            "compatible-local-order": 90,
+            "no-comparable-wiki-path": 5
+          },
+          "tentativeItems": 1792
+        },
+        "reading": {
+          "previousOrderUnknown": 439,
+          "newlyPlacedRows": 2,
+          "placedRows": 741,
+          "occurrences": 742,
+          "repeatedOccurrences": 1,
+          "newChoiceReplyLinks": 25,
+          "unplacedRows": 543,
+          "remainingPreviousUnknown": 437,
+          "officialExecutionVerifiedRows": 80
+        },
+        "missingOfficialCandidates": 67
+      },
+      {
+        "file": "content/station-departure--platform.json",
+        "title": "개척 후문: 인간과 신의 면류관",
+        "missionCount": 5,
+        "summary": {
+          "confirmedRows": 515,
+          "confirmedOccurrences": 605,
+          "confirmedEdges": 409,
+          "confirmedChoiceResponses": 72,
+          "previousUnknownRows": 206,
+          "newlyPlacedRows": 91,
+          "totalExecutionPlacedRows": 91,
+          "newlyPlacedExistingRows": 75,
+          "newOfficialRows": 16,
+          "newlyPlacedNewRows": 16,
+          "remainingPreviousUnknownRows": 131,
+          "remainingUnknownRows": 131,
+          "placedBetweenWikiAnchors": 5,
+          "orderComparisons": {
+            "compatible-local-order": 153,
+            "no-comparable-wiki-path": 29
+          },
+          "tentativeItems": 285
+        },
+        "reading": {
+          "previousOrderUnknown": 471,
+          "newlyPlacedRows": 265,
+          "placedRows": 582,
+          "occurrences": 588,
+          "repeatedOccurrences": 6,
+          "newChoiceReplyLinks": 36,
+          "unplacedRows": 316,
+          "remainingPreviousUnknown": 206,
+          "officialExecutionVerifiedRows": 214
+        },
+        "missingOfficialCandidates": 100
+      },
+      {
+        "file": "content/jarilo-records--snowfield.json",
+        "title": "제1막: 시들어가는 겨울밤",
+        "missionCount": 28,
+        "summary": {
+          "confirmedRows": 1421,
+          "confirmedOccurrences": 1512,
+          "confirmedEdges": 530,
+          "confirmedChoiceResponses": 15,
+          "previousUnknownRows": 351,
+          "newlyPlacedRows": 203,
+          "totalExecutionPlacedRows": 203,
+          "newlyPlacedExistingRows": 191,
+          "newOfficialRows": 12,
+          "newlyPlacedNewRows": 12,
+          "remainingPreviousUnknownRows": 160,
+          "remainingUnknownRows": 160,
+          "placedBetweenWikiAnchors": 0,
+          "orderComparisons": {
+            "compatible-local-order": 314
+          },
+          "tentativeItems": 2126
+        },
+        "reading": {
+          "previousOrderUnknown": 375,
+          "newlyPlacedRows": 24,
+          "placedRows": 2071,
+          "occurrences": 2087,
+          "repeatedOccurrences": 16,
+          "newChoiceReplyLinks": 45,
+          "unplacedRows": 575,
+          "remainingPreviousUnknown": 351,
+          "officialExecutionVerifiedRows": 76
+        },
+        "missingOfficialCandidates": 33
+      },
+      {
+        "file": "content/jarilo-records--city.json",
+        "title": "제2막: 동트는 태양 아래",
+        "missionCount": 16,
+        "summary": {
+          "confirmedRows": 1229,
+          "confirmedOccurrences": 1315,
+          "confirmedEdges": 697,
+          "confirmedChoiceResponses": 80,
+          "previousUnknownRows": 189,
+          "newlyPlacedRows": 84,
+          "totalExecutionPlacedRows": 84,
+          "newlyPlacedExistingRows": 84,
+          "newOfficialRows": 0,
+          "newlyPlacedNewRows": 0,
+          "remainingPreviousUnknownRows": 105,
+          "remainingUnknownRows": 105,
+          "placedBetweenWikiAnchors": 1,
+          "orderComparisons": {
+            "compatible-local-order": 477,
+            "no-comparable-wiki-path": 22
+          },
+          "tentativeItems": 663
+        },
+        "reading": {
+          "previousOrderUnknown": 195,
+          "newlyPlacedRows": 6,
+          "placedRows": 1250,
+          "occurrences": 1251,
+          "repeatedOccurrences": 1,
+          "newChoiceReplyLinks": 8,
+          "unplacedRows": 244,
+          "remainingPreviousUnknown": 189,
+          "officialExecutionVerifiedRows": 258
+        },
+        "missingOfficialCandidates": 88
+      },
+      {
+        "file": "content/jarilo-records--winter-dream.json",
+        "title": "개척 후문: 겨울꿈에서 깨어난 순간",
+        "missionCount": 6,
+        "summary": {
+          "confirmedRows": 658,
+          "confirmedOccurrences": 693,
+          "confirmedEdges": 568,
+          "confirmedChoiceResponses": 74,
+          "previousUnknownRows": 204,
+          "newlyPlacedRows": 85,
+          "totalExecutionPlacedRows": 85,
+          "newlyPlacedExistingRows": 83,
+          "newOfficialRows": 2,
+          "newlyPlacedNewRows": 2,
+          "remainingPreviousUnknownRows": 121,
+          "remainingUnknownRows": 121,
+          "placedBetweenWikiAnchors": 11,
+          "orderComparisons": {
+            "compatible-local-order": 269,
+            "no-comparable-wiki-path": 5
+          },
+          "tentativeItems": 43
+        },
+        "reading": {
+          "previousOrderUnknown": 736,
+          "newlyPlacedRows": 532,
+          "placedRows": 773,
+          "occurrences": 778,
+          "repeatedOccurrences": 5,
+          "newChoiceReplyLinks": 43,
+          "unplacedRows": 345,
+          "remainingPreviousUnknown": 204,
+          "officialExecutionVerifiedRows": 326
+        },
+        "missingOfficialCandidates": 14
+      },
+      {
+        "file": "content/luofu-records--harbor.json",
+        "title": "제1막: 바람 따라 즐기는 선경",
+        "missionCount": 14,
+        "summary": {
+          "confirmedRows": 1596,
+          "confirmedOccurrences": 1735,
+          "confirmedEdges": 1065,
+          "confirmedChoiceResponses": 165,
+          "previousUnknownRows": 324,
+          "newlyPlacedRows": 118,
+          "totalExecutionPlacedRows": 118,
+          "newlyPlacedExistingRows": 117,
+          "newOfficialRows": 1,
+          "newlyPlacedNewRows": 1,
+          "remainingPreviousUnknownRows": 207,
+          "remainingUnknownRows": 207,
+          "placedBetweenWikiAnchors": 5,
+          "orderComparisons": {
+            "compatible-local-order": 649,
+            "no-comparable-wiki-path": 54
+          },
+          "tentativeItems": 1196
+        },
+        "reading": {
+          "previousOrderUnknown": 332,
+          "newlyPlacedRows": 8,
+          "placedRows": 1670,
+          "occurrences": 1670,
+          "repeatedOccurrences": 0,
+          "newChoiceReplyLinks": 34,
+          "unplacedRows": 449,
+          "remainingPreviousUnknown": 324,
+          "officialExecutionVerifiedRows": 481
+        },
+        "missingOfficialCandidates": 106
+      },
+      {
+        "file": "content/luofu-records--clouds.json",
+        "title": "제2막: 구름에 가려진 탑",
+        "missionCount": 5,
+        "summary": {
+          "confirmedRows": 473,
+          "confirmedOccurrences": 575,
+          "confirmedEdges": 356,
+          "confirmedChoiceResponses": 19,
+          "previousUnknownRows": 25,
+          "newlyPlacedRows": 6,
+          "totalExecutionPlacedRows": 6,
+          "newlyPlacedExistingRows": 4,
+          "newOfficialRows": 2,
+          "newlyPlacedNewRows": 2,
+          "remainingPreviousUnknownRows": 21,
+          "remainingUnknownRows": 21,
+          "placedBetweenWikiAnchors": 0,
+          "orderComparisons": {
+            "compatible-local-order": 290,
+            "no-comparable-wiki-path": 8
+          },
+          "tentativeItems": 101
+        },
+        "reading": {
+          "previousOrderUnknown": 25,
+          "newlyPlacedRows": 0,
+          "placedRows": 611,
+          "occurrences": 611,
+          "repeatedOccurrences": 0,
+          "newChoiceReplyLinks": 6,
+          "unplacedRows": 77,
+          "remainingPreviousUnknown": 25,
+          "officialExecutionVerifiedRows": 271
+        },
+        "missingOfficialCandidates": 13
+      },
+      {
+        "file": "content/luofu-records--aftermath.json",
+        "title": "제3막: 재앙이 지나간 자리",
+        "missionCount": 2,
+        "summary": {
+          "confirmedRows": 441,
+          "confirmedOccurrences": 461,
+          "confirmedEdges": 268,
+          "confirmedChoiceResponses": 48,
+          "previousUnknownRows": 40,
+          "newlyPlacedRows": 28,
+          "totalExecutionPlacedRows": 28,
+          "newlyPlacedExistingRows": 27,
+          "newOfficialRows": 1,
+          "newlyPlacedNewRows": 1,
+          "remainingPreviousUnknownRows": 13,
+          "remainingUnknownRows": 13,
+          "placedBetweenWikiAnchors": 2,
+          "orderComparisons": {
+            "compatible-local-order": 149,
+            "no-comparable-wiki-path": 25
+          },
+          "tentativeItems": 110
+        },
+        "reading": {
+          "previousOrderUnknown": 40,
+          "newlyPlacedRows": 0,
+          "placedRows": 405,
+          "occurrences": 405,
+          "repeatedOccurrences": 0,
+          "newChoiceReplyLinks": 3,
+          "unplacedRows": 85,
+          "remainingPreviousUnknown": 40,
+          "officialExecutionVerifiedRows": 171
+        },
+        "missingOfficialCandidates": 5
+      },
+      {
+        "file": "content/luofu-records--foxian-tale.json",
+        "title": "개척 후문: 호재지이",
+        "missionCount": 18,
+        "summary": {
+          "confirmedRows": 1538,
+          "confirmedOccurrences": 1722,
+          "confirmedEdges": 767,
+          "confirmedChoiceResponses": 106,
+          "previousUnknownRows": 263,
+          "newlyPlacedRows": 195,
+          "totalExecutionPlacedRows": 195,
+          "newlyPlacedExistingRows": 179,
+          "newOfficialRows": 16,
+          "newlyPlacedNewRows": 16,
+          "remainingPreviousUnknownRows": 84,
+          "remainingUnknownRows": 84,
+          "placedBetweenWikiAnchors": 1,
+          "orderComparisons": {
+            "compatible-local-order": 482,
+            "no-comparable-wiki-path": 42
+          },
+          "tentativeItems": 893
+        },
+        "reading": {
+          "previousOrderUnknown": 1543,
+          "newlyPlacedRows": 1280,
+          "placedRows": 1746,
+          "occurrences": 1761,
+          "repeatedOccurrences": 15,
+          "newChoiceReplyLinks": 144,
+          "unplacedRows": 325,
+          "remainingPreviousUnknown": 263,
+          "officialExecutionVerifiedRows": 386
+        },
+        "missingOfficialCandidates": 19
+      },
+      {
+        "file": "content/luofu-records--swords-upper.json",
+        "title": "개척 후문: 청천 위 교차하는 칼끝·상",
+        "missionCount": 13,
+        "summary": {
+          "confirmedRows": 479,
+          "confirmedOccurrences": 518,
+          "confirmedEdges": 356,
+          "confirmedChoiceResponses": 43,
+          "previousUnknownRows": 196,
+          "newlyPlacedRows": 13,
+          "totalExecutionPlacedRows": 13,
+          "newlyPlacedExistingRows": 13,
+          "newOfficialRows": 0,
+          "newlyPlacedNewRows": 0,
+          "remainingPreviousUnknownRows": 183,
+          "remainingUnknownRows": 183,
+          "placedBetweenWikiAnchors": 0,
+          "orderComparisons": {
+            "compatible-local-order": 250,
+            "no-comparable-wiki-path": 4
+          },
+          "tentativeItems": 440
+        },
+        "reading": {
+          "previousOrderUnknown": 597,
+          "newlyPlacedRows": 401,
+          "placedRows": 1378,
+          "occurrences": 1381,
+          "repeatedOccurrences": 3,
+          "newChoiceReplyLinks": 69,
+          "unplacedRows": 237,
+          "remainingPreviousUnknown": 196,
+          "officialExecutionVerifiedRows": 156
+        },
+        "missingOfficialCandidates": 63
+      },
+      {
+        "file": "content/luofu-records--swords-lower.json",
+        "title": "개척 후문: 청천 위 교차하는 칼끝·하",
+        "missionCount": 15,
+        "summary": {
+          "confirmedRows": 293,
+          "confirmedOccurrences": 315,
+          "confirmedEdges": 117,
+          "confirmedChoiceResponses": 7,
+          "previousUnknownRows": 108,
+          "newlyPlacedRows": 2,
+          "totalExecutionPlacedRows": 2,
+          "newlyPlacedExistingRows": 2,
+          "newOfficialRows": 0,
+          "newlyPlacedNewRows": 0,
+          "remainingPreviousUnknownRows": 106,
+          "remainingUnknownRows": 106,
+          "placedBetweenWikiAnchors": 0,
+          "orderComparisons": {
+            "compatible-local-order": 94,
+            "no-comparable-wiki-path": 4
+          },
+          "tentativeItems": 72
+        },
+        "reading": {
+          "previousOrderUnknown": 117,
+          "newlyPlacedRows": 9,
+          "placedRows": 1140,
+          "occurrences": 1142,
+          "repeatedOccurrences": 2,
+          "newChoiceReplyLinks": 23,
+          "unplacedRows": 143,
+          "remainingPreviousUnknown": 108,
+          "officialExecutionVerifiedRows": 90
+        },
+        "missingOfficialCandidates": 41
+      },
+      {
+        "file": "content/penacony-records--invitation.json",
+        "title": "제1막: 음향과 분노",
+        "missionCount": 17,
+        "summary": {
+          "confirmedRows": 1340,
+          "confirmedOccurrences": 1611,
+          "confirmedEdges": 1101,
+          "confirmedChoiceResponses": 191,
+          "previousUnknownRows": 453,
+          "newlyPlacedRows": 103,
+          "totalExecutionPlacedRows": 103,
+          "newlyPlacedExistingRows": 84,
+          "newOfficialRows": 19,
+          "newlyPlacedNewRows": 19,
+          "remainingPreviousUnknownRows": 369,
+          "remainingUnknownRows": 369,
+          "placedBetweenWikiAnchors": 3,
+          "orderComparisons": {
+            "compatible-local-order": 522,
+            "no-comparable-wiki-path": 65
+          },
+          "tentativeItems": 1269
+        },
+        "reading": {
+          "previousOrderUnknown": 459,
+          "newlyPlacedRows": 6,
+          "placedRows": 1773,
+          "occurrences": 1779,
+          "repeatedOccurrences": 6,
+          "newChoiceReplyLinks": 50,
+          "unplacedRows": 654,
+          "remainingPreviousUnknown": 453,
+          "officialExecutionVerifiedRows": 723
+        },
+        "missingOfficialCandidates": 295
+      },
+      {
+        "file": "content/penacony-records--dream.json",
+        "title": "제2막: 비둘기 속의 고양이",
+        "missionCount": 15,
+        "summary": {
+          "confirmedRows": 673,
+          "confirmedOccurrences": 800,
+          "confirmedEdges": 373,
+          "confirmedChoiceResponses": 16,
+          "previousUnknownRows": 302,
+          "newlyPlacedRows": 18,
+          "totalExecutionPlacedRows": 18,
+          "newlyPlacedExistingRows": 13,
+          "newOfficialRows": 5,
+          "newlyPlacedNewRows": 5,
+          "remainingPreviousUnknownRows": 289,
+          "remainingUnknownRows": 289,
+          "placedBetweenWikiAnchors": 1,
+          "orderComparisons": {
+            "compatible-local-order": 255,
+            "no-comparable-wiki-path": 3
+          },
+          "tentativeItems": 1665
+        },
+        "reading": {
+          "previousOrderUnknown": 328,
+          "newlyPlacedRows": 26,
+          "placedRows": 1431,
+          "occurrences": 1439,
+          "repeatedOccurrences": 8,
+          "newChoiceReplyLinks": 15,
+          "unplacedRows": 417,
+          "remainingPreviousUnknown": 302,
+          "officialExecutionVerifiedRows": 275
+        },
+        "missingOfficialCandidates": 448
+      },
+      {
+        "file": "content/penacony-records--our-time.json",
+        "title": "제3막: 우리들의 시대에",
+        "missionCount": 18,
+        "summary": {
+          "confirmedRows": 472,
+          "confirmedOccurrences": 483,
+          "confirmedEdges": 248,
+          "confirmedChoiceResponses": 15,
+          "previousUnknownRows": 247,
+          "newlyPlacedRows": 38,
+          "totalExecutionPlacedRows": 38,
+          "newlyPlacedExistingRows": 37,
+          "newOfficialRows": 1,
+          "newlyPlacedNewRows": 1,
+          "remainingPreviousUnknownRows": 210,
+          "remainingUnknownRows": 210,
+          "placedBetweenWikiAnchors": 2,
+          "orderComparisons": {
+            "compatible-local-order": 62,
+            "potential-order-conflict; invocation-scope-review-required": 1,
+            "no-comparable-wiki-path": 1
+          },
+          "tentativeItems": 331
+        },
+        "reading": {
+          "previousOrderUnknown": 247,
+          "newlyPlacedRows": 0,
+          "placedRows": 1871,
+          "occurrences": 1871,
+          "repeatedOccurrences": 0,
+          "newChoiceReplyLinks": 35,
+          "unplacedRows": 537,
+          "remainingPreviousUnknown": 247,
+          "officialExecutionVerifiedRows": 226
+        },
+        "missingOfficialCandidates": 180
+      },
+      {
+        "file": "content/penacony-records--farewell.json",
+        "title": "제4막: 안녕, 페나코니",
+        "missionCount": 8,
+        "summary": {
+          "confirmedRows": 234,
+          "confirmedOccurrences": 269,
+          "confirmedEdges": 82,
+          "confirmedChoiceResponses": 7,
+          "previousUnknownRows": 171,
+          "newlyPlacedRows": 8,
+          "totalExecutionPlacedRows": 8,
+          "newlyPlacedExistingRows": 8,
+          "newOfficialRows": 0,
+          "newlyPlacedNewRows": 0,
+          "remainingPreviousUnknownRows": 163,
+          "remainingUnknownRows": 163,
+          "placedBetweenWikiAnchors": 0,
+          "orderComparisons": {
+            "compatible-local-order": 20,
+            "no-comparable-wiki-path": 2
+          },
+          "tentativeItems": 120
+        },
+        "reading": {
+          "previousOrderUnknown": 173,
+          "newlyPlacedRows": 2,
+          "placedRows": 736,
+          "occurrences": 738,
+          "repeatedOccurrences": 2,
+          "newChoiceReplyLinks": 38,
+          "unplacedRows": 251,
+          "remainingPreviousUnknown": 171,
+          "officialExecutionVerifiedRows": 65
+        },
+        "missingOfficialCandidates": 91
+      },
+      {
+        "file": "content/penacony-records--nana-outrage.json",
+        "title": "개척 후문: 나나웃레이지·인의(忍義) 없는 전쟁",
+        "missionCount": 12,
+        "summary": {
+          "confirmedRows": 456,
+          "confirmedOccurrences": 488,
+          "confirmedEdges": 102,
+          "confirmedChoiceResponses": 11,
+          "previousUnknownRows": 249,
+          "newlyPlacedRows": 35,
+          "totalExecutionPlacedRows": 35,
+          "newlyPlacedExistingRows": 16,
+          "newOfficialRows": 19,
+          "newlyPlacedNewRows": 19,
+          "remainingPreviousUnknownRows": 233,
+          "remainingUnknownRows": 233,
+          "placedBetweenWikiAnchors": 0,
+          "orderComparisons": {
+            "compatible-local-order": 59,
+            "no-comparable-wiki-path": 9
+          },
+          "tentativeItems": 269
+        },
+        "reading": {
+          "previousOrderUnknown": 962,
+          "newlyPlacedRows": 713,
+          "placedRows": 1887,
+          "occurrences": 1888,
+          "repeatedOccurrences": 1,
+          "newChoiceReplyLinks": 63,
+          "unplacedRows": 360,
+          "remainingPreviousUnknown": 249,
+          "officialExecutionVerifiedRows": 136
+        },
+        "missingOfficialCandidates": 61
+      },
+      {
+        "file": "content/penacony-records--eighth-day.json",
+        "title": "제5막: 여덟째 날에 오르는 여정",
+        "missionCount": 9,
+        "summary": {
+          "confirmedRows": 103,
+          "confirmedOccurrences": 104,
+          "confirmedEdges": 42,
+          "confirmedChoiceResponses": 2,
+          "previousUnknownRows": 75,
+          "newlyPlacedRows": 0,
+          "totalExecutionPlacedRows": 0,
+          "newlyPlacedExistingRows": 0,
+          "newOfficialRows": 0,
+          "newlyPlacedNewRows": 0,
+          "remainingPreviousUnknownRows": 75,
+          "remainingUnknownRows": 75,
+          "placedBetweenWikiAnchors": 0,
+          "orderComparisons": {
+            "compatible-local-order": 37,
+            "no-comparable-wiki-path": 4
+          },
+          "tentativeItems": 53
+        },
+        "reading": {
+          "previousOrderUnknown": 75,
+          "newlyPlacedRows": 0,
+          "placedRows": 822,
+          "occurrences": 822,
+          "repeatedOccurrences": 0,
+          "newChoiceReplyLinks": 1,
+          "unplacedRows": 92,
+          "remainingPreviousUnknown": 75,
+          "officialExecutionVerifiedRows": 43
+        },
+        "missingOfficialCandidates": 35
+      },
+      {
+        "file": "content/penacony-records--dream-grail.json",
+        "title": "개척 후문: 좋은꿈과 성배",
+        "missionCount": 13,
+        "summary": {
+          "confirmedRows": 262,
+          "confirmedOccurrences": 265,
+          "confirmedEdges": 12,
+          "confirmedChoiceResponses": 0,
+          "previousUnknownRows": 191,
+          "newlyPlacedRows": 48,
+          "totalExecutionPlacedRows": 48,
+          "newlyPlacedExistingRows": 38,
+          "newOfficialRows": 10,
+          "newlyPlacedNewRows": 10,
+          "remainingPreviousUnknownRows": 153,
+          "remainingUnknownRows": 153,
+          "placedBetweenWikiAnchors": 0,
+          "orderComparisons": {
+            "compatible-local-order": 11
+          },
+          "tentativeItems": 140
+        },
+        "reading": {
+          "previousOrderUnknown": 1157,
+          "newlyPlacedRows": 966,
+          "placedRows": 1331,
+          "occurrences": 1331,
+          "repeatedOccurrences": 0,
+          "newChoiceReplyLinks": 40,
+          "unplacedRows": 207,
+          "remainingPreviousUnknown": 191,
+          "officialExecutionVerifiedRows": 8
+        },
+        "missingOfficialCandidates": 114
+      },
+      {
+        "file": "content/penacony-records--memories-opening.json",
+        "title": "종말 임무: 기억은 꿈의 오프닝",
+        "missionCount": 12,
+        "summary": {
+          "confirmedRows": 106,
+          "confirmedOccurrences": 108,
+          "confirmedEdges": 9,
+          "confirmedChoiceResponses": 0,
+          "previousUnknownRows": 190,
+          "newlyPlacedRows": 4,
+          "totalExecutionPlacedRows": 4,
+          "newlyPlacedExistingRows": 4,
+          "newOfficialRows": 0,
+          "newlyPlacedNewRows": 0,
+          "remainingPreviousUnknownRows": 186,
+          "remainingUnknownRows": 186,
+          "placedBetweenWikiAnchors": 0,
+          "orderComparisons": {
+            "compatible-local-order": 6
+          },
+          "tentativeItems": 74
+        },
+        "reading": {
+          "previousOrderUnknown": 191,
+          "newlyPlacedRows": 1,
+          "placedRows": 1501,
+          "occurrences": 1502,
+          "repeatedOccurrences": 1,
+          "newChoiceReplyLinks": 3,
+          "unplacedRows": 302,
+          "remainingPreviousUnknown": 190,
+          "officialExecutionVerifiedRows": 11
+        },
+        "missingOfficialCandidates": 48
+      },
+      {
+        "file": "content/amphoreus-records--journey.json",
+        "title": "제1막: 불을 쫓는 낙목의 영웅기",
+        "missionCount": 18,
+        "summary": {
+          "confirmedRows": 1038,
+          "confirmedOccurrences": 1062,
+          "confirmedEdges": 425,
+          "confirmedChoiceResponses": 50,
+          "previousUnknownRows": 555,
+          "newlyPlacedRows": 42,
+          "totalExecutionPlacedRows": 42,
+          "newlyPlacedExistingRows": 42,
+          "newOfficialRows": 0,
+          "newlyPlacedNewRows": 0,
+          "remainingPreviousUnknownRows": 513,
+          "remainingUnknownRows": 513,
+          "placedBetweenWikiAnchors": 0,
+          "orderComparisons": {
+            "compatible-local-order": 209,
+            "no-comparable-wiki-path": 20,
+            "potential-order-conflict; invocation-scope-review-required": 2
+          },
+          "tentativeItems": 595
+        },
+        "reading": {
+          "previousOrderUnknown": 566,
+          "newlyPlacedRows": 11,
+          "placedRows": 3015,
+          "occurrences": 3029,
+          "repeatedOccurrences": 14,
+          "newChoiceReplyLinks": 45,
+          "unplacedRows": 754,
+          "remainingPreviousUnknown": 555,
+          "officialExecutionVerifiedRows": 391
+        },
+        "missingOfficialCandidates": 310
+      },
+      {
+        "file": "content/amphoreus-records--gate-throne.json",
+        "title": "제2막: 문의 시작, 왕좌의 종말",
+        "missionCount": 13,
+        "summary": {
+          "confirmedRows": 647,
+          "confirmedOccurrences": 677,
+          "confirmedEdges": 321,
+          "confirmedChoiceResponses": 38,
+          "previousUnknownRows": 298,
+          "newlyPlacedRows": 22,
+          "totalExecutionPlacedRows": 22,
+          "newlyPlacedExistingRows": 20,
+          "newOfficialRows": 2,
+          "newlyPlacedNewRows": 2,
+          "remainingPreviousUnknownRows": 278,
+          "remainingUnknownRows": 278,
+          "placedBetweenWikiAnchors": 3,
+          "orderComparisons": {
+            "compatible-local-order": 204,
+            "no-comparable-wiki-path": 7
+          },
+          "tentativeItems": 677
+        },
+        "reading": {
+          "previousOrderUnknown": 325,
+          "newlyPlacedRows": 27,
+          "placedRows": 2200,
+          "occurrences": 2213,
+          "repeatedOccurrences": 13,
+          "newChoiceReplyLinks": 26,
+          "unplacedRows": 454,
+          "remainingPreviousUnknown": 298,
+          "officialExecutionVerifiedRows": 281
+        },
+        "missingOfficialCandidates": 168
+      },
+      {
+        "file": "content/amphoreus-records--flowers.json",
+        "title": "제3막: 안식의 땅의 꽃밭을 지나",
+        "missionCount": 14,
+        "summary": {
+          "confirmedRows": 368,
+          "confirmedOccurrences": 377,
+          "confirmedEdges": 83,
+          "confirmedChoiceResponses": 8,
+          "previousUnknownRows": 239,
+          "newlyPlacedRows": 27,
+          "totalExecutionPlacedRows": 27,
+          "newlyPlacedExistingRows": 23,
+          "newOfficialRows": 4,
+          "newlyPlacedNewRows": 4,
+          "remainingPreviousUnknownRows": 216,
+          "remainingUnknownRows": 216,
+          "placedBetweenWikiAnchors": 0,
+          "orderComparisons": {
+            "compatible-local-order": 58,
+            "no-comparable-wiki-path": 1
+          },
+          "tentativeItems": 79
+        },
+        "reading": {
+          "previousOrderUnknown": 242,
+          "newlyPlacedRows": 3,
+          "placedRows": 2413,
+          "occurrences": 2420,
+          "repeatedOccurrences": 7,
+          "newChoiceReplyLinks": 22,
+          "unplacedRows": 328,
+          "remainingPreviousUnknown": 239,
+          "officialExecutionVerifiedRows": 82
+        },
+        "missingOfficialCandidates": 46
+      },
+      {
+        "file": "content/amphoreus-records--dawn-fall.json",
+        "title": "제4막: 여명이 틀 무렵의 추락",
+        "missionCount": 17,
+        "summary": {
+          "confirmedRows": 255,
+          "confirmedOccurrences": 256,
+          "confirmedEdges": 111,
+          "confirmedChoiceResponses": 1,
+          "previousUnknownRows": 967,
+          "newlyPlacedRows": 31,
+          "totalExecutionPlacedRows": 31,
+          "newlyPlacedExistingRows": 30,
+          "newOfficialRows": 1,
+          "newlyPlacedNewRows": 1,
+          "remainingPreviousUnknownRows": 937,
+          "remainingUnknownRows": 937,
+          "placedBetweenWikiAnchors": 0,
+          "orderComparisons": {
+            "compatible-local-order": 15
+          },
+          "tentativeItems": 146
+        },
+        "reading": {
+          "previousOrderUnknown": 967,
+          "newlyPlacedRows": 0,
+          "placedRows": 1492,
+          "occurrences": 1492,
+          "repeatedOccurrences": 0,
+          "newChoiceReplyLinks": 7,
+          "unplacedRows": 1121,
+          "remainingPreviousUnknown": 967,
+          "officialExecutionVerifiedRows": 111
+        },
+        "missingOfficialCandidates": 117
+      },
+      {
+        "file": "content/amphoreus-records--sun-destruction.json",
+        "title": "제5막: 태양이 파멸로 향하기에",
+        "missionCount": 6,
+        "summary": {
+          "confirmedRows": 181,
+          "confirmedOccurrences": 181,
+          "confirmedEdges": 16,
+          "confirmedChoiceResponses": 0,
+          "previousUnknownRows": 138,
+          "newlyPlacedRows": 5,
+          "totalExecutionPlacedRows": 5,
+          "newlyPlacedExistingRows": 5,
+          "newOfficialRows": 0,
+          "newlyPlacedNewRows": 0,
+          "remainingPreviousUnknownRows": 133,
+          "remainingUnknownRows": 133,
+          "placedBetweenWikiAnchors": 0,
+          "orderComparisons": {
+            "compatible-local-order": 16
+          },
+          "tentativeItems": 23
+        },
+        "reading": {
+          "previousOrderUnknown": 140,
+          "newlyPlacedRows": 2,
+          "placedRows": 1358,
+          "occurrences": 1360,
+          "repeatedOccurrences": 2,
+          "newChoiceReplyLinks": 19,
+          "unplacedRows": 196,
+          "remainingPreviousUnknown": 138,
+          "officialExecutionVerifiedRows": 10
+        },
+        "missingOfficialCandidates": 23
+      },
+      {
+        "file": "content/amphoreus-records--before-heroes-die.json",
+        "title": "제6막: 영웅은 죽기 전에",
+        "missionCount": 15,
+        "summary": {
+          "confirmedRows": 272,
+          "confirmedOccurrences": 272,
+          "confirmedEdges": 30,
+          "confirmedChoiceResponses": 0,
+          "previousUnknownRows": 276,
+          "newlyPlacedRows": 3,
+          "totalExecutionPlacedRows": 3,
+          "newlyPlacedExistingRows": 0,
+          "newOfficialRows": 3,
+          "newlyPlacedNewRows": 3,
+          "remainingPreviousUnknownRows": 276,
+          "remainingUnknownRows": 276,
+          "placedBetweenWikiAnchors": 0,
+          "orderComparisons": {
+            "compatible-local-order": 19
+          },
+          "tentativeItems": 102
+        },
+        "reading": {
+          "previousOrderUnknown": 276,
+          "newlyPlacedRows": 0,
+          "placedRows": 1818,
+          "occurrences": 1818,
+          "repeatedOccurrences": 0,
+          "newChoiceReplyLinks": 35,
+          "unplacedRows": 334,
+          "remainingPreviousUnknown": 276,
+          "officialExecutionVerifiedRows": 51
+        },
+        "missingOfficialCandidates": 77
+      },
+      {
+        "file": "content/amphoreus-records--long-night.json",
+        "title": "제7막: 긴 밤 속에 다시 대지로",
+        "missionCount": 16,
+        "summary": {
+          "confirmedRows": 152,
+          "confirmedOccurrences": 155,
+          "confirmedEdges": 27,
+          "confirmedChoiceResponses": 4,
+          "previousUnknownRows": 160,
+          "newlyPlacedRows": 9,
+          "totalExecutionPlacedRows": 9,
+          "newlyPlacedExistingRows": 9,
+          "newOfficialRows": 0,
+          "newlyPlacedNewRows": 0,
+          "remainingPreviousUnknownRows": 151,
+          "remainingUnknownRows": 151,
+          "placedBetweenWikiAnchors": 0,
+          "orderComparisons": {
+            "compatible-local-order": 9,
+            "no-comparable-wiki-path": 1
+          },
+          "tentativeItems": 82
+        },
+        "reading": {
+          "previousOrderUnknown": 162,
+          "newlyPlacedRows": 2,
+          "placedRows": 1429,
+          "occurrences": 1431,
+          "repeatedOccurrences": 2,
+          "newChoiceReplyLinks": 16,
+          "unplacedRows": 220,
+          "remainingPreviousUnknown": 160,
+          "officialExecutionVerifiedRows": 29
+        },
+        "missingOfficialCandidates": 42
+      },
+      {
+        "file": "content/amphoreus-records--yesterdays-tomorrow.json",
+        "title": "제8막: 어제의 내일이 되어",
+        "missionCount": 15,
+        "summary": {
+          "confirmedRows": 242,
+          "confirmedOccurrences": 252,
+          "confirmedEdges": 28,
+          "confirmedChoiceResponses": 0,
+          "previousUnknownRows": 128,
+          "newlyPlacedRows": 16,
+          "totalExecutionPlacedRows": 16,
+          "newlyPlacedExistingRows": 9,
+          "newOfficialRows": 8,
+          "newlyPlacedNewRows": 7,
+          "remainingPreviousUnknownRows": 119,
+          "remainingUnknownRows": 120,
+          "placedBetweenWikiAnchors": 0,
+          "orderComparisons": {
+            "compatible-local-order": 27
+          },
+          "tentativeItems": 45
+        },
+        "reading": {
+          "previousOrderUnknown": 332,
+          "newlyPlacedRows": 204,
+          "placedRows": 1552,
+          "occurrences": 1597,
+          "repeatedOccurrences": 45,
+          "newChoiceReplyLinks": 34,
+          "unplacedRows": 180,
+          "remainingPreviousUnknown": 128,
+          "officialExecutionVerifiedRows": 7
+        },
+        "missingOfficialCandidates": 29
+      },
+      {
+        "file": "content/amphoreus-records--as-i-write.json",
+        "title": "모험 임무: 내가 쓰는 대로",
+        "missionCount": 0,
+        "summary": {
+          "confirmedRows": 0,
+          "confirmedOccurrences": 0,
+          "confirmedEdges": 0,
+          "confirmedChoiceResponses": 0,
+          "previousUnknownRows": 50,
+          "newlyPlacedRows": 0,
+          "totalExecutionPlacedRows": 0,
+          "newlyPlacedExistingRows": 0,
+          "newOfficialRows": 0,
+          "newlyPlacedNewRows": 0,
+          "remainingPreviousUnknownRows": 50,
+          "remainingUnknownRows": 50,
+          "placedBetweenWikiAnchors": 0,
+          "orderComparisons": {},
+          "tentativeItems": 0
+        },
+        "reading": {
+          "previousOrderUnknown": 50,
+          "newlyPlacedRows": 0,
+          "placedRows": 0,
+          "occurrences": 0,
+          "repeatedOccurrences": 0,
+          "newChoiceReplyLinks": 0,
+          "unplacedRows": 336,
+          "remainingPreviousUnknown": 50,
+          "officialExecutionVerifiedRows": 117
+        },
+        "missingOfficialCandidates": 0
+      },
+      {
+        "file": "content/paradise-records--paradise.json",
+        "title": "제1막: 낙원에 오신 걸 환영합니다",
+        "missionCount": 12,
+        "summary": {
+          "confirmedRows": 613,
+          "confirmedOccurrences": 625,
+          "confirmedEdges": 148,
+          "confirmedChoiceResponses": 21,
+          "previousUnknownRows": 263,
+          "newlyPlacedRows": 22,
+          "totalExecutionPlacedRows": 22,
+          "newlyPlacedExistingRows": 22,
+          "newOfficialRows": 0,
+          "newlyPlacedNewRows": 0,
+          "remainingPreviousUnknownRows": 241,
+          "remainingUnknownRows": 241,
+          "placedBetweenWikiAnchors": 0,
+          "orderComparisons": {
+            "compatible-local-order": 84,
+            "no-comparable-wiki-path": 12
+          },
+          "tentativeItems": 197
+        },
+        "reading": {
+          "previousOrderUnknown": 267,
+          "newlyPlacedRows": 4,
+          "placedRows": 2310,
+          "occurrences": 2314,
+          "repeatedOccurrences": 4,
+          "newChoiceReplyLinks": 59,
+          "unplacedRows": 381,
+          "remainingPreviousUnknown": 263,
+          "officialExecutionVerifiedRows": 134
+        },
+        "missingOfficialCandidates": 113
+      },
+      {
+        "file": "content/paradise-records--astropolis.json",
+        "title": "제2막: 새벽에 바치는 폭주",
+        "missionCount": 11,
+        "summary": {
+          "confirmedRows": 499,
+          "confirmedOccurrences": 501,
+          "confirmedEdges": 65,
+          "confirmedChoiceResponses": 10,
+          "previousUnknownRows": 168,
+          "newlyPlacedRows": 11,
+          "totalExecutionPlacedRows": 11,
+          "newlyPlacedExistingRows": 9,
+          "newOfficialRows": 2,
+          "newlyPlacedNewRows": 2,
+          "remainingPreviousUnknownRows": 159,
+          "remainingUnknownRows": 159,
+          "placedBetweenWikiAnchors": 0,
+          "orderComparisons": {
+            "compatible-local-order": 30,
+            "no-comparable-wiki-path": 7
+          },
+          "tentativeItems": 84
+        },
+        "reading": {
+          "previousOrderUnknown": 174,
+          "newlyPlacedRows": 6,
+          "placedRows": 2050,
+          "occurrences": 2056,
+          "repeatedOccurrences": 6,
+          "newChoiceReplyLinks": 48,
+          "unplacedRows": 216,
+          "remainingPreviousUnknown": 168,
+          "officialExecutionVerifiedRows": 51
+        },
+        "missingOfficialCandidates": 32
+      },
+      {
+        "file": "content/paradise-records--laughter.json",
+        "title": "제3막: 그리하여, 웃음소리는 멈추지 않으리",
+        "missionCount": 13,
+        "summary": {
+          "confirmedRows": 243,
+          "confirmedOccurrences": 262,
+          "confirmedEdges": 57,
+          "confirmedChoiceResponses": 3,
+          "previousUnknownRows": 219,
+          "newlyPlacedRows": 13,
+          "totalExecutionPlacedRows": 13,
+          "newlyPlacedExistingRows": 13,
+          "newOfficialRows": 0,
+          "newlyPlacedNewRows": 0,
+          "remainingPreviousUnknownRows": 206,
+          "remainingUnknownRows": 206,
+          "placedBetweenWikiAnchors": 1,
+          "orderComparisons": {
+            "compatible-local-order": 22,
+            "no-comparable-wiki-path": 3
+          },
+          "tentativeItems": 118
+        },
+        "reading": {
+          "previousOrderUnknown": 226,
+          "newlyPlacedRows": 7,
+          "placedRows": 1266,
+          "occurrences": 1273,
+          "repeatedOccurrences": 7,
+          "newChoiceReplyLinks": 31,
+          "unplacedRows": 280,
+          "remainingPreviousUnknown": 219,
+          "officialExecutionVerifiedRows": 62
+        },
+        "missingOfficialCandidates": 47
+      },
+      {
+        "file": "content/paradise-records--river-of-oblivion.json",
+        "title": "제4막: 산 자의 망천에 잠겨",
+        "missionCount": 11,
+        "summary": {
+          "confirmedRows": 240,
+          "confirmedOccurrences": 251,
+          "confirmedEdges": 74,
+          "confirmedChoiceResponses": 15,
+          "previousUnknownRows": 83,
+          "newlyPlacedRows": 9,
+          "totalExecutionPlacedRows": 9,
+          "newlyPlacedExistingRows": 9,
+          "newOfficialRows": 0,
+          "newlyPlacedNewRows": 0,
+          "remainingPreviousUnknownRows": 74,
+          "remainingUnknownRows": 74,
+          "placedBetweenWikiAnchors": 0,
+          "orderComparisons": {
+            "compatible-local-order": 38,
+            "no-comparable-wiki-path": 8
+          },
+          "tentativeItems": 39
+        },
+        "reading": {
+          "previousOrderUnknown": 92,
+          "newlyPlacedRows": 9,
+          "placedRows": 1267,
+          "occurrences": 1268,
+          "repeatedOccurrences": 1,
+          "newChoiceReplyLinks": 25,
+          "unplacedRows": 110,
+          "remainingPreviousUnknown": 83,
+          "officialExecutionVerifiedRows": 53
+        },
+        "missingOfficialCandidates": 18
+      },
+      {
+        "file": "content/paradise-records--silent-horn.json",
+        "title": "제5막: 적막이 깃든 순간, 울리는 경적",
+        "missionCount": 7,
+        "summary": {
+          "confirmedRows": 328,
+          "confirmedOccurrences": 328,
+          "confirmedEdges": 268,
+          "confirmedChoiceResponses": 3,
+          "previousUnknownRows": 87,
+          "newlyPlacedRows": 12,
+          "totalExecutionPlacedRows": 12,
+          "newlyPlacedExistingRows": 12,
+          "newOfficialRows": 0,
+          "newlyPlacedNewRows": 0,
+          "remainingPreviousUnknownRows": 75,
+          "remainingUnknownRows": 75,
+          "placedBetweenWikiAnchors": 3,
+          "orderComparisons": {
+            "compatible-local-order": 235,
+            "no-comparable-wiki-path": 2
+          },
+          "tentativeItems": 102
+        },
+        "reading": {
+          "previousOrderUnknown": 91,
+          "newlyPlacedRows": 4,
+          "placedRows": 1084,
+          "occurrences": 1086,
+          "repeatedOccurrences": 2,
+          "newChoiceReplyLinks": 6,
+          "unplacedRows": 154,
+          "remainingPreviousUnknown": 87,
+          "officialExecutionVerifiedRows": 246
+        },
+        "missingOfficialCandidates": 1
+      },
+      {
+        "file": "content/paradise-records--celestial-gambit.json",
+        "title": "제6막: 천성에 던진 승부수",
+        "missionCount": 6,
+        "summary": {
+          "confirmedRows": 3,
+          "confirmedOccurrences": 3,
+          "confirmedEdges": 1,
+          "confirmedChoiceResponses": 0,
+          "previousUnknownRows": 127,
+          "newlyPlacedRows": 0,
+          "totalExecutionPlacedRows": 0,
+          "newlyPlacedExistingRows": 0,
+          "newOfficialRows": 0,
+          "newlyPlacedNewRows": 0,
+          "remainingPreviousUnknownRows": 127,
+          "remainingUnknownRows": 127,
+          "placedBetweenWikiAnchors": 0,
+          "orderComparisons": {
+            "compatible-local-order": 1
+          },
+          "tentativeItems": 0
+        },
+        "reading": {
+          "previousOrderUnknown": 127,
+          "newlyPlacedRows": 0,
+          "placedRows": 903,
+          "occurrences": 903,
+          "repeatedOccurrences": 0,
+          "newChoiceReplyLinks": 4,
+          "unplacedRows": 148,
+          "remainingPreviousUnknown": 127,
+          "officialExecutionVerifiedRows": 0
+        },
+        "missingOfficialCandidates": 0
+      },
+      {
+        "file": "content/paradise-records--penniless-billionaire.json",
+        "title": "개척 후문: 무일푼 재벌 프로젝트",
+        "missionCount": 9,
+        "summary": {
+          "confirmedRows": 0,
+          "confirmedOccurrences": 0,
+          "confirmedEdges": 0,
+          "confirmedChoiceResponses": 0,
+          "previousUnknownRows": 57,
+          "newlyPlacedRows": 0,
+          "totalExecutionPlacedRows": 0,
+          "newlyPlacedExistingRows": 0,
+          "newOfficialRows": 0,
+          "newlyPlacedNewRows": 0,
+          "remainingPreviousUnknownRows": 57,
+          "remainingUnknownRows": 57,
+          "placedBetweenWikiAnchors": 0,
+          "orderComparisons": {},
+          "tentativeItems": 0
+        },
+        "reading": {
+          "previousOrderUnknown": 474,
+          "newlyPlacedRows": 417,
+          "placedRows": 1053,
+          "occurrences": 1057,
+          "repeatedOccurrences": 4,
+          "newChoiceReplyLinks": 15,
+          "unplacedRows": 67,
+          "remainingPreviousUnknown": 57,
+          "officialExecutionVerifiedRows": 0
+        },
+        "missingOfficialCandidates": 0
+      },
+      {
+        "file": "content/paradise-records--before-moonrise.json",
+        "title": "제7막: 달 뜨기 전, 괴수와 춤을",
+        "missionCount": 9,
+        "summary": {
+          "confirmedRows": 0,
+          "confirmedOccurrences": 0,
+          "confirmedEdges": 0,
+          "confirmedChoiceResponses": 0,
+          "previousUnknownRows": 1,
+          "newlyPlacedRows": 0,
+          "totalExecutionPlacedRows": 0,
+          "newlyPlacedExistingRows": 0,
+          "newOfficialRows": 0,
+          "newlyPlacedNewRows": 0,
+          "remainingPreviousUnknownRows": 1,
+          "remainingUnknownRows": 1,
+          "placedBetweenWikiAnchors": 0,
+          "orderComparisons": {},
+          "tentativeItems": 0
+        },
+        "reading": {
+          "previousOrderUnknown": 0,
+          "newlyPlacedRows": 0,
+          "placedRows": 1392,
+          "occurrences": 1392,
+          "repeatedOccurrences": 0,
+          "newChoiceReplyLinks": 15,
+          "unplacedRows": 1,
+          "remainingPreviousUnknown": 0,
+          "officialExecutionVerifiedRows": 0
+        },
+        "missingOfficialCandidates": 0
+      }
+    ],
+    "wholeGamePathVerified": false
+  }
 }

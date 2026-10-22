@@ -28,6 +28,17 @@ b = module('source_first_bwiki', 'bwiki-dialogue.py')
 imports = module('source_first_imports', 'import-bwiki-chapters.py')
 flow = module('source_first_flow', 'restore-dialogue-flow.py')
 placement = module('source_first_placement', 'bwiki-placement.py')
+execution_placement = module('source_first_execution_placement', 'execution-placement.py')
+
+
+class ExecutionGraphs(dict):
+    def __init__(self):
+        super().__init__()
+        self.executions = {}
+        self.documents = {}
+        self.tables = {}
+        self.invocations = {}
+        self.mission_relations = []
 
 
 def read(path):
@@ -55,7 +66,8 @@ def checkpoint(path, key):
 def code_hash():
     files = ['source-first.py', 'source-first.mjs', 'bwiki-dialogue.py', 'bwiki-placement.py',
              'import-bwiki-chapters.py', 'import-localizations.py', 'restore-dialogue-flow.py',
-             'validate-content-stage.py', 'source-first-publication.mjs', 'content-publication.mjs', 'import-trailblaze.py']
+             'validate-content-stage.py', 'source-first-publication.mjs', 'content-publication.mjs', 'import-trailblaze.py',
+             'execution-placement.py']
     return digest({name: hashlib.sha256((CODE / name).read_bytes()).hexdigest() for name in files})
 
 
@@ -100,7 +112,7 @@ def catalog(root, raw, plan_path):
 def structure_index(manifest, commit):
     if manifest.get('schema') != 'hsr-dialogue-flow-input.v1' or manifest.get('commit') != commit:
         raise ValueError('Mixed official structure version')
-    owners, graphs, evidence, issues = defaultdict(list), {}, {}, []
+    owners, graphs, evidence, issues = defaultdict(list), ExecutionGraphs(), {}, []
     for item in manifest['files']:
         match = re.fullmatch(r'(?:Config/Level/Mission|Story/(?:Discussion/)?Mission)/(\d+)/[\w./-]+\.json', item['path'])
         if not match or any(p in ['.', '..'] for p in item['path'].split('/')):
@@ -114,9 +126,16 @@ def structure_index(manifest, commit):
         if blob != item['sha']:
             raise ValueError('Official structure checksum mismatch')
         document = json.loads(data)
+        if not isinstance(document, dict):
+            issues.append({'source': item['path'], 'reason': 'unsupported-structure-root'})
+            continue
+        graphs.documents[item['path']] = document
         proof = {'source': item['path'], 'missionId': int(match[1]), 'gitBlob': blob,
                  'sha256': hashlib.sha256(data).hexdigest()}
         evidence[item['path']] = proof
+        local = flow.execution_slices(document)
+        if local['nodes']:
+            graphs.executions[item['path']] = {**local, 'proof': proof}
 
         def visit(value, pointer='', role=None, conditions=()):
             if isinstance(value, list):
@@ -125,7 +144,8 @@ def structure_index(manifest, commit):
             elif isinstance(value, dict):
                 kind = value.get('$type', '').split('.')[-1]
                 # Disabled/conditional references prove ownership, not that the branch executes.
-                gates = {k: value[k] for k in value if k in ['TaskEnabled', 'Condition', 'ConditionList', 'Predicate', 'If', 'Else']}
+                gates = {k: value[k] for k in value if k in ['Condition', 'ConditionList', 'Predicate', 'If', 'Else'] or
+                         (k == 'TaskEnabled' and value[k] is not True)}
                 context = conditions + (({'pointer': pointer, 'fields': gates},) if gates else ())
                 typed = 'choice' if kind == 'OptionTalkInfo' else role
                 if kind in ['PlayAndWaitSimpleTalk', 'PlaySimpleTalk', 'SimpleTalkInfo']:
@@ -142,6 +162,24 @@ def structure_index(manifest, commit):
             graphs[item['path']] = {str(k): v['next'] for k, v in nodes.items()}
         except flow.Unresolved:
             issues.append({'source': item['path'], 'reason': 'execution-structure-partial-or-unsupported'})
+    for item in manifest.get('tables', []):
+        if not re.fullmatch(r'ExcelOutput/(?:Performance(?:A|C|D|DS|CG|E|SubMissionLink)|SubMission)\.json', item['path']):
+            raise ValueError('Unsupported execution table')
+        data = (Path(manifest['blobs']) / item['sha']).read_bytes()
+        if hashlib.sha1(f'blob {len(data)}\0'.encode() + data).hexdigest() != item['sha']:
+            raise ValueError('Execution table checksum mismatch')
+        graphs.tables[item['path']] = json.loads(data)
+        evidence[item['path']] = {'source': item['path'], 'gitBlob': item['sha'], 'sha256': hashlib.sha256(data).hexdigest()}
+    graphs.invocations, graphs.mission_relations, invocation_review = execution_placement.invocation_index(graphs.documents, graphs.tables)
+    for source, graph in graphs.executions.items():
+        paths = set()
+        for invocation in graphs.invocations.get(source, []):
+            paths.update(invocation.get('entrySources', []))
+            paths.update(invocation.get('tables', []))
+            paths.update(p for p in [invocation.get('source'), invocation.get('caller')] if p)
+            for call in invocation.get('callChain', []): paths.update([call['source'], call['target']])
+        graph['invocationEvidence'] = {p: evidence[p] for p in paths if p in evidence}
+    issues.extend(invocation_review)
     return owners, graphs, evidence, issues
 
 
@@ -433,6 +471,155 @@ def add_confirmed(payload, result):
     return value, additions
 
 
+def valid_execution_rows(rows, talks, cn, kr):
+    return {r['id']: proof for r in rows if (proof := b.row_evidence(r, talks, cn, kr)) and
+            # OptionTalkInfo establishes the actor role even when the table has
+            # no speaker name and the old UI used a missing-speaker placeholder.
+            (r['type'] == 'choice' or
+             b._localizations.plain(kr.get(str(talks[r['talkId']].get('TextmapTalkSentenceName', {}).get('Hash')), '')) == r['speaker'])}
+
+
+def add_execution_confirmed(payload, record, graphs, talks, cn, kr):
+    """New originals require an explicit reachable mission -> performance call."""
+    present = {r.get('talkId') for r in payload['rows']}
+    missions = {m['id'] for m in record['missions']}
+    candidates = defaultdict(list)
+    for source, graph in graphs.executions.items():
+        owner = graph['proof']['missionId']
+        invocations = graphs.invocations.get(source, [])
+        if owner not in missions or {p['mainMissionId'] for p in invocations} != {owner}: continue
+        for pointer, node in graph['nodes'].items():
+            if node['status'] != 'confirmed' or node['talkId'] in present: continue
+            talk = talks.get(node['talkId'])
+            if not talk: continue
+            th = str(talk.get('TalkSentenceText', {}).get('Hash'))
+            sh = str(talk.get('TextmapTalkSentenceName', {}).get('Hash'))
+            if not kr.get(th) or not cn.get(th) or (sh not in ['None', '0'] and (not cn.get(sh) or not kr.get(sh))): continue
+            content = {'talkId': node['talkId'], 'textHash': th,
+                'text': b._localizations.plain(kr[th]), 'speaker': b._localizations.plain(kr.get(sh, '')),
+                'chineseHash': b.digest(b.canonical(cn[th])), 'speakerHash': b.digest(b.canonical(cn.get(sh, ''))),
+                'koreanHash': b.digest(b._localizations.plain(kr[th]))}
+            candidates[node['talkId']].append({'id': 'exec-admission-' + digest([source, pointer, node['talkId']])[:24],
+                'kind': node['type'], 'status': 'confirmed', 'missionId': owner, 'official': [content],
+                'ownership': [{**graph['proof'], 'pointer': pointer, 'conditions': node['conditions'], 'invocations': invocations}]})
+    selected = [values[0] for values in candidates.values()
+                if len({(v['missionId'], v['kind']) for v in values}) == 1]
+    return add_confirmed(payload, {'chapter': record, 'occurrences': selected, 'orderComparisons': []})
+
+
+def extend_wiki_partition(payload, additions):
+    wiki = payload.get('wikiReading')
+    if not wiki or not additions: return
+    rows = {r['id']: r for r in payload['rows']}
+    for addition in additions:
+        row = rows[addition['rowId']]
+        group = next((g for g in wiki['unplaced'] if g['id'] == row['missionId']), None)
+        if group is None:
+            group = {'id': row['missionId'], 'title': row['mission'], 'rowIds': []}
+            wiki['unplaced'].append(group)
+        group['rowIds'].append(row['id'])
+    wiki['canonicalRowsHash'] = placement.digest({r['id']: placement.canonical(r) for r in payload['rows']})
+    wiki['summary']['unplacedRows'] += len(additions)
+
+
+def refresh_added_views(root, records, count):
+    """Use the standard canonical search/metadata projection for either admission path."""
+    if not count: return []
+    metadata, entries = read(root / 'src/data/imported-content.json'), read(root / 'src/data/trailblaze.json')
+    search = read(root / 'public/content/search-index.json')
+    groups = defaultdict(list)
+    for row in search['rows']: groups[row['entryId'] + '/' + row['chapterId']].append(row)
+    for record in records:
+        body = read(root / 'public' / record['file'])
+        route = record['entryId'] + '/' + record['chapterId']
+        metadata[route]['rows'] = len(body['rows'])
+        for entry in entries:
+            for chapter in entry['chapters']:
+                if entry['id'] == record['entryId'] and chapter['id'] == record['chapterId']:
+                    chapter['content'] = copy.deepcopy(metadata[route])
+        groups[route] = [{k: v for k, v in row.items() if k not in ['missionId', 'talkId', 'source']} |
+                        {'source': b.digest(row['source'])[:16]} for row in body['rows']]
+    search['rows'] = [row for group in groups.values() for row in group]
+    write(root / 'src/data/imported-content.json', metadata)
+    write(root / 'src/data/trailblaze.json', entries)
+    b.write(root / 'public/content/search-index.json', search)
+    update = read(root / 'public/content-update.json')
+    update['rows'] = len(search['rows']); update['verifiedTextRows'] += count
+    write(root / 'public/content-update.json', update)
+    wiki = read(root / 'public/bwiki-provenance.json')
+    wiki.setdefault('totals', {})['reviewRows'] = wiki.get('totals', {}).get('reviewRows', 0) + count
+    b.write(root / 'public/bwiki-provenance.json', wiki)
+    return ['src/data/imported-content.json', 'src/data/trailblaze.json', 'public/content/search-index.json',
+            'public/content-update.json', 'public/bwiki-provenance.json']
+
+
+def audit_execution_only(args, cat, plan, talks, cn, kr):
+    """Extend the deployed snapshot; do not rerun BWIKI collection or rematching."""
+    policy = validated_policy()
+    owners, graphs, proofs, issues = structure_index(read(args.work / 'structures.json'), plan['commit'])
+    version = {'commit': plan['commit'], 'codeHash': code_hash(), 'policyHash': digest(policy),
+        'policyVersion': policy['version'], 'officialInputs': cat['inputHashes'], 'structureHashes': digest(proofs)}
+    talk_table = {t['TalkSentenceID']: t for t in talks if t}
+    report = {'schema': 'hsr-execution-audit.v1', **version, 'status': 'running', 'chapters': [],
+              'structureReview': issues, 'referenceTxtUsed': False, 'wikiRematched': False}
+    changed, total_added = [], 0
+    for record in cat['chapters']:
+        if args.title and record['title'] != args.title:
+            continue
+        payload = read(args.root / 'public' / record['file'])
+        if payload.get('textReferenceCommit', payload['referenceCommit']) != plan['commit']:
+            raise ValueError('Mixed execution baseline release')
+        payload, added = add_execution_confirmed(payload, record, graphs, talk_table, cn, kr)
+        extend_wiki_partition(payload, added)
+        total_added += len(added)
+        valid = valid_execution_rows(payload['rows'], talk_table, cn, kr)
+        reading, review = execution_placement.build(payload, record, graphs.executions, valid, version,
+            graphs.invocations, graphs.mission_relations, added)
+        review['missingOriginals'] = []
+        for item in review['review']:
+            if item.get('reason') != 'official-row-missing':
+                continue
+            talk = talk_table.get(item['talkId'], {})
+            th = str(talk.get('TalkSentenceText', {}).get('Hash'))
+            sh = str(talk.get('TextmapTalkSentenceName', {}).get('Hash'))
+            review['missingOriginals'].append({**item, 'textHash': th,
+                'officialKorean': kr.get(th), 'officialChinese': cn.get(th),
+                'koreanSpeaker': kr.get(sh, ''), 'admission': 'isolated-candidate; invocation-review-required'})
+        execution_placement.validate(reading, payload['rows'], plan['commit'], payload.get('wikiReading'))
+        report['chapters'].append({'file': record['file'], 'title': record['title'],
+            'missionCount': len(record['missions']), 'summary': reading['summary'],
+            'reading': payload.get('wikiReading', {}).get('summary'),
+            'missingOfficialCandidates': len({r['talkId'] for r in review['missingOriginals']})})
+        write(args.work / 'execution-results' / (str(record['id']) + '-' + record['chapterId'] + '.json'), review)
+        if args.apply:
+            payload['executionReading'] = reading
+            write(args.root / 'public' / record['file'], payload)
+            changed.append('public/' + record['file'])
+        write(args.work / 'execution-progress.json', report)
+        print(json.dumps(report['chapters'][-1], ensure_ascii=False), flush=True)
+    report.update(status='completed', candidateAdditions=total_added)
+    write(args.work / 'execution-report.json', report)
+    if args.apply:
+        changed.extend(refresh_added_views(args.root, cat['chapters'], total_added))
+        provenance = read(args.root / 'public/dialogue-flow-provenance.json')
+        provenance['executionAudit'] = {**version, 'chapters': report['chapters'], 'wholeGamePathVerified': False}
+        write(args.root / 'public/dialogue-flow-provenance.json', provenance)
+        receipt = read(args.root / 'receipt.json') if (args.root / 'receipt.json').exists() else {'files': []}
+        receipt['files'] = sorted(set(receipt['files'] + changed + ['public/dialogue-flow-provenance.json']))
+        receipt['rows'] = read(args.root / 'public/content-update.json')['rows']
+        write(args.root / 'receipt.json', receipt)
+
+
+def validated_policy():
+    policy = read(CODE.parent / 'editorial/source-first-policy.json')
+    if (policy.get('version') != 3 or not policy.get('requireExplicitMissionOwnership') or
+            policy.get('newSemanticMatches') != 'candidate-only' or
+            policy.get('wikiPositionEdges') != 'wiki-display-only-never-official-execution' or
+            policy.get('publishUnknownEdges') is not False):
+        raise ValueError('Unsupported or weakened source-first policy')
+    return policy
+
+
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument('root', type=Path)
@@ -441,20 +628,19 @@ def main():
     parser.add_argument('work', type=Path)
     parser.add_argument('--discover', action='store_true')
     parser.add_argument('--apply', action='store_true')
+    parser.add_argument('--execution-only', action='store_true')
+    parser.add_argument('--title')
     args = parser.parse_args()
     cat, (plan, talks, cn, kr) = catalog(args.root, args.raw, args.plan)
+    if args.execution_only:
+        return audit_execution_only(args, cat, plan, talks, cn, kr)
     args.work.mkdir(parents=True, exist_ok=True)
     write(args.work / 'catalog.json', cat)
     if args.discover:
         write(args.work / 'request.json', {'schema': 'hsr-bwiki-request.v1', 'commit': plan['commit'], 'requests': cat['requests'], 'review': cat['review']})
         print(json.dumps({'chapters': len(cat['chapters']), 'missions': sum(len(c['missions']) for c in cat['chapters']), 'documents': len(cat['requests'])}))
         return
-    policy = read(CODE.parent / 'editorial/source-first-policy.json')
-    if (policy.get('version') != 2 or not policy.get('requireExplicitMissionOwnership') or
-            policy.get('newSemanticMatches') != 'candidate-only' or
-            policy.get('wikiPositionEdges') != 'wiki-display-only-never-official-execution' or
-            policy.get('publishUnknownEdges') is not False):
-        raise ValueError('Unsupported or weakened source-first policy')
+    policy = validated_policy()
     manifest = read(args.work / 'manifest.json')
     if manifest.get('schema') != 'hsr-bwiki-input.v1' or manifest['commit'] != plan['commit']:
         raise ValueError('Mixed wiki input version')
@@ -478,8 +664,6 @@ def main():
     source_records = {f"{p['pageTitle']}@{p['revision']}": {'sha256': p['sha256']}
                       for p in manifest['pages'] if p.get('status') == 'available'}
     talk_table = {t['TalkSentenceID']: t for t in talks if t}
-    metadata = read(args.root / 'src/data/imported-content.json')
-    entries = read(args.root / 'src/data/trailblaze.json')
     changed, total_added = [], 0
     for record in cat['chapters']:
         payload = read(args.root / 'public' / record['file'])
@@ -540,13 +724,7 @@ def main():
         if args.apply:
             write(args.root / 'public' / record['file'], candidate)
             changed.append('public/' + record['file'])
-        if args.apply and added:
-            key_route = record['entryId'] + '/' + record['chapterId']
-            metadata[key_route]['rows'] = len(candidate['rows'])
-            for entry in entries:
-                for c in entry['chapters']:
-                    if entry['id'] == record['entryId'] and c['id'] == record['chapterId']:
-                        c['content'] = copy.deepcopy(metadata[key_route])
+        if args.apply:
             total_added += len(added)
         print(json.dumps({'chapter': record['id'], 'counts': result['counts'], 'additions': len(added), 'reused': reused}), flush=True)
     summary.update(status='completed', candidateAdditions=sum(c['candidateAdditions'] for c in summary['chapters']),
@@ -554,28 +732,7 @@ def main():
     write(progress, summary)
     write(args.work / 'report.json', summary)
     if args.apply:
-        if total_added:
-            write(args.root / 'src/data/imported-content.json', metadata)
-            write(args.root / 'src/data/trailblaze.json', entries)
-            search = read(args.root / 'public/content/search-index.json')
-            groups = {r['entryId'] + '/' + r['chapterId']: [] for r in search['rows']}
-            for r in search['rows']:
-                groups[r['entryId'] + '/' + r['chapterId']].append(r)
-            for record in cat['chapters']:
-                body = read(args.root / 'public' / record['file'])
-                groups[record['entryId'] + '/' + record['chapterId']] = [
-                    {k: v for k, v in r.items() if k not in ['missionId', 'talkId', 'source']} |
-                    {'source': b.digest(r['source'])[:16]} for r in body['rows']]
-            search['rows'] = [r for group in groups.values() for r in group]
-            b.write(args.root / 'public/content/search-index.json', search)
-            update = read(args.root / 'public/content-update.json')
-            update['rows'] = len(search['rows'])
-            update['verifiedTextRows'] += total_added
-            write(args.root / 'public/content-update.json', update)
-            wiki = read(args.root / 'public/bwiki-provenance.json')
-            wiki.setdefault('totals', {})['reviewRows'] = wiki.get('totals', {}).get('reviewRows', 0) + total_added
-            b.write(args.root / 'public/bwiki-provenance.json', wiki)
-            changed += ['src/data/imported-content.json', 'src/data/trailblaze.json', 'public/content/search-index.json', 'public/content-update.json', 'public/bwiki-provenance.json']
+        changed.extend(refresh_added_views(args.root, cat['chapters'], total_added))
         # Publish audit only after the complete run. Checkpoints/raw material are never copied.
         b.write(args.root / 'public/source-first-provenance.json', public)
         receipt_path = args.root / 'receipt.json'

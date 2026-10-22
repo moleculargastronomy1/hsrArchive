@@ -7,6 +7,7 @@ import { fetchBwiki } from './fetch-bwiki.mjs';
 import { readRetry, saveRetry, algorithmHash } from './verification-retry.mjs';
 import { pythonRunner } from './content-process.mjs';
 import { publishContentStage } from './content-publication.mjs';
+import { retainUnavailableWikiPositions } from './wiki-reading-recovery.mjs';
 import {
   verificationRows,
   compareVerification,
@@ -150,6 +151,26 @@ export async function collectStructures(commit, missionIds, work, blobs, { offli
       review.push({ prefix, reason: error.message });
     }
   }
+  // Resolve performance IDs through explicit game tables, never through filenames.
+  const tableNames = new Set([
+    'PerformanceA.json',
+    'PerformanceC.json',
+    'PerformanceD.json',
+    'PerformanceDS.json',
+    'PerformanceCG.json',
+    'PerformanceE.json',
+    'PerformanceSubMissionLink.json',
+  ]);
+  try {
+    const rootTree = await api(`git/trees/${commit}`);
+    const excel = rootTree.tree.find((r) => r.path === 'ExcelOutput' && r.type === 'tree');
+    if (!excel) throw new Error('execution-table-directory-absent');
+    for (const file of (await api(`git/trees/${excel.sha}`)).tree)
+      if (file.type === 'blob' && tableNames.has(file.path))
+        files.push({ path: 'ExcelOutput/' + file.path, sha: file.sha });
+  } catch (error) {
+    review.push({ prefix: 'ExcelOutput/Performance', reason: error.message });
+  }
   let cursor = 0;
   const available = [];
   await fs.mkdir(blobs, { recursive: true });
@@ -182,7 +203,12 @@ export async function collectStructures(commit, missionIds, work, blobs, { offli
     schema: 'hsr-dialogue-flow-input.v1',
     commit,
     blobs: path.resolve(blobs),
-    files: available.sort((a, b) => a.path.localeCompare(b.path)),
+    files: available
+      .filter((f) => !f.path.startsWith('ExcelOutput/'))
+      .sort((a, b) => a.path.localeCompare(b.path)),
+    tables: available
+      .filter((f) => f.path.startsWith('ExcelOutput/'))
+      .sort((a, b) => a.path.localeCompare(b.path)),
     review,
     discoveredFiles: files.length,
   };
@@ -192,6 +218,9 @@ export async function verifySourceFirst(root, stage, raw, planFile, options = {}
   const work = options.work ?? path.join(root, '.cache/source-first');
   const run = pythonRunner(codeRoot, stage);
   const plan = await read(planFile);
+  const before = options.executionOnly
+    ? undefined
+    : (options.previous ?? (await verificationRows(stage)));
   await fs.mkdir(work, { recursive: true });
   run('source-first.py', [stage, raw, planFile, work, '--discover']);
   const cat = await read(path.join(work, 'catalog.json'));
@@ -205,6 +234,17 @@ export async function verifySourceFirst(root, stage, raw, planFile, options = {}
         options,
       );
   await write(path.join(work, 'structures.json'), structureManifest);
+  if (options.executionOnly) {
+    run('source-first.py', [
+      stage,
+      raw,
+      planFile,
+      work,
+      '--execution-only',
+      ...(options.apply ? ['--apply'] : []),
+    ]);
+    return read(path.join(work, 'execution-report.json'));
+  }
   const collection = path.join(work, 'collection');
   await fs.mkdir(path.join(collection, '.cache/bwiki'), { recursive: true });
   await fs.copyFile(
@@ -239,6 +279,36 @@ export async function verifySourceFirst(root, stage, raw, planFile, options = {}
   await write(path.join(work, 'manifest.json'), manifest);
   try {
     run('source-first.py', [stage, raw, planFile, work, ...(options.apply ? ['--apply'] : [])]);
+    if (options.apply) {
+      const retained = await retainUnavailableWikiPositions(stage, before, manifest);
+      if (retained.length)
+        console.log(
+          'Retained unavailable BWIKI documents: ' +
+            JSON.stringify(
+              retained.map((r) => ({ file: r.file, documents: r.documents.map((d) => d.page) })),
+            ),
+        );
+      // Build against the final recovered wiki layout, not its incomplete candidate.
+      run('source-first.py', [stage, raw, planFile, work, '--execution-only', '--apply']);
+      const execution = await read(path.join(work, 'execution-report.json'));
+      const report = await read(path.join(work, 'report.json'));
+      const provenance = await read(path.join(stage, 'public/source-first-provenance.json'));
+      report.candidateAdditions += execution.candidateAdditions;
+      for (const chapter of execution.chapters) {
+        const item = report.chapters.find((c) => c.file === chapter.file);
+        if (item) {
+          item.execution = chapter.summary;
+          item.reading = chapter.reading;
+          item.candidateAdditions += chapter.summary.newOfficialRows;
+        }
+        if (provenance.chapters[chapter.file]) {
+          provenance.chapters[chapter.file].execution = chapter.summary;
+          provenance.chapters[chapter.file].reading = chapter.reading;
+        }
+      }
+      await write(path.join(work, 'report.json'), report);
+      await write(path.join(stage, 'public/source-first-provenance.json'), provenance);
+    }
     await write(path.join(work, 'validator-health.json'), {
       status: 'audit-passed; final-stage-contracts-pending',
       algorithm,
@@ -261,6 +331,7 @@ async function main() {
     offline: args.includes('--offline'),
     replay: args.includes('--replay'),
     apply: true,
+    executionOnly: args.includes('--execution-only'),
   };
   const value = (flag, fallback) => (args.includes(flag) ? args[args.indexOf(flag) + 1] : fallback);
   const root = path.resolve(value('--root', process.cwd()));
@@ -289,9 +360,15 @@ async function main() {
     { ...options, work },
   );
   const run = pythonRunner(codeRoot, stage);
-  run('import-localizations.py', [stage, path.join(root, '.cache/upstream-content/raw'), planFile]);
+  if (!options.executionOnly || report.candidateAdditions)
+    run('import-localizations.py', [
+      stage,
+      path.join(root, '.cache/upstream-content/raw'),
+      planFile,
+    ]);
   const receipt = await read(path.join(stage, 'receipt.json'));
-  receipt.files.push(...(await read(path.join(stage, '.cache/localization-receipt.json'))).files);
+  if (!options.executionOnly || report.candidateAdditions)
+    receipt.files.push(...(await read(path.join(stage, '.cache/localization-receipt.json'))).files);
   assertVerificationPreserved(
     compareVerification(before, await verificationRows(stage)),
     'Source-first partial application',
@@ -310,7 +387,7 @@ async function main() {
     await publishContentStage(root, stage, await stateFiles(stage));
   }
   console.log(
-    `Source-first ${report.registeredChapters} chapters / ${report.officialMissions} missions, ${report.candidateAdditions} additions; ${args.includes('--publish') ? 'published locally' : 'isolated stage only'}`,
+    `Source-first ${report.registeredChapters ?? report.chapters.length} chapters; ${options.executionOnly ? 'official execution extension' : report.candidateAdditions + ' additions'}; ${args.includes('--publish') ? 'published locally' : 'isolated stage only'}`,
   );
   await write(path.join(work, 'validator-health.json'), {
     status: 'passed',

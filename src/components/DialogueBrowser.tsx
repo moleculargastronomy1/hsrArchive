@@ -34,7 +34,14 @@ import GameText from './GameText';
 import VideoVerificationNote from './VideoVerificationNote';
 import SourceDetails from './SourceDetails';
 import { searchableGameText } from '../lib/game-text';
-import { isWikiReading, readingRows, positionKey, type WikiReading } from '../lib/wiki-reading';
+import {
+  isWikiReading,
+  isExecutionReading,
+  readingRows,
+  positionKey,
+  type WikiReading,
+  type ExecutionReading,
+} from '../lib/wiki-reading';
 
 export default function DialogueBrowser({
   file = 'content/search-index.json',
@@ -61,7 +68,11 @@ export default function DialogueBrowser({
   const languages = controlledLanguages ?? storedLanguages;
   const [canonicalRows, setRows] = useState<DialogueRow[]>([]);
   const [reading, setReading] = useState<WikiReading>();
-  const rows = useMemo(() => readingRows(canonicalRows, reading), [canonicalRows, reading]);
+  const [execution, setExecution] = useState<ExecutionReading>();
+  const rows = useMemo(
+    () => readingRows(canonicalRows, reading, execution),
+    [canonicalRows, reading, execution],
+  );
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [retry, setRetry] = useState(0);
@@ -98,6 +109,7 @@ export default function DialogueBrowser({
     setError('');
     setRows([]);
     setReading(undefined);
+    setExecution(undefined);
     setMatches([]);
     setSelected(undefined);
     if (!/^content\/[a-zA-Z0-9_-]+\.json$/.test(file)) {
@@ -113,9 +125,15 @@ export default function DialogueBrowser({
           throw new Error('본문의 자료 형식을 확인해 주세요.');
         if (data.wikiReading !== undefined && !isWikiReading(data.wikiReading, data.rows))
           throw new Error('출현 위치의 자료 형식을 확인해 주세요.');
+        if (
+          data.executionReading !== undefined &&
+          !isExecutionReading(data.executionReading, data.rows)
+        )
+          throw new Error('대사 연결의 자료 형식을 확인해 주세요.');
         if (!controller.signal.aborted) {
           setRows(data.rows);
           setReading(data.wikiReading);
+          setExecution(data.executionReading);
           setLoading(false);
         }
       })
@@ -156,12 +174,10 @@ export default function DialogueBrowser({
         const targetPage =
           restorePage.current && targetRowId && !query && scope === 'all'
             ? targetOccurrenceId &&
-              rows.some(
-                (row) => row.wikiPosition?.id === targetOccurrenceId && row.id === targetRowId,
-              )
+              rows.some((row) => positionKey(row) === targetOccurrenceId && row.id === targetRowId)
               ? Math.floor(
                   rows.findIndex(
-                    (row) => row.wikiPosition?.id === targetOccurrenceId && row.id === targetRowId,
+                    (row) => positionKey(row) === targetOccurrenceId && row.id === targetRowId,
                   ) / pageSize,
                 ) + 1
               : dialoguePage(rows, targetRowId, pageSize)
@@ -215,12 +231,14 @@ export default function DialogueBrowser({
   const selectedRow = selected === undefined ? undefined : rows[selected];
   const linkedChoice =
     selectedRow?.type === 'choice' &&
-    (selectedRow.wikiPosition && contextMode !== 'existing'
-      ? selectedRow.wikiPosition.nextIds.length > 0
+    ((selectedRow.wikiPosition || selectedRow.executionPosition) && contextMode !== 'existing'
+      ? (selectedRow.wikiPosition ?? selectedRow.executionPosition)!.nextIds.length > 0
       : selectedRow.flowStatus === 'verified' ||
         ['matched', 'cached'].includes(selectedRow.bwikiStatus ?? ''));
   const selectedWiki =
-    !!selectedRow?.wikiPosition || ['matched', 'cached'].includes(selectedRow?.bwikiStatus ?? '');
+    !!selectedRow?.wikiPosition ||
+    !!selectedRow?.executionPosition ||
+    ['matched', 'cached'].includes(selectedRow?.bwikiStatus ?? '');
   const context = useMemo(
     () =>
       selected === undefined
@@ -237,11 +255,16 @@ export default function DialogueBrowser({
   );
   const byId = useMemo(() => new Map(rows.map((row) => [row.id, row])), [rows]);
   const byPosition = useMemo(
-    () => new Map(rows.filter((row) => row.wikiPosition).map((row) => [row.wikiPosition!.id, row])),
+    () =>
+      new Map(
+        rows
+          .filter((row) => row.wikiPosition || row.executionPosition)
+          .map((row) => [positionKey(row), row]),
+      ),
     [rows],
   );
   const occurrenceIndex = targetOccurrenceId
-    ? rows.findIndex((row) => row.wikiPosition?.id === targetOccurrenceId && row.id === targetRowId)
+    ? rows.findIndex((row) => positionKey(row) === targetOccurrenceId && row.id === targetRowId)
     : -1;
   const targetIndex =
     occurrenceIndex >= 0 ? occurrenceIndex : rows.findIndex((row) => row.id === targetRowId);
@@ -378,7 +401,7 @@ export default function DialogueBrowser({
             <div className="dialogue-table" aria-busy={searching}>
               {visible.map((index) => {
                 const row = rows[index];
-                const position = row.wikiPosition;
+                const position = row.wikiPosition ?? row.executionPosition;
                 const isTarget = index === targetIndex;
                 const entry = entries.get(row.entryId);
                 return (
@@ -606,10 +629,15 @@ export default function DialogueBrowser({
             {selectedRow &&
               (
                 selectedRow.wikiPosition?.replyToIds ??
+                selectedRow.executionPosition?.replyToIds ??
                 selectedRow.bwikiReplyToIds ??
                 selectedRow.replyToIds
               )
-                ?.map((id) => (selectedRow.wikiPosition ? byPosition.get(id) : byId.get(id)))
+                ?.map((id) =>
+                  selectedRow.wikiPosition || selectedRow.executionPosition
+                    ? byPosition.get(id)
+                    : byId.get(id),
+                )
                 .filter(Boolean)
                 .map((choice) => (
                   <button
@@ -628,7 +656,7 @@ export default function DialogueBrowser({
             {selectedRow && (
               <a
                 className="button secondary"
-                href={`#${readerPath(selectedRow.entryId, selectedRow.chapterId, selectedRow.id)}${selectedRow.wikiPosition ? '&occurrence=' + encodeURIComponent(selectedRow.wikiPosition.id) : ''}`}
+                href={`#${readerPath(selectedRow.entryId, selectedRow.chapterId, selectedRow.id)}${selectedRow.wikiPosition || selectedRow.executionPosition ? '&occurrence=' + encodeURIComponent(positionKey(selectedRow)) : ''}`}
                 onClick={closeDialog}
               >
                 선택한 대사로

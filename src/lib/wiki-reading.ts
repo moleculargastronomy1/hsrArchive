@@ -23,6 +23,64 @@ export interface WikiReading {
   unplaced: { id: string; title: string; rowIds: string[] }[];
 }
 
+export interface ExecutionPosition {
+  id: string;
+  rowId: string;
+  missionId: string;
+  mission: string;
+  source: string;
+  pointer: string;
+  sceneId: string;
+  nextIds: string[];
+  replyToIds: string[];
+  conditions: unknown[];
+  status: 'confirmed';
+}
+export interface ExecutionReading {
+  schema: 'hsr-execution-reading.v1';
+  occurrences: ExecutionPosition[];
+  placements: {
+    occurrenceIds: string[];
+    contextIds: string[];
+    beforeRowId: string;
+    beforeWikiId?: string;
+  }[];
+}
+export function isExecutionReading(value: unknown, rows: DialogueRow[]): value is ExecutionReading {
+  if (!value || typeof value !== 'object') return false;
+  const v = value as ExecutionReading;
+  if (
+    v.schema !== 'hsr-execution-reading.v1' ||
+    !Array.isArray(v.occurrences) ||
+    !Array.isArray(v.placements)
+  )
+    return false;
+  const ids = new Set(v.occurrences.map((p) => p.id));
+  const rowIds = new Set(rows.map((r) => r.id));
+  return (
+    ids.size === v.occurrences.length &&
+    v.occurrences.every(
+      (p) =>
+        p.status === 'confirmed' &&
+        rowIds.has(p.rowId) &&
+        typeof p.source === 'string' &&
+        typeof p.pointer === 'string' &&
+        typeof p.sceneId === 'string' &&
+        Array.isArray(p.conditions) &&
+        [p.nextIds, p.replyToIds].every(
+          (links) => Array.isArray(links) && links.every((id) => ids.has(id)),
+        ),
+    ) &&
+    v.placements.every(
+      (g) =>
+        rowIds.has(g.beforeRowId) &&
+        Array.isArray(g.contextIds) &&
+        Array.isArray(g.occurrenceIds) &&
+        [...g.contextIds, ...g.occurrenceIds].every((id) => ids.has(id)),
+    )
+  );
+}
+
 export function isWikiReading(value: unknown, rows: DialogueRow[]): value is WikiReading {
   if (!value || typeof value !== 'object') return false;
   const v = value as WikiReading;
@@ -82,8 +140,12 @@ export function isWikiReading(value: unknown, rows: DialogueRow[]): value is Wik
 
 // Occurrence IDs are presentation identities; canonical row IDs remain the
 // localization, search and bookmark keys even when a line is shown twice.
-export function readingRows(rows: DialogueRow[], reading?: WikiReading): DialogueRow[] {
-  if (!reading) return rows;
+export function readingRows(
+  rows: DialogueRow[],
+  reading?: WikiReading,
+  execution?: ExecutionReading,
+): DialogueRow[] {
+  if (!reading) return mergeExecutionRows(rows, rows, execution);
   const byId = new Map(rows.map((row) => [row.id, row]));
   const result: DialogueRow[] = [];
   const consumed = new Set<string>();
@@ -124,11 +186,89 @@ export function readingRows(rows: DialogueRow[], reading?: WikiReading): Dialogu
     }
   }
   for (const group of reading.unplaced) if (!consumed.has(group.id)) appendUnknown(group);
-  return result;
+  return mergeExecutionRows(result, rows, execution);
+}
+
+function mergeExecutionRows(
+  base: DialogueRow[],
+  canonical: DialogueRow[],
+  execution?: ExecutionReading,
+) {
+  if (!execution) return base;
+  const byId = new Map(canonical.map((row) => [row.id, row]));
+  const positions = new Map(
+    execution.occurrences.map(
+      (p) => [p.id, { ...byId.get(p.rowId)!, executionPosition: p }] as const,
+    ),
+  );
+  const insertions = new Map<string, DialogueRow[]>();
+  const moved = new Set<string>();
+  for (const group of execution.placements) {
+    const peers = group.contextIds.map((id) => positions.get(id)!);
+    const placed = group.occurrenceIds.map((id) => ({
+      ...positions.get(id)!,
+      executionPeers: peers,
+    }));
+    for (const row of placed) moved.add(row.id);
+    const insertion = group.beforeWikiId ?? group.beforeRowId;
+    insertions.set(insertion, [...(insertions.get(insertion) ?? []), ...placed]);
+  }
+  return base.flatMap((row) => [
+    ...(insertions.get(positionKey(row)) ?? insertions.get(row.id) ?? []),
+    ...(moved.has(row.id) ? [] : [row]),
+  ]);
 }
 
 export function positionKey(row: DialogueRow) {
-  return row.wikiPosition?.id ?? row.id;
+  return row.wikiPosition?.id ?? row.executionPosition?.id ?? row.id;
+}
+
+export function executionContext(rows: DialogueRow[], index: number, choice: boolean, limit = 41) {
+  const selected = rows[index],
+    p = selected?.executionPosition;
+  if (!p) return selected ? [selected] : [];
+  const peers = selected.executionPeers ?? rows;
+  const byId = new Map(
+    peers.filter((r) => r.executionPosition).map((r) => [r.executionPosition!.id, r]),
+  );
+  const before: DialogueRow[] = [],
+    after: DialogueRow[] = [],
+    seen = new Set([p.id]);
+  let current = selected;
+  if (!choice)
+    while (before.length < 20) {
+      const incoming = peers.filter((r) =>
+        r.executionPosition?.nextIds.includes(current.executionPosition!.id),
+      );
+      if (
+        incoming.length !== 1 ||
+        incoming[0].type === 'choice' ||
+        seen.has(incoming[0].executionPosition!.id)
+      )
+        break;
+      current = incoming[0];
+      before.unshift(current);
+      seen.add(current.executionPosition!.id);
+    }
+  current = selected;
+  while (
+    before.length + after.length + 1 < limit &&
+    current.executionPosition?.nextIds.length === 1
+  ) {
+    const next = byId.get(current.executionPosition.nextIds[0]);
+    if (
+      !next?.executionPosition ||
+      next.type === 'choice' ||
+      seen.has(next.executionPosition.id) ||
+      next.executionPosition.source !== p.source ||
+      JSON.stringify(next.executionPosition.conditions) !== JSON.stringify(p.conditions)
+    )
+      break;
+    after.push(next);
+    seen.add(next.executionPosition.id);
+    current = next;
+  }
+  return [...before, selected, ...after];
 }
 export function wikiContext(rows: DialogueRow[], index: number, choice: boolean, limit = 41) {
   const selected = rows[index];

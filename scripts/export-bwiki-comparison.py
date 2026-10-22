@@ -101,7 +101,7 @@ def main():
                 else:
                     status = '연결존재_중문재대조불일치_검토필요'
             elif row:
-                status = {'legacy': '기존검증보존_새출현매칭미확정', 'intro': '챕터소개문_대사순서대상아님'}.get(site['kind'], '사이트원문_출현매칭미확정')
+                status = {'execution': '공식실행위치확인_BWIKI출현미연결', 'legacy': '기존검증보존_새출현매칭미확정', 'intro': '챕터소개문_대사순서대상아님'}.get(site['kind'], '사이트원문_출현매칭미확정')
             else:
                 status = 'BWIKI출현_공식원문연결미확정'
             repeats = []
@@ -120,7 +120,7 @@ def main():
                     site['siteOrder'] if site else None, site['page'] if site else None, status,
                     ('선택지' if node['kind'] == 'choice' else '분기응답' if node['branch'] else '장면설명' if node['kind'] == 'narration' else '일반대사') if node else site['kind'],
                     node['speaker'] if node else None, node['chinese'] if node else None, row['speaker'] if row else None,
-                    row['text'] if row else None, korean if row else None, identity, row['id'] if row else None, node['id'] if node else None,
+                    row['text'] if row else None, korean if row else None, identity, row['id'] if row else None, node['id'] if node else site.get('occurrenceId') if site else None,
                     node['page'] if node else None, node['revision'] if node else None, node['location'] if node else None,
                     node['context'] if node else None, branch, direct if node else None, pos['nextIds'] if pos else None,
                     ';'.join(repeats) or '-', original or None, [r['talkId'] for r in node.get('official', [])] if node and not pos else [],

@@ -17,18 +17,24 @@ for (const chapter of report.chapters) {
   const payload = JSON.parse(await fs.readFile(path.join(root, 'public', chapter.file), 'utf8'));
   if (!isWikiReading(payload.wikiReading, payload.rows))
     throw Error('Invalid site positions: ' + chapter.file);
-  orders[chapter.file] = readingRows(payload.rows, payload.wikiReading).map((row, i) => ({
+  orders[chapter.file] = readingRows(
+    payload.rows,
+    payload.wikiReading,
+    payload.executionReading,
+  ).map((row, i) => ({
     siteOrder: i + 1,
     page: Math.floor(i / 50) + 1,
     rowId: row.id,
-    occurrenceId: row.wikiPosition?.id,
-    kind: row.wikiPosition
-      ? 'wiki'
-      : row.wikiLegacy
-        ? 'legacy'
-        : row.wikiUnplaced?.id.startsWith('chapter-intro-')
-          ? 'intro'
-          : 'unknown',
+    occurrenceId: row.wikiPosition?.id ?? row.executionPosition?.id,
+    kind: row.executionPosition
+      ? 'execution'
+      : row.wikiPosition
+        ? 'wiki'
+        : row.wikiLegacy
+          ? 'legacy'
+          : row.wikiUnplaced?.id.startsWith('chapter-intro-')
+            ? 'intro'
+            : 'unknown',
   }));
 }
 const orderFile = path.join(output, 'site-order.json');

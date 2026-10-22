@@ -1,7 +1,7 @@
 {
   "station-departure/arrival": {
     "file": "content/station-departure--arrival.json",
-    "rows": 1245,
+    "rows": 1284,
     "missing": 0,
     "sourceIds": [
       "quest-1000101",
@@ -16,7 +16,7 @@
   },
   "station-departure/platform": {
     "file": "content/station-departure--platform.json",
-    "rows": 847,
+    "rows": 898,
     "missing": 0,
     "sourceIds": [
       "quest-2000902",
@@ -29,7 +29,7 @@
   },
   "jarilo-records/snowfield": {
     "file": "content/jarilo-records--snowfield.json",
-    "rows": 2634,
+    "rows": 2646,
     "missing": 0,
     "sourceIds": [
       "quest-1010002",
@@ -72,7 +72,7 @@
   },
   "jarilo-records/winter-dream": {
     "file": "content/jarilo-records--winter-dream.json",
-    "rows": 1101,
+    "rows": 1118,
     "missing": 0,
     "sourceIds": [
       "quest-2010201",
@@ -86,7 +86,7 @@
   },
   "luofu-records/harbor": {
     "file": "content/luofu-records--harbor.json",
-    "rows": 2118,
+    "rows": 2119,
     "missing": 0,
     "sourceIds": [
       "quest-1020101",
@@ -106,7 +106,7 @@
   },
   "luofu-records/clouds": {
     "file": "content/luofu-records--clouds.json",
-    "rows": 686,
+    "rows": 688,
     "missing": 0,
     "sourceIds": [
       "quest-1021201",
@@ -119,7 +119,7 @@
   },
   "luofu-records/aftermath": {
     "file": "content/luofu-records--aftermath.json",
-    "rows": 489,
+    "rows": 490,
     "missing": 0,
     "sourceIds": [
       "quest-1021702"
@@ -128,7 +128,7 @@
   },
   "luofu-records/foxian-tale": {
     "file": "content/luofu-records--foxian-tale.json",
-    "rows": 2014,
+    "rows": 2071,
     "missing": 0,
     "sourceIds": [
       "quest-2021701",
@@ -152,7 +152,7 @@
   },
   "luofu-records/swords-upper": {
     "file": "content/luofu-records--swords-upper.json",
-    "rows": 1542,
+    "rows": 1615,
     "missing": 0,
     "sourceIds": [
       "quest-2022001",
@@ -194,7 +194,7 @@
   },
   "penacony-records/invitation": {
     "file": "content/penacony-records--invitation.json",
-    "rows": 2408,
+    "rows": 2427,
     "missing": 0,
     "sourceIds": [
       "quest-1030101",
@@ -214,7 +214,7 @@
   },
   "penacony-records/dream": {
     "file": "content/penacony-records--dream.json",
-    "rows": 1843,
+    "rows": 1848,
     "missing": 0,
     "sourceIds": [
       "quest-1030901",
@@ -231,7 +231,7 @@
   },
   "penacony-records/our-time": {
     "file": "content/penacony-records--our-time.json",
-    "rows": 2407,
+    "rows": 2408,
     "missing": 0,
     "sourceIds": [
       "quest-1032301",
@@ -267,7 +267,7 @@
   },
   "penacony-records/nana-outrage": {
     "file": "content/penacony-records--nana-outrage.json",
-    "rows": 2187,
+    "rows": 2247,
     "missing": 0,
     "sourceIds": [
       "quest-1034201",
@@ -303,7 +303,7 @@
   },
   "penacony-records/dream-grail": {
     "file": "content/penacony-records--dream-grail.json",
-    "rows": 1395,
+    "rows": 1538,
     "missing": 0,
     "sourceIds": [
       "quest-1040531",
@@ -364,7 +364,7 @@
   },
   "amphoreus-records/gate-throne": {
     "file": "content/amphoreus-records--gate-throne.json",
-    "rows": 2652,
+    "rows": 2654,
     "missing": 0,
     "sourceIds": [
       "quest-1040201",
@@ -385,7 +385,7 @@
   },
   "amphoreus-records/flowers": {
     "file": "content/amphoreus-records--flowers.json",
-    "rows": 2737,
+    "rows": 2741,
     "missing": 0,
     "sourceIds": [
       "quest-1040301",
@@ -407,7 +407,7 @@
   },
   "amphoreus-records/dawn-fall": {
     "file": "content/amphoreus-records--dawn-fall.json",
-    "rows": 2612,
+    "rows": 2613,
     "missing": 0,
     "sourceIds": [
       "quest-1040401",
@@ -443,7 +443,7 @@
   },
   "amphoreus-records/before-heroes-die": {
     "file": "content/amphoreus-records--before-heroes-die.json",
-    "rows": 2149,
+    "rows": 2152,
     "missing": 0,
     "sourceIds": [
       "quest-1040601",
@@ -487,7 +487,7 @@
   },
   "amphoreus-records/yesterdays-tomorrow": {
     "file": "content/amphoreus-records--yesterdays-tomorrow.json",
-    "rows": 1724,
+    "rows": 1732,
     "missing": 0,
     "sourceIds": [
       "quest-1043700",
@@ -538,7 +538,7 @@
   },
   "paradise-records/astropolis": {
     "file": "content/paradise-records--astropolis.json",
-    "rows": 2264,
+    "rows": 2266,
     "missing": 0,
     "sourceIds": [
       "quest-1054102",

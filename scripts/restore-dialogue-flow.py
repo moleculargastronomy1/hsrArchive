@@ -173,6 +173,151 @@ def scene_graph(document):
     return nodes, order
 
 
+def execution_slices(document):
+    """Keep explicit local relations even when the rest of a file is opaque.
+
+    Sequence arrays are concurrent entry points, never a global playback list.
+    Timeline/video/custom tasks are barriers. Repeated IDs retain JSON pointers.
+    """
+    nodes, edges, review, signals, listeners = {}, [], [], [], defaultdict(list)
+    talk_tasks = {'PlayAndWaitSimpleTalk', 'PlaySimpleTalk', 'PlayMissionTalk', 'PlayOptionTalk'}
+    transparent = PRESENTATION_TASKS - {'WaitPerformanceEnd', 'FinishLevelGraph'}
+
+    def link(left, right, method):
+        for a in left:
+            for z in right:
+                if a != z:
+                    edges.append({'from': a, 'to': z, 'method': method,
+                        'status': 'confirmed' if nodes[a].get('linkSafe') and nodes[z].get('linkSafe') else 'tentative'})
+
+    def task_list(tasks, pointer, gates, phase, sequence, inactive=False):
+        tail, pending, entry, waiting, blocked = [], [], None, None, False
+        for i, task in enumerate(tasks):
+            p = pointer + '/' + str(i)
+            if not isinstance(task, dict):
+                tail, pending, blocked = [], [], True
+                continue
+            kind = task.get('$type', '').split('.')[-1]
+            condition = {k: v for k, v in task.items()
+                         if k in ['Condition', 'ConditionList', 'Predicate', 'If', 'Else'] or
+                         (k == 'TaskEnabled' and v is not True)}
+            local_gates = gates + ([{'pointer': p, 'fields': condition}] if condition else [])
+            disabled = inactive or task.get('TaskEnabled', True) is not True
+            if kind in talk_tasks:
+                choice = kind == 'PlayOptionTalk'
+                field = 'OptionList' if choice else 'SimpleTalkList'
+                records = task.get(field)
+                if not isinstance(records, list) or not records:
+                    review.append({'pointer': p, 'reason': 'unsupported-talk-records'})
+                    tail, pending, blocked = [], [], True
+                    continue
+                current = []
+                for j, record in enumerate(records):
+                    q = p + '/' + field + '/' + str(j)
+                    identity = record.get('TalkSentenceID') if isinstance(record, dict) else None
+                    if type(identity) is not int or identity == 999999999:
+                        # A missing record must interrupt a linear list.
+                        current.append(None)
+                        review.append({'pointer': q, 'reason': 'missing-or-unsupported-talk-id'})
+                        continue
+                    rg = {k: v for k, v in record.items() if k in ['Condition', 'ConditionList', 'Predicate']}
+                    record_fields = {'$type', 'TalkSentenceID', 'ProtectTime', 'TextSpeed', 'TalkBgID',
+                        'OptionIconType', 'TriggerCustomString', 'Condition', 'ConditionList', 'Predicate'}
+                    task_fields = {'$type', 'TaskEnabled', field, 'Condition', 'ConditionList', 'Predicate', 'If', 'Else'}
+                    nodes[q] = {'talkId': identity, 'type': 'choice' if choice else 'line',
+                                'pointer': q, 'scope': p + '/' + field,
+                                'sequence': sequence, 'phase': phase,
+                                'conditions': local_gates + ([{'pointer': q, 'fields': rg}] if rg else []),
+                                'status': 'tentative' if disabled else 'confirmed',
+                                'linkSafe': not (set(record) - record_fields or set(task) - task_fields) and not disabled,
+                                'method': 'explicit-option-record' if choice else 'explicit-talk-list'}
+                    current.append(q)
+                    if choice:
+                        marker = string(record.get('TriggerCustomString'))
+                        if isinstance(marker, str) and marker and not disabled:
+                            signals.append((q, marker, phase, gates))
+                present = [q for q in current if q]
+                if not disabled:
+                    link(tail, present if choice else current[:1] if current and current[0] else [], 'blocking-task-continuation')
+                    if not choice:
+                        for a, z in zip(current, current[1:]):
+                            if a and z and nodes[a]['conditions'] == nodes[z]['conditions']:
+                                link([a], [z], 'explicit-talk-list')
+                    if entry is None and not blocked:
+                        entry = present if choice else current[:1] if current and current[0] else []
+                    tail = current[-1:] if current and current[-1] and not choice and kind == 'PlayAndWaitSimpleTalk' else []
+                    pending = current[-1:] if current and current[-1] and kind == 'PlaySimpleTalk' else []
+                else:
+                    tail, pending, blocked = [], [], True
+            elif kind == 'WaitSimpleTalkFinish' and not disabled:
+                tail, pending = pending, []
+            elif kind == 'WaitCustomString' and i == 0 and not disabled:
+                marker = string(task.get('CustomString'))
+                if isinstance(marker, str) and marker:
+                    waiting = marker
+                else:
+                    blocked = True
+                tail, pending = [], []
+            elif kind == 'TriggerCustomString' and not disabled:
+                marker = string(task.get('CustomString'))
+                if isinstance(marker, str) and marker:
+                    signals.extend((q, marker, phase, gates) for q in tail)
+            elif kind in transparent and not disabled and not contains_talk(task):
+                pass
+            else:
+                # Parse explicit conditional sub-lists independently, never bridge them.
+                for field in ['SuccessTaskList', 'FailedTaskList', 'TaskList']:
+                    if isinstance(task.get(field), list):
+                        branch_gates = local_gates + [{'pointer': p, 'branch': field,
+                            'predicate': {k: v for k, v in task.items() if k not in ['SuccessTaskList', 'FailedTaskList', 'TaskList']}}]
+                        task_list(task[field], p + '/' + field, branch_gates, phase, sequence,
+                                  disabled or kind != 'PredicateTaskList')
+                if kind not in ['EndPerformance', 'WaitPerformanceEnd', 'FinishLevelGraph']:
+                    review.append({'pointer': p, 'reason': 'opaque-execution-boundary', 'task': kind})
+                tail, pending, blocked = [], [], True
+        if waiting and entry:
+            listeners[(phase, waiting)].append((entry, gates))
+
+    for phase in ['OnInitSequece', 'OnStartSequece']:
+        sequences = document.get(phase) or []
+        if not isinstance(sequences, list):
+            review.append({'pointer': '/' + phase, 'reason': 'unsupported-sequence-container'})
+            continue
+        for i, sequence in enumerate(sequences):
+            if not isinstance(sequence, dict) or not isinstance(sequence.get('TaskList'), list):
+                review.append({'pointer': '/' + phase + '/' + str(i), 'reason': 'unsupported-sequence'})
+                continue
+            p = '/' + phase + '/' + str(i)
+            fields = {k: v for k, v in sequence.items() if k not in ['TaskList', 'Order']}
+            task_list(sequence['TaskList'], p + '/TaskList',
+                      [{'pointer': p, 'fields': fields}] if fields else [], phase, p,
+                      sequence.get('TaskEnabled', True) is not True)
+    for source, marker, phase, gates in signals:
+        targets = listeners.get((phase, marker), [])
+        if len(targets) == 1 and targets[0][1] == gates:
+            link([source], targets[0][0], 'explicit-signal-listener')
+        else:
+            review.append({'pointer': source, 'reason': 'signal-target-unresolved', 'marker': marker})
+    # Cycles are real possible loops, not a sortable once-only playback order.
+    incoming = Counter(e['to'] for e in edges if e['status'] == 'confirmed')
+    queue = [p for p, n in nodes.items() if n['status'] == 'confirmed' and not incoming[p]]
+    visited = set()
+    while queue:
+        p = queue.pop()
+        if p in visited:
+            continue
+        visited.add(p)
+        for e in edges:
+            if e['from'] == p and e['status'] == 'confirmed':
+                incoming[e['to']] -= 1
+                if not incoming[e['to']]:
+                    queue.append(e['to'])
+    for e in edges:
+        if e['from'] not in visited or e['to'] not in visited:
+            e['status'] = 'tentative'
+    return {'nodes': nodes, 'edges': edges, 'review': review}
+
+
 def restore(payload, structures):
     payload.pop('bwikiBaseOrder', None)
     payload.pop('bwiki', None)

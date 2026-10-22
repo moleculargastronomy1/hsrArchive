@@ -1,6 +1,9 @@
 {
   "schema": "hsr-source-first-policy.v1",
-  "version": 2,
+  "version": 3,
+  "executionPositions": "explicit-typed-occurrences-with-local-edges-and-condition-scopes",
+  "executionBarriers": "missing-timeline-unknown-task-and-unresolved-signal-never-bridged",
+  "tentativeExecution": "isolated-report-only; never-authoritative-reader-edges",
   "readingPositions": "separate-occurrences-with-immutable-canonical-row-refs",
   "wikiPositionEvidence": "exact-content-owned-scope-or-two-anchors-in-one-official-array-and-gate",
   "wikiPositionEdges": "wiki-display-only-never-official-execution",

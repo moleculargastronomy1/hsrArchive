@@ -1,4 +1,9 @@
-import { wikiContext, type WikiPosition } from './wiki-reading.ts';
+import {
+  wikiContext,
+  executionContext,
+  type WikiPosition,
+  type ExecutionPosition,
+} from './wiki-reading.ts';
 
 export interface DialogueRow {
   id: string;
@@ -30,6 +35,8 @@ export interface DialogueRow {
   videoNextIds?: string[];
   videoReplyToIds?: string[];
   wikiPosition?: WikiPosition;
+  executionPosition?: ExecutionPosition;
+  executionPeers?: DialogueRow[];
   wikiUnplaced?: { id: string; title: string };
   wikiLegacy?: { id: string; title: string };
 }
@@ -88,6 +95,7 @@ export function nearbyDialogue(rows: DialogueRow[], index: number, radius = 20) 
   const selected = rows[index];
   if (!selected) return [];
   if (selected.wikiPosition) return wikiContext(rows, index, false);
+  if (selected.executionPosition) return executionContext(rows, index, false);
   if (selected.wikiUnplaced) return [selected];
   if (selected.flowBoundary && selected.flowStatus === 'review') return [selected];
   const wiki = ['matched', 'cached'].includes(selected.bwikiStatus ?? '') && !!selected.bwikiScene;
@@ -114,6 +122,7 @@ export function nearbyDialogue(rows: DialogueRow[], index: number, radius = 20) 
 export function choiceDialogue(rows: DialogueRow[], index: number, limit = 41) {
   const selected = rows[index];
   if (selected?.wikiPosition) return wikiContext(rows, index, true, limit);
+  if (selected?.executionPosition) return executionContext(rows, index, true, limit);
   if (selected?.wikiUnplaced) return [selected];
   const video =
     selected?.videoStatus === 'screen-matched' &&

@@ -11,6 +11,9 @@ def validate(root):
     spec = importlib.util.spec_from_file_location('bwiki_placement_validation', Path(__file__).with_name('bwiki-placement.py'))
     placement = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(placement)
+    spec = importlib.util.spec_from_file_location('execution_placement_validation', Path(__file__).with_name('execution-placement.py'))
+    execution = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(execution)
     def read(file):
         return json.loads((root / file).read_bytes())
 
@@ -68,6 +71,8 @@ def validate(root):
         by_id = {row['id']: row for row in payload['rows']}
         if 'wikiReading' in payload:
             placement.validate(payload['wikiReading'], payload['rows'], commit)
+        if 'executionReading' in payload:
+            execution.validate(payload['executionReading'], payload['rows'], commit, payload.get('wikiReading'))
         for row in payload['rows']:
             if row.get('bwikiMatchMethod') is not None:
                 if row['bwikiMatchMethod'] != 'translation-reviewed' or row['id'] not in translated:

@@ -34722,9 +34722,9 @@
   "retainedTextRowIds": [],
   "wikiReading": {
     "schema": "hsr-wiki-reading.v1",
-    "codeHash": "9220853c07cc92470deac0ec236994843cfb37861e65b5e216304ba0b1018ccd",
-    "policyHash": "4151348015f751082c0c3a723dcf5895642555a42f8323b79b265d4a3573191d",
-    "policyVersion": 2,
+    "codeHash": "7296135985659046eee1a04a78675d37648afc134cf139ba62c8195f55efc8c2",
+    "policyHash": "0010823042bef4d103b06b1a206d2329ebfb548dafe0de74704b505cb3f92468",
+    "policyVersion": 3,
     "officialInputs": {
       "ExcelOutput/MainMission.json": {
         "gitBlob": "255406dd60de8d13fa6e40303e769b74c13b41ba",
@@ -34752,7 +34752,7 @@
       }
     },
     "commit": "74a7b96fba32f00cf495a5c00b0311bd02207aaf",
-    "structureHashes": "25a966633b71c42bfb558dc0720633fbe13c429f09886c54e0ad059bcd4f84e1",
+    "structureHashes": "6f8bf42883faf0c04673146146964f821e47be4091e587a82a2b884c252ff851",
     "reviewRegistryHash": "a8a1cfee7ec504f4942be47937ee63fbaf1a9c5d7d65459e16b2e4c72f8d4a2c",
     "canonicalRowsHash": "afc2427b3192a689bf1b523c56de7f4680a752a9bc3706402313abe5e6fe336b",
     "sources": [
@@ -72681,5 +72681,63 @@
         "reason": "no-unique-owned-official-row"
       }
     ]
+  },
+  "executionReading": {
+    "schema": "hsr-execution-reading.v1",
+    "commit": "74a7b96fba32f00cf495a5c00b0311bd02207aaf",
+    "codeHash": "7296135985659046eee1a04a78675d37648afc134cf139ba62c8195f55efc8c2",
+    "policyHash": "0010823042bef4d103b06b1a206d2329ebfb548dafe0de74704b505cb3f92468",
+    "policyVersion": 3,
+    "officialInputs": {
+      "ExcelOutput/MainMission.json": {
+        "gitBlob": "255406dd60de8d13fa6e40303e769b74c13b41ba",
+        "sha256": "7d2fc8212d52119c47c3e1cf847f43bc9df74126a5f8290061cc5f61f0b8b967"
+      },
+      "ExcelOutput/TalkSentenceConfig.json": {
+        "gitBlob": "522b747a5f48546829f17cf3a364ccd642b10fcf",
+        "sha256": "db75cb1e7adb6de861a816eb41bfd2da5d3c159efc5163c8bb38217a90a12479"
+      },
+      "TextMap/TextMapCHS.json": {
+        "gitBlob": "799c7ea9309eb6f17eb57c0c4cf219f28483eee3",
+        "sha256": "b442c7a30bbd5c21e5f4393781bfd833e939e5feca6f6612b01b107e94b2ea9c"
+      },
+      "TextMap/TextMapKR_0.json": {
+        "gitBlob": "4c4adcf4ed86c48ebb407442801f3b3dd396eb19",
+        "sha256": "2a996609124fd7ab215cbacae43eee098578c6d7cc4c10186bb12d5dfc8fc941"
+      },
+      "TextMap/TextMapKR_1.json": {
+        "gitBlob": "80eee947e1dc31577209e39d841ad2eb127541e0",
+        "sha256": "ceef6b210ebd57f955b26bffa2995487b18627cfd5a30c3b770de803c07d92b8"
+      },
+      "ExcelOutput/MissionChapterConfig.json": {
+        "gitBlob": "3131ed0c02242aa69978f3daa0e6a2f2a8df363b",
+        "sha256": "a266987091690891ff495be0bedd0760d447840571adfba5a7d51524ad7be1ec"
+      }
+    },
+    "structureHashes": "6f8bf42883faf0c04673146146964f821e47be4091e587a82a2b884c252ff851",
+    "wikiReadingHash": "26b3dd2ece729933a615230a885e51ad8c364e68c2c1a28f3e5d0d340423c6ae",
+    "canonicalRowsHash": "7fc550eabda96981adb39d9da104fc8d4a0108901f6573f55b9e4328a2aa879a",
+    "sources": {},
+    "occurrences": [],
+    "placements": [],
+    "additions": [],
+    "missionRelations": [],
+    "summary": {
+      "confirmedRows": 0,
+      "confirmedOccurrences": 0,
+      "confirmedEdges": 0,
+      "confirmedChoiceResponses": 0,
+      "previousUnknownRows": 1,
+      "newlyPlacedRows": 0,
+      "totalExecutionPlacedRows": 0,
+      "newlyPlacedExistingRows": 0,
+      "newOfficialRows": 0,
+      "newlyPlacedNewRows": 0,
+      "remainingPreviousUnknownRows": 1,
+      "remainingUnknownRows": 1,
+      "placedBetweenWikiAnchors": 0,
+      "orderComparisons": {},
+      "tentativeItems": 0
+    }
   }
 }
