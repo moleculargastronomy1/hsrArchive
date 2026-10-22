@@ -35,6 +35,7 @@ execFileSync(
 const seal = await sealData(root);
 const code = [];
 const codeFiles = [
+  'docs/reports/data-exposure-before-2026-10-22.json',
   'public/content-watch.json',
   'public/verification-progress.json',
   'public/site-update.json',

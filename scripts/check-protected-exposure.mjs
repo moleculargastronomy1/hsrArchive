@@ -34,6 +34,15 @@ export async function auditProtected(root, dist) {
   }
   for (const file of files.filter((f) => /\.(?:js|json|html)$/.test(f))) {
     const text = await fs.readFile(path.join(dist, file), 'utf8');
+    for (const name of [
+      'SESSION_SECRET',
+      'INTERNAL_TOKEN',
+      'HSR_PRIVATE_STATE_TOKEN',
+      'CLOUDFLARE_API_TOKEN',
+      'HSR_FRONTEND_TOKEN',
+    ])
+      if (process.env[name]?.length >= 12 && text.includes(process.env[name]))
+        throw new Error('Private credential in public artifact: ' + file);
     if (/serviceWorker\.register|sourceMappingURL=|hsr-dialogue\.v1.{0,15}["']rows/.test(text))
       throw new Error('Unexpected worker/map/body in public artifact: ' + file);
     for (const canary of canaries)

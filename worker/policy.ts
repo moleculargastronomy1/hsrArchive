@@ -5,10 +5,19 @@ export const defaultPolicy = {
   ipRequests: 1200,
   ipPages: 240,
   ipSearches: 120,
-  ipChapters: 120,
+  ipChapters: 480,
   searchRequests: 30,
   pageRequests: 90,
-  distinctChapters: 40,
+  distinctChapters: 80,
+  sustainedReads: 2400,
+  sustainedReadsPerHour: 1200,
+  sustainedSearches: 600,
+  sustainedSearchesPerHour: 300,
+  sustainedChapters: 360,
+  sustainedChaptersPerHour: 180,
+  trapThreshold: 3,
+  trapWindowSeconds: 600,
+  trapCooldownSeconds: 60,
 };
 export type Policy = typeof defaultPolicy;
 export function parsePolicy(value?: string): Policy {
@@ -35,7 +44,7 @@ export function consume(
   previous: Usage | undefined,
   session: string,
   kind: string,
-  chapter: string,
+  chapter: string | string[],
   now: number,
   policy: Policy,
   cleared = false,
@@ -51,7 +60,8 @@ export function consume(
   usage.total++;
   if (kind === 'page') usage.pages++;
   if (kind === 'search') usage.searches++;
-  if (chapter && !usage.chapters.includes(chapter)) usage.chapters.push(chapter);
+  const chapters = (Array.isArray(chapter) ? chapter : [chapter]).filter(Boolean);
+  for (const item of chapters) if (!usage.chapters.includes(item)) usage.chapters.push(item);
   const shared =
     usage.pages > policy.ipPages
       ? 'ip-pages'
@@ -69,7 +79,7 @@ export function consume(
   own.total++;
   if (kind === 'search') own.search++;
   if (kind === 'page') own.page++;
-  if (chapter && !own.chapters.includes(chapter)) own.chapters.push(chapter);
+  for (const item of chapters) if (!own.chapters.includes(item)) own.chapters.push(item);
   const allowance = cleared ? 2 : 1;
   const reason =
     own.total > policy.sessionRequests * allowance

@@ -1,0 +1,32 @@
+{
+  "schema": "hsr-collection-simulation.v1",
+  "chapterCount": 2840,
+  "rapid": {
+    "accepted": 2840,
+    "denied": 2462,
+    "simulatedSeconds": 49601,
+    "reasons": {
+      "sustained-chapter": 2462
+    }
+  },
+  "slow": {
+    "accepted": 2840,
+    "denied": 2121,
+    "simulatedSeconds": 49610,
+    "reasons": {
+      "sustained-chapter": 2121
+    }
+  },
+  "verySlow": {
+    "accepted": 2840,
+    "denied": 0,
+    "simulatedSeconds": 85200,
+    "reasons": {}
+  },
+  "distributed": {
+    "accepted": 2840,
+    "denied": 0,
+    "simulatedSeconds": 2840,
+    "reasons": {}
+  }
+}

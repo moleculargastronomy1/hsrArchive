@@ -33,7 +33,7 @@ test('shared limiter permits ordinary reading, isolates sessions and limits swee
     true,
   );
   let sweep: any;
-  for (let i = 0; i < 41; i++)
+  for (let i = 0; i <= defaultPolicy.distinctChapters; i++)
     sweep = consume(sweep?.usage, 'crawler', 'page', 'chapter-' + i, 1000, defaultPolicy);
   assert.equal(sweep.reason, 'chapter-sweep');
   assert.equal(

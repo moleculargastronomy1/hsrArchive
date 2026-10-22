@@ -1,5 +1,14 @@
-import { serveData, termsOf, PAGE_SIZE, HttpError, validFile, type DataStore } from './service.ts';
+import {
+  serveData,
+  termsOf,
+  PAGE_SIZE,
+  HttpError,
+  validFile,
+  localeBatch,
+  type DataStore,
+} from './service.ts';
 import { consume, parsePolicy } from './policy.ts';
+import { consumeBehavior, behaviorLifetime, trapPath } from './behavior.ts';
 import { verifyTurnstile } from './turnstile.ts';
 
 interface R2Object {
@@ -101,26 +110,42 @@ export class RequestGuard {
     const { session, kind, chapter, cleared } = (await request.json()) as {
       session: string;
       kind: string;
-      chapter: string;
+      chapter: string[];
       cleared?: boolean;
     };
     const result = await this.ctx.storage.transaction(async (tx: any) => {
       const policy = parsePolicy(this.env.RATE_POLICY);
+      const now = Date.now();
       const decision = consume(
         await tx.get('usage'),
         session,
         kind,
         chapter,
-        Date.now(),
+        now,
         policy,
         cleared === true,
       );
       await tx.put('usage', decision.usage);
-      await tx.setAlarm(Date.now() + (policy.windowSeconds + 60) * 1000);
+      await tx.setAlarm(now + behaviorLifetime(policy) * 1000);
+      const behavior = consumeBehavior(
+        await tx.get('behavior'),
+        decision.allowed || kind === 'trap' ? kind : 'other',
+        chapter,
+        now,
+        policy,
+      );
+      await tx.put('behavior', behavior.usage);
+      if (!behavior.allowed)
+        return {
+          allowed: false,
+          reason: behavior.reason,
+          retryAfter: behavior.retryAfter,
+        };
       return {
         allowed: decision.allowed,
         reason: decision.reason,
         retryAfter: decision.retryAfter,
+        logProbe: kind === 'trap' && Number.isInteger(Math.log2(behavior.usage.trapProbes ?? 0)),
       };
     });
     return json(result);
@@ -236,7 +261,6 @@ export default {
             throw new HttpError(411, 'A bounded content length is required');
           if (
             !/^[a-f0-9]{64}$/.test(release) ||
-            ![env.DATA_RELEASE, env.PREVIOUS_RELEASE].includes(release) ||
             !/^[a-f0-9]{64}$/.test(checksum) ||
             !/^(?:ready\.json|src\/data\/[A-Za-z0-9_-]+\.json|public\/(?:[A-Za-z0-9_-]+\.json(?:\.gz)?|content\/[A-Za-z0-9_-]+\.json|content\/locales\/(?:manifest|(?:en|zh-CN|ja)\/[A-Za-z0-9_-]+)\.json))$/.test(
               file,
@@ -250,6 +274,8 @@ export default {
               throw new HttpError(409, 'Immutable object differs');
             return json({ uploaded: true });
           }
+          // Authenticated candidates may be uploaded before the serving version changes.
+          // Promotion still requires a completely uploaded, currently served release.
           // R2 checks the digest; stream large snapshots without buffering them in the isolate.
           const result = await env.DATA.put(key, request.body, {
             sha256: checksum,
@@ -296,6 +322,39 @@ export default {
         });
       }
       if (origin && !allowed.includes(origin)) throw new HttpError(403, 'Origin not allowed');
+      if (url.pathname === '/robots.txt' && request.method === 'GET')
+        return new Response('User-agent: *\nDisallow: /v1/\nDisallow: /internal/\n', {
+          headers: { 'Content-Type': 'text/plain', 'Cache-Control': 'public, max-age=3600' },
+        });
+      if (url.pathname === trapPath && request.method === 'GET') {
+        const group = ipGroup(request.headers.get('CF-Connecting-IP') ?? '');
+        const guardId = await mac(env.SESSION_SECRET, 'guard:' + group);
+        const logId = await mac(
+          env.SESSION_SECRET,
+          new Date().toISOString().slice(0, 10) + ':' + group,
+        );
+        if (env.EDGE_LIMIT && !(await env.EDGE_LIMIT.limit({ key: logId })).success)
+          return new Response(null, { status: 404, headers: { 'Cache-Control': 'no-store' } });
+        const probeResponse = await env.GUARD.get(env.GUARD.idFromName(guardId)).fetch(
+          new Request('https://guard/check', {
+            method: 'POST',
+            body: JSON.stringify({ session: 'trap', kind: 'trap', chapter: [] }),
+          }),
+        );
+        if (!probeResponse.ok) throw new Error('Guard unavailable');
+        if (((await probeResponse.json()) as { logProbe?: boolean }).logProbe)
+          console.log(
+            JSON.stringify({
+              event: 'archive-export-probe',
+              client: logId.slice(0, 12),
+              at: new Date().toISOString(),
+            }),
+          );
+        return new Response(null, {
+          status: 404,
+          headers: { 'Cache-Control': 'no-store', 'X-Robots-Tag': 'noindex' },
+        });
+      }
       if (request.method === 'OPTIONS')
         return new Response(null, {
           status: 204,
@@ -352,9 +411,16 @@ export default {
           : ['page', 'record', 'context', 'locale', 'locales'].includes(url.pathname.slice(4))
             ? 'page'
             : 'other';
-      const chapter = url.searchParams.get('file') ?? '';
-      if (chapter) validFile(chapter);
-      const decision = await env.GUARD.get(env.GUARD.idFromName(ip)).fetch(
+      const file = url.searchParams.get('file') ?? '';
+      if (file) validFile(file);
+      const chapter =
+        url.pathname === '/v1/locales'
+          ? localeBatch(url.searchParams).map((item) => item.file)
+          : file
+            ? [file]
+            : [];
+      const guardId = await mac(env.SESSION_SECRET, 'guard:' + group);
+      const decision = await env.GUARD.get(env.GUARD.idFromName(guardId)).fetch(
         new Request('https://guard/check', {
           method: 'POST',
           body: JSON.stringify({
@@ -386,6 +452,8 @@ export default {
             error: `${result.retryAfter}초 후 다시 시도해 주세요.`,
             retryAfter: result.retryAfter,
             ...(!result.reason.startsWith('ip-') &&
+            !result.reason.startsWith('sustained-') &&
+            result.reason !== 'trap-cooldown' &&
             result.reason !== 'session-rotation' &&
             env.TURNSTILE_SITE_KEY &&
             env.TURNSTILE_SECRET &&

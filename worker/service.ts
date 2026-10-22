@@ -57,6 +57,24 @@ function pageNumber(v: string | null) {
   if (!Number.isSafeInteger(n) || n < 1 || n > 100000) throw new HttpError(400, 'Invalid page');
   return n;
 }
+export function localeBatch(params: URLSearchParams): { file: string; ids: string[] }[] {
+  let items: { file: string; ids: string[] }[];
+  try {
+    items = JSON.parse(params.get('items') ?? 'null');
+  } catch {
+    throw new HttpError(400, 'Invalid localization batch');
+  }
+  if (
+    !Array.isArray(items) ||
+    !items.length ||
+    items.length > 8 ||
+    items.some((item) => !item || typeof item.file !== 'string' || !Array.isArray(item.ids)) ||
+    items.reduce((n, item) => n + item.ids.length, 0) > 100
+  )
+    throw new HttpError(400, 'Localization batch too large');
+  for (const item of items) validFile(item.file);
+  return items;
+}
 // The response includes the selected rows, never the chapter-wide occurrence graph.
 export async function serveData(route: string, params: URLSearchParams, store: DataStore) {
   const file = params.get('file') ?? '';
@@ -71,20 +89,7 @@ export async function serveData(route: string, params: URLSearchParams, store: D
     return { ...result, page, pageSize: PAGE_SIZE };
   }
   if (route === '/v1/locales') {
-    let items: { file: string; ids: string[] }[];
-    try {
-      items = JSON.parse(params.get('items') ?? 'null');
-    } catch {
-      throw new HttpError(400, 'Invalid localization batch');
-    }
-    if (
-      !Array.isArray(items) ||
-      !items.length ||
-      items.length > 8 ||
-      items.some((item) => !item || typeof item.file !== 'string' || !Array.isArray(item.ids)) ||
-      items.reduce((n, item) => n + item.ids.length, 0) > 100
-    )
-      throw new HttpError(400, 'Localization batch too large');
+    const items = localeBatch(params);
     const results = [];
     for (const item of items)
       results.push(

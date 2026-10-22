@@ -3,6 +3,7 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs/promises';
 import { createHash } from 'node:crypto';
 import { localWorker } from '../scripts/local-worker.mjs';
+import { trapPath } from '../worker/behavior.ts';
 
 test('workerd + real local R2/D1/SQLite DO: partial reading, auth, concurrency limiting and closed recovery paths', async () => {
   const mf = await localWorker({
@@ -119,6 +120,97 @@ test('workerd + real local R2/D1/SQLite DO: partial reading, auth, concurrency l
     });
     assert.equal(search.status, 200);
     assert.equal(((await search.json()) as any).total, 1);
+  } finally {
+    await mf.dispose();
+  }
+});
+
+test('real Worker applies sustained limits across sessions, counts locale batches and keeps internal verification independent', async () => {
+  const mf = await localWorker({
+    bindings: {
+      SESSION_SECRET: 'local-only-secret-at-least-32-characters',
+      INTERNAL_TOKEN: 'internal-test-only',
+      DATA_RELEASE: 'fixture',
+      ALLOWED_ORIGINS: '',
+      RATE_POLICY: JSON.stringify({ sustainedChapters: 2, sustainedChaptersPerHour: 1 }),
+    },
+  });
+  try {
+    const headers = { 'CF-Connecting-IP': '192.0.2.55', 'User-Agent': 'normal-browser' };
+    const call = (route: string, extra = {}) =>
+      mf.dispatchFetch('https://api.example' + route, { headers: { ...headers, ...extra } });
+    const session = async (extra = {}) =>
+      ((await (await call('/v1/session', extra)).json()) as any).token;
+    const token = await session();
+    const auth = { 'X-Archive-Session': token };
+    const raw = await fs.readFile('public/content/station-departure--arrival.json', 'utf8');
+    const bucket = await mf.getR2Bucket('DATA');
+    const files = ['content/test--a.json', 'content/test--b.json', 'content/test--c.json'];
+    for (const file of files) await bucket.put('releases/fixture/public/' + file, raw);
+    const read = (file: string, extra = auth) =>
+      call('/v1/page?release=fixture&file=' + file, extra);
+    assert.equal((await read(files[0])).status, 200);
+    assert.equal((await call(trapPath)).status, 404);
+    assert.equal((await read(files[0])).status, 200); // A single scanner hit is harmless.
+    const rotated = await session({ 'User-Agent': 'Googlebot' });
+    const rotatedAuth = { 'User-Agent': 'Googlebot', 'X-Archive-Session': rotated };
+    assert.equal((await read(files[1], rotatedAuth)).status, 200);
+    const denied = await read(files[2], rotatedAuth);
+    assert.equal(denied.status, 429);
+    assert.ok(Number(denied.headers.get('Retry-After')) > 3500);
+    assert.equal(((await denied.json()) as any).challengeSiteKey, undefined);
+    // A locale batch cannot hide multiple chapters from traversal accounting.
+    const batch = new URLSearchParams({
+      release: 'fixture',
+      language: 'en',
+      items: JSON.stringify([{ file: files[2], ids: ['test'] }]),
+    });
+    assert.equal((await call('/v1/locales?' + batch, auth)).status, 429);
+    for (const path of [
+      '/content/search-index.json',
+      '/content/locales/en/test--a.json',
+      '/verification-state.json',
+      '/bwiki-provenance.json',
+    ])
+      assert.equal((await call(path)).status, 404);
+    assert.equal((await call('/robots.txt')).status, 200);
+    await call(trapPath);
+    const trap = await call(trapPath);
+    assert.equal(trap.status, 404);
+    assert.equal(await trap.text(), '');
+    assert.equal((await read(files[0])).status, 429);
+    assert.equal(
+      (
+        await read(files[0], {
+          'CF-Connecting-IP': '192.0.2.56',
+          'User-Agent': 'normal-browser',
+          'X-Archive-Session': await session({ 'CF-Connecting-IP': '192.0.2.56' }),
+        })
+      ).status,
+      200,
+    );
+    // Authenticated CI does not need a visitor session or visitor network header.
+    await bucket.put('releases/fixture/ready.json', '{"release":"fixture"}');
+    await bucket.put('releases/fixture/public/verification-state.json', '{"private":"preserved"}');
+    const internalHeaders = { Authorization: 'Bearer internal-test-only' };
+    assert.equal(
+      (
+        await mf.dispatchFetch('https://api.example/internal/promote', {
+          method: 'POST',
+          headers: internalHeaders,
+          body: JSON.stringify({ release: 'fixture', expectedPrevious: null }),
+        })
+      ).status,
+      200,
+    );
+    for (let i = 0; i < 5; i++) {
+      const response = await mf.dispatchFetch(
+        'https://api.example/internal/state/verification-state.json',
+        { headers: internalHeaders },
+      );
+      assert.equal(response.status, 200);
+      assert.equal(((await response.json()) as any).private, 'preserved');
+    }
   } finally {
     await mf.dispose();
   }

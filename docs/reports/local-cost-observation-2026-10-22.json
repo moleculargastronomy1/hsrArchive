@@ -1,0 +1,45 @@
+{
+  "schema": "hsr-local-cost-observation.v1",
+  "productionMetered": false,
+  "release": "d1c6e8c0e4b9eda54789d9ed4ae6644715d349503387f04a8ef0aa1adc459f5d",
+  "chapters": [
+    {
+      "file": "content/amphoreus-records--journey.json",
+      "bytes": 6848078,
+      "rows": 3783,
+      "localCpuMedianMs": 16,
+      "localCpuMaxMs": 62
+    },
+    {
+      "file": "content/amphoreus-records--flowers.json",
+      "bytes": 5122506,
+      "rows": 2744,
+      "localCpuMedianMs": 15,
+      "localCpuMaxMs": 16
+    },
+    {
+      "file": "content/amphoreus-records--gate-throne.json",
+      "bytes": 4970342,
+      "rows": 2665,
+      "localCpuMedianMs": 15,
+      "localCpuMaxMs": 16
+    }
+  ],
+  "searches": [
+    {
+      "query": "나",
+      "total": 25883,
+      "localCpuMs": 78
+    },
+    {
+      "query": "개척자",
+      "total": 5779,
+      "localCpuMs": 15
+    },
+    {
+      "query": "없는문자열xyz",
+      "total": 0,
+      "localCpuMs": 16
+    }
+  ]
+}
