@@ -5,6 +5,7 @@ import { gzipSync, gunzipSync } from 'node:zlib';
 
 export const SITE = 'https://moleculargastronomy1.github.io/hsrArchive/';
 export const hash = (bytes) => crypto.createHash('sha256').update(bytes).digest('hex');
+const MAX_SNAPSHOT_BYTES = 768 * 1024 * 1024;
 export class PublishedStateUnavailable extends Error {
   constructor(message, options) {
     super(message, options);
@@ -121,12 +122,15 @@ export async function packState(root) {
     files.push({ path: file, sha256: hash(bytes), bytes: bytes.toString('base64') });
   }
   const update = JSON.parse(await fs.readFile(path.join(root, 'public/content-update.json')));
-  const bytes = gzipSync(
-    JSON.stringify({ schema: 'hsr-verification-state.v1', commit: update.commit, files }),
-  );
+  // Parse one file per line on restore, avoiding V8's single-string size limit.
+  const parts = [Buffer.from(JSON.stringify({
+    schema: 'hsr-verification-state.v2', commit: update.commit, files: files.length,
+  }) + '\n'), ...files.map(file => Buffer.from(JSON.stringify(file) + '\n'))];
+  const size = parts.reduce((n, part) => n + part.length, 0);
+  if (size > MAX_SNAPSHOT_BYTES) throw Error('Verification snapshot exceeds the restore size limit');
+  const bytes = gzipSync(Buffer.concat(parts, size));
   const sha256 = hash(bytes);
   const file = `verification-state-${sha256}.json.gz`;
-  await fs.writeFile(path.join(root, 'public', file), bytes);
   const descriptor = {
     schema: 'hsr-verification-state-pointer.v1',
     commit: update.commit,
@@ -134,6 +138,9 @@ export async function packState(root) {
     sha256,
     files: files.length,
   };
+  // A successful build must never publish a snapshot its own restore cannot read.
+  unpackState(bytes, descriptor);
+  await fs.writeFile(path.join(root, 'public', file), bytes);
   await fs.writeFile(path.join(root, 'public/verification-state.json'), JSON.stringify(descriptor));
   for (const name of await fs.readdir(path.join(root, 'public')))
     if (/^verification-state-[a-f0-9]{64}\.json\.gz$/.test(name) && name !== file)
@@ -150,26 +157,46 @@ export function unpackState(bytes, descriptor) {
     hash(bytes) !== descriptor.sha256
   )
     throw new Error('Invalid published verification snapshot checksum');
-  const data = JSON.parse(gunzipSync(bytes, { maxOutputLength: 400 * 1024 * 1024 }));
+  const inflated = gunzipSync(bytes, { maxOutputLength: MAX_SNAPSHOT_BYTES });
+  const newline = inflated.indexOf(10);
+  let header;
+  if (newline >= 0) {
+    try { header = JSON.parse(inflated.subarray(0, newline).toString()); } catch { /* Legacy JSON may be pretty-printed. */ }
+  }
+  const data = header?.schema === 'hsr-verification-state.v2' ? header : JSON.parse(inflated.toString());
+  const count = Array.isArray(data.files) ? data.files.length : data.files;
   if (
-    data.schema !== 'hsr-verification-state.v1' ||
+    !['hsr-verification-state.v1', 'hsr-verification-state.v2'].includes(data.schema) ||
     data.commit !== descriptor.commit ||
-    !Array.isArray(data.files) ||
-    data.files.length !== descriptor.files ||
-    data.files.length > 50000
+    !Number.isSafeInteger(count) || count !== descriptor.files || count > 50000 || count < 0 ||
+    (data.schema === 'hsr-verification-state.v1' && !Array.isArray(data.files)) ||
+    (data.schema === 'hsr-verification-state.v2' && !Number.isSafeInteger(data.files))
   )
     throw new Error('Invalid published verification snapshot');
+  function* records() {
+    if (data.schema === 'hsr-verification-state.v1') { yield* data.files; return; }
+    let start = newline + 1;
+    while (start < inflated.length) {
+      const end = inflated.indexOf(10, start);
+      if (end < 0) throw Error('Truncated verification snapshot record');
+      yield JSON.parse(inflated.subarray(start, end).toString());
+      start = end + 1;
+    }
+  }
   const seen = new Set();
   // Validate every entry before allowing any file to be restored. Keep original
   // JSON bytes: parsing/re-serializing here would corrupt 64-bit text hashes.
-  return data.files.map((item) => {
+  const entries = [];
+  for (const item of records()) {
     if (!statePath(item.path) || seen.has(item.path) || typeof item.bytes !== 'string')
       throw new Error('Unsafe or duplicate verification state path');
     seen.add(item.path);
     const content = Buffer.from(item.bytes, 'base64');
     if (hash(content) !== item.sha256) throw new Error('Verification state file checksum mismatch');
-    return { path: item.path, bytes: content };
-  });
+    entries.push({ path: item.path, bytes: content });
+  }
+  if (entries.length !== count) throw Error('Invalid verification snapshot record count');
+  return entries;
 }
 
 export async function fetchState(fetcher = fetch) {

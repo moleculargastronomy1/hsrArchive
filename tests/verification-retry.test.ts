@@ -230,6 +230,23 @@ test('published snapshots preserve exact integer bytes and validate every path/c
   }
 });
 
+test('snapshot records restore legacy JSON and reject incomplete or duplicated v2 records', () => {
+  const exact = '{"hash":18446744073709551615}';
+  const record = { path: 'src/data/trailblaze.json', bytes: Buffer.from(exact).toString('base64'), sha256: hash(exact) };
+  const read = (text, count = 1) => {
+    const bytes = gzipSync(text), sha256 = hash(bytes);
+    return unpackState(bytes, { schema: 'hsr-verification-state-pointer.v1', commit,
+      files: count, sha256, file: `verification-state-${sha256}.json.gz` });
+  };
+  assert.equal(read(JSON.stringify({ schema: 'hsr-verification-state.v1', commit, files: [record] }, null, 2))[0].bytes.toString(), exact);
+  const header = JSON.stringify({ schema: 'hsr-verification-state.v2', commit, files: 1 }) + '\n';
+  assert.equal(read(header + JSON.stringify(record) + '\n')[0].bytes.toString(), exact);
+  assert.throws(() => read(header));
+  assert.throws(() => read(header + JSON.stringify(record)));
+  assert.throws(() => read(header + JSON.stringify(record) + '\n' + JSON.stringify(record) + '\n'));
+  assert.throws(() => read(header + JSON.stringify({ ...record, sha256: hash('changed') }) + '\n'));
+});
+
 test('legacy journal recovery only acknowledges the exact published content digest', () => {
   const state = {
     pendingDigest: 'published',
