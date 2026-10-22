@@ -70,3 +70,11 @@
 | ![변경 전](screenshots/execution/official-response-before.png) | ![변경 후](screenshots/execution/official-response-after.png) |
 
 정기 실행의 `execution-results`, `execution-report.json`, `execution-progress.json`도 기존 체크포인트 캐시와 90일 실행 증거 아티팩트에 보존한다. 이전 기록을 복원하더라도 입력·코드·정책 검사를 생략하거나 잠정 항목을 자동 확정하는 근거로 쓰지 않는다.
+
+제8막 실제 게시 화면에서도 `의식을 시작한다` 선택지의 공식 출현 링크가 열리고, 근거 없는 응답을 추가하지 않는 것을 확인했다. 같은 문장의 다른 공식 행은 합치지 않았다. 화면의 1,732줄은 고유 원문, 읽기 목록의 1,777줄은 반복 출현을 포함한 표시 행 수다.
+
+![제8막 게시 화면](screenshots/execution/act8-published.png)
+
+별도로 자동 실행된 [정기 재대조 후보](https://github.com/moleculargastronomy1/hsrArchive/actions/runs/39737002851)는 기존 검증 손실 1건, 연결 변경 7건, 순서 변경 10건, 읽기 위치 손실 63건, 읽기 연결 손실 9건을 공통 보존 검사가 발견해 게시를 차단했다. 이 수들은 서로 겹칠 수 있다. 해당 후보는 이번 정상 배포와 구별하며, 후보가 실패한 뒤에도 마지막 성공 데이터가 유지되는 것을 실제 사이트에서 확인했다. 이 후보의 회귀 원인별 확정·해소는 이번 결과로 주장하지 않는다. 현재 격리 검증 결과와 원문 개선 수치도 변경하지 않았다.
+
+격리 증거 보존 설정을 포함한 최종 운영 커밋은 `12fba3bd`이며, [후속 배포](https://github.com/moleculargastronomy1/hsrArchive/actions/runs/39751960661)도 성공했다. 본문 데이터는 첫 배포에서 검증한 것과 같고 후속 실행에서도 최종 계약·테스트·산출물 동일성 검사를 통과했다.
