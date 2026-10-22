@@ -58,6 +58,9 @@ jobs:
             .cache/source-first/document-results
             .cache/source-first/missions
             .cache/source-first/collection-state.json
+            .cache/source-first/execution-results
+            .cache/source-first/execution-report.json
+            .cache/source-first/execution-progress.json
           key: hsr-source-first-v1-${{ github.run_id }}-${{ github.run_attempt }}
           restore-keys: hsr-source-first-v1-
       - name: Check source metadata before processing
@@ -166,6 +169,9 @@ jobs:
             .cache/source-first/report.json
             .cache/source-first/validator-health.json
             .cache/source-first/artifact-seal.json
+            .cache/source-first/execution-report.json
+            .cache/source-first/execution-progress.json
+            .cache/source-first/execution-results
           if-no-files-found: warn
           retention-days: 90
       - name: Save source-first checkpoints even if a later stage fails
@@ -178,6 +184,9 @@ jobs:
             .cache/source-first/document-results
             .cache/source-first/missions
             .cache/source-first/collection-state.json
+            .cache/source-first/execution-results
+            .cache/source-first/execution-report.json
+            .cache/source-first/execution-progress.json
           key: hsr-source-first-v1-${{ github.run_id }}-${{ github.run_attempt }}
 
   deploy:

@@ -59,4 +59,14 @@
 
 기계 판독 집계·장별 결과·새 원문 ID는 [JSON](dimbreath-execution-2026-10-22.json), 전체 잠정 기록과 실행 증거는 `.cache/execution-improvement/automation-replay/execution-results`에 보존했다. 재현·보존 비교는 `.cache/execution-improvement/final-comparison.json`에 있다. 사용자 TXT를 입력으로 사용하지 않았다.
 
-배포 상태와 실제 게시 화면은 Actions 완료 후 추가한다.
+## 배포 및 화면 확인
+
+구현·운영 데이터 커밋 `63f1c59a`의 [배포 실행](https://github.com/moleculargastronomy1/hsrArchive/actions/runs/39733198202)이 성공했다. 테스트·최종 계약·빌드 산출물 동일성 검사 후 같은 산출물을 게시했다. 실제 사이트의 `site-update.json`에서도 해당 커밋을 확인했다.
+
+실제 게시 사이트에서 `울보 유령일지도 모른다고 했어` 선택지에 아들러의 `맞는 것 같기도 하고… 아닌 것 같기도 하네요` 응답이 표시되는 것을 확인했다. 변경 전에는 같은 선택지의 문맥창에 응답이 없었다. 일반 목록의 표시 형식은 화자·임무·대사이며 기술 검증 상태는 노출하지 않는다.
+
+| 변경 전 | 변경 후 |
+| --- | --- |
+| ![변경 전](screenshots/execution/official-response-before.png) | ![변경 후](screenshots/execution/official-response-after.png) |
+
+정기 실행의 `execution-results`, `execution-report.json`, `execution-progress.json`도 기존 체크포인트 캐시와 90일 실행 증거 아티팩트에 보존한다. 이전 기록을 복원하더라도 입력·코드·정책 검사를 생략하거나 잠정 항목을 자동 확정하는 근거로 쓰지 않는다.
