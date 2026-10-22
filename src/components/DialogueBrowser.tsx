@@ -35,6 +35,7 @@ import VideoVerificationNote from './VideoVerificationNote';
 import SourceDetails from './SourceDetails';
 import { searchableGameText } from '../lib/game-text';
 import { isWikiReading, readingRows, positionKey, type WikiReading } from '../lib/wiki-reading';
+import { apiGet, dataApi } from '../lib/data-api';
 
 export default function DialogueBrowser({
   file = 'content/search-index.json',
@@ -60,6 +61,15 @@ export default function DialogueBrowser({
   const [storedLanguages, setLanguages] = useComparisonLanguages();
   const languages = controlledLanguages ?? storedLanguages;
   const [canonicalRows, setRows] = useState<DialogueRow[]>([]);
+  const [remoteTotal, setRemoteTotal] = useState(0);
+  const [remoteSelection, setRemoteSelection] = useState<DialogueRow>();
+  const [remoteContext, setRemoteContext] = useState<{
+    rows: DialogueRow[];
+    choices: DialogueRow[];
+    alternate: boolean;
+  }>({ rows: [], choices: [], alternate: false });
+  const [contextError, setContextError] = useState('');
+  const [contextRetry, setContextRetry] = useState(0);
   const [reading, setReading] = useState<WikiReading>();
   const rows = useMemo(() => readingRows(canonicalRows, reading), [canonicalRows, reading]);
   const [loading, setLoading] = useState(true);
@@ -93,6 +103,7 @@ export default function DialogueBrowser({
     setQuery(initialQuery);
   }, [initialQuery]);
   useEffect(() => {
+    if (dataApi) return;
     const controller = new AbortController();
     setLoading(true);
     setError('');
@@ -127,6 +138,46 @@ export default function DialogueBrowser({
       });
     return () => controller.abort();
   }, [file, retry]);
+  useEffect(() => {
+    if (!dataApi) return;
+    const controller = new AbortController();
+    setLoading(true);
+    setError('');
+    setSelected(undefined);
+    setRemoteSelection(undefined);
+    apiGet<{ rows: DialogueRow[]; total: number; page: number }>(
+      global ? 'v1/search' : 'v1/page',
+      {
+        file: global ? '' : file,
+        q: query,
+        scope,
+        page: String(page),
+        dialogue: restorePage.current ? (targetRowId ?? '') : '',
+        occurrence: restorePage.current ? (targetOccurrenceId ?? '') : '',
+      },
+      controller.signal,
+    )
+      .then((data) => {
+        if (!isDialogueRows(data.rows)) throw new Error('본문의 자료 형식을 확인해 주세요.');
+        if (controller.signal.aborted) return;
+        setRows(data.rows);
+        setReading(undefined);
+        setMatches(data.rows.map((_, index) => index));
+        setRemoteTotal(data.total);
+        setPage(data.page);
+        if (!query && scope === 'all') setSavedPage(data.page);
+        restorePage.current = false;
+        setLoading(false);
+        setSearching(false);
+      })
+      .catch((err) => {
+        if (!controller.signal.aborted) {
+          setError(err instanceof Error ? err.message : '본문을 불러오지 못했습니다.');
+          setLoading(false);
+        }
+      });
+    return () => controller.abort();
+  }, [file, global, query, scope, page, retry, targetRowId, targetOccurrenceId]);
   const searchIndex = useMemo(
     () =>
       rows.map((row) =>
@@ -135,6 +186,7 @@ export default function DialogueBrowser({
     [rows],
   );
   useEffect(() => {
+    if (dataApi) return;
     const token = ++version.current;
     if (loading) return;
     const terms = query.toLocaleLowerCase().trim().split(/\s+/).filter(Boolean);
@@ -197,6 +249,7 @@ export default function DialogueBrowser({
 
   const submit = (event: FormEvent) => {
     event.preventDefault();
+    if (dataApi) setPage(1);
     setQuery(draft.trim());
   };
   const changePage = (next: number) => {
@@ -204,15 +257,19 @@ export default function DialogueBrowser({
     if (!query && scope === 'all') setSavedPage(next);
     tableTop.current?.scrollIntoView({ block: 'start' });
   };
-  const totalPages = Math.max(1, Math.ceil(matches.length / pageSize));
+  const totalPages = Math.max(1, Math.ceil((dataApi ? remoteTotal : matches.length) / pageSize));
   useEffect(() => setPageInput(String(page)), [page, totalPages]);
   const jumpToPage = (event: FormEvent) => {
     event.preventDefault();
     const next = Number(pageInput);
     if (Number.isInteger(next) && next >= 1 && next <= totalPages) changePage(next);
   };
-  const visible = matches.slice((page - 1) * pageSize, page * pageSize);
-  const selectedRow = selected === undefined ? undefined : rows[selected];
+  const visible = dataApi ? matches : matches.slice((page - 1) * pageSize, page * pageSize);
+  const selectedRow = dataApi
+    ? remoteSelection
+    : selected === undefined
+      ? undefined
+      : rows[selected];
   const linkedChoice =
     selectedRow?.type === 'choice' &&
     (selectedRow.wikiPosition && contextMode !== 'existing'
@@ -223,18 +280,44 @@ export default function DialogueBrowser({
     !!selectedRow?.wikiPosition || ['matched', 'cached'].includes(selectedRow?.bwikiStatus ?? '');
   const context = useMemo(
     () =>
-      selected === undefined
-        ? []
-        : contextMode === 'existing'
-          ? (rows[selected].type === 'choice' ? choiceDialogue : nearbyDialogue)(
-              canonicalRows,
-              canonicalRows.findIndex((row) => row.id === rows[selected].id),
-            )
-          : linkedChoice
-            ? choiceDialogue(rows, selected)
-            : nearbyDialogue(rows, selected),
-    [rows, canonicalRows, selected, linkedChoice, contextMode],
+      dataApi
+        ? remoteContext.rows
+        : selected === undefined
+          ? []
+          : contextMode === 'existing'
+            ? (rows[selected].type === 'choice' ? choiceDialogue : nearbyDialogue)(
+                canonicalRows,
+                canonicalRows.findIndex((row) => row.id === rows[selected].id),
+              )
+            : linkedChoice
+              ? choiceDialogue(rows, selected)
+              : nearbyDialogue(rows, selected),
+    [rows, canonicalRows, selected, linkedChoice, contextMode, remoteContext],
   );
+  useEffect(() => {
+    if (!dataApi || !selectedRow) return;
+    const controller = new AbortController();
+    setRemoteContext({ rows: [], choices: [], alternate: false });
+    setContextError('');
+    apiGet<typeof remoteContext>(
+      'v1/context',
+      {
+        file: `content/${selectedRow.entryId}--${selectedRow.chapterId}.json`,
+        dialogue: selectedRow.id,
+        occurrence: selectedRow.wikiPosition?.id ?? '',
+        mode: contextMode,
+      },
+      controller.signal,
+    )
+      .then((value) => {
+        if (!controller.signal.aborted) setRemoteContext(value);
+      })
+      .catch((err) => {
+        if (!controller.signal.aborted)
+          setContextError(err instanceof Error ? err.message : '문맥을 불러오지 못했습니다.');
+      });
+    return () => controller.abort();
+  }, [selectedRow, contextMode, contextRetry]);
   const byId = useMemo(() => new Map(rows.map((row) => [row.id, row])), [rows]);
   const byPosition = useMemo(
     () => new Map(rows.filter((row) => row.wikiPosition).map((row) => [row.wikiPosition!.id, row])),
@@ -289,10 +372,12 @@ export default function DialogueBrowser({
   const closeDialog = () => {
     dialog.current?.close();
     setSelected(undefined);
+    setRemoteSelection(undefined);
   };
   const openContext = (index: number) => {
-    setContextMode(rows[index].wikiLegacy ? 'existing' : 'position');
+    setContextMode((dataApi && global) || rows[index].wikiLegacy ? 'existing' : 'position');
     setSelected(index);
+    if (dataApi) setRemoteSelection(rows[index]);
   };
 
   return (
@@ -325,7 +410,10 @@ export default function DialogueBrowser({
                 key={id}
                 className={scope === id ? 'active' : ''}
                 aria-pressed={scope === id}
-                onClick={() => setScope(id)}
+                onClick={() => {
+                  if (dataApi) setPage(1);
+                  setScope(id);
+                }}
               >
                 {label}
               </button>
@@ -352,7 +440,7 @@ export default function DialogueBrowser({
             <span>
               {searching
                 ? '검색 중…'
-                : `${matches.length.toLocaleString('ko-KR')}줄${query ? ` · “${query}”` : ''}`}
+                : `${(dataApi ? remoteTotal : matches.length).toLocaleString('ko-KR')}줄${query ? ` · “${query}”` : ''}`}
             </span>
             {query && (
               <button
@@ -360,6 +448,7 @@ export default function DialogueBrowser({
                 onClick={() => {
                   setDraft('');
                   setQuery('');
+                  if (dataApi) setPage(1);
                 }}
               >
                 검색 지우기 <X size={12} />
@@ -516,7 +605,10 @@ export default function DialogueBrowser({
       <dialog
         className="context-dialog"
         ref={dialog}
-        onClose={() => setSelected(undefined)}
+        onClose={() => {
+          setSelected(undefined);
+          setRemoteSelection(undefined);
+        }}
         onClick={(event) => {
           if (event.target === event.currentTarget) closeDialog();
         }}
@@ -547,6 +639,17 @@ export default function DialogueBrowser({
           </button>
         </header>
         <div className="context-dialog-body">
+          {dataApi && !context.length && !contextError && (
+            <p role="status">문맥을 불러오는 중입니다…</p>
+          )}
+          {contextError && (
+            <div role="alert">
+              <p>{contextError}</p>
+              <button className="button secondary" onClick={() => setContextRetry((v) => v + 1)}>
+                다시 시도
+              </button>
+            </div>
+          )}
           {context.map((row) => (
             <div
               key={positionKey(row)}
@@ -588,12 +691,14 @@ export default function DialogueBrowser({
           <nav className="context-navigation" aria-label="선택한 대사로 이동">
             {selectedRow?.wikiPosition &&
               selectedRow.type === 'choice' &&
-              selectedRow.bwikiNextIds?.some(
-                (id) =>
-                  !selectedRow.wikiPosition!.nextIds.some(
-                    (target) => byPosition.get(target)?.id === id,
-                  ),
-              ) && (
+              (dataApi
+                ? remoteContext.alternate
+                : selectedRow.bwikiNextIds?.some(
+                    (id) =>
+                      !selectedRow.wikiPosition!.nextIds.some(
+                        (target) => byPosition.get(target)?.id === id,
+                      ),
+                  )) && (
                 <button
                   className="button secondary"
                   onClick={() =>
@@ -604,27 +709,35 @@ export default function DialogueBrowser({
                 </button>
               )}
             {selectedRow &&
-              (
-                selectedRow.wikiPosition?.replyToIds ??
-                selectedRow.bwikiReplyToIds ??
-                selectedRow.replyToIds
-              )
-                ?.map((id) => (selectedRow.wikiPosition ? byPosition.get(id) : byId.get(id)))
-                .filter(Boolean)
-                .map((choice) => (
-                  <button
-                    className="button secondary"
-                    key={positionKey(choice!)}
-                    onClick={() => {
-                      if (selectedRow.wikiLegacy) {
-                        setContextMode('existing');
-                        setSelected(rows.indexOf(choice!));
-                      } else openContext(rows.indexOf(choice!));
-                    }}
-                  >
-                    “<GameText text={choice!.text} />” 선택지
-                  </button>
-                ))}
+              (dataApi
+                ? remoteContext.choices
+                : (
+                    selectedRow.wikiPosition?.replyToIds ??
+                    selectedRow.bwikiReplyToIds ??
+                    selectedRow.replyToIds ??
+                    []
+                  )
+                    .map((id) => (selectedRow.wikiPosition ? byPosition.get(id) : byId.get(id)))
+                    .filter(Boolean)
+              ).map((choice) => (
+                <button
+                  className="button secondary"
+                  key={positionKey(choice!)}
+                  onClick={() => {
+                    if (dataApi) {
+                      setRemoteSelection(choice!);
+                      setSelected((v) => (v ?? 0) + 1);
+                      return;
+                    }
+                    if (selectedRow.wikiLegacy) {
+                      setContextMode('existing');
+                      setSelected(rows.indexOf(choice!));
+                    } else openContext(rows.indexOf(choice!));
+                  }}
+                >
+                  “<GameText text={choice!.text} />” 선택지
+                </button>
+              ))}
             {selectedRow && (
               <a
                 className="button secondary"

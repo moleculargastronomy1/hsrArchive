@@ -20,6 +20,7 @@ if (process.argv[2] === '--pack') {
   for (const file of await stateFiles(process.cwd()))
     repositoryBytes.set(file, await fs.readFile(file));
   if (!(await restoreState(process.cwd()))) {
+    if (process.env.HSR_PRIVATE_STATE_URL) throw new Error('Private recovery state is required; no public migration fallback');
     // One-time migration from deployments predating durable snapshots. Fetch
     // actual published derived payloads; raw game/wiki input is never published.
     const get = async (file) => {

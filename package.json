@@ -6,6 +6,9 @@
   "scripts": {
     "dev": "vite --host 127.0.0.1",
     "build": "node scripts/update-site-status.mjs && tsc -b && vite build",
+    "build:protected": "tsc -b && node --experimental-strip-types scripts/build-protected.ts",
+    "check:exposure": "node scripts/check-protected-exposure.mjs",
+    "preview:protected": "node --experimental-strip-types scripts/preview-protected.ts",
     "preview": "vite preview --host 127.0.0.1",
     "test": "node --experimental-strip-types --test tests/*.test.ts",
     "update:videos": "node scripts/update-official-videos.mjs",
@@ -23,8 +26,10 @@
     "@types/react": "^19.0.0",
     "@types/react-dom": "^19.0.0",
     "@vitejs/plugin-react": "^4.3.4",
+    "miniflare": "^4.20260730.0",
     "prettier": "3.5.0",
     "typescript": "~5.7.2",
-    "vite": "^6.0.5"
+    "vite": "^6.0.5",
+    "wrangler": "^4.151.3"
   }
 }

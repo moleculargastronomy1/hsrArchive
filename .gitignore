@@ -5,6 +5,10 @@
 !.env.sample
 !.env.template
 *.local
+worker/wrangler.jsonc
+.dev.vars
+.dev.vars.*
+.wrangler/
 
 # Passwords, API keys, credentials, and private keys
 .secrets/

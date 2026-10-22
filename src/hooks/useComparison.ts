@@ -8,6 +8,8 @@ import {
   type RowIdentity,
 } from '../lib/localization';
 import { useStored } from '../lib/storage';
+import { dataApi } from '../lib/data-api';
+import { requestLocalizations } from '../lib/localization-api';
 
 export function useComparisonLanguages() {
   return useStored<ComparisonLanguage[]>('comparison-languages', [], isComparisonLanguages);
@@ -15,7 +17,10 @@ export function useComparisonLanguages() {
 
 const cache = new Map<string, Promise<LocalizationState>>();
 
-export function useLocalizations(rows: RowIdentity[], languages: ComparisonLanguage[]) {
+export function useLocalizations(
+  rows: (RowIdentity & { id?: string })[],
+  languages: ComparisonLanguage[],
+) {
   const [states, setStates] = useState<Record<string, LocalizationState>>({});
   const requests = JSON.stringify([
     ...new Map(
@@ -30,32 +35,61 @@ export function useLocalizations(rows: RowIdentity[], languages: ComparisonLangu
       ),
     ).entries(),
   ]);
+  const requestedIds = JSON.stringify(
+    Object.fromEntries(
+      [...new Set(rows.map((r) => `${r.entryId}/${r.chapterId}`))].map((key) => [
+        key,
+        [
+          ...new Set(
+            rows
+              .filter((r) => `${r.entryId}/${r.chapterId}` === key)
+              .map((r) => r.id)
+              .filter(Boolean),
+          ),
+        ].sort(),
+      ]),
+    ),
+  );
   const [retry, setRetry] = useState(0);
   useEffect(() => {
     let active = true;
     const entries: [string, RowIdentity & { language: ComparisonLanguage }][] =
       JSON.parse(requests);
     setStates((previous) =>
-      Object.fromEntries(
-        entries.filter(([key]) => previous[key]).map(([key]) => [key, previous[key]]),
-      ),
+      dataApi
+        ? {}
+        : Object.fromEntries(
+            entries.filter(([key]) => previous[key]).map(([key]) => [key, previous[key]]),
+          ),
     );
     for (const [key, identity] of entries) {
-      let pending = cache.get(key);
+      const ids: string[] =
+        JSON.parse(requestedIds)[`${identity.entryId}/${identity.chapterId}`] ?? [];
+      const cacheKey = dataApi ? `${key}:${ids.join(',')}` : key;
+      let pending = cache.get(cacheKey);
       if (!pending) {
-        pending = fetch(`${import.meta.env.BASE_URL}content/locales/${key}.json`)
-          .then(async (response): Promise<LocalizationState> => {
-            if (!response.ok) throw new Error('Localization fetch failed');
+        const request = dataApi
+          ? Promise.all(
+              Array.from({ length: Math.ceil(ids.length / 25) }, (_, index) =>
+                requestLocalizations(identity, ids.slice(index * 25, (index + 1) * 25)),
+              ),
+            ).then((parts) => ({ ...parts[0], rows: parts.flatMap((p) => p.rows) }))
+          : fetch(`${import.meta.env.BASE_URL}content/locales/${key}.json`).then((response) => {
+              if (!response.ok) throw new Error('Localization fetch failed');
+              return response.json();
+            });
+        pending = request
+          .then(async (value): Promise<LocalizationState> => {
             return {
               status: 'ready',
-              rows: parseLocalizations(await response.json(), identity, identity.language),
+              rows: parseLocalizations(value, identity, identity.language),
             };
           })
           .catch((): LocalizationState => {
-            if (cache.get(key) === pending) cache.delete(key);
+            if (cache.get(cacheKey) === pending) cache.delete(cacheKey);
             return { status: 'error' };
           });
-        cache.set(key, pending);
+        cache.set(cacheKey, pending);
         if (cache.size > 64) cache.delete(cache.keys().next().value!);
       }
       void pending.then((state) => {
@@ -65,7 +99,7 @@ export function useLocalizations(rows: RowIdentity[], languages: ComparisonLangu
     return () => {
       active = false;
     };
-  }, [requests, retry]);
+  }, [requests, requestedIds, retry]);
   return {
     states,
     retry: () => {

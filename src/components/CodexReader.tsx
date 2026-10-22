@@ -19,6 +19,7 @@ import type { ReadingHistory } from '../lib/storage';
 import { useComparisonLanguages, useLocalizations } from '../hooks/useComparison';
 import { localizationKey } from '../lib/localization';
 import { LanguageComparisonControls, LocalizedPassage } from './LanguageComparison';
+import { apiGet, dataApi } from '../lib/data-api';
 
 export default function CodexReader({
   entry,
@@ -53,6 +54,11 @@ export default function CodexReader({
   const [retry, setRetry] = useState(0);
   const [variantChoice, setVariantChoice] = useState<{ file: string; index: number }>();
   const file = selected.content!.file;
+  const [remotePage, setRemotePage] = useState<{ file: string; page: number }>();
+  const page = remotePage?.file === file ? remotePage.page : 1;
+  const [remoteTotal, setRemoteTotal] = useState(0);
+  const [remoteVariants, setRemoteVariants] = useState<{ id: string; variant: string }[]>([]);
+  const [remoteVariant, setRemoteVariant] = useState<{ file: string; id: string }>();
   const list = useMemo(
     () =>
       entry.chapters.filter(
@@ -66,15 +72,22 @@ export default function CodexReader({
   );
   const ready = payload?.file === file;
   const records = ready ? payload!.rows : [];
-  const hasVariants = records.length > 0 && records.every((row) => typeof row.variant === 'string');
+  const hasVariants = dataApi
+    ? remoteVariants.length > 0
+    : records.length > 0 && records.every((row) => typeof row.variant === 'string');
   const targetIndex = records.findIndex((row) => row.id === targetRowId);
-  const variantIndex =
-    variantChoice?.file === file
+  const variantIndex = dataApi
+    ? Math.max(
+        0,
+        remoteVariants.findIndex((r) => r.id === records[0]?.id),
+      )
+    : variantChoice?.file === file
       ? Math.min(variantChoice.index, records.length - 1)
       : targetIndex >= 0
         ? targetIndex
         : records.length - 1;
-  const displayedRows = hasVariants ? [records[variantIndex]] : records;
+  const displayedRows = hasVariants && !dataApi ? [records[variantIndex]] : records;
+  const variantOptions = dataApi ? remoteVariants : records;
   const [languages, setLanguages] = useComparisonLanguages();
   const translations = useLocalizations(displayedRows, languages);
   const targetRow = useRef<HTMLElement>(null);
@@ -95,20 +108,49 @@ export default function CodexReader({
   useEffect(() => {
     const controller = new AbortController();
     setError('');
-    fetch(`${import.meta.env.BASE_URL}${file}`, { signal: controller.signal })
-      .then(async (response) => {
-        if (!response.ok) throw new Error('원문을 불러오지 못했습니다.');
-        const data = await response.json();
-        if (data.schema !== 'hsr-dialogue.v1' || !isDialogueRows(data.rows))
-          throw new Error('자료 형식을 확인해 주세요.');
-        if (!controller.signal.aborted) setPayload({ file, rows: data.rows });
+    if (dataApi) setPayload(undefined);
+    const request = dataApi
+      ? apiGet<{
+          rows: DialogueRow[];
+          total: number;
+          page: number;
+          variants?: { id: string; variant: string }[];
+        }>(
+          'v1/record',
+          {
+            file,
+            page: String(page),
+            dialogue: remotePage?.file !== file ? (targetRowId ?? '') : '',
+            variant: remoteVariant?.file === file ? remoteVariant.id : '',
+          },
+          controller.signal,
+        )
+      : fetch(`${import.meta.env.BASE_URL}${file}`, { signal: controller.signal }).then(
+          async (response) => {
+            if (!response.ok) throw new Error('원문을 불러오지 못했습니다.');
+            const data = await response.json();
+            if (data.schema !== 'hsr-dialogue.v1') throw new Error('자료 형식을 확인해 주세요.');
+            return data;
+          },
+        );
+    request
+      .then((data) => {
+        if (!isDialogueRows(data.rows)) throw new Error('자료 형식을 확인해 주세요.');
+        if (!controller.signal.aborted) {
+          setPayload({ file, rows: data.rows });
+          if (dataApi) {
+            setRemoteTotal(data.total);
+            setRemoteVariants(data.variants ?? []);
+            if (data.page !== page) setRemotePage({ file, page: data.page });
+          }
+        }
       })
       .catch((err) => {
         if (!controller.signal.aborted)
           setError(err instanceof Error ? err.message : '자료를 불러오지 못했습니다.');
       });
     return () => controller.abort();
-  }, [file, retry]);
+  }, [file, retry, page, remoteVariant, targetRowId]);
   useEffect(() => {
     if (ready)
       setHistory((previous) => ({
@@ -246,7 +288,7 @@ export default function CodexReader({
             </div>
           ) : (
             <div className="codex-passages">
-              {hasVariants && records.length > 1 && (
+              {hasVariants && variantOptions.length > 1 && (
                 <div className="codex-variants">
                   <label>
                     본문 기록{' '}
@@ -254,10 +296,15 @@ export default function CodexReader({
                       aria-label="본문 기록 선택"
                       value={variantIndex}
                       onChange={(event) =>
-                        setVariantChoice({ file, index: Number(event.target.value) })
+                        dataApi
+                          ? setRemoteVariant({
+                              file,
+                              id: remoteVariants[Number(event.target.value)].id,
+                            })
+                          : setVariantChoice({ file, index: Number(event.target.value) })
                       }
                     >
-                      {records.map((row, index) => (
+                      {variantOptions.map((row, index) => (
                         <option key={row.id} value={index}>
                           {row.variant}
                         </option>
@@ -300,6 +347,27 @@ export default function CodexReader({
                   </div>
                 </section>
               ))}
+              {dataApi && !hasVariants && remoteTotal > 50 && (
+                <nav className="dialogue-pagination" aria-label="본문 페이지 이동">
+                  <button
+                    className="button secondary"
+                    disabled={page <= 1}
+                    onClick={() => setRemotePage({ file, page: page - 1 })}
+                  >
+                    이전
+                  </button>
+                  <span>
+                    {page} / {Math.ceil(remoteTotal / 50)} 페이지
+                  </span>
+                  <button
+                    className="button secondary"
+                    disabled={page >= Math.ceil(remoteTotal / 50)}
+                    onClick={() => setRemotePage({ file, page: page + 1 })}
+                  >
+                    다음
+                  </button>
+                </nav>
+              )}
             </div>
           )}
           <footer>

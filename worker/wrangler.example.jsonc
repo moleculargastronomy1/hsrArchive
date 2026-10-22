@@ -1,0 +1,22 @@
+{
+  "$schema": "../node_modules/wrangler/config-schema.json",
+  "name": "hsr-archive-data-preview",
+  "main": "index.ts",
+  "compatibility_date": "2026-10-22",
+  "workers_dev": true,
+  "preview_urls": false,
+  "vars": {
+    "DATA_RELEASE": "REPLACE_WITH_VERIFIED_CANDIDATE_SHA256",
+    "ALLOWED_ORIGINS": "https://moleculargastronomy1.github.io"
+  },
+  "r2_buckets": [{ "binding": "DATA", "bucket_name": "REPLACE_WITH_PRIVATE_BUCKET" }],
+  "d1_databases": [{ "binding": "SEARCH", "database_name": "hsr-search-preview", "database_id": "REPLACE_AFTER_APPROVAL" }],
+  "durable_objects": { "bindings": [{ "name": "GUARD", "class_name": "RequestGuard" }, { "name": "RELEASES", "class_name": "ReleaseCoordinator" }] },
+  "migrations": [{ "tag": "v1", "new_sqlite_classes": ["RequestGuard", "ReleaseCoordinator"] }],
+  "ratelimits": [{ "name": "EDGE_LIMIT", "namespace_id": "1001", "simple": { "limit": 1200, "period": 60 } }],
+  "observability": { "enabled": true, "logs": { "invocation_logs": false, "head_sampling_rate": 1 } }
+  // Secrets: SESSION_SECRET (random >=32 chars), INTERNAL_TOKEN (random).
+  // Optional: TURNSTILE_SITE_KEY variable + TURNSTILE_SECRET secret.
+  // On an update, retain PREVIOUS_RELEASE and a SEARCH_PREVIOUS D1 binding.
+  // R2 public access (r2.dev/custom domain) MUST remain disabled.
+}

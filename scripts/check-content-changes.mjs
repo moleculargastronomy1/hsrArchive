@@ -17,6 +17,7 @@ import {
   retryDecision,
 } from './verification-retry.mjs';
 import { SITE } from './verification-state.mjs';
+import { publishedFetch } from './private-state-fetch.mjs';
 import { videoRetryDecision, mergeVideoChecks } from './video-order.mjs';
 
 const read = async (file) => JSON.parse(await fs.readFile(file, 'utf8'));
@@ -57,7 +58,7 @@ if (mode === '--record') {
   const videoAlgorithm = await videoAlgorithmHash();
   let published;
   try {
-    const response = await fetch(SITE + 'verification-progress.json', {
+    const response = await publishedFetch(SITE + 'verification-progress.json', {
       cache: 'no-store',
       signal: AbortSignal.timeout(30000),
     });
@@ -77,7 +78,7 @@ if (mode === '--record') {
   const retry = retryDecision({ ...state, pendingDigest: undefined }, algorithm, published);
   let videoRetry = { needed: false, reason: 'video-state-unavailable' };
   try {
-    const response = await fetch(SITE + 'video-order-provenance.json', {
+    const response = await publishedFetch(SITE + 'video-order-provenance.json', {
       cache: 'no-store',
       signal: AbortSignal.timeout(30000),
     });

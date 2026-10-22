@@ -2,6 +2,7 @@ import fs from 'node:fs/promises';
 import path from 'node:path';
 import crypto from 'node:crypto';
 import { gzipSync, gunzipSync } from 'node:zlib';
+import { publishedFetch } from './private-state-fetch.mjs';
 
 export const SITE = 'https://moleculargastronomy1.github.io/hsrArchive/';
 export const hash = (bytes) => crypto.createHash('sha256').update(bytes).digest('hex');
@@ -102,7 +103,7 @@ export function unpackState(bytes, descriptor) {
   });
 }
 
-export async function restoreState(root, fetcher = fetch) {
+export async function restoreState(root, fetcher = publishedFetch) {
   const response = await fetcher(SITE + 'verification-state.json', {
     cache: 'no-store',
     signal: AbortSignal.timeout(30000),

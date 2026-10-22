@@ -1,6 +1,7 @@
 import { sha256, fetchPlaylist } from './video-order.mjs';
 import { REPOSITORY } from './upstream-content.mjs';
 import { CHANNEL_ID, parseVideos } from './youtube-feed.mjs';
+import { publishedFetch } from './private-state-fetch.mjs';
 
 export const WATCH_URL = 'https://moleculargastronomy1.github.io/hsrArchive/content-watch.json';
 const schema = 'hsr-content-watch.v1';
@@ -308,7 +309,7 @@ export async function checkSources(
   return { changed: Object.values(checks).includes('changed'), checks };
 }
 
-export async function readPublishedSnapshot(fetcher = fetch) {
+export async function readPublishedSnapshot(fetcher = publishedFetch) {
   const response = await fetcher(WATCH_URL, {
     signal: AbortSignal.timeout(30000),
     cache: 'no-store',

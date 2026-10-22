@@ -1,0 +1,85 @@
+{
+  "checkedAt": "2026-10-22T01:39:35.184Z",
+  "mode": "read-only-head-and-small-metadata",
+  "base": "https://moleculargastronomy1.github.io/hsrArchive/",
+  "checks": [
+    {
+      "path": "/",
+      "status": 200,
+      "type": "text/html; charset=utf-8",
+      "bytes": "787",
+      "cache": "max-age=600"
+    },
+    {
+      "path": "content/search-index.json",
+      "status": 200,
+      "type": "application/json; charset=utf-8",
+      "bytes": "6247272",
+      "cache": "max-age=600"
+    },
+    {
+      "path": "content/station-departure--arrival.json",
+      "status": 200,
+      "type": "application/json; charset=utf-8",
+      "bytes": "178799",
+      "cache": "max-age=600"
+    },
+    {
+      "path": "content/locales/en/station-departure--arrival.json",
+      "status": 200,
+      "type": "application/json; charset=utf-8",
+      "bytes": "51391",
+      "cache": "max-age=600"
+    },
+    {
+      "path": "bwiki-provenance.json",
+      "status": 200,
+      "type": "application/json; charset=utf-8",
+      "bytes": "5652052",
+      "cache": "max-age=600"
+    },
+    {
+      "path": "verification-state.json",
+      "status": 200,
+      "type": "application/json; charset=utf-8",
+      "bytes": "185",
+      "cache": "max-age=600"
+    },
+    {
+      "path": "content/locales/manifest.json",
+      "status": 200,
+      "type": "application/json; charset=utf-8",
+      "bytes": "986",
+      "cache": "max-age=600"
+    },
+    {
+      "path": "sw.js",
+      "status": 404,
+      "type": "text/html; charset=utf-8",
+      "bytes": "5254",
+      "cache": null
+    },
+    {
+      "path": "service-worker.js",
+      "status": 404,
+      "type": "text/html; charset=utf-8",
+      "bytes": "5254",
+      "cache": null
+    },
+    {
+      "path": "verification-state-73e6f9b542074b8c53dd48515bfa5071f36af187ca8ae1165bec213be02a0d07.json.gz",
+      "status": 200,
+      "bytes": "54610655"
+    },
+    {
+      "path": "./assets/index-DjDtKT2v.js",
+      "bytes": 1528991,
+      "serviceWorkerRegistration": false,
+      "sourceMapReference": false
+    },
+    {
+      "path": "./assets/index-DjDtKT2v.js.map",
+      "status": 404
+    }
+  ]
+}
