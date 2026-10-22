@@ -259,7 +259,7 @@ def validate_admission(addition, row, node, chapter, reading):
             source.get('sourceUrl') == proof.get('source') and
             bool(re.fullmatch(r'[a-f0-9]{64}', proof.get('sha256', ''))), 'document evidence')
     require(row is not None and row.get('missionEvidence') == 'bwiki' and
-            row.get('missionId') == row.get('bwikiMissionId') == mission, 'display attribution')
+            row.get('missionId') == mission, 'display attribution')
     require(row.get('talkId') == addition['talkId'] == content['talkId'] and
             row.get('textHash') == content['textHash'] and row['text'] == content['text'] and
             row['speaker'] == content['speaker'] and
@@ -275,7 +275,10 @@ def validate_admission(addition, row, node, chapter, reading):
             node['revision'] == proof['revision'] and node['location'] == proof['location'] and
             node['branch'] == proof['branch'] and node['context'] == proof['conditions'], 'occurrence scope')
     position = next((p for p in reading['occurrences'] if p['id'] == node['id']), None)
-    require(position is not None and position['rowId'] == row['id'] and position['page'] == node['page'] and
+    # Legacy row-level BWIKI hints describe one canonical-row match. The
+    # occurrence, rather than that hint, owns the displayed mission placement.
+    require(position is not None and position['missionId'] == mission and
+            position['rowId'] == row['id'] and position['page'] == node['page'] and
             position['revision'] == node['revision'] and position['location'] == node['location'], 'display position')
 
 

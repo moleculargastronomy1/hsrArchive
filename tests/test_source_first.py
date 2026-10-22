@@ -52,8 +52,18 @@ class SourceFirstTests(unittest.TestCase):
             {'pageTitle': '任务', 'pageId': 3, 'revision': 9, 'sha256': 'a'*64, 'sourceUrl': scope['source']}]}
         public_node = {**node, 'officialIds': [10]}
         reading = {'missions': [{'id': node['missionId'], 'officialMissionIds': [1]}],
-                   'occurrences': [{'id': node['id'], 'rowId': row['id'], 'page': '任务', 'revision': 9, 'location': [0, 0]}]}
+                   'occurrences': [{'id': node['id'], 'rowId': row['id'], 'missionId': node['missionId'], 'page': '任务', 'revision': 9, 'location': [0, 0]}]}
         s.placement.validate_admission(additions[0], row, public_node, chapter, reading)
+        canonical_mission = row['missionId']
+        s.b.apply_chunks(changed, [{'page': '任务', 'revision': 9, 'segment': 0, 'status': 'cached',
+            'missionId': 'quest-1', 'order': [row['id']], 'edges': {row['id']: []}}])
+        self.assertEqual(row['bwikiMissionId'], 'quest-1')
+        self.assertEqual(row['missionId'], canonical_mission)
+        s.placement.validate_admission(additions[0], row, public_node, chapter, reading)
+        wrong_position = copy.deepcopy(reading)
+        wrong_position['occurrences'][0]['missionId'] = 'quest-1'
+        with self.assertRaisesRegex(ValueError, 'display position'):
+            s.placement.validate_admission(additions[0], row, public_node, chapter, wrong_position)
         for key, value in [('speaker', '다른 화자'), ('text', '잘못된 원문'), ('textHash', '100'), ('missionId', 'quest-2')]:
             bad = {**row, key: value}
             with self.assertRaisesRegex(ValueError, 'BWIKI original admission'):
@@ -129,7 +139,7 @@ class SourceFirstTests(unittest.TestCase):
         chapter = {'chapterId': 7, 'missions': [{'id': 1}], 'sources': [
             {'pageTitle': '任务', 'pageId': 3, 'revision': 9, 'sha256': 'a'*64, 'sourceUrl': scope['source']}]}
         reading = {'missions': [{'id': node['missionId'], 'officialMissionIds': [1]}],
-                   'occurrences': [{'id': node['id'], 'rowId': row['id'], 'page': '任务', 'revision': 9, 'location': [0, 0]}]}
+                   'occurrences': [{'id': node['id'], 'rowId': row['id'], 'missionId': node['missionId'], 'page': '任务', 'revision': 9, 'location': [0, 0]}]}
         public_node = {**node, 'officialIds': [10]}
         s.placement.validate_admission(additions[0], row, public_node, chapter, reading)
         with self.assertRaisesRegex(ValueError, 'role match'):
