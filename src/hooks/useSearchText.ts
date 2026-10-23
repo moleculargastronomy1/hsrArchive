@@ -1,7 +1,13 @@
 import { useEffect, useRef, useState } from 'react';
-import type { SearchText, SearchTextSource } from '../lib/search-text';
+import type { SearchText, SearchTextSource, OtherTextFilter } from '../lib/search-text';
 
-export function useSearchText(enabled: boolean, query: string, offset: number, limit: number) {
+export function useSearchText(
+  enabled: boolean,
+  query: string,
+  offset: number,
+  limit: number,
+  filter?: OtherTextFilter,
+) {
   const worker = useRef<Worker | undefined>(undefined);
   const sequence = useRef(0);
   const [retry, setRetry] = useState(0);
@@ -13,6 +19,7 @@ export function useSearchText(enabled: boolean, query: string, offset: number, l
     rows: SearchText[];
     sources?: SearchTextSource[];
     error?: string;
+    filter?: OtherTextFilter;
   }>();
   useEffect(
     () => () => {
@@ -39,6 +46,7 @@ export function useSearchText(enabled: boolean, query: string, offset: number, l
             rows: data.rows ?? [],
             sources: data.sources,
             error: data.error,
+            filter,
           });
       };
       current.onerror = () => {
@@ -50,6 +58,7 @@ export function useSearchText(enabled: boolean, query: string, offset: number, l
             count: 0,
             rows: [],
             error: '기타 텍스트 검색을 시작하지 못했습니다.',
+            filter,
           });
         current.terminate();
         worker.current = undefined;
@@ -60,6 +69,7 @@ export function useSearchText(enabled: boolean, query: string, offset: number, l
         query,
         offset,
         limit,
+        filter,
       });
     } catch {
       setResult({
@@ -69,13 +79,14 @@ export function useSearchText(enabled: boolean, query: string, offset: number, l
         count: 0,
         rows: [],
         error: '기타 텍스트 검색을 시작하지 못했습니다.',
+        filter,
       });
     }
     return () => {
       sequence.current++;
     };
-  }, [enabled, query, offset, limit, retry]);
-  const sameQuery = enabled && result?.query === query;
+  }, [enabled, query, offset, limit, filter, retry]);
+  const sameQuery = enabled && result?.query === query && result.filter === filter;
   const ready = sameQuery && result.offset === offset && result.limit === limit;
   return {
     count: sameQuery ? result.count : 0,

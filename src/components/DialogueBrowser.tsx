@@ -35,7 +35,7 @@ import VideoVerificationNote from './VideoVerificationNote';
 import SourceDetails from './SourceDetails';
 import SearchTextResults from './SearchTextResults';
 import { useSearchText } from '../hooks/useSearchText';
-import { searchTextWindow } from '../lib/search-text';
+import { searchTextWindow, otherTextCategories, type OtherTextFilter } from '../lib/search-text';
 import { searchableGameText } from '../lib/game-text';
 import {
   isWikiReading,
@@ -69,6 +69,9 @@ async function loadDialogueDocument(file: string, signal: AbortSignal): Promise<
 export default function DialogueBrowser({
   file = 'content/search-index.json',
   initialQuery = '',
+  initialScope = 'all',
+  initialOtherKind = 'all',
+  onScopeChange,
   global = false,
   onReady,
   targetRowId,
@@ -79,6 +82,9 @@ export default function DialogueBrowser({
 }: {
   file?: string;
   initialQuery?: string;
+  initialScope?: string;
+  initialOtherKind?: OtherTextFilter;
+  onScopeChange?: (scope: string, kind: OtherTextFilter, query: string) => void;
   global?: boolean;
   onReady?: () => void;
   targetRowId?: string;
@@ -101,7 +107,9 @@ export default function DialogueBrowser({
   const [retry, setRetry] = useState(0);
   const [query, setQuery] = useState(initialQuery);
   const [draft, setDraft] = useState(initialQuery);
-  const [scope, setScope] = useState('all');
+  const [scope, setScope] = useState(initialScope);
+  const [otherKind, setOtherKind] = useState<OtherTextFilter>(initialOtherKind);
+  const onlyOther = global && scope === 'other';
   const [matches, setMatches] = useState<number[]>([]);
   const [searching, setSearching] = useState(false);
   const [savedPage, setSavedPage] = useStored<number>(
@@ -134,6 +142,11 @@ export default function DialogueBrowser({
     setQuery(initialQuery);
   }, [initialQuery]);
   useEffect(() => {
+    setScope(initialScope);
+    setOtherKind(initialOtherKind);
+    setPage(1);
+  }, [initialScope, initialOtherKind]);
+  useEffect(() => {
     const controller = new AbortController();
     setLoading(true);
     setError('');
@@ -142,6 +155,10 @@ export default function DialogueBrowser({
     setExecution(undefined);
     setMatches([]);
     setSelected(undefined);
+    if (onlyOther) {
+      setLoading(false);
+      return () => controller.abort();
+    }
     loadDialogueDocument(file, controller.signal)
       .then((data) => {
         if (!controller.signal.aborted) {
@@ -158,7 +175,7 @@ export default function DialogueBrowser({
         }
       });
     return () => controller.abort();
-  }, [file, retry]);
+  }, [file, retry, onlyOther]);
   const searchIndex = useMemo(
     () =>
       rows.map((row) =>
@@ -238,10 +255,11 @@ export default function DialogueBrowser({
   };
   const extraWindow = searchTextWindow(matches.length, page, pageSize);
   const extra = useSearchText(
-    global && scope === 'all',
+    global && (scope === 'all' || onlyOther),
     query,
     extraWindow.offset,
     extraWindow.limit,
+    onlyOther ? otherKind : undefined,
   );
   const totalMatches = matches.length + extra.count;
   const busy = searching || extra.loading;
@@ -436,18 +454,43 @@ export default function DialogueBrowser({
       </form>
       {global && (
         <div className="dialogue-scopes" aria-label="대사 검색 범위">
-          {[['all', '전체'], ...categories.map((category) => [category.id, category.label])].map(
-            ([id, label]) => (
-              <button
-                key={id}
-                className={scope === id ? 'active' : ''}
-                aria-pressed={scope === id}
-                onClick={() => setScope(id)}
-              >
-                {label}
-              </button>
-            ),
-          )}
+          {[
+            ['all', '전체'],
+            ...categories.map((category) => [category.id, category.label]),
+            ['other', '기타'],
+          ].map(([id, label]) => (
+            <button
+              key={id}
+              className={scope === id ? 'active' : ''}
+              aria-pressed={scope === id}
+              onClick={() => {
+                setScope(id);
+                setOtherKind('all');
+                setPage(1);
+                onScopeChange?.(id, 'all', query);
+              }}
+            >
+              {label}
+            </button>
+          ))}
+        </div>
+      )}
+      {onlyOther && (
+        <div className="dialogue-scopes" aria-label="기타 소분류">
+          {[{ id: 'all' as const, label: '전체' }, ...otherTextCategories].map((category) => (
+            <button
+              key={category.id}
+              className={otherKind === category.id ? 'active' : ''}
+              aria-pressed={otherKind === category.id}
+              onClick={() => {
+                setOtherKind(category.id);
+                setPage(1);
+                onScopeChange?.('other', category.id, query);
+              }}
+            >
+              {category.label}
+            </button>
+          ))}
         </div>
       )}
       {loading ? (
@@ -494,7 +537,7 @@ export default function DialogueBrowser({
           {!busy && !totalMatches ? (
             <div className="dialogue-status">
               <p>
-                {rows.length
+                {rows.length || onlyOther
                   ? '일치하는 원문이 없습니다.'
                   : '이 항목에서 확인된 한국어 대사가 없습니다.'}
               </p>

@@ -8,6 +8,40 @@ export interface SearchTextSource {
   kind: string;
   label: string;
 }
+
+export const otherTextCategories = [
+  { id: 'loading', label: '로딩 화면' },
+  { id: 'npc', label: 'NPC 대사' },
+  { id: 'interaction', label: '상호작용' },
+  { id: 'message', label: '메시지' },
+  { id: 'mail', label: '우편' },
+] as const;
+export type OtherTextCategory = (typeof otherTextCategories)[number]['id'];
+export type OtherTextFilter = 'all' | OtherTextCategory;
+
+export function otherTextFilter(value: string | null): OtherTextFilter {
+  return otherTextCategories.find((category) => category.id === value)?.id ?? 'all';
+}
+
+export function searchScopePath(query = '', scope = 'all', kind: OtherTextFilter = 'all') {
+  const params = new URLSearchParams();
+  if (query) params.set('q', query);
+  if (['trailblaze', 'simulation', 'codex', 'books', 'other'].includes(scope))
+    params.set('scope', scope);
+  if (scope === 'other' && kind !== 'all') params.set('kind', kind);
+  return '/search' + (params.size ? '?' + params.toString() : '');
+}
+
+export function matchesOtherText(
+  row: SearchText,
+  sources: SearchTextSource[],
+  filter: OtherTextFilter,
+) {
+  const labels = otherTextCategories
+    .filter((category) => filter === 'all' || category.id === filter)
+    .map((category) => category.label as string);
+  return row[2].some((id) => sources[id] && labels.includes(sources[id].kind));
+}
 export interface SearchTextManifest {
   schema: 'hsr-search-text.v1';
   commit: string;

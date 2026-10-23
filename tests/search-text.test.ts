@@ -9,6 +9,11 @@ import {
   parseSearchPart,
   searchTextWindow,
   textMatches,
+  otherTextCategories,
+  otherTextFilter,
+  searchScopePath,
+  matchesOtherText,
+  type SearchTextSource,
 } from '../src/lib/search-text.ts';
 import { searchRetryDue, refreshSearchText } from '../scripts/search-text.mjs';
 import { gitBlob } from '../scripts/upstream-content.mjs';
@@ -72,6 +77,53 @@ test('search backoff is independent and waits for both review and request deadli
   assert.doesNotMatch(collector, /saveRetry|readRetry/);
 });
 
+test('the Other menu contains exactly five confirmed source types and excludes unrelated or unknown rows', () => {
+  assert.deepEqual(
+    otherTextCategories.map((category) => category.label),
+    ['로딩 화면', 'NPC 대사', '상호작용', '메시지', '우편'],
+  );
+  const sources = [
+    '로딩 화면',
+    'NPC 대사',
+    '상호작용',
+    '메시지',
+    '우편',
+    '광추',
+    '유물',
+    '서적',
+    '관련 문서',
+  ].map(
+    (kind, index): SearchTextSource => ({
+      kind,
+      label: kind,
+      pageTitle: kind,
+      pageId: index + 1,
+      revision: 1,
+    }),
+  );
+  for (let index = 0; index < sources.length; index++)
+    assert.equal(matchesOtherText(['1', '원문', [index]], sources, 'all'), index < 5);
+  assert.equal(matchesOtherText(['1', '원문', []], sources, 'all'), false);
+  assert.equal(matchesOtherText(['1', '원문', [0]], sources, 'loading'), true);
+  assert.equal(matchesOtherText(['1', '원문', [0]], sources, 'npc'), false);
+  assert.equal(matchesOtherText(['1', '원문', [1, 5]], sources, 'npc'), true);
+  assert.equal(otherTextFilter('loading'), 'loading');
+  assert.equal(otherTextFilter('books'), 'all');
+  assert.equal(otherTextFilter(null), 'all');
+});
+
+test('Other navigation links preserve the query and subcategory without adding an archive category', () => {
+  assert.equal(searchScopePath(), '/search');
+  assert.equal(searchScopePath('', 'other'), '/search?scope=other');
+  const route = searchScopePath('허수의 나무 & 대사', 'other', 'loading');
+  const params = new URLSearchParams(route.split('?')[1]);
+  assert.equal(params.get('scope'), 'other');
+  assert.equal(params.get('kind'), 'loading');
+  assert.equal(params.get('q'), '허수의 나무 & 대사');
+  assert.equal(searchScopePath('', 'books', 'npc'), '/search?scope=books');
+  assert.equal(searchScopePath('', 'unknown'), '/search');
+});
+
 test('search conversion preserves coverage and exact wiki section boundaries', () => {
   execFileSync(
     process.env.HSR_PYTHON || (process.platform === 'win32' ? 'python' : 'python3'),
@@ -87,10 +139,16 @@ test('failed BWIKI collection still updates TextMap and leaves canonical content
       await fsp.mkdir(path.join(fixture, folder), { recursive: true });
     for (const name of ['import-search-text.py', 'bwiki-dialogue.py', 'import-localizations.py'])
       await fsp.copyFile(path.resolve('scripts', name), path.join(fixture, 'scripts', name));
-    await fsp.writeFile(path.join(fixture, 'scripts/collect-search-sources.mjs'), 'process.exit(1)');
+    await fsp.writeFile(
+      path.join(fixture, 'scripts/collect-search-sources.mjs'),
+      'process.exit(1)',
+    );
     const original = JSON.stringify({ rows: [{ id: 'existing', text: '기존 본문' }] });
     await fsp.writeFile(path.join(fixture, 'public/content/search-index.json'), original);
-    await fsp.writeFile(path.join(fixture, 'public/content-update.json'), '{"commit":"older-canonical"}');
+    await fsp.writeFile(
+      path.join(fixture, 'public/content-update.json'),
+      '{"commit":"older-canonical"}',
+    );
     const files = [];
     for (const [name, texts] of Object.entries({
       'TextMapKR.json': { '1': '기존 본문', '18446744073709551615': '새 로딩 안내' },
@@ -100,13 +158,27 @@ test('failed BWIKI collection still updates TextMap and leaves canonical content
       await fsp.writeFile(path.join(fixture, '.cache/upstream-content/raw', name), bytes);
       files.push({ path: 'TextMap/' + name, sha: gitBlob(bytes) });
     }
-    await fsp.writeFile(path.join(fixture, '.cache/upstream-content/plan.json'), JSON.stringify({
-      schema: 'hsr-upstream-plan.v1', repository: 'DimbreathBot/TurnBasedGameData', commit: 'a'.repeat(40), files,
-    }));
+    await fsp.writeFile(
+      path.join(fixture, '.cache/upstream-content/plan.json'),
+      JSON.stringify({
+        schema: 'hsr-upstream-plan.v1',
+        repository: 'DimbreathBot/TurnBasedGameData',
+        commit: 'a'.repeat(40),
+        files,
+      }),
+    );
     assert.equal((await refreshSearchText(fixture)).changed, true);
-    assert.equal(await fsp.readFile(path.join(fixture, 'public/content/search-index.json'), 'utf8'), original);
-    assert.equal(await fsp.readFile(path.join(fixture, 'public/content-update.json'), 'utf8'), '{"commit":"older-canonical"}');
-    const manifest = JSON.parse(await fsp.readFile(path.join(fixture, 'public/search/manifest.json'), 'utf8'));
+    assert.equal(
+      await fsp.readFile(path.join(fixture, 'public/content/search-index.json'), 'utf8'),
+      original,
+    );
+    assert.equal(
+      await fsp.readFile(path.join(fixture, 'public/content-update.json'), 'utf8'),
+      '{"commit":"older-canonical"}',
+    );
+    const manifest = JSON.parse(
+      await fsp.readFile(path.join(fixture, 'public/search/manifest.json'), 'utf8'),
+    );
     assert.equal(manifest.rows, 1);
     assert.equal(manifest.classifiedRows, 0);
     assert.match(manifest.review[0].reason, /조회 실패/);

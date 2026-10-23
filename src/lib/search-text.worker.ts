@@ -2,6 +2,8 @@ import {
   parseSearchManifest,
   parseSearchPart,
   textMatches,
+  matchesOtherText,
+  type OtherTextFilter,
   type SearchText,
   type SearchTextSource,
 } from './search-text';
@@ -12,6 +14,7 @@ interface Request {
   query: string;
   offset: number;
   limit: number;
+  filter?: OtherTextFilter;
 }
 const worker = self as unknown as {
   onmessage: (event: MessageEvent<Request>) => void;
@@ -20,6 +23,7 @@ const worker = self as unknown as {
 let latest = 0;
 let loading: Promise<{ parts: SearchText[][]; sources: SearchTextSource[] }> | undefined;
 let cachedQuery: string | undefined;
+let cachedFilter: OtherTextFilter | undefined;
 let matches: SearchText[] = [];
 const pause = () => new Promise((resolve) => setTimeout(resolve, 0));
 
@@ -57,7 +61,7 @@ async function load(base: string) {
 }
 
 worker.onmessage = async ({ data }) => {
-  const { token, base, query, offset, limit } = data;
+  const { token, base, query, offset, limit, filter } = data;
   latest = token;
   try {
     loading ??= load(base).catch((error) => {
@@ -66,19 +70,24 @@ worker.onmessage = async ({ data }) => {
     });
     const { parts, sources } = await loading;
     if (latest !== token) return;
-    if (query !== cachedQuery) {
+    if (query !== cachedQuery || filter !== cachedFilter) {
       const terms = query.toLocaleLowerCase().trim().split(/\s+/).filter(Boolean);
       const result: SearchText[] = [];
       for (const part of parts) {
         for (let start = 0; start < part.length; start += 2000) {
           if (latest !== token) return;
           for (let index = start; index < Math.min(start + 2000, part.length); index++)
-            if (!terms.length || textMatches(part[index], terms, sources)) result.push(part[index]);
+            if (
+              (filter === undefined || matchesOtherText(part[index], sources, filter)) &&
+              (!terms.length || textMatches(part[index], terms, sources))
+            )
+              result.push(part[index]);
           await pause();
         }
       }
       matches = result;
       cachedQuery = query;
+      cachedFilter = filter;
     }
     if (latest === token)
       worker.postMessage({

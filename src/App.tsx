@@ -42,6 +42,7 @@ import ContentUpdateStatus from './components/ContentUpdateStatus';
 import HomePage from './components/HomePage';
 import SourceDetails from './components/SourceDetails';
 import ThemeSwitch from './components/ThemeSwitch';
+import { otherTextCategories, otherTextFilter, searchScopePath } from './lib/search-text';
 
 const worldName = (id: World) => worlds.find((world) => world.id === id)!.label;
 const categoryName = (id: Category) => categories.find((category) => category.id === id)!.label;
@@ -126,6 +127,9 @@ function Empty({ title, text }: { title: string; text: string }) {
 
 export default function App() {
   const { route, path, params } = useRoute();
+  const otherView = path === '/search' && params.get('scope') === 'other';
+  const otherKind = otherTextFilter(params.get('kind'));
+  const otherLabel = otherTextCategories.find((category) => category.id === otherKind)?.label;
   const [theme, setTheme] = useStored<'light' | 'dark'>(
     'theme',
     'dark',
@@ -181,7 +185,9 @@ export default function App() {
           ? categoryName(selectedCategory)
           : '아카이브 탐색'
         : path === '/search'
-          ? '원문 검색'
+          ? otherView
+            ? (otherLabel ?? '기타')
+            : '원문 검색'
           : path === '/library'
             ? '내 서재'
             : path === '/about'
@@ -191,7 +197,7 @@ export default function App() {
       pageTitle === '열차 아카이브'
         ? '열차 아카이브 · 붕괴: 스타레일'
         : `${pageTitle} · 열차 아카이브`;
-  }, [path, entry, chapter, selectedCategory, eventSection]);
+  }, [path, entry, chapter, selectedCategory, eventSection, otherView, otherLabel]);
   useEffect(() => {
     const shortcut = (event: KeyboardEvent) => {
       if ((event.ctrlKey || event.metaKey) && event.key.toLowerCase() === 'k') {
@@ -360,10 +366,26 @@ export default function App() {
     content = (
       <>
         <PageIntro
-          title="원문 검색"
-          description="임무명과 서적명, 화자와 한국어 원문을 검색하고 맥락을 함께 읽어보세요."
+          title={otherView ? (otherLabel ?? '기타') : '원문 검색'}
+          description={
+            otherView
+              ? '로딩 화면, NPC 대사, 상호작용, 메시지와 우편의 한국어 원문을 읽어보세요.'
+              : '임무명과 서적명, 화자와 한국어 원문을 검색하고 맥락을 함께 읽어보세요.'
+          }
         />
-        <DialogueBrowser initialQuery={params.get('q') ?? ''} global />
+        <DialogueBrowser
+          initialQuery={params.get('q') ?? ''}
+          initialScope={
+            otherView
+              ? 'other'
+              : (categories.find((category) => category.id === params.get('scope'))?.id ?? 'all')
+          }
+          initialOtherKind={otherKind}
+          onScopeChange={(scope, kind, query) => {
+            window.location.hash = searchScopePath(query, scope, kind);
+          }}
+          global
+        />
       </>
     );
   } else if (path === '/library') {
@@ -696,7 +718,7 @@ export default function App() {
             <Home size={18} />
             아카이브 홈{navActive('/') && <span className="nav-dot" />}
           </a>
-          <a className={navActive('/search') ? 'active' : ''} href="#/search">
+          <a className={navActive('/search') && !otherView ? 'active' : ''} href="#/search">
             <Search size={18} />
             원문 검색
           </a>
@@ -737,6 +759,30 @@ export default function App() {
               </Fragment>
             );
           })}
+          <a
+            className={`primary-story-link ${otherView ? 'active' : ''}`}
+            aria-current={otherView ? 'page' : undefined}
+            href={href(searchScopePath('', 'other'))}
+          >
+            <span className="category-icon" aria-hidden="true">
+              <FolderOpen size={27} strokeWidth={1.5} />
+            </span>
+            기타
+          </a>
+          {otherView && (
+            <div className="codex-submenu" aria-label="기타 분류">
+              {otherTextCategories.map((category) => (
+                <a
+                  key={category.id}
+                  href={href(searchScopePath('', 'other', category.id))}
+                  className={otherKind === category.id ? 'active' : ''}
+                  aria-current={otherKind === category.id ? 'page' : undefined}
+                >
+                  {category.label}
+                </a>
+              ))}
+            </div>
+          )}
           <span className="nav-label nav-space">내 서재</span>
           <a
             href="#/library"
@@ -785,7 +831,9 @@ export default function App() {
                 : path === '/archive'
                   ? '이야기 탐색'
                   : path === '/search'
-                    ? '원문 검색'
+                    ? otherView
+                      ? `기타${otherLabel ? ' · ' + otherLabel : ''}`
+                      : '원문 검색'
                     : path === '/library'
                       ? '내 서재'
                       : path === '/about'
