@@ -73,7 +73,7 @@ export default function HomePage({
           <div className="home-section-heading">
             <div>
               <h2 id="home-missions-title">개척 임무</h2>
-              <p>프롤로그부터 장 순서대로</p>
+              <p>여정의 끝이 뭇별에 닿길</p>
             </div>
             <a href="#/archive?category=trailblaze">
               전체 보기 <ArrowRight size={14} />

@@ -807,10 +807,6 @@ export default function App() {
             <BookOpen size={15} />
             사이트 안내 <ChevronRight size={14} />
           </a>
-          <div className="sidebar-version">
-            <span className="status-dot" />
-            베타 0.1.0
-          </div>
         </div>
       </aside>
       <div className="workspace">
