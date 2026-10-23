@@ -24,7 +24,8 @@ export async function refreshSearchText(root = process.cwd()) {
   const plan = await read('.cache/upstream-content/plan.json');
   const previous = await read('public/search/manifest.json', {});
   const state = await read('.cache/verification-retry/search-sources.json', {});
-  if (plan.commit === previous.commit && !searchRetryDue(state))
+  const locales = await read('public/search/locales/manifest.json', {});
+  if (plan.commit === previous.commit && locales.commit === plan.commit && !searchRetryDue(state))
     return { changed: false, deferred: true };
   if (
     plan.schema !== 'hsr-upstream-plan.v1' ||
@@ -33,7 +34,7 @@ export async function refreshSearchText(root = process.cwd()) {
   )
     throw Error('Invalid search update plan');
   const files = plan.files.filter((f) =>
-    /^TextMap\/TextMap(?:KR|CHS)(?:_\d+)?\.json$/.test(f.path),
+    /^TextMap\/TextMap(?:KR|EN|CHS|JP)(?:_\d+)?\.json$/.test(f.path),
   );
   const stage = path.join(root, '.cache/search-text/candidate');
   const raw = path.join(stage, 'raw');
@@ -79,13 +80,25 @@ export async function refreshSearchText(root = process.cwd()) {
   } catch {
     // New TextMap strings still publish when BWIKI is unavailable or timed out.
     await fs.mkdir(path.dirname(wikiFile), { recursive: true });
-    await fs.writeFile(wikiFile, JSON.stringify({ schema: 'hsr-bwiki-input.v1', commit: plan.commit,
-      pages: (previous.pendingPages ?? []).map((item) => ({ ...item, status: 'unavailable', reason: '검색 출처 수집 시간 초과 또는 조회 실패' })),
-      review: [{ reason: '검색 출처 수집 시간 초과 또는 조회 실패; 원문 검색 갱신 계속' }] }));
+    await fs.writeFile(
+      wikiFile,
+      JSON.stringify({
+        schema: 'hsr-bwiki-input.v1',
+        commit: plan.commit,
+        pages: (previous.pendingPages ?? []).map((item) => ({
+          ...item,
+          status: 'unavailable',
+          reason: '검색 출처 수집 시간 초과 또는 조회 실패',
+        })),
+        review: [{ reason: '검색 출처 수집 시간 초과 또는 조회 실패; 원문 검색 갱신 계속' }],
+      }),
+    );
     const stateFile = path.join(root, '.cache/verification-retry/search-sources.json');
     await fs.mkdir(path.dirname(stateFile), { recursive: true });
-    await fs.writeFile(stateFile, JSON.stringify({ ...state,
-      nextRequestAt: new Date(Date.now() + 6 * 3600000).toISOString() }));
+    await fs.writeFile(
+      stateFile,
+      JSON.stringify({ ...state, nextRequestAt: new Date(Date.now() + 6 * 3600000).toISOString() }),
+    );
   }
   const run = pythonRunner(root, stage);
   run('import-search-text.py', [
@@ -96,9 +109,28 @@ export async function refreshSearchText(root = process.cwd()) {
     path.join(root, 'public/search/manifest.json'),
   ]);
   run('import-search-text.py', ['--validate', stage]);
+  run('import-search-localizations.py', [
+    stage,
+    raw,
+    planFile,
+    wikiFile,
+    path.join(root, 'public/search/locales/manifest.json'),
+  ]);
+  run('import-search-localizations.py', ['--validate', stage]);
   const receipt = await read('.cache/search-text/candidate/.cache/search-text-receipt.json');
+  const localized = await read(
+    '.cache/search-text/candidate/.cache/search-localization-receipt.json',
+  );
+  receipt.files.push(...localized.files);
   // Search work cannot publish chapter rows, routes or canonical evidence.
-  if (receipt.files.some((file) => !/^public\/search\/(?:manifest|part-\d{2})\.json$/.test(file)))
+  if (
+    receipt.files.some(
+      (file) =>
+        !/^public\/search\/(?:(?:manifest|part-\d{2})|locales\/(?:manifest|(?:en|zh-CN|ja)\/search-text--part-\d{2}))\.json$/.test(
+          file,
+        ),
+    )
+  )
     throw Error('Search refresh attempted to publish outside search');
   const entries = await Promise.all(
     receipt.files.map(async (file) => ({

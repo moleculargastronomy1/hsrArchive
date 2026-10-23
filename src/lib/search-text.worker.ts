@@ -21,7 +21,9 @@ const worker = self as unknown as {
   postMessage: (value: unknown) => void;
 };
 let latest = 0;
-let loading: Promise<{ parts: SearchText[][]; sources: SearchTextSource[] }> | undefined;
+let loading:
+  | Promise<{ parts: SearchText[][]; sources: SearchTextSource[]; commit: string }>
+  | undefined;
 let cachedQuery: string | undefined;
 let cachedFilter: OtherTextFilter | undefined;
 let matches: SearchText[] = [];
@@ -34,6 +36,15 @@ async function load(base: string) {
     return response;
   };
   const manifest = parseSearchManifest(await (await get('manifest.json')).json());
+  // Titles are optional: an unavailable or older title manifest must never hide text.
+  const titles: Record<string, { title: string; text: string }> = await get('locales/manifest.json')
+    .then((response) => response.json())
+    .then((data) =>
+      data.schema === 'hsr-search-localizations.v1' && data.commit === manifest.commit
+        ? (data.titles ?? {})
+        : {},
+    )
+    .catch(() => ({}));
   const parts: SearchText[][] = new Array(manifest.parts.length);
   let cursor = 0;
   // Bound peak parsing memory and keep the text corpus outside the UI thread.
@@ -54,10 +65,15 @@ async function load(base: string) {
           part.rows,
           manifest.sources.length,
         );
+        for (const row of parts[index]) {
+          const title = titles[row[0]];
+          if (title?.text === row[1] && typeof title.title === 'string' && title.title.trim())
+            row[3] = title.title;
+        }
       }
     }),
   );
-  return { parts, sources: manifest.sources };
+  return { parts, sources: manifest.sources, commit: manifest.commit };
 }
 
 worker.onmessage = async ({ data }) => {
@@ -68,7 +84,7 @@ worker.onmessage = async ({ data }) => {
       loading = undefined;
       throw error;
     });
-    const { parts, sources } = await loading;
+    const { parts, sources, commit } = await loading;
     if (latest !== token) return;
     if (query !== cachedQuery || filter !== cachedFilter) {
       const terms = query.toLocaleLowerCase().trim().split(/\s+/).filter(Boolean);
@@ -95,6 +111,7 @@ worker.onmessage = async ({ data }) => {
         count: matches.length,
         rows: matches.slice(offset, offset + limit),
         sources,
+        commit,
       });
   } catch (error) {
     if (latest === token)

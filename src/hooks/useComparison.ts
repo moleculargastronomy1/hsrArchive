@@ -15,7 +15,13 @@ export function useComparisonLanguages() {
 
 const cache = new Map<string, Promise<LocalizationState>>();
 
-export function useLocalizations(rows: RowIdentity[], languages: ComparisonLanguage[]) {
+export function useLocalizations(
+  rows: RowIdentity[],
+  languages: ComparisonLanguage[],
+  options: { source?: 'search' | 'content'; referenceCommit?: string } = {},
+) {
+  const source = options.source ?? 'content';
+  const referenceCommit = options.referenceCommit;
   const [states, setStates] = useState<Record<string, LocalizationState>>({});
   const requests = JSON.stringify([
     ...new Map(
@@ -41,21 +47,29 @@ export function useLocalizations(rows: RowIdentity[], languages: ComparisonLangu
       ),
     );
     for (const [key, identity] of entries) {
-      let pending = cache.get(key);
+      const cacheKey = `${source}/${key}/${referenceCommit ?? ''}`;
+      let pending = cache.get(cacheKey);
       if (!pending) {
-        pending = fetch(`${import.meta.env.BASE_URL}content/locales/${key}.json`)
+        pending = fetch(
+          `${import.meta.env.BASE_URL}${source}/locales/${key}.json${referenceCommit ? '?v=' + referenceCommit : ''}`,
+        )
           .then(async (response): Promise<LocalizationState> => {
             if (!response.ok) throw new Error('Localization fetch failed');
             return {
               status: 'ready',
-              rows: parseLocalizations(await response.json(), identity, identity.language),
+              rows: parseLocalizations(
+                await response.json(),
+                identity,
+                identity.language,
+                referenceCommit,
+              ),
             };
           })
           .catch((): LocalizationState => {
-            if (cache.get(key) === pending) cache.delete(key);
+            if (cache.get(cacheKey) === pending) cache.delete(cacheKey);
             return { status: 'error' };
           });
-        cache.set(key, pending);
+        cache.set(cacheKey, pending);
         if (cache.size > 64) cache.delete(cache.keys().next().value!);
       }
       void pending.then((state) => {
@@ -65,7 +79,7 @@ export function useLocalizations(rows: RowIdentity[], languages: ComparisonLangu
     return () => {
       active = false;
     };
-  }, [requests, retry]);
+  }, [requests, retry, source, referenceCommit]);
   return {
     states,
     retry: () => {

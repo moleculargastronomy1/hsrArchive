@@ -603,7 +603,8 @@ export default function DialogueBrowser({
                 );
               })}
               {global && (
-                <SearchTextResults rows={extra.rows} sources={extra.sources} query={query} />
+                <SearchTextResults rows={extra.rows} sources={extra.sources} query={query}
+                  languages={languages} referenceCommit={extra.commit} />
               )}
             </div>
           )}

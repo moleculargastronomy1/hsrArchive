@@ -1,46 +1,72 @@
-import { useRef, useState } from 'react';
+import { useRef, useState, type CSSProperties } from 'react';
 import { X } from 'lucide-react';
 import type { SearchText, SearchTextSource } from '../lib/search-text';
 import GameText from './GameText';
+import { searchTextRow } from '../lib/search-text';
+import { useLocalizations } from '../hooks/useComparison';
+import { LocalizedPassage } from './LanguageComparison';
+import type { ComparisonLanguage } from '../lib/localization';
 
 export default function SearchTextResults({
   rows,
   sources,
   query,
+  languages,
+  referenceCommit,
 }: {
   rows: SearchText[];
   sources: SearchTextSource[];
   query: string;
+  languages: ComparisonLanguage[];
+  referenceCommit?: string;
 }) {
   const dialog = useRef<HTMLDialogElement>(null);
   const [selected, setSelected] = useState<SearchText>();
+  const translations = useLocalizations(
+    [...rows, ...(selected ? [selected] : [])].map(searchTextRow),
+    languages,
+    { source: 'search', referenceCommit },
+  );
+  const columnStyle = { '--comparison-count': languages.length + 1 } as CSSProperties;
   return (
     <>
       {rows.map((row) => (
-        <div className="dialogue-row" key={row[0]}>
+        <div className={`dialogue-row ${languages.length ? 'comparing' : ''}`} key={row[0]}>
           <div className="dialogue-row-meta">
-            <span>기타 텍스트</span>
+            <span>{row[3] ?? '기타 텍스트'}</span>
             {row[2].length ? (
               row[2].map((id) => (
                 <small key={id}>
-                  {sources[id].kind} · {sources[id].label}
+                  {sources[id].kind}
+                  {sources[id].kind !== '로딩 화면' && ` · ${sources[id].label}`}
                 </small>
               ))
             ) : (
               <small>출처 미확인</small>
             )}
           </div>
-          <button
-            className="dialogue-text"
-            lang="ko"
-            aria-haspopup="dialog"
-            onClick={() => {
-              setSelected(row);
-              dialog.current?.showModal();
-            }}
-          >
-            <GameText text={row[1]} query={query} />
-          </button>
+          <div className={languages.length ? 'comparison-columns' : undefined} style={columnStyle}>
+            <button
+              className="dialogue-text"
+              lang="ko"
+              aria-haspopup="dialog"
+              onClick={() => {
+                setSelected(row);
+                dialog.current?.showModal();
+              }}
+            >
+              {languages.length > 0 && <span className="comparison-language-label">한국어</span>}
+              <GameText text={row[1]} query={query} />
+            </button>
+            {languages.map((language) => (
+              <LocalizedPassage
+                key={language}
+                row={searchTextRow(row)}
+                language={language}
+                {...translations}
+              />
+            ))}
+          </div>
         </div>
       ))}
       <dialog
@@ -53,8 +79,12 @@ export default function SearchTextResults({
       >
         <header>
           <div>
-            <span className="eyebrow">기타 텍스트</span>
-            <h2 id="search-text-heading">한국어 원문</h2>
+            <span className="eyebrow">
+              {selected?.[2].some((id) => sources[id]?.kind === '로딩 화면')
+                ? '로딩 화면'
+                : '기타 텍스트'}
+            </span>
+            <h2 id="search-text-heading">{selected?.[3] ?? '한국어 원문'}</h2>
           </div>
           <button
             className="icon-button"
@@ -66,38 +96,27 @@ export default function SearchTextResults({
         </header>
         <div className="context-dialog-body">
           <div className="context-row" lang="ko">
-            <p>{selected && <GameText text={selected[1]} query={query} />}</p>
+            <div
+              className={languages.length ? 'comparison-columns' : undefined}
+              style={columnStyle}
+            >
+              <div className="comparison-korean" lang="ko">
+                {languages.length > 0 && <span className="comparison-language-label">한국어</span>}
+                <p>{selected && <GameText text={selected[1]} query={query} />}</p>
+              </div>
+              {selected &&
+                languages.map((language) => (
+                  <LocalizedPassage
+                    key={language}
+                    row={searchTextRow(selected)}
+                    language={language}
+                    {...translations}
+                  />
+                ))}
+            </div>
           </div>
         </div>
         <footer>
-          {selected?.[2].map((id) => {
-            const source = sources[id];
-            return (
-              <p key={id}>
-                {source.kind} ·{' '}
-                <a
-                  href={`https://wiki.biligame.com/sr/${encodeURIComponent(source.pageTitle)}?oldid=${source.revision}`}
-                  target="_blank"
-                  rel="noreferrer"
-                >
-                  {source.label} (BWIKI)
-                </a>
-              </p>
-            );
-          })}
-          {!!selected?.[2].length && (
-            <p>
-              BWIKI에서 같은 중국어 원문이 확인된 문서입니다. 분류·출처 정보는{' '}
-              <a
-                href="https://creativecommons.org/licenses/by-nc-sa/4.0/"
-                target="_blank"
-                rel="noreferrer"
-              >
-                CC BY-NC-SA 4.0
-              </a>
-              에 따라 재구성했습니다.
-            </p>
-          )}
           <p>게임 원문의 권리는 HoYoverse 및 해당 권리자에게 있습니다.</p>
         </footer>
       </dialog>

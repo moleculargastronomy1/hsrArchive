@@ -16,6 +16,8 @@ const state = JSON.parse(await fs.readFile(stateFile).catch(() => '{"pages":{}}'
 const requests = new Map([
   ['过场提示', { title: '过场提示', searchKind: '로딩 화면' }],
   ['互动文本', { title: '互动文本', searchKind: '상호작용' }],
+  ['短信一览', { title: '短信一览', searchKind: '메시지' }],
+  ['邮件', { title: '邮件', searchKind: '우편' }],
 ]);
 const categories = [
   ['NPC', 'NPC 대사'],
@@ -69,22 +71,28 @@ for (const [category, searchKind] of categories) {
     review.push({ category, reason: error.message });
   }
 }
-try {
-  let continuation;
-  do {
-    const data = await listing({
-      list: 'allpages',
-      apprefix: '互动文本',
-      aplimit: '500',
-      ...continuation,
-    });
-    for (const page of data.query.allpages)
-      requests.set(page.title, { title: page.title, searchKind: '상호작용' });
-    continuation = data.continue;
-    await new Promise((resolve) => setTimeout(resolve, 1200));
-  } while (continuation);
-} catch (error) {
-  review.push({ prefix: '互动文本', reason: error.message });
+for (const [prefix, searchKind] of [
+  ['互动文本', '상호작용'],
+  ['短信', '메시지'],
+  ['邮件', '우편'],
+]) {
+  try {
+    let continuation;
+    do {
+      const data = await listing({
+        list: 'allpages',
+        apprefix: prefix,
+        aplimit: '500',
+        ...continuation,
+      });
+      for (const page of data.query.allpages)
+        requests.set(page.title, { title: page.title, searchKind });
+      continuation = data.continue;
+      await new Promise((resolve) => setTimeout(resolve, 1200));
+    } while (continuation);
+  } catch (error) {
+    review.push({ prefix, reason: error.message });
+  }
 }
 // Also use the existing revision-pinned mission/event corpus without new downloads.
 const index = JSON.parse(

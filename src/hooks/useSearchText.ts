@@ -18,6 +18,7 @@ export function useSearchText(
     count: number;
     rows: SearchText[];
     sources?: SearchTextSource[];
+    commit?: string;
     error?: string;
     filter?: OtherTextFilter;
   }>();
@@ -45,6 +46,7 @@ export function useSearchText(
             count: data.count ?? 0,
             rows: data.rows ?? [],
             sources: data.sources,
+            commit: data.commit,
             error: data.error,
             filter,
           });
@@ -92,6 +94,7 @@ export function useSearchText(
     count: sameQuery ? result.count : 0,
     rows: ready ? result.rows : [],
     sources: sameQuery ? (result.sources ?? []) : [],
+    commit: sameQuery ? result.commit : undefined,
     loading: enabled && !ready,
     error: sameQuery ? result.error : undefined,
     retry: () => {

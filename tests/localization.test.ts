@@ -27,6 +27,7 @@ test('translation loading validates language, chapter, text and duplicate row ID
     rows: [{ id: 'a', text: 'Choice', speaker: '' }],
   };
   assert.equal(parseLocalizations(payload, identity, 'en').get('a')!.text, 'Choice');
+  assert.throws(() => parseLocalizations(payload, identity, 'en', 'b'.repeat(40)));
   for (const value of [
     null,
     { ...payload, language: 'ja' },

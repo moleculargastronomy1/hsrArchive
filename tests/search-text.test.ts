@@ -13,10 +13,23 @@ import {
   otherTextFilter,
   searchScopePath,
   matchesOtherText,
+  searchTextRow,
   type SearchTextSource,
 } from '../src/lib/search-text.ts';
 import { searchRetryDue, refreshSearchText } from '../scripts/search-text.mjs';
 import { gitBlob } from '../scripts/upstream-content.mjs';
+
+test('supplemental comparison identity keeps full 64-bit hashes and titles are searchable', () => {
+  const row: [string, string, number[], string] = [
+    '8635891183804058996',
+    '본문',
+    [],
+    '허수의 나무',
+  ];
+  assert.equal(searchTextRow(row).id, row[0]);
+  assert.equal(searchTextRow(row).chapterId, 'part-20');
+  assert.equal(textMatches(row, ['허수의', '나무']), true);
+});
 
 test('supplemental search shares pagination across the curated result boundary', () => {
   assert.deepEqual(searchTextWindow(51, 2), { offset: 0, limit: 49 });
@@ -137,7 +150,12 @@ test('failed BWIKI collection still updates TextMap and leaves canonical content
   try {
     for (const folder of ['scripts', 'public/content', '.cache/upstream-content/raw'])
       await fsp.mkdir(path.join(fixture, folder), { recursive: true });
-    for (const name of ['import-search-text.py', 'bwiki-dialogue.py', 'import-localizations.py'])
+    for (const name of [
+      'import-search-text.py',
+      'bwiki-dialogue.py',
+      'import-localizations.py',
+      'import-search-localizations.py',
+    ])
       await fsp.copyFile(path.resolve('scripts', name), path.join(fixture, 'scripts', name));
     await fsp.writeFile(
       path.join(fixture, 'scripts/collect-search-sources.mjs'),
@@ -153,6 +171,8 @@ test('failed BWIKI collection still updates TextMap and leaves canonical content
     for (const [name, texts] of Object.entries({
       'TextMapKR.json': { '1': '기존 본문', '18446744073709551615': '새 로딩 안내' },
       'TextMapCHS.json': { '1': '已有原文', '18446744073709551615': '这是新的加载提示原文' },
+      'TextMapEN.json': { '18446744073709551615': 'New loading text' },
+      'TextMapJP.json': { '18446744073709551615': '新しいロード中のテキスト' },
     })) {
       const bytes = Buffer.from(JSON.stringify(texts));
       await fsp.writeFile(path.join(fixture, '.cache/upstream-content/raw', name), bytes);

@@ -35,7 +35,12 @@ export function localizationKey(row: RowIdentity, language: ComparisonLanguage) 
   return `${language}/${row.entryId}--${row.chapterId}`;
 }
 
-export function parseLocalizations(value: unknown, row: RowIdentity, language: ComparisonLanguage) {
+export function parseLocalizations(
+  value: unknown,
+  row: RowIdentity,
+  language: ComparisonLanguage,
+  referenceCommit?: string,
+) {
   if (!value || typeof value !== 'object') throw new Error('Invalid localizations');
   const data = value as Record<string, unknown>;
   if (
@@ -45,6 +50,7 @@ export function parseLocalizations(value: unknown, row: RowIdentity, language: C
     data.chapterId !== row.chapterId ||
     typeof data.referenceCommit !== 'string' ||
     !/^[a-f0-9]{40}$/.test(data.referenceCommit) ||
+    (referenceCommit !== undefined && data.referenceCommit !== referenceCommit) ||
     !Array.isArray(data.rows)
   )
     throw new Error('Mismatched localizations');

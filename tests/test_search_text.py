@@ -8,9 +8,58 @@ import unittest
 spec = importlib.util.spec_from_file_location('search_text', Path(__file__).resolve().parents[1] / 'scripts/import-search-text.py')
 search = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(search)
+spec = importlib.util.spec_from_file_location('search_locale', Path(__file__).resolve().parents[1] / 'scripts/import-search-localizations.py')
+locale = importlib.util.module_from_spec(spec)
+spec.loader.exec_module(locale)
 
 
 class SearchTextTest(unittest.TestCase):
+    def test_comparisons_and_title_require_same_official_hash_and_whole_table_row(self):
+        folder = Path('.cache/tests')
+        folder.mkdir(parents=True, exist_ok=True)
+        with tempfile.TemporaryDirectory(dir=folder) as tmp:
+            root = Path(tmp)
+            (root / 'raw').mkdir()
+            (root / 'public/content').mkdir(parents=True)
+            (root / 'public/content/search-index.json').write_text('{"rows":[]}')
+            body_id = '8635891183804058996'
+            files = []
+            for code, texts in {
+                'KR': {body_id: '모든 것에 깃든 존재의 본질', '2': '허수의 나무', '3': '연결 없음'},
+                'CHS': {body_id: '遍入一切的存在本质，诞生众多世界的宇宙结构。', '2': '虚数之树'},
+                'EN': {body_id: '<b>Essence</b>\\n{NICKNAME}'},
+                'JP': {body_id: 'あらゆる存在の本質。'},
+            }.items():
+                data = json.dumps(texts).encode()
+                name = f'TextMap{code}.json'
+                (root / 'raw' / name).write_bytes(data)
+                files.append({'path': 'TextMap/' + name, 'sha': hashlib.sha1(f'blob {len(data)}\0'.encode() + data).hexdigest()})
+            plan = {'schema': 'hsr-upstream-plan.v1', 'repository': 'DimbreathBot/TurnBasedGameData', 'commit': 'a'*40, 'files': files}
+            (root / 'plan.json').write_text(json.dumps(plan))
+            data = '!unsupported\n{| class=wikitable\n!虚数之树\n|遍入一切的存在本质，诞生众多世界的宇宙结构。\n|}\n'.encode('utf8')
+            wiki_file = root / 'loading.wiki'
+            wiki_file.write_bytes(data)
+            page = {'status': 'available', 'searchKind': '로딩 화면', 'pageTitle': '过场提示', 'pageId': 3402, 'revision': 104164,
+                    'timestamp': '2026-07-31', 'file': str(wiki_file), 'sha256': hashlib.sha256(data).hexdigest()}
+            wiki = {'schema': 'hsr-bwiki-input.v1', 'commit': plan['commit'], 'pages': [page]}
+            (root / 'wiki.json').write_text(json.dumps(wiki))
+            search.build(root, root/'raw', root/'plan.json', root/'wiki.json')
+            locale.build(root, root/'raw', root/'plan.json', root/'wiki.json')
+            locale.validate(root)
+            manifest = json.loads((root / 'public/search/locales/manifest.json').read_bytes())
+            self.assertEqual(manifest['titles'][body_id]['title'], '허수의 나무')
+            self.assertEqual(manifest['titles'][body_id]['titleHashCandidates'], ['2'])
+            self.assertEqual(manifest['coverage']['en'], {'rows': 1, 'missing': 2})
+            target = root / f'public/search/locales/en/search-text--part-{int(body_id)%32:02}.json'
+            self.assertEqual(json.loads(target.read_bytes())['rows'][0]['text'], 'Essence\n[Trailblazer]')
+            self.assertEqual(list(locale.loading_pairs('{|\n!rowspan=2|虚数之树\n|正文\n|}')), [])
+            (root/'raw/TextMapEN.json').write_text('{}')
+            with self.assertRaisesRegex(ValueError, 'Unverified'):
+                locale.build(root, root/'raw', root/'plan.json')
+            target.write_text('{}')
+            with self.assertRaises((ValueError, KeyError)):
+                locale.validate(root)
+
     def test_full_textmap_coverage_exact_hashes_and_tamper_rejection(self):
         folder = Path('.cache/tests')
         folder.mkdir(parents=True, exist_ok=True)

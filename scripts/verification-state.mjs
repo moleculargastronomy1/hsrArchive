@@ -52,6 +52,7 @@ export async function writeDerived(root, relative, bytes) {
   }
 }
 export const statePath = (file) =>
+  /^public\/search\/locales\/(?:manifest|(?:en|zh-CN|ja)\/search-text--part-(?:0\d|[12]\d|3[01]))\.json$/.test(file) ||
   /^public\/search\/(?:manifest|part-(?:0\d|[12]\d|3[01]))\.json$/.test(file) ||
   /^(?:src\/data\/(?:codex|simulation|imported-content|train-databank|astropolis-intro|books|trailblaze)\.json|public\/(?:content-update|content-watch|official-videos|books-provenance|trailblaze-provenance|dialogue-flow-provenance|bwiki-provenance|source-first-provenance|simulation-events-provenance|video-order-provenance|video-review-summary|verification-progress)\.json|public\/content\/[A-Za-z0-9_-]+\.json|public\/content\/locales\/(?:manifest|(?:en|zh-CN|ja)\/[A-Za-z0-9_-]+)\.json)$/.test(
     file,

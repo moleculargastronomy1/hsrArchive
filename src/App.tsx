@@ -369,7 +369,7 @@ export default function App() {
           title={otherView ? (otherLabel ?? '기타') : '원문 검색'}
           description={
             otherView
-              ? '로딩 화면, NPC 대사, 상호작용, 메시지와 우편의 한국어 원문을 읽어보세요.'
+              ? undefined
               : '임무명과 서적명, 화자와 한국어 원문을 검색하고 맥락을 함께 읽어보세요.'
           }
         />
@@ -644,7 +644,7 @@ export default function App() {
             . 게임 원문의 권리와 저작권은 HoYoverse 및 해당 권리자에게 있습니다.
           </p>
           <p>
-            임무 순서·분기 대조에는{' '}
+            임무 순서·분기 대조와 기타 원문의 분류에는{' '}
             <a href="https://wiki.biligame.com/sr/开拓任务" target="_blank" rel="noreferrer">
               BWIKI 기여자들의 정리
             </a>
