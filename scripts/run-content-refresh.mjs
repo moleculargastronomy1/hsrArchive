@@ -31,6 +31,10 @@ try {
       }),
     );
     console.log('Site-only build: reusing validated content without collection or text projection');
+  } else if (watch.mode === 'retry' && watch.retrySearch && !watch.retryBwiki && !watch.retryVideo) {
+    if (process.env.GITHUB_OUTPUT)
+      await fs.appendFile(process.env.GITHUB_OUTPUT, 'publish=false\nsearch_only=true\n');
+    console.log('Only search-source review is due; canonical content processing skipped');
   } else {
     execFileSync(
       process.execPath,

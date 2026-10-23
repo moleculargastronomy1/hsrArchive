@@ -18,6 +18,7 @@ import {
 } from './verification-retry.mjs';
 import { SITE } from './verification-state.mjs';
 import { videoRetryDecision, mergeVideoChecks } from './video-order.mjs';
+import { searchRetryDue } from './search-text.mjs';
 
 const read = async (file) => JSON.parse(await fs.readFile(file, 'utf8'));
 const config = await read('editorial/video-verification-sources.json');
@@ -121,6 +122,11 @@ if (mode === '--record') {
   // Source changes retain the full pipeline. Independent BWIKI/video retries
   // only process the due verifier and still pass preservation and build gates.
   result = contentRefreshDecision(result, retry, videoRetry, unpublished);
+  const searchState = await read('.cache/verification-retry/search-sources.json').catch(() => ({}));
+  const searchEnabled = await fs.access('public/search/manifest.json').then(() => true, () => false);
+  result.retrySearch = searchEnabled && searchRetryDue(searchState);
+  result.checks.search = result.retrySearch ? 'due; independent search-only refresh' : 'backoff';
+  result.changed ||= result.retrySearch;
   await saveRetry(state);
   await fs.mkdir(path.resolve('.cache/content-watch'), { recursive: true });
   await fs.writeFile('.cache/content-watch/check.json', JSON.stringify(result, null, 2));

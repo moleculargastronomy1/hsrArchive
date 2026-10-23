@@ -12,6 +12,10 @@
 
 ## 입력 형식
 
+검색 전용 TextMap 확장(2026-10-23)은 현재 배포 본문과 같은 `74a7b96fba32f00cf495a5c00b0311bd02207aaf` 입력으로 생성했다. 전체 474,189개 문자열 중 기존 원문 검색으로 확인할 수 있는 73,690개와 표시 내용이 비어 있는 9개를 제외한 400,490개를 `public/search`에 추가했다. 기존에 확보한 BWIKI 435개 문서에서 20,962개 추가 원문의 출처를 대조했다. 새 NPC·로딩·상호작용 등의 본문 조회는 HTTP 567 접근 제한으로 중단되어 미확인 상태이며, 미확인 379,528개도 검색에는 포함한다. 전체 분류가 끝났다는 뜻이 아니다.
+
+`scripts/import-search-text.py`는 한국어·중국어 TextMap의 Git blob/SHA-256, 문서의 고정 수정 번호·원문 SHA-256과 변환 코드 해시를 기록한다. Python 정수·문자열 해시로 정확히 연결하며 번역이나 문자열 유사도로 출처를 만들지 않는다. 검색 전용 파생 정보는 `public/search/manifest.json`의 출처 목록·수집 대기와 32개 조각의 `[TextMap ID, 표시 원문, 출처 참조 목록]`에 보존한다. BWIKI 원문·외부 저장소와 이력은 캐시에만 저장한다. 원문 권리는 HoYoverse 및 해당 권리자에게 있고 BWIKI 기반 분류·출처는 CC BY-NC-SA 4.0을 표시한다.
+
 - 입력: 로컬 한국어 자료, 고정 커밋 `a66ec9c36e3321ce4ea9e62b58e9326634628dce`.
 - 고정 `dataset/manifest.json`의 조각·전체 압축·파일 SHA-256 검증을 통과한 JSON을 `.cache/starrail-source`로 복원했다. 참고 원본은 수정하지 않았다.
 - 지원 입력은 이 스냅샷의 `catalog.json`, 임무 문서 JSON, `starrail-mission-dialogue-supplements.v1`, `starrail-deep-timeline-dialogue.v1`, `starrail-handbook-originals.v1`과 자료실 전용 `hsr-train-databank.v1`이다. 다른 스키마는 오류로 중단한다.

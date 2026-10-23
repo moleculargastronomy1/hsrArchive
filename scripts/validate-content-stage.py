@@ -8,6 +8,10 @@ from pathlib import Path
 
 
 def validate(root):
+    spec = importlib.util.spec_from_file_location('search_text_validation', Path(__file__).with_name('import-search-text.py'))
+    search_text = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(search_text)
+    search_text.validate(root)
     spec = importlib.util.spec_from_file_location('bwiki_placement_validation', Path(__file__).with_name('bwiki-placement.py'))
     placement = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(placement)

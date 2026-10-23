@@ -48,3 +48,46 @@ test('site deployments never run text processing or acknowledge a newer official
     await fs.rm(folder, { recursive: true, force: true });
   }
 });
+
+test('a search-only deadline skips all canonical collectors', async () => {
+  const root = process.cwd();
+  const folder = await fs.mkdtemp(path.resolve('.cache/tests/search-only-'));
+  try {
+    for (const name of ['.cache/content-watch', '.cache/upstream-content', 'public'])
+      await fs.mkdir(path.join(folder, name), { recursive: true });
+    await fs.writeFile(
+      path.join(folder, '.cache/content-watch/check.json'),
+      JSON.stringify({
+        mode: 'retry',
+        retrySearch: true,
+        retryBwiki: false,
+        retryVideo: false,
+      }),
+    );
+    await fs.writeFile(path.join(folder, '.cache/upstream-content/plan.json'), '{"commit":"same"}');
+    await fs.writeFile(path.join(folder, 'public/content-update.json'), '{"commit":"same"}');
+    const output = path.join(folder, 'outputs');
+    // No canonical processing scripts exist in the fixture.
+    execFileSync(process.execPath, [path.join(root, 'scripts/run-content-refresh.mjs')], {
+      cwd: folder,
+      env: { ...process.env, GITHUB_OUTPUT: output },
+    });
+    assert.equal(await fs.readFile(output, 'utf8'), 'publish=false\nsearch_only=true\n');
+    assert.deepEqual(await fs.readdir(path.join(folder, 'public')), ['content-update.json']);
+    assert.equal(
+      await fs.readFile(path.join(folder, 'public/content-update.json'), 'utf8'),
+      '{"commit":"same"}',
+    );
+    // An invalid search update must also finish without failing canonical deployment.
+    execFileSync(process.execPath, [path.join(root, 'scripts/search-text.mjs')], {
+      cwd: folder,
+      env: { ...process.env, GITHUB_OUTPUT: output },
+      stdio: 'pipe',
+    });
+    assert.match(await fs.readFile(output, 'utf8'), /changed=false/);
+    assert.deepEqual(await fs.readdir(path.join(folder, 'public')), ['content-update.json']);
+  } finally {
+    assert.ok(folder.startsWith(path.resolve('.cache/tests') + path.sep));
+    await fs.rm(folder, { recursive: true, force: true });
+  }
+});

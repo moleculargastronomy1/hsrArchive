@@ -34,7 +34,7 @@ jobs:
       contents: read
       pages: read
     outputs:
-      publish: ${{ steps.refresh.outputs.publish }}
+      publish: ${{ steps.publication.outputs.publish }}
     steps:
       - name: Check out source
         uses: actions/checkout@v6
@@ -106,7 +106,9 @@ jobs:
         if: steps.baseline.outputs.ready == 'true'
         uses: actions/cache/restore@v4
         with:
-          path: .cache/upstream-content/bwiki
+          path: |
+            .cache/upstream-content/bwiki
+            .cache/upstream-content/search-bwiki
           key: hsr-bwiki-snapshots-v1-${{ github.run_id }}-${{ github.run_attempt }}
           restore-keys: hsr-bwiki-snapshots-v1-
       - name: Refresh changed sources or retry unresolved BWIKI and YouTube sections
@@ -116,35 +118,47 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ github.token }}
           HSR_TRAILBLAZE_TITLE: ${{ inputs.trailblaze_title }}
+      - name: Refresh search-only TextMap and BWIKI source labels independently
+        if: steps.baseline.outputs.ready == 'true' && steps.refresh.outputs.site_only != 'true'
+        id: search
+        continue-on-error: true
+        timeout-minutes: 4
+        run: node scripts/search-text.mjs
+      - name: Select publication when canonical content or search improved
+        if: steps.baseline.outputs.ready == 'true'
+        id: publication
+        run: echo "publish=${PUBLISH}" >> "$GITHUB_OUTPUT"
+        env:
+          PUBLISH: ${{ steps.refresh.outputs.publish == 'true' || steps.search.outputs.changed == 'true' }}
       - name: Refresh official YouTube video
-        if: steps.refresh.outputs.publish == 'true' && steps.refresh.outputs.site_only != 'true'
+        if: steps.refresh.outputs.publish == 'true' && steps.refresh.outputs.site_only != 'true' && steps.refresh.outputs.search_only != 'true'
         run: node scripts/update-official-videos.mjs
       - name: Record processed revisions
-        if: steps.baseline.outputs.ready == 'true' && steps.refresh.outputs.site_only != 'true' && success()
+        if: steps.baseline.outputs.ready == 'true' && steps.refresh.outputs.site_only != 'true' && steps.refresh.outputs.search_only != 'true' && success()
         run: node scripts/check-content-changes.mjs --record
       - name: Validate final content contracts
-        if: steps.refresh.outputs.publish == 'true'
+        if: steps.publication.outputs.publish == 'true'
         run: |
           node scripts/source-first-publication.mjs --seal
           python scripts/validate-content-stage.py .
       - name: Test archive behavior
-        if: steps.refresh.outputs.publish == 'true'
+        if: steps.publication.outputs.publish == 'true'
         run: pnpm test
       - name: Preserve validated derived data for the next deployment
-        if: steps.refresh.outputs.publish == 'true'
+        if: steps.publication.outputs.publish == 'true'
         run: node scripts/prepare-verification.mjs --pack
       - name: Build static site
-        if: steps.refresh.outputs.publish == 'true'
+        if: steps.publication.outputs.publish == 'true'
         run: |
           pnpm build
       - name: Configure Pages
-        if: steps.refresh.outputs.publish == 'true'
+        if: steps.publication.outputs.publish == 'true'
         uses: actions/configure-pages@v5
       - name: Verify the built artifact is the tested data
-        if: steps.refresh.outputs.publish == 'true'
+        if: steps.publication.outputs.publish == 'true'
         run: node scripts/source-first-publication.mjs --check-build
       - name: Upload built site
-        if: steps.refresh.outputs.publish == 'true'
+        if: steps.publication.outputs.publish == 'true'
         uses: actions/upload-pages-artifact@v4
         with:
           path: dist
@@ -157,7 +171,9 @@ jobs:
         if: always() && steps.baseline.outputs.ready == 'true'
         uses: actions/cache/save@v4
         with:
-          path: .cache/upstream-content/bwiki
+          path: |
+            .cache/upstream-content/bwiki
+            .cache/upstream-content/search-bwiki
           key: hsr-bwiki-snapshots-v1-${{ github.run_id }}-${{ github.run_attempt }}
       - name: Save retry schedule and run journal
         if: always()

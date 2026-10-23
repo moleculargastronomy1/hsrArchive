@@ -33,6 +33,9 @@ import { localizationKey, type ComparisonLanguage } from '../lib/localization';
 import GameText from './GameText';
 import VideoVerificationNote from './VideoVerificationNote';
 import SourceDetails from './SourceDetails';
+import SearchTextResults from './SearchTextResults';
+import { useSearchText } from '../hooks/useSearchText';
+import { searchTextWindow } from '../lib/search-text';
 import { searchableGameText } from '../lib/game-text';
 import {
   isWikiReading,
@@ -197,7 +200,9 @@ export default function DialogueBrowser({
         setPage(
           targetPage ??
             (restorePage.current && !query
-              ? Math.min(savedPage, Math.max(1, Math.ceil(result.length / pageSize)))
+              ? global
+                ? savedPage
+                : Math.min(savedPage, Math.max(1, Math.ceil(result.length / pageSize)))
               : 1),
         );
         if (targetPage !== undefined) setSavedPage(targetPage);
@@ -231,7 +236,19 @@ export default function DialogueBrowser({
     if (!query && scope === 'all') setSavedPage(next);
     tableTop.current?.scrollIntoView({ block: 'start' });
   };
-  const totalPages = Math.max(1, Math.ceil(matches.length / pageSize));
+  const extraWindow = searchTextWindow(matches.length, page, pageSize);
+  const extra = useSearchText(
+    global && scope === 'all',
+    query,
+    extraWindow.offset,
+    extraWindow.limit,
+  );
+  const totalMatches = matches.length + extra.count;
+  const busy = searching || extra.loading;
+  const totalPages = Math.max(1, Math.ceil(totalMatches / pageSize));
+  useEffect(() => {
+    if (!loading && !busy && page > totalPages) setPage(totalPages);
+  }, [loading, busy, page, totalPages]);
   useEffect(() => setPageInput(String(page)), [page, totalPages]);
   const jumpToPage = (event: FormEvent) => {
     event.preventDefault();
@@ -406,7 +423,9 @@ export default function DialogueBrowser({
         <input
           aria-label={global ? '원문 검색어' : '이 장에서 검색'}
           placeholder={
-            global ? '임무명, 서적명, 화자, 원문을 검색해 보세요' : '이 장에서 화자나 대사 검색'
+            global
+              ? '임무명, 서적명, 화자, 전체 원문을 검색해 보세요'
+              : '이 장에서 화자나 대사 검색'
           }
           value={draft}
           onChange={(event) => setDraft(event.target.value)}
@@ -448,9 +467,9 @@ export default function DialogueBrowser({
         <>
           <div className="dialogue-result-bar" ref={tableTop} aria-live="polite">
             <span>
-              {searching
+              {busy
                 ? '검색 중…'
-                : `${matches.length.toLocaleString('ko-KR')}줄${query ? ` · “${query}”` : ''}`}
+                : `${totalMatches.toLocaleString('ko-KR')}줄${query ? ` · “${query}”` : ''}`}
             </span>
             {query && (
               <button
@@ -464,16 +483,24 @@ export default function DialogueBrowser({
               </button>
             )}
           </div>
-          {!searching && !matches.length ? (
+          {extra.error && (
+            <div className="dialogue-status" role="alert">
+              <p>{extra.error} 기존 자료의 검색 결과는 계속 표시합니다.</p>
+              <button className="button secondary" onClick={extra.retry}>
+                다시 시도
+              </button>
+            </div>
+          )}
+          {!busy && !totalMatches ? (
             <div className="dialogue-status">
               <p>
                 {rows.length
-                  ? '일치하는 대사가 없습니다.'
+                  ? '일치하는 원문이 없습니다.'
                   : '이 항목에서 확인된 한국어 대사가 없습니다.'}
               </p>
             </div>
           ) : (
-            <div className="dialogue-table" aria-busy={searching}>
+            <div className="dialogue-table" aria-busy={busy}>
               {visible.map((index) => {
                 const row = rows[index];
                 const position = row.wikiPosition ?? row.executionPosition;
@@ -532,12 +559,15 @@ export default function DialogueBrowser({
                   </Fragment>
                 );
               })}
+              {global && (
+                <SearchTextResults rows={extra.rows} sources={extra.sources} query={query} />
+              )}
             </div>
           )}
           <nav className="dialogue-pagination" aria-label="대사 페이지 이동">
             <button
               className="button secondary"
-              disabled={page <= 1 || searching}
+              disabled={page <= 1 || busy}
               onClick={() => changePage(page - 1)}
             >
               <ArrowLeft size={14} />
@@ -553,16 +583,16 @@ export default function DialogueBrowser({
                 required
                 value={pageInput}
                 onChange={(event) => setPageInput(event.target.value)}
-                disabled={searching}
+                disabled={busy}
               />
               <span>/ {totalPages} 페이지</span>
-              <button className="button secondary" type="submit" disabled={searching}>
+              <button className="button secondary" type="submit" disabled={busy}>
                 이동
               </button>
             </form>
             <button
               className="button secondary"
-              disabled={page >= totalPages || searching}
+              disabled={page >= totalPages || busy}
               onClick={() => changePage(page + 1)}
             >
               다음
