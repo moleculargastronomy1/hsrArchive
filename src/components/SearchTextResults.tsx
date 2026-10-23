@@ -85,7 +85,6 @@ export default function SearchTextResults({
               </p>
             );
           })}
-          {!selected?.[2].length && <p>BWIKI에서 출처를 확인하지 못한 원문입니다.</p>}
           {!!selected?.[2].length && (
             <p>
               BWIKI에서 같은 중국어 원문이 확인된 문서입니다. 분류·출처 정보는{' '}
@@ -99,7 +98,6 @@ export default function SearchTextResults({
               에 따라 재구성했습니다.
             </p>
           )}
-          <p>TextMap ID: {selected?.[0]}</p>
           <p>게임 원문의 권리는 HoYoverse 및 해당 권리자에게 있습니다.</p>
         </footer>
       </dialog>
