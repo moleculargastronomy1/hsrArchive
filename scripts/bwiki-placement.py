@@ -17,6 +17,29 @@ def mission_group(chapter_id, page):
     return 'wiki-mission-' + digest([chapter_id, page])[:24]
 
 
+def context_positions(occurrences, nodes):
+    """Group contiguous verified wiki text for reading, without adding any edges.
+
+    Parser segments isolate narration for graph safety. They are not necessarily
+    scene breaks. Actual barriers, missing matches, tabs/folds and response
+    branches still end the surrounding-text window.
+    """
+    positions = {p['id']: p for p in occurrences}
+    previous, context_id = None, None
+    for node in nodes:
+        position = positions.get(node['id'])
+        if position is None or node['kind'] not in ['line', 'choice', 'narration']:
+            previous, context_id = None, None
+            continue
+        location = node['location']
+        containers = [location[:i] for i, part in enumerate(location) if part == 'separated']
+        scope = [position['missionId'], node['page'], node['revision'], node['context'], node['branch'], containers]
+        if scope != previous:
+            context_id = 'wiki-context-' + digest([node['id'], scope])[:24]
+        position['contextId'] = context_id
+        previous = scope
+
+
 def build(record, payload, audit, talks, chinese, korean, owners, previous_chunks, b, imports, version, content_index=None):
     rows = {r['id']: r for r in payload['rows']}
     table = {t['TalkSentenceID']: t for t in talks if t}
@@ -212,6 +235,7 @@ def build(record, payload, audit, talks, chinese, korean, owners, previous_chunk
                 'evidenceHash': digest([canonical(rows[row_id]), documents[page]['sha256'], node['location']])})
         reading_groups.append({'id': group_id, 'title': title, 'officialMissionIds': [m['id'] for m in group],
             'page': page, 'objectives': metadata.get(page, {}).get('objectives', {})})
+    context_positions(occurrences, nodes)
     unknown = defaultdict(list)
     unknown_titles = {}
     for row in rows.values():
@@ -293,6 +317,7 @@ def validate(reading, rows, commit):
     sources = {(s['pageTitle'], s['revision']): s for s in reading['sources']}
     missions = {m['id']: m for m in reading['missions']}
     positions = {p['id']: p for p in reading['occurrences']}
+    contexts = {}
     require(len(missions) == len(reading['missions']) and len(positions) == len(reading['occurrences']), 'duplicate position/group')
     for p in positions.values():
         require(p['rowId'] in by_id and p['missionId'] in missions and p['status'] == 'wiki-display', 'row/group/status')
@@ -300,6 +325,10 @@ def validate(reading, rows, commit):
         require(source is not None and bool(re.fullmatch(r'[a-f0-9]{64}', source.get('sha256', ''))), 'pinned source')
         require(p['evidenceHash'] == digest([canonical(by_id[p['rowId']]), source['sha256'], p['location']]), 'position evidence')
         require(all(isinstance(value, str) for gate in p['conditions'] for value in gate.values()), 'condition labels')
+        if 'contextId' in p:
+            require(bool(re.fullmatch(r'wiki-context-[a-f0-9]{24}', p['contextId'])), 'context identity')
+            scope = [p['missionId'], p['page'], p['revision'], p['conditions'], p['branch']]
+            require(contexts.setdefault(p['contextId'], scope) == scope, 'cross-boundary context')
         for target in p['nextIds'] + p['replyToIds']:
             q = positions.get(target)
             require(q is not None and p['missionId'] == q['missionId'] and p['sceneId'] == q['sceneId'] and

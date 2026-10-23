@@ -424,8 +424,14 @@
 }
 .context-navigation {
   display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
   justify-content: flex-end;
   margin-bottom: 10px;
+}
+.context-navigation select {
+  max-width: 100%;
 }
 .context-navigation .button {
   min-height: 32px;

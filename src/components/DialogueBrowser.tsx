@@ -43,6 +43,26 @@ import {
   type ExecutionReading,
 } from '../lib/wiki-reading';
 
+interface DialogueDocument {
+  rows: DialogueRow[];
+  wikiReading?: WikiReading;
+  executionReading?: ExecutionReading;
+}
+
+async function loadDialogueDocument(file: string, signal: AbortSignal): Promise<DialogueDocument> {
+  if (!/^content\/[a-zA-Z0-9_-]+\.json$/.test(file)) throw new Error('자료 주소를 확인해 주세요.');
+  const response = await fetch(`${import.meta.env.BASE_URL}${file}`, { signal });
+  if (!response.ok) throw new Error(`본문을 불러오지 못했습니다 (${response.status}).`);
+  const data = await response.json();
+  if (data.schema !== 'hsr-dialogue.v1' || !isDialogueRows(data.rows))
+    throw new Error('본문의 자료 형식을 확인해 주세요.');
+  if (data.wikiReading !== undefined && !isWikiReading(data.wikiReading, data.rows))
+    throw new Error('출현 위치의 자료 형식을 확인해 주세요.');
+  if (data.executionReading !== undefined && !isExecutionReading(data.executionReading, data.rows))
+    throw new Error('대사 연결의 자료 형식을 확인해 주세요.');
+  return data;
+}
+
 export default function DialogueBrowser({
   file = 'content/search-index.json',
   initialQuery = '',
@@ -91,6 +111,13 @@ export default function DialogueBrowser({
   const restorePage = useRef(true);
   const [selected, setSelected] = useState<number>();
   const [contextMode, setContextMode] = useState<'position' | 'existing'>('position');
+  const [contextDocument, setContextDocument] = useState<{
+    file: string;
+    data: DialogueDocument;
+  }>();
+  const [contextOccurrence, setContextOccurrence] = useState<string>();
+  const [contextError, setContextError] = useState('');
+  const [contextRetry, setContextRetry] = useState(0);
   const version = useRef(0);
   const dialog = useRef<HTMLDialogElement>(null);
   const tableTop = useRef<HTMLDivElement>(null);
@@ -112,24 +139,8 @@ export default function DialogueBrowser({
     setExecution(undefined);
     setMatches([]);
     setSelected(undefined);
-    if (!/^content\/[a-zA-Z0-9_-]+\.json$/.test(file)) {
-      setError('자료 주소를 확인해 주세요.');
-      setLoading(false);
-      return;
-    }
-    fetch(`${import.meta.env.BASE_URL}${file}`, { signal: controller.signal })
-      .then(async (response) => {
-        if (!response.ok) throw new Error(`본문을 불러오지 못했습니다 (${response.status}).`);
-        const data = await response.json();
-        if (data.schema !== 'hsr-dialogue.v1' || !isDialogueRows(data.rows))
-          throw new Error('본문의 자료 형식을 확인해 주세요.');
-        if (data.wikiReading !== undefined && !isWikiReading(data.wikiReading, data.rows))
-          throw new Error('출현 위치의 자료 형식을 확인해 주세요.');
-        if (
-          data.executionReading !== undefined &&
-          !isExecutionReading(data.executionReading, data.rows)
-        )
-          throw new Error('대사 연결의 자료 형식을 확인해 주세요.');
+    loadDialogueDocument(file, controller.signal)
+      .then((data) => {
         if (!controller.signal.aborted) {
           setRows(data.rows);
           setReading(data.wikiReading);
@@ -228,40 +239,103 @@ export default function DialogueBrowser({
     if (Number.isInteger(next) && next >= 1 && next <= totalPages) changePage(next);
   };
   const visible = matches.slice((page - 1) * pageSize, page * pageSize);
-  const selectedRow = selected === undefined ? undefined : rows[selected];
+  const originRow = selected === undefined ? undefined : rows[selected];
+  const contextFile =
+    global && originRow
+      ? entries
+          .get(originRow.entryId)
+          ?.chapters.find((chapter) => chapter.id === originRow.chapterId)?.content?.file
+      : undefined;
+  useEffect(() => {
+    setContextError('');
+    if (!global || !originRow) return;
+    if (!contextFile) {
+      setContextError('이 대사의 본문을 찾지 못했습니다.');
+      return;
+    }
+    if (contextDocument?.file === contextFile) return;
+    const controller = new AbortController();
+    loadDialogueDocument(contextFile, controller.signal)
+      .then((data) => {
+        if (!controller.signal.aborted) setContextDocument({ file: contextFile, data });
+      })
+      .catch((err) => {
+        if (!controller.signal.aborted)
+          setContextError(err instanceof Error ? err.message : '본문을 불러오지 못했습니다.');
+      });
+    return () => controller.abort();
+  }, [global, contextFile, contextDocument?.file, contextRetry, originRow?.id]);
+  const loadedContext =
+    global && contextDocument?.file === contextFile ? contextDocument?.data : undefined;
+  const contextCanonical = loadedContext?.rows ?? canonicalRows;
+  const contextRows = useMemo(
+    () =>
+      loadedContext
+        ? readingRows(loadedContext.rows, loadedContext.wikiReading, loadedContext.executionReading)
+        : rows,
+    [loadedContext, rows],
+  );
+  const occurrences =
+    global && loadedContext && originRow
+      ? contextRows.filter((row) => row.id === originRow.id)
+      : [];
+  const contextIndex = global
+    ? contextRows.findIndex(
+        (row) =>
+          row.id === originRow?.id &&
+          (!contextOccurrence || positionKey(row) === contextOccurrence),
+      )
+    : (selected ?? -1);
+  const selectedRow = contextRows[contextIndex] ?? originRow;
+  const contextMismatch =
+    global &&
+    loadedContext &&
+    originRow &&
+    (!selectedRow ||
+      selectedRow.text !== originRow.text ||
+      selectedRow.speaker !== originRow.speaker ||
+      selectedRow.type !== originRow.type ||
+      !occurrences.length);
+  const contextPending = global && !!originRow && !loadedContext;
   const linkedChoice =
     selectedRow?.type === 'choice' &&
     ((selectedRow.wikiPosition || selectedRow.executionPosition) && contextMode !== 'existing'
       ? (selectedRow.wikiPosition ?? selectedRow.executionPosition)!.nextIds.length > 0
       : selectedRow.flowStatus === 'verified' ||
         ['matched', 'cached'].includes(selectedRow.bwikiStatus ?? ''));
-  const selectedWiki =
-    !!selectedRow?.wikiPosition ||
-    !!selectedRow?.executionPosition ||
-    ['matched', 'cached'].includes(selectedRow?.bwikiStatus ?? '');
   const context = useMemo(
     () =>
-      selected === undefined
+      selected === undefined || contextPending || contextMismatch
         ? []
         : contextMode === 'existing'
-          ? (rows[selected].type === 'choice' ? choiceDialogue : nearbyDialogue)(
-              canonicalRows,
-              canonicalRows.findIndex((row) => row.id === rows[selected].id),
+          ? (selectedRow?.type === 'choice' ? choiceDialogue : nearbyDialogue)(
+              contextCanonical,
+              contextCanonical.findIndex((row) => row.id === selectedRow?.id),
             )
           : linkedChoice
-            ? choiceDialogue(rows, selected)
-            : nearbyDialogue(rows, selected),
-    [rows, canonicalRows, selected, linkedChoice, contextMode],
+            ? choiceDialogue(contextRows, contextIndex)
+            : nearbyDialogue(contextRows, contextIndex),
+    [
+      contextRows,
+      contextCanonical,
+      selected,
+      selectedRow,
+      contextIndex,
+      contextPending,
+      contextMismatch,
+      linkedChoice,
+      contextMode,
+    ],
   );
-  const byId = useMemo(() => new Map(rows.map((row) => [row.id, row])), [rows]);
+  const byId = useMemo(() => new Map(contextRows.map((row) => [row.id, row])), [contextRows]);
   const byPosition = useMemo(
     () =>
       new Map(
-        rows
+        contextRows
           .filter((row) => row.wikiPosition || row.executionPosition)
           .map((row) => [positionKey(row), row]),
       ),
-    [rows],
+    [contextRows],
   );
   const occurrenceIndex = targetOccurrenceId
     ? rows.findIndex((row) => positionKey(row) === targetOccurrenceId && row.id === targetRowId)
@@ -314,6 +388,7 @@ export default function DialogueBrowser({
     setSelected(undefined);
   };
   const openContext = (index: number) => {
+    setContextOccurrence(undefined);
     setContextMode(rows[index].wikiLegacy ? 'existing' : 'position');
     setSelected(index);
   };
@@ -562,7 +637,6 @@ export default function DialogueBrowser({
               {selectedRow?.wikiPosition?.mission ??
                 selectedRow?.bwikiMission ??
                 selectedRow?.mission}
-              {!selectedWiki && <> · {selectedRow?.scene}</>}
             </p>
           </div>
           <button className="icon-button" aria-label="앞뒤 대사 닫기" onClick={closeDialog}>
@@ -570,6 +644,20 @@ export default function DialogueBrowser({
           </button>
         </header>
         <div className="context-dialog-body">
+          {contextPending && !contextError && <p role="status">주변 대사를 불러오는 중입니다…</p>}
+          {(contextError || contextMismatch) && (
+            <div role="alert">
+              <p>{contextError || '검색 자료와 본문이 달라졌습니다. 다시 검색해 주세요.'}</p>
+              {contextError && (
+                <button
+                  className="button secondary"
+                  onClick={() => setContextRetry(contextRetry + 1)}
+                >
+                  다시 시도
+                </button>
+              )}
+            </div>
+          )}
           {context.map((row) => (
             <div
               key={positionKey(row)}
@@ -603,12 +691,34 @@ export default function DialogueBrowser({
                   />
                 ))}
               </div>
-              {row.id === selectedRow?.id && <small>선택한 대사</small>}
+              {selectedRow &&
+                (contextMode === 'existing'
+                  ? row.id === selectedRow.id
+                  : positionKey(row) === positionKey(selectedRow)) && <small>선택한 대사</small>}
             </div>
           ))}
         </div>
         <footer>
           <nav className="context-navigation" aria-label="선택한 대사로 이동">
+            {occurrences.length > 1 && (
+              <label>
+                대사 위치{' '}
+                <select
+                  aria-label="대사 출현 위치"
+                  value={selectedRow ? positionKey(selectedRow) : ''}
+                  onChange={(event) => {
+                    setContextOccurrence(event.target.value);
+                    setContextMode('position');
+                  }}
+                >
+                  {occurrences.map((row, index) => (
+                    <option key={positionKey(row)} value={positionKey(row)}>
+                      {row.wikiPosition?.mission ?? row.mission} · {index + 1}/{occurrences.length}
+                    </option>
+                  ))}
+                </select>
+              </label>
+            )}
             {selectedRow?.wikiPosition &&
               selectedRow.type === 'choice' &&
               selectedRow.bwikiNextIds?.some(
@@ -644,7 +754,13 @@ export default function DialogueBrowser({
                     className="button secondary"
                     key={positionKey(choice!)}
                     onClick={() => {
-                      if (selectedRow.wikiLegacy) {
+                      if (global) {
+                        const index = rows.findIndex((row) => row.id === choice!.id);
+                        if (index < 0) return;
+                        setSelected(index);
+                        setContextOccurrence(positionKey(choice!));
+                        setContextMode('position');
+                      } else if (selectedRow.wikiLegacy) {
                         setContextMode('existing');
                         setSelected(rows.indexOf(choice!));
                       } else openContext(rows.indexOf(choice!));

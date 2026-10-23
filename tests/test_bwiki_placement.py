@@ -77,6 +77,28 @@ class PlacementTest(unittest.TestCase):
         with self.assertRaisesRegex(ValueError,'empty choice'):
             s.placement.validate(bad,self.rows,'c'*40)
 
+    def test_context_joins_document_narration_without_creating_response_or_execution_edges(self):
+        self.cn['300'], self.kr['300'] = '旁白原文', '내레이션 원문'
+        self.talks.append({'TalkSentenceID': 300, 'TalkSentenceText': {'Hash': 300}})
+        self.rows.append({'id': '300', 'talkId': 300, 'textHash': '300', 'text': '내레이션 원문',
+            'speaker': '', 'type': 'narration', 'missionId': 'quest-11', 'mission': '임무', 'source': 'official'})
+        reading = self.build('*角色：开始\n:旁白原文\n*角色：结束')
+        positions = reading['occurrences']
+        self.assertEqual(len({p['sceneId'] for p in positions}), 3)
+        self.assertEqual(len({p['contextId'] for p in positions}), 1)
+        self.assertTrue(all(not p['nextIds'] and not p['replyToIds'] for p in positions))
+        s.placement.validate(reading, self.rows, 'c'*40)
+
+    def test_context_stops_at_missing_text_barriers_sibling_responses_and_repeated_folds(self):
+        for text in ['*角色：开始\n----\n*角色：结束',
+                     '*角色：开始\n*角色：未收录\n*角色：结束',
+                     '{{折叠|标题=同名|内容=*角色：开始}}\n{{折叠|标题=同名|内容=*角色：结束}}',
+                     '{{剧情选项|选项1=左|剧情1=*角色：开始|选项2=右|剧情2=*角色：结束}}']:
+            reading = self.build(text)
+            positions = {p['rowId']: p for p in reading['occurrences']}
+            self.assertNotEqual(positions['100']['contextId'], positions['102']['contextId'])
+            s.placement.validate(reading, self.rows, 'c'*40)
+
     def test_unimported_official_alternative_is_not_mistaken_for_uniqueness(self):
         self.talks.append({'TalkSentenceID':999,'TalkSentenceText':{'Hash':101},'TextmapTalkSentenceName':{'Hash':9}})
         self.owners[(999,'line')]=[{'missionId':11,'source':'OtherAct','pointer':'/SimpleTalkList/1','conditions':[]}]

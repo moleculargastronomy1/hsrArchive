@@ -20,22 +20,34 @@ import { finishVerification } from '../scripts/reverify-content.mjs';
 
 const commit = 'a'.repeat(40);
 
-test('workflow journals preserve checkpoints and distinguish failed candidates from publication', async t => {
+test('workflow journals preserve checkpoints and distinguish failed candidates from publication', async (t) => {
   const root = await fs.mkdtemp(path.resolve('.cache/journal-test-'));
   t.after(() => fs.rm(root, { recursive: true, force: true }));
   const put = async (file, value) => {
     await fs.mkdir(path.dirname(path.join(root, file)), { recursive: true });
     await fs.writeFile(path.join(root, file), JSON.stringify(value));
   };
-  await put('.cache/source-first/progress.json', { runId: 'previous', status: 'running',
-    registeredChapters: 36, chapters: [{ file: 'chapter', title: '임무|제목', candidateAdditions: 2 }],
-    pendingChapters: ['next'], codeHash: 'hash', policyVersion: 4 });
+  await put('.cache/source-first/progress.json', {
+    runId: 'previous',
+    status: 'running',
+    registeredChapters: 36,
+    chapters: [{ file: 'chapter', title: '임무|제목', candidateAdditions: 2 }],
+    pendingChapters: ['next'],
+    codeHash: 'hash',
+    policyVersion: 4,
+  });
   await put('.cache/verification-retry/run.json', { status: 'failed', newlyVerified: 0 });
-  await put('.cache/verification-retry/state.json', { pendingDigest: 'unpublished',
-    pages: { page: { reason: 'retry', nextRetryAt: 'tomorrow' } } });
+  await put('.cache/verification-retry/state.json', {
+    pendingDigest: 'unpublished',
+    pages: { page: { reason: 'retry', nextRetryAt: 'tomorrow' } },
+  });
   const summary = path.join(root, 'summary.md');
-  const result = await recordWorkflowProgress(root, { GITHUB_RUN_ID: 'current', HSR_JOB_STATUS: 'failure',
-    GITHUB_STEP_SUMMARY: summary, GITHUB_SHA: commit });
+  const result = await recordWorkflowProgress(root, {
+    GITHUB_RUN_ID: 'current',
+    HSR_JOB_STATUS: 'failure',
+    GITHUB_STEP_SUMMARY: summary,
+    GITHUB_SHA: commit,
+  });
   assert.equal(result.pipelineStatus, 'failure');
   assert.equal(result.audit.currentRun, false);
   assert.equal(result.audit.processedChapters, 1);
@@ -43,12 +55,26 @@ test('workflow journals preserve checkpoints and distinguish failed candidates f
   assert.equal(result.retry.pendingDigest, 'unpublished');
   assert.equal(result.publicationStatus.includes('not-publication-approval'), true);
   assert.match(await fs.readFile(summary, 'utf8'), /임무 제목/);
-  assert.equal(JSON.parse(await fs.readFile(path.join(root, '.cache/verification-retry/workflow-progress.json'))).runId, 'current');
+  assert.equal(
+    JSON.parse(
+      await fs.readFile(path.join(root, '.cache/verification-retry/workflow-progress.json')),
+    ).runId,
+    'current',
+  );
   await fs.rm(path.join(root, '.cache/source-first/progress.json'));
-  await put('.cache/verification-retry/run.json', { status: 'unchanged', sourceAudit: {
-    status: 'validated-publication-checkpoint', registeredChapters: 36,
-    chapters: [{ file: 'chapter', title: '보존된 장' }], pendingChapters: [] } });
-  const recovered = await recordWorkflowProgress(root, { GITHUB_RUN_ID: 'next', HSR_JOB_STATUS: 'success' });
+  await put('.cache/verification-retry/run.json', {
+    status: 'unchanged',
+    sourceAudit: {
+      status: 'validated-publication-checkpoint',
+      registeredChapters: 36,
+      chapters: [{ file: 'chapter', title: '보존된 장' }],
+      pendingChapters: [],
+    },
+  });
+  const recovered = await recordWorkflowProgress(root, {
+    GITHUB_RUN_ID: 'next',
+    HSR_JOB_STATUS: 'success',
+  });
   assert.equal(recovered.audit.processedChapters, 1);
   assert.equal(recovered.audit.currentRun, false);
   assert.equal(recovered.audit.chapters[0].title, '보존된 장');
@@ -106,6 +132,12 @@ test('BWIKI and video code changes have independent replay fingerprints, with sh
     assert.notEqual(await algorithmHash(folder), initialWiki);
     assert.equal(await videoAlgorithmHash(folder), editedVideo);
     const editedWiki = await algorithmHash(folder);
+    await fs.appendFile(
+      path.join(folder, 'scripts/bwiki-placement.py'),
+      '\n# context placement edit\n',
+    );
+    assert.notEqual(await algorithmHash(folder), editedWiki);
+    assert.equal(await videoAlgorithmHash(folder), editedVideo);
     await fs.mkdir(path.join(folder, 'editorial'), { recursive: true });
     await fs.writeFile(
       path.join(folder, 'editorial/bwiki-translation-matches.json'),
@@ -232,13 +264,28 @@ test('published snapshots preserve exact integer bytes and validate every path/c
 
 test('snapshot records restore legacy JSON and reject incomplete or duplicated v2 records', () => {
   const exact = '{"hash":18446744073709551615}';
-  const record = { path: 'src/data/trailblaze.json', bytes: Buffer.from(exact).toString('base64'), sha256: hash(exact) };
-  const read = (text, count = 1) => {
-    const bytes = gzipSync(text), sha256 = hash(bytes);
-    return unpackState(bytes, { schema: 'hsr-verification-state-pointer.v1', commit,
-      files: count, sha256, file: `verification-state-${sha256}.json.gz` });
+  const record = {
+    path: 'src/data/trailblaze.json',
+    bytes: Buffer.from(exact).toString('base64'),
+    sha256: hash(exact),
   };
-  assert.equal(read(JSON.stringify({ schema: 'hsr-verification-state.v1', commit, files: [record] }, null, 2))[0].bytes.toString(), exact);
+  const read = (text, count = 1) => {
+    const bytes = gzipSync(text),
+      sha256 = hash(bytes);
+    return unpackState(bytes, {
+      schema: 'hsr-verification-state-pointer.v1',
+      commit,
+      files: count,
+      sha256,
+      file: `verification-state-${sha256}.json.gz`,
+    });
+  };
+  assert.equal(
+    read(
+      JSON.stringify({ schema: 'hsr-verification-state.v1', commit, files: [record] }, null, 2),
+    )[0].bytes.toString(),
+    exact,
+  );
   const header = JSON.stringify({ schema: 'hsr-verification-state.v2', commit, files: 1 }) + '\n';
   assert.equal(read(header + JSON.stringify(record) + '\n')[0].bytes.toString(), exact);
   assert.throws(() => read(header));

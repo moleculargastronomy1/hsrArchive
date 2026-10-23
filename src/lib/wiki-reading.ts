@@ -6,6 +6,7 @@ export interface WikiPosition {
   missionId: string;
   mission: string;
   sceneId: string;
+  contextId?: string;
   scene: string;
   page: string;
   revision: number;
@@ -112,6 +113,7 @@ export function isWikiReading(value: unknown, rows: DialogueRow[]): value is Wik
         typeof p.id === 'string' &&
         typeof p.sceneId === 'string' &&
         typeof p.scene === 'string' &&
+        (p.contextId === undefined || /^wiki-context-[a-f0-9]{24}$/.test(p.contextId)) &&
         typeof p.mission === 'string' &&
         missions.has(p.missionId) &&
         typeof p.page === 'string' &&
@@ -254,8 +256,12 @@ export function wikiContext(rows: DialogueRow[], index: number, choice: boolean,
     return result;
   }
   const same = (row: DialogueRow) =>
-    row.wikiPosition?.sceneId === p.sceneId &&
+    !!row.wikiPosition &&
+    (row.wikiPosition.contextId ?? row.wikiPosition.sceneId) === (p.contextId ?? p.sceneId) &&
     row.wikiPosition.missionId === p.missionId &&
+    row.wikiPosition.page === p.page &&
+    row.wikiPosition.revision === p.revision &&
+    JSON.stringify(row.wikiPosition.conditions) === JSON.stringify(p.conditions) &&
     JSON.stringify(row.wikiPosition.branch) === JSON.stringify(p.branch);
   let start = index,
     end = index;

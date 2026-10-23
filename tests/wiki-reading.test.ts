@@ -82,6 +82,38 @@ test('reading schema rejects lost canonical IDs and links to unknown occurrences
   assert.equal(isWikiReading(lost, rows), false);
 });
 
+test('document context includes adjacent narration positions but keeps branch and gate boundaries', () => {
+  const contextId = 'wiki-context-' + 'a'.repeat(24);
+  const rows = ['a', 'narration', 'b', 'response', 'condition', 'missing'].map((id, i) => ({
+    ...row(id, id === 'narration' ? 'narration' : 'dialogue'),
+    wikiPosition: {
+      ...pos('occ-' + id, id),
+      sceneId: 'segment-' + i,
+      contextId,
+      ...(id === 'response' ? { branch: ['choice'] } : {}),
+      ...(id === 'condition' ? { conditions: [{ condition: 'other' }] } : {}),
+      ...(id === 'missing' ? { contextId: 'wiki-context-' + 'b'.repeat(24) } : {}),
+    },
+  }));
+  assert.deepEqual(
+    nearbyDialogue(rows, 1).map((r) => r.id),
+    ['a', 'narration', 'b'],
+  );
+  assert.deepEqual(
+    nearbyDialogue(rows, 3).map((r) => r.id),
+    ['response'],
+  );
+  assert.deepEqual(
+    nearbyDialogue(rows, 4).map((r) => r.id),
+    ['condition'],
+  );
+  assert.deepEqual(
+    nearbyDialogue(rows, 5).map((r) => r.id),
+    ['missing'],
+  );
+  assert.ok(rows.every((r) => r.wikiPosition.nextIds.length === 0));
+});
+
 test('missing BWIKI positions stay in their mission unknown area with original evidence preserved', () => {
   const canonical = [
     row('left', 'choice'),
@@ -98,8 +130,11 @@ test('missing BWIKI positions stay in their mission unknown area with original e
 
 test('BWIKI positions and branch replies are invariant under opposing official execution order', () => {
   const canonical = [row('left', 'choice'), row('right', 'choice'), row('shared'), row('unknown')];
-  const opposed = { schema: 'hsr-execution-reading.v1' as const,
-    occurrences: [], placements: [{ beforeRowId: 'left', contextIds: [], occurrenceIds: [] }] };
+  const opposed = {
+    schema: 'hsr-execution-reading.v1' as const,
+    occurrences: [],
+    placements: [{ beforeRowId: 'left', contextIds: [], occurrenceIds: [] }],
+  };
   assert.deepEqual(readingRows(canonical, reading, opposed), readingRows(canonical, reading));
 });
 
