@@ -126,6 +126,7 @@ export async function algorithmHash(root = process.cwd()) {
     'dialogue-flow.mjs',
     'trailblaze-structures.mjs',
     'source-first.mjs',
+    'update-content.mjs',
     'source-first-publication.mjs',
     'import-trailblaze.py',
   ]);

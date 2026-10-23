@@ -69,7 +69,7 @@ def code_hash():
     files = ['source-first.py', 'source-first.mjs', 'bwiki-dialogue.py', 'bwiki-placement.py',
              'import-bwiki-chapters.py', 'import-localizations.py', 'restore-dialogue-flow.py',
              'validate-content-stage.py', 'source-first-publication.mjs', 'content-publication.mjs', 'import-trailblaze.py',
-             'execution-placement.py', 'verification-state.mjs']
+             'execution-placement.py', 'verification-state.mjs', 'update-content.mjs']
     return digest({name: hashlib.sha256((CODE / name).read_bytes()).hexdigest() for name in files})
 
 
@@ -111,7 +111,7 @@ def catalog(root, raw, plan_path):
             'requests': requests, 'review': unresolved + missing, 'inputHashes': hashes}, (plan, talks, cn, kr)
 
 
-def structure_index(manifest, commit):
+def structure_index(manifest, commit, verify_order=True):
     if manifest.get('schema') != 'hsr-dialogue-flow-input.v1' or manifest.get('commit') != commit:
         raise ValueError('Mixed official structure version')
     owners, graphs, evidence, issues = defaultdict(list), ExecutionGraphs(), {}, []
@@ -135,9 +135,10 @@ def structure_index(manifest, commit):
         proof = {'source': item['path'], 'missionId': int(match[1]), 'gitBlob': blob,
                  'sha256': hashlib.sha256(data).hexdigest()}
         evidence[item['path']] = proof
-        local = flow.execution_slices(document)
-        if local['nodes']:
-            graphs.executions[item['path']] = {**local, 'proof': proof}
+        if verify_order:
+            local = flow.execution_slices(document)
+            if local['nodes']:
+                graphs.executions[item['path']] = {**local, 'proof': proof}
 
         def visit(value, pointer='', role=None, conditions=()):
             if isinstance(value, list):
@@ -159,11 +160,12 @@ def structure_index(manifest, commit):
                     child_role = 'line' if key == 'SimpleTalkList' else 'choice' if key == 'OptionList' else typed
                     visit(child, pointer + '/' + key, child_role, context)
         visit(document)
-        try:
-            nodes, order = flow.scene_graph(document)
-            graphs[item['path']] = {str(k): v['next'] for k, v in nodes.items()}
-        except flow.Unresolved:
-            issues.append({'source': item['path'], 'reason': 'execution-structure-partial-or-unsupported'})
+        if verify_order:
+            try:
+                nodes, order = flow.scene_graph(document)
+                graphs[item['path']] = {str(k): v['next'] for k, v in nodes.items()}
+            except flow.Unresolved:
+                issues.append({'source': item['path'], 'reason': 'execution-structure-partial-or-unsupported'})
     for item in manifest.get('tables', []):
         if not re.fullmatch(r'ExcelOutput/(?:Performance(?:A|C|D|DS|CG|E|SubMissionLink)|SubMission)\.json', item['path']):
             raise ValueError('Unsupported execution table')
@@ -172,6 +174,8 @@ def structure_index(manifest, commit):
             raise ValueError('Execution table checksum mismatch')
         graphs.tables[item['path']] = json.loads(data)
         evidence[item['path']] = {'source': item['path'], 'gitBlob': item['sha'], 'sha256': hashlib.sha256(data).hexdigest()}
+    if not verify_order:
+        return owners, graphs, evidence, issues
     graphs.invocations, graphs.mission_relations, invocation_review = execution_placement.invocation_index(graphs.documents, graphs.tables)
     for source, graph in graphs.executions.items():
         paths = set()
@@ -203,8 +207,12 @@ def inventory(segments, page, chapter_id):
         for i, node in enumerate(nodes):
             loc = path + [i]
             if node['kind'] == 'choice':
+                group = 'wiki-choice-' + digest([chapter_id, page['pageId'], page['revision'], loc])[:24]
+                prompt = nodes[i - 1].get('_occ') if i and nodes[i - 1]['kind'] == 'line' else None
                 for j, option in enumerate(node['options']):
                     identity = add(option, loc + ['choice', j], 'choice', branch, context)
+                    occurrences[-1].update(choiceGroup=group, optionIndex=j + 1,
+                                           optionCount=len(node['options']), promptId=prompt)
                     walk(option['body'], loc + ['body', j], branch + [identity], context)
             elif node['kind'] == 'separated':
                 ctx = context + [{k: node[k] for k in ['condition', 'fold'] if k in node}]
@@ -306,12 +314,18 @@ def match_occurrence(node, index, owners, mission_ids, existing, wiki_scope=None
         return
     candidates = list({r['talkId']: r for r in index.get(key, [])}.values())
     node['candidateTalkIds'] = [r['talkId'] for r in candidates]
-    if len(candidates) != 1:
+    shared = len(candidates) > 1 and wiki_scope is not None and placement.same_content(candidates)
+    if len(candidates) != 1 and not shared:
         node.update(reason='ambiguous-official-ids' if candidates else 'no-exact-official-candidate')
         return
+    # rowRefs are storage references for identical official text, never a guess
+    # that one of several official IDs is the ID of this wiki occurrence.
+    candidates.sort(key=lambda r: (not bool(existing.get(r['talkId'])), r['talkId']))
     record = candidates[0]
-    node.update(official=[record], contentStatus='exact-official', method='exact-official')
-    node['rowRefs'] = [r['id'] for r in existing.get(record['talkId'], [])
+    node.update(official=candidates, contentStatus='exact-official',
+                method='exact-shared-official-text' if shared else 'exact-official',
+                idStatus='unresolved-identical-text' if shared else 'unique')
+    node['rowRefs'] = [r['id'] for candidate in candidates for r in existing.get(candidate['talkId'], [])
                        if r['text'] == record['text'] and r['speaker'] == record['speaker'] and
                        (r['type'] == 'choice') == (node['kind'] == 'choice') and
                        (node['kind'] != 'narration' or r['type'] == 'narration')]
@@ -423,9 +437,9 @@ def audit_chapter(record, payload, pages, index, owners, graphs, reviewed=None, 
             write(doc_path, {'key': doc_key, 'sha256': digest(saved), 'result': saved})
         document_result({'status': 'audited', 'key': doc_key, 'reused': False})
     by_id = {o['id']: o for o in occurrences}
-    orders = [{'from': a, 'to': z, 'evidence': 'wiki-display',
-               'officialComparison': classify_order(by_id[a], by_id[z], owners, graphs)}
-              for a, targets in edges.items() for z in targets]
+    # The wiki already supplies display order. No separate game-order verdict
+    # is computed or required for publishing that document order.
+    orders = []
     # Unresolved endpoints are retained in the source graph, never bridged.
     confirmed = {o['id'] for o in occurrences if o['status'] in ['confirmed', 'wiki-confirmed']}
     safe_edges = {a: [z for z in targets if z in confirmed] for a, targets in edges.items() if a in confirmed}
@@ -445,14 +459,30 @@ def audit_chapter(record, payload, pages, index, owners, graphs, reviewed=None, 
             'baselineLinkedRows': sum(r.get('bwikiStatus') in ['matched', 'cached'] for r in payload['rows']),
             'sources': sources, 'documents': documents, 'missions': mission_reports, 'occurrences': occurrences, 'wikiGraph': edges, 'confirmedWikiGraph': safe_edges,
             'orderComparisons': orders, 'review': reviews,
+            'choiceCoverage': choice_coverage(occurrences),
             'counts': {'allParsedUnits': len(occurrences), 'speechOccurrences': len(speech),
                        'status': dict(counts), 'boundaries': sum(o['kind'] == 'barrier' for o in occurrences),
                        'unsupported': sum(o['kind'] == 'unsupported' for o in occurrences),
                        'unavailableDocuments': sum('missionIds' in r for r in reviews),
                        'uniqueOfficialContentIds': len({r['talkId'] for o in speech for r in o['official']}),
                        'newConfirmedIds': len({o['official'][0]['talkId'] for o in speech if o['status'] in ['confirmed', 'wiki-confirmed'] and not existing.get(o['official'][0]['talkId'])})},
-            'verification': {'content': 'partial', 'localOrder': 'partial', 'wholePath': 'unverified',
+            'verification': {'content': 'partial', 'localOrder': 'bwiki-display', 'wholePath': 'unverified',
+                             'separateOrderVerification': False,
                              'referenceTxtUsed': False, 'crossBoundaryEdges': 0}}
+
+
+def choice_coverage(nodes):
+    groups = defaultdict(list)
+    by_id = {n['id']: n for n in nodes}
+    for node in nodes:
+        if node.get('choiceGroup'):
+            groups[node['choiceGroup']].append(node)
+    return [{'groupId': key, 'page': values[0]['page'], 'expected': values[0]['optionCount'],
+             'matched': sum(n['status'] == 'wiki-confirmed' for n in values),
+             'unmatchedOptions': [n['id'] for n in values if n['status'] != 'wiki-confirmed'],
+             'promptId': values[0].get('promptId'),
+             'promptMatched': by_id.get(values[0].get('promptId'), {}).get('status') == 'wiki-confirmed'}
+            for key, values in groups.items()]
 
 
 def add_confirmed(payload, result):
@@ -578,6 +608,41 @@ def refresh_added_views(root, records, count):
             'public/content-update.json', 'public/bwiki-provenance.json']
 
 
+def preserve_execution(args, cat, plan):
+    """Retain old execution evidence; only rebind its unchanged row references.
+
+    New BWIKI content is not required to have an execution call. No execution
+    nodes, edges, calls or order comparisons are generated here.
+    """
+    report = {'status': 'retained', 'candidateAdditions': 0, 'chapters': [],
+              'separateOrderVerification': False}
+    for record in cat['chapters']:
+        payload = read(args.root / 'public' / record['file'])
+        reading = payload.get('executionReading')
+        if reading:
+            if reading.get('displayOrderPolicy') != 'bwiki-only' or reading.get('placements'):
+                raise ValueError('Legacy execution display must be migrated before preserving evidence')
+            reading['canonicalRowsHash'] = execution_placement.digest([execution_placement.canonical(r) for r in payload['rows']])
+            reading['wikiReadingHash'] = execution_placement.digest(payload.get('wikiReading', {}))
+            reading['verificationMode'] = 'retained-no-order-audit'
+            execution_placement.validate(reading, payload['rows'], plan['commit'], payload.get('wikiReading'))
+            if args.apply:
+                write(args.root / 'public' / record['file'], payload)
+        report['chapters'].append({'file': record['file'], 'reading': payload.get('wikiReading', {}).get('summary'),
+                                  'summary': {'newOfficialRows': 0, 'verificationMode': 'retained-no-order-audit'}})
+    flow_file = args.root / 'public/dialogue-flow-provenance.json'
+    if args.apply and flow_file.exists():
+        proof = read(flow_file)
+        proof.setdefault('evidenceCommit', proof['commit'])
+        proof.update(commit=plan['commit'], verificationMode='retained-no-order-audit')
+        write(flow_file, proof)
+        receipt_file = args.root / 'receipt.json'
+        receipt = read(receipt_file) if receipt_file.exists() else {'files': []}
+        receipt['files'] = sorted(set(receipt['files'] + ['public/dialogue-flow-provenance.json']))
+        write(receipt_file, receipt)
+    write(args.work / 'execution-report.json', report)
+
+
 def audit_execution_only(args, cat, plan, talks, cn, kr):
     """Extend the deployed snapshot; do not rerun BWIKI collection or rematching."""
     policy = validated_policy()
@@ -641,7 +706,9 @@ def audit_execution_only(args, cat, plan, talks, cn, kr):
 
 def validated_policy():
     policy = read(CODE.parent / 'editorial/source-first-policy.json')
-    if (policy.get('version') != 5 or policy.get('requireExplicitMissionOwnership') is not False or
+    if (policy.get('version') != 6 or policy.get('requireExplicitMissionOwnership') is not False or
+            policy.get('separateOrderVerification') is not False or
+            policy.get('ambiguousOfficialIds') != 'share-identical-official-text-with-candidates-preserved' or
             policy.get('narrationEvidence') != 'exact-official-unnamed-text-and-validated-bwiki-position' or
             policy.get('admissionEvidence') != 'exact-official-content-and-validated-bwiki-mission' or
             policy.get('missionAttribution') != 'bwiki-display-separate-from-official-execution' or
@@ -662,11 +729,14 @@ def main():
     parser.add_argument('--discover', action='store_true')
     parser.add_argument('--apply', action='store_true')
     parser.add_argument('--execution-only', action='store_true')
+    parser.add_argument('--preserve-execution', action='store_true')
     parser.add_argument('--title')
     args = parser.parse_args()
     cat, (plan, talks, cn, kr) = catalog(args.root, args.raw, args.plan)
     if args.execution_only:
         return audit_execution_only(args, cat, plan, talks, cn, kr)
+    if args.preserve_execution:
+        return preserve_execution(args, cat, plan)
     args.work.mkdir(parents=True, exist_ok=True)
     write(args.work / 'catalog.json', cat)
     if args.discover:
@@ -678,7 +748,7 @@ def main():
     if manifest.get('schema') != 'hsr-bwiki-input.v1' or manifest['commit'] != plan['commit']:
         raise ValueError('Mixed wiki input version')
     structures = read(args.work / 'structures.json')
-    owners, graphs, structure_proofs, structure_review = structure_index(structures, plan['commit'])
+    owners, graphs, structure_proofs, structure_review = structure_index(structures, plan['commit'], verify_order=False)
     index = global_candidates(talks, cn, kr)
     pages = {p['title']: p for p in manifest['pages']}
     version = {'codeHash': code_hash(), 'policyHash': digest(policy), 'policyVersion': policy['version'],
@@ -729,10 +799,11 @@ def main():
         for prior in previous.get('chapters', {}).get(record['file'], {}).get('additions', []):
             row = by_id.get(prior['rowId'])
             node = next((o for o in result['occurrences'] if o['status'] in ['confirmed', 'wiki-confirmed'] and
-                         o['official'][0]['talkId'] == prior['talkId'] and
+                         any(r['talkId'] == prior['talkId'] for r in o['official']) and
                          (o['missionId'] == prior['missionId'] or prior['missionId'] in o.get('wikiProof', {}).get('catalogMissionIds', []))), None)
-            if row and node and row.get('missionEvidence') == 'bwiki' and node['status'] == 'wiki-confirmed' and row['text'] == node['official'][0]['text'] and row['speaker'] == node['official'][0]['speaker']:
-                retained_proofs.append({**prior, 'occurrence': node['id'], 'content': node['official'][0], 'proof': node['wikiProof']})
+            content = next((r for r in node['official'] if r['talkId'] == prior['talkId']), None) if node else None
+            if row and node and row.get('missionEvidence') == 'bwiki' and node['status'] == 'wiki-confirmed' and row['text'] == content['text'] and row['speaker'] == content['speaker']:
+                retained_proofs.append({**prior, 'occurrence': node['id'], 'content': content, 'proof': node['wikiProof']})
             elif row and node and row['text'] == node['official'][0]['text'] and row['source'] in {p['source'] for p in node['ownership']}:
                 retained_proofs.append({**prior, 'occurrence': node['id'], 'content': node['official'][0],
                                         'proof': next(p for p in node['ownership'] if p['source'] == row['source'])})
@@ -758,8 +829,11 @@ def main():
             'missions': result['missions'],
             'verification': result['verification'], 'additions': retained_proofs + added, 'retainedUnverifiedRows': unverified_prior,
             'reading': candidate['wikiReading']['summary'],
+            'choiceCoverage': result['choiceCoverage'],
             'occurrences': [{k: v for k, v in o.items() if k not in ['chinese', 'speaker', 'official', 'ownership']}
-                            | {'officialIds': [r['talkId'] for r in o['official']]} for o in result['occurrences'] if o['id'] in published_occurrences],
+                            | {'officialIds': [r['talkId'] for r in o['official']]}
+                            | ({'equivalentContent': o['official']} if o.get('method') == 'exact-shared-official-text' else {})
+                            for o in result['occurrences'] if o['id'] in published_occurrences],
             'wikiGraph': {}, 'orderComparisonCounts': dict(Counter(e['officialComparison'] for e in result['orderComparisons'])),
             'orderReview': [e for e in result['orderComparisons'] if e['officialComparison'] == 'potential-order-conflict'],
             'inventoryKey': key, 'inventorySha256': digest(result), 'review': result['review']}

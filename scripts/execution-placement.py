@@ -358,7 +358,10 @@ def validate(reading, rows, commit, wiki=None):
     by_id = {r['id']: r for r in rows}
     def require(ok, reason):
         if not ok: raise ValueError('Invalid official execution positions: ' + reason)
-    require(reading.get('schema') == 'hsr-execution-reading.v1' and reading.get('commit') == commit, 'schema/release')
+    retained = (reading.get('verificationMode') == 'retained-no-order-audit' and
+                reading.get('displayOrderPolicy') == 'bwiki-only' and not reading.get('placements'))
+    require(reading.get('schema') == 'hsr-execution-reading.v1' and
+            (reading.get('commit') == commit or (retained and re.fullmatch('[a-f0-9]{40}', reading.get('commit', '')))), 'schema/release')
     require(all(re.fullmatch('[a-f0-9]{64}', reading.get(k, '')) for k in ['codeHash', 'policyHash']), 'code/policy version')
     require(reading.get('canonicalRowsHash') == digest([canonical(r) for r in rows]), 'canonical checksum')
     require(reading.get('wikiReadingHash') == digest(wiki or {}), 'wiki layout version')

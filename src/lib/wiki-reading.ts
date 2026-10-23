@@ -7,6 +7,9 @@ export interface WikiPosition {
   mission: string;
   sceneId: string;
   contextId?: string;
+  officialCandidateIds?: number[];
+  idStatus?: 'unresolved-identical-text';
+  rowReference?: 'official-content';
   scene: string;
   page: string;
   revision: number;
@@ -114,6 +117,12 @@ export function isWikiReading(value: unknown, rows: DialogueRow[]): value is Wik
         typeof p.sceneId === 'string' &&
         typeof p.scene === 'string' &&
         (p.contextId === undefined || /^wiki-context-[a-f0-9]{24}$/.test(p.contextId)) &&
+        (p.idStatus === undefined ||
+          (p.idStatus === 'unresolved-identical-text' &&
+            p.rowReference === 'official-content' &&
+            Array.isArray(p.officialCandidateIds) &&
+            p.officialCandidateIds.length > 1 &&
+            p.officialCandidateIds.every(Number.isSafeInteger))) &&
         typeof p.mission === 'string' &&
         missions.has(p.missionId) &&
         typeof p.page === 'string' &&

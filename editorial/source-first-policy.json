@@ -1,6 +1,8 @@
 {
   "schema": "hsr-source-first-policy.v1",
-  "version": 5,
+  "version": 6,
+  "separateOrderVerification": false,
+  "ambiguousOfficialIds": "share-identical-official-text-with-candidates-preserved",
   "narrationEvidence": "exact-official-unnamed-text-and-validated-bwiki-position",
   "executionPositions": "explicit-typed-occurrences-with-local-edges-and-condition-scopes",
   "executionBarriers": "missing-timeline-unknown-task-and-unresolved-signal-never-bridged",
@@ -8,7 +10,7 @@
   "readingPositions": "separate-occurrences-with-immutable-canonical-row-refs",
   "wikiPositionEvidence": "exact-official-content-and-validated-bwiki-mission-scene",
   "wikiPositionEdges": "wiki-display-only-never-official-execution",
-  "automaticMethods": ["exact-official", "translation-reviewed-pinned"],
+  "automaticMethods": ["exact-official", "exact-shared-official-text", "translation-reviewed-pinned"],
   "requireExplicitMissionOwnership": false,
   "admissionEvidence": "exact-official-content-and-validated-bwiki-mission",
   "missionAttribution": "bwiki-display-separate-from-official-execution",

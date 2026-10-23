@@ -205,8 +205,16 @@ if (mode === '--plan') {
   run('import-trailblaze.py', trailblazeArgs);
   run('project-upstream-content.py', [root, raw, planFile], stage);
   await prepareSimulationEvents(stage, raw, planFile, api, blobs, run);
-  await prepareDialogueFlow(root, stage, plan.commit, api, blobs);
-  run('restore-dialogue-flow.py', [stage, path.join(stage, '.cache/dialogue-flow/manifest.json')]);
+  const sourcePolicy = JSON.parse(
+    await fs.readFile(path.join(root, 'editorial/source-first-policy.json'), 'utf8'),
+  );
+  if (sourcePolicy.separateOrderVerification !== false) {
+    await prepareDialogueFlow(root, stage, plan.commit, api, blobs);
+    run('restore-dialogue-flow.py', [
+      stage,
+      path.join(stage, '.cache/dialogue-flow/manifest.json'),
+    ]);
+  }
   discoverBwiki(run, stage, raw, planFile);
   const retryState = await readRetry(root),
     algorithm = await algorithmHash(root);

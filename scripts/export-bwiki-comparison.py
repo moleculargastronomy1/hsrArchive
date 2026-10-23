@@ -95,7 +95,8 @@ def main():
             elif pos:
                 same = s.b.comparable(node['chinese']) == s.b.comparable(original)
                 if same:
-                    status = '연결확인_중문본문일치'
+                    status = ('텍스트확인_중문본문일치_공식ID후보복수' if pos.get('idStatus') == 'unresolved-identical-text'
+                              else '연결확인_중문본문일치')
                 elif row.get('bwikiMatchMethod') == 'translation-reviewed':
                     status = '연결확인_기존번역검토_문장동일아님'
                 else:
@@ -123,13 +124,14 @@ def main():
                     row['text'] if row else None, korean if row else None, identity, row['id'] if row else None, node['id'] if node else site.get('occurrenceId') if site else None,
                     node['page'] if node else None, node['revision'] if node else None, node['location'] if node else None,
                     node['context'] if node else None, branch, direct if node else None, pos['nextIds'] if pos else None,
-                    ';'.join(repeats) or '-', original or None, [r['talkId'] for r in node.get('official', [])] if node and not pos else [],
+                    ';'.join(repeats) or '-', original or None, pos.get('officialCandidateIds', []) if pos else [r['talkId'] for r in node.get('official', [])] if node else [],
                     pos.get('method') if pos else None]
 
         lines += [chapter['title'] + ' — BWIKI 출현별 1:1 대조', '공식 입력: ' + report['commit'],
                   '문서 표시 순서와 사이트 표시 순서를 비교합니다. 공식 게임 실행 순서를 뜻하지 않습니다.',
                   '순번은 각각 독립적인 전체 순번입니다. 미확정·사이트 전용 행 때문에 같은 숫자일 필요는 없습니다.',
                   '하나의 BWIKI 출현은 출현ID로 하나의 사이트 출현과 연결하며, 반복 출현의 원문 행ID는 공유합니다.',
+                  '공식ID 후보가 복수인 텍스트 공유 행의 행ID·공식ID는 저장 원문 참조입니다. 실제 출현 ID를 하나로 확정하지 않으며 후보 전체를 별도 열에 남깁니다.',
                   '중국어는 고정 수정본의 표시 본문입니다. 유사 번역으로 새 연결을 만들지 않았습니다. - 는 미확정/해당 없음입니다.',
                   '한국어 일치는 기존 공식 표시 변환(특수 공백·서식·이름 치환)을 적용해 검사하며, 공식 한국어 원본도 별도 열에 보존합니다.',
                   '열 구분: 탭. 본문 줄바꿈·탭·역슬래시는 \\n·\\t·\\\\로 기록합니다.',

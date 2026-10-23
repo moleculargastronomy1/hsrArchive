@@ -24,6 +24,10 @@ class PlacementTest(unittest.TestCase):
 
     def build(self, text):
         nodes, graph = s.inventory(s.b.story_segments('==剧情内容==\n'+text,True,True),self.page,77)
+        index = s.global_candidates(self.talks, self.cn, self.kr)
+        scope = {'chapterId': 77, 'page': '任务', 'pageId': 1, 'revision': 5, 'sha256': 'a'*64}
+        for node in nodes:
+            s.match_occurrence(node, index, self.owners, {11}, {}, scope)
         audit={'sources':[self.page],'documents':[],'occurrences':nodes,'wikiGraph':graph}
         return s.placement.build(self.record,{'rows':self.rows},audit,self.talks,self.cn,self.kr,self.owners,[],s.b,s.imports,self.version)
 
@@ -99,23 +103,39 @@ class PlacementTest(unittest.TestCase):
             self.assertNotEqual(positions['100']['contextId'], positions['102']['contextId'])
             s.placement.validate(reading, self.rows, 'c'*40)
 
-    def test_unimported_official_alternative_is_not_mistaken_for_uniqueness(self):
+    def test_identical_text_reuses_content_and_keeps_all_official_ids_unresolved(self):
         self.talks.append({'TalkSentenceID':999,'TalkSentenceText':{'Hash':101},'TextmapTalkSentenceName':{'Hash':9}})
         self.owners[(999,'line')]=[{'missionId':11,'source':'OtherAct','pointer':'/SimpleTalkList/1','conditions':[]}]
         reading=self.build('*角色：回应')
-        self.assertFalse(reading['occurrences'])
+        self.assertEqual(reading['occurrences'][0]['officialCandidateIds'], [101,999])
+        self.assertEqual(reading['occurrences'][0]['idStatus'], 'unresolved-identical-text')
         self.rows[1].update(bwikiStatus='cached',bwikiPage='任务',bwikiRevision=5)
         # An old page binding is preserved on the canonical row but cannot
         # select one of several new occurrence-level official ID candidates.
         reading=self.build('*角色：回应')
-        self.assertFalse(reading['occurrences'])
+        self.assertEqual(reading['occurrences'][0]['rowId'], '101')
         self.assertEqual(self.rows[1]['bwikiStatus'],'cached')
-        # Both unique anchors must refer to the same explicit array and gate.
+        # Official array order never changes the wiki position or resolves ID ambiguity.
         reading=self.build('*角色：开始\n*角色：回应\n*角色：结束')
-        self.assertTrue(any(p['rowId']=='101' and p['method']=='two-anchors-same-official-array-and-gate' for p in reading['occurrences']))
+        before=copy.deepcopy(reading['occurrences'])
         self.owners[(999,'line')][0].update(source='Story/Mission/11/A.json')
         reading=self.build('*角色：开始\n*角色：回应\n*角色：结束')
+        self.assertEqual(reading['occurrences'],before)
+
+    def test_different_korean_candidates_are_not_displayed_as_shared_text(self):
+        self.cn['103'], self.kr['103'] = self.cn['101'], '다른 한국어 원문'
+        self.talks.append({'TalkSentenceID':999,'TalkSentenceText':{'Hash':103},'TextmapTalkSentenceName':{'Hash':9}})
+        reading=self.build('*角色：开始\n*角色：回应\n*角色：结束')
         self.assertFalse(any(p['rowId']=='101' for p in reading['occurrences']))
+
+    def test_shared_choice_preserves_legacy_storage_without_an_optional_hash_or_speaker_name(self):
+        self.rows[3].pop('textHash')
+        self.rows[3]['speaker'] = '화자 미지정'
+        self.talks.append({'TalkSentenceID':999,'TalkSentenceText':{'Hash':201},'TextmapTalkSentenceName':{'Hash':0}})
+        reading = self.build('{{剧情选项|选项1=左|选项2=右}}')
+        position = next(p for p in reading['occurrences'] if p['rowId'] == '201')
+        self.assertEqual(position['officialCandidateIds'], [201, 999])
+        s.placement.validate(reading, self.rows, 'c'*40)
 
     def test_unknown_rows_keep_original_mission_groups_and_mutated_text_fails_validation(self):
         self.rows[-1]['missionId']='quest-12'

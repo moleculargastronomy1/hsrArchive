@@ -82,6 +82,27 @@ test('reading schema rejects lost canonical IDs and links to unknown occurrences
   assert.equal(isWikiReading(lost, rows), false);
 });
 
+test('shared source text retains independent occurrences and unresolved official ID candidates', () => {
+  const canonical = [row('left', 'choice'), row('right', 'choice'), row('shared'), row('unknown')];
+  const data = structuredClone(reading);
+  Object.assign(data.occurrences[2], {
+    idStatus: 'unresolved-identical-text',
+    rowReference: 'official-content',
+    officialCandidateIds: [10, 11],
+  });
+  Object.assign(data.occurrences[3], {
+    idStatus: 'unresolved-identical-text',
+    rowReference: 'official-content',
+    officialCandidateIds: [10, 11],
+  });
+  assert.ok(isWikiReading(data, canonical));
+  const display = readingRows(canonical, data);
+  assert.equal(display[2].id, display[3].id);
+  assert.notEqual(positionKey(display[2]), positionKey(display[3]));
+  assert.deepEqual(display[2].wikiPosition?.officialCandidateIds, [10, 11]);
+  assert.deepEqual(choiceDialogue(display, 0).map(positionKey), ['choice-left', 'response-left']);
+});
+
 test('document context includes adjacent narration positions but keeps branch and gate boundaries', () => {
   const contextId = 'wiki-context-' + 'a'.repeat(24);
   const rows = ['a', 'narration', 'b', 'response', 'condition', 'missing'].map((id, i) => ({

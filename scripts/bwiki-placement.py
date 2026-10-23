@@ -17,6 +17,12 @@ def mission_group(chapter_id, page):
     return 'wiki-mission-' + digest([chapter_id, page])[:24]
 
 
+def same_content(records):
+    keys = ['text', 'speaker', 'chineseHash', 'speakerHash', 'koreanHash']
+    return bool(records) and all(all(record.get(key) == records[0].get(key) and key in record
+                                    for key in keys) for record in records)
+
+
 def context_positions(occurrences, nodes):
     """Group contiguous verified wiki text for reading, without adding any edges.
 
@@ -127,6 +133,15 @@ def build(record, payload, audit, talks, chinese, korean, owners, previous_chunk
         if not values and node.get('method') == 'translation-reviewed-pinned':
             values = [identity for identity in node.get('rowRefs', []) if identity in rows]
         candidates[node['id']] = list(dict.fromkeys(values))
+        if node.get('method') == 'exact-shared-official-text' and same_content(node.get('official', [])):
+            official_ids = {r['talkId'] for r in node['official']}
+            refs = [identity for identity in candidates[node['id']] if rows[identity].get('talkId') in official_ids]
+            old = next((p['rowId'] for p in payload.get('wikiReading', {}).get('occurrences', [])
+                        if p['id'] == node['id'] and p['rowId'] in refs), None)
+            if refs:
+                mapped[node['id']] = old or refs[0]
+                methods[node['id']] = 'exact-shared-official-text'
+                continue
         if len(candidates[node['id']]) == 1:
             row = rows[candidates[node['id']][0]]
             # A missing official alternative must not look unique merely because
@@ -160,45 +175,9 @@ def build(record, payload, audit, talks, chinese, korean, owners, previous_chunk
                 prior['evidenceHash'] == digest([canonical(rows[prior['rowId']]), source['sha256'], node['location']])):
             mapped[node['id']], methods[node['id']] = prior['rowId'], 'retained-pinned-position'
 
-    # Disambiguation needs two already unique anchors in one explicit source
-    # array and the same gate. Cross-file/Act/Discussion adjacency is insufficient.
+    # Official source-array order is not used to assign wiki positions.
     by_id = {n['id']: n for n in nodes}
     graph = audit['wikiGraph']
-    reverse = defaultdict(list)
-    for identity, targets in graph.items():
-        for target in targets:
-            reverse[target].append(identity)
-
-    def between(left, candidate, right, kind):
-        def locations(identity, role):
-            out = []
-            for proof in owners.get((identity, role), []):
-                match = re.fullmatch(r'(.*/(?:SimpleTalkList|OptionList))/(\d+)', proof['pointer'])
-                if match:
-                    out.append((proof['source'], match[1], json.dumps(proof['conditions'], sort_keys=True), int(match[2])))
-            return out
-        for a in locations(rows[left].get('talkId'), 'line'):
-            for c in locations(candidate, kind):
-                for z in locations(rows[right].get('talkId'), 'line'):
-                    if a[:3] == c[:3] == z[:3] and a[3] < c[3] < z[3]:
-                        return True
-        return False
-
-    for node in nodes:
-        identity = node['id']
-        if identity in mapped or (len(candidates.get(identity, [])) < 2 and identity not in doubtful):
-            continue
-        left, right = reverse[identity], graph.get(identity, [])
-        if len(left) != 1 or len(right) != 1 or left[0] not in mapped or right[0] not in mapped:
-            continue
-        a, z = by_id[left[0]], by_id[right[0]]
-        if not (a['branch'] == node['branch'] == z['branch'] and a['context'] == node['context'] == z['context']):
-            continue
-        possible = doubtful.get(identity, {rows[row].get('talkId') for row in candidates[identity]})
-        talk_ids = {talk for talk in possible if between(mapped[a['id']], talk, mapped[z['id']], node['kind'])}
-        values = [row for row in candidates[identity] if rows[row].get('talkId') in talk_ids]
-        if len(values) == 1 and len(talk_ids) == 1:
-            mapped[identity], methods[identity] = values[0], 'two-anchors-same-official-array-and-gate'
 
     reading_groups = []
     placed = set()
@@ -230,6 +209,11 @@ def build(record, payload, audit, talks, chinese, korean, owners, previous_chunk
                 'sceneId': scene, 'scene': section, 'page': page, 'revision': node['revision'],
                 'location': node['location'], 'conditions': node['context'], 'branch': node['branch'],
                 'method': methods[node['id']], 'status': 'wiki-display',
+                **({'officialCandidateIds': sorted(r['talkId'] for r in node['official']),
+                    'contentCandidates': node['official'],
+                    'idStatus': 'unresolved-identical-text', 'rowReference': 'official-content'}
+                   if node.get('method') == 'exact-shared-official-text' else {}),
+                **{key: node[key] for key in ['choiceGroup', 'optionIndex', 'optionCount', 'promptId'] if key in node},
                 'nextIds': display_edges.get(node['id'], []),
                 'replyToIds': [choice for choice in node['branch'] if choice in mapped and by_id[choice]['context'] == node['context'] and by_id[choice]['location'][0] == node['location'][0]],
                 'evidenceHash': digest([canonical(rows[row_id]), documents[page]['sha256'], node['location']])})
@@ -257,6 +241,7 @@ def build(record, payload, audit, talks, chinese, korean, owners, previous_chunk
         'summary': {'previousOrderUnknown': len(unknown_before), 'newlyPlacedRows': len(placed & unknown_before),
             'placedRows': len(placed), 'occurrences': len(occurrences), 'repeatedOccurrences': len(occurrences) - len(placed),
             'newChoiceReplyLinks': len(new_reply_edges), 'unplacedRows': len(rows) - len(placed),
+            'sharedContentOccurrences': sum(p.get('idStatus') == 'unresolved-identical-text' for p in occurrences),
             'remainingPreviousUnknown': len(unknown_before - placed),
             'officialExecutionVerifiedRows': sum(r.get('flowStatus') == 'verified' for r in rows.values())},
         'review': [{'occurrenceId': n['id'], 'candidateRowIds': candidates.get(n['id'], []),
@@ -291,8 +276,16 @@ def validate_admission(addition, row, node, chapter, reading):
             all(re.fullmatch(r'[a-f0-9]{64}', content.get(k, '')) for k in ['chineseHash', 'speakerHash']),
             'official text/ID/speaker')
     require(row['source'] == f"ExcelOutput/TalkSentenceConfig.json#TalkSentenceID={row['talkId']}", 'official content source')
-    require(node is not None and node['status'] == 'wiki-confirmed' and node['method'] == 'exact-official' and
-            node['officialIds'] == [row['talkId']] and
+    shared = node is not None and node.get('method') == 'exact-shared-official-text'
+    if shared:
+        records = node.get('equivalentContent', [])
+        require(len(records) > 1 and same_content(records) and
+                sorted(r['talkId'] for r in records) == sorted(node['officialIds']) and
+                content in records and node.get('idStatus') == 'unresolved-identical-text',
+                'identical official content candidates')
+    require(node is not None and node['status'] == 'wiki-confirmed' and
+            node['method'] in ['exact-official', 'exact-shared-official-text'] and
+            (row['talkId'] in node['officialIds'] if shared else node['officialIds'] == [row['talkId']]) and
             (node['kind'] == 'choice') == (row['type'] == 'choice') and
             (node['kind'] != 'narration' or (row['type'] == 'narration' and not row['speaker'])), 'unique exact role match')
     require(node['page'] == proof['page'] and node['pageId'] == proof['pageId'] and
@@ -324,6 +317,18 @@ def validate(reading, rows, commit):
         source = sources.get((p['page'], p['revision']))
         require(source is not None and bool(re.fullmatch(r'[a-f0-9]{64}', source.get('sha256', ''))), 'pinned source')
         require(p['evidenceHash'] == digest([canonical(by_id[p['rowId']]), source['sha256'], p['location']]), 'position evidence')
+        if p.get('idStatus') == 'unresolved-identical-text':
+            records = p.get('contentCandidates', [])
+            row = by_id[p['rowId']]
+            require(len(records) > 1 and same_content(records) and
+                    sorted(r['talkId'] for r in records) == p.get('officialCandidateIds') and
+                    len(set(p['officialCandidateIds'])) == len(records) and
+                    p.get('rowReference') == 'official-content', 'shared content evidence')
+            record = next((r for r in records if r['talkId'] == row.get('talkId')), None)
+            require(record is not None and record['text'] == row['text'] and
+                    (record['speaker'] == row['speaker'] or row['type'] == 'choice') and
+                    (row.get('textHash') is None or record['textHash'] == row['textHash']) and
+                    record['koreanHash'] == hashlib.sha256(row['text'].encode()).hexdigest(), 'shared content source row')
         require(all(isinstance(value, str) for gate in p['conditions'] for value in gate.values()), 'condition labels')
         if 'contextId' in p:
             require(bool(re.fullmatch(r'wiki-context-[a-f0-9]{24}', p['contextId'])), 'context identity')

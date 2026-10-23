@@ -288,8 +288,9 @@ export async function verifySourceFirst(root, stage, raw, planFile, options = {}
               retained.map((r) => ({ file: r.file, documents: r.documents.map((d) => d.page) })),
             ),
         );
-      // Build against the final recovered wiki layout, not its incomplete candidate.
-      run('source-first.py', [stage, raw, planFile, work, '--execution-only', '--apply']);
+      // Wiki text matching supplies display order. Keep prior execution proof
+      // without running another ordering algorithm over the new wiki layout.
+      run('source-first.py', [stage, raw, planFile, work, '--preserve-execution', '--apply']);
       const execution = await read(path.join(work, 'execution-report.json'));
       const report = await read(path.join(work, 'report.json'));
       const provenance = await read(path.join(stage, 'public/source-first-provenance.json'));

@@ -73,10 +73,38 @@ class SourceFirstTests(unittest.TestCase):
 
     def test_wiki_scope_does_not_resolve_ambiguous_official_ids_or_page_missions(self):
         node, scope = self.wiki_node()
-        for missions, records in [(set(), [self.record]), ({1}, [self.record, {**self.record, 'talkId': 11}])]:
+        for missions, records in [(set(), [self.record]), ({1}, [self.record, {**self.record, 'talkId': 11, 'text': '다른 원문'}])]:
             fresh = {**copy.deepcopy(self.node), 'location': [0, 0]}
             s.match_occurrence(fresh, {self.key: records}, {}, missions, {}, scope)
             self.assertNotEqual(fresh['status'], 'wiki-confirmed')
+
+    def test_identical_official_text_can_share_wiki_positions_without_resolving_ids(self):
+        node, scope = self.wiki_node()
+        candidates = [self.record, {**self.record, 'talkId': 11, 'textHash': '100'}]
+        s.match_occurrence(node, {self.key: candidates}, {}, {1}, {}, scope)
+        self.assertEqual(node['status'], 'wiki-confirmed')
+        self.assertEqual(node['idStatus'], 'unresolved-identical-text')
+        self.assertEqual(node['method'], 'exact-shared-official-text')
+        self.assertEqual({r['talkId'] for r in node['official']}, {10, 11})
+        payload = {'entryId': 'e', 'chapterId': 'c', 'rows': []}
+        changed, additions = s.add_confirmed(payload, {'chapter': {'missions': [{'id': 1, 'title': '임무'}]},
+            'occurrences': [node], 'orderComparisons': []})
+        row = changed['rows'][0]
+        chapter = {'chapterId': 7, 'missions': [{'id': 1}], 'sources': [
+            {'pageTitle': '任务', 'pageId': 3, 'revision': 9, 'sha256': 'a'*64, 'sourceUrl': scope['source']}]}
+        reading = {'missions': [{'id': node['missionId'], 'officialMissionIds': [1]}],
+            'occurrences': [{'id': node['id'], 'rowId': row['id'], 'missionId': node['missionId'],
+                'page': '任务', 'revision': 9, 'location': [0, 0]}]}
+        public_node = {**node, 'officialIds': [10, 11], 'equivalentContent': candidates}
+        s.placement.validate_admission(additions[0], row, public_node, chapter, reading)
+        bad = copy.deepcopy(public_node)
+        bad['equivalentContent'][1]['text'] = '다른 원문'
+        with self.assertRaisesRegex(ValueError, 'identical official content'):
+            s.placement.validate_admission(additions[0], row, bad, chapter, reading)
+        for field in ['text', 'speaker', 'chineseHash', 'koreanHash']:
+            fresh = {**copy.deepcopy(self.node), 'location': [0, 0]}
+            s.match_occurrence(fresh, {self.key: [self.record, {**candidates[1], field: 'different'}]}, {}, {1}, {}, scope)
+            self.assertEqual(fresh['status'], 'pending')
 
     def test_shared_wiki_document_has_its_own_scope_without_guessing_official_mission(self):
         node, scope = self.wiki_node()
@@ -148,8 +176,7 @@ class SourceFirstTests(unittest.TestCase):
     def test_narration_keeps_ambiguous_ids_named_speech_and_non_game_directions_pending(self):
         _, scope = self.wiki_node()
         talk = {'TalkSentenceID': 10, 'TalkSentenceText': {'Hash': 99}}
-        for talks in [[talk, {**talk, 'TalkSentenceID': 11}],
-                      [{**talk, 'TextmapTalkSentenceName': {'Hash': 9}}], []]:
+        for talks in [[{**talk, 'TextmapTalkSentenceName': {'Hash': 9}}], []]:
             index = s.global_candidates(talks, {'99': '一句话。', '9': '角色'}, {'99': '한국어 원문', '9': '화자'})
             node = {**copy.deepcopy(self.node), 'kind': 'narration', 'speaker': '', 'location': [0, 0]}
             s.match_occurrence(node, index, {}, {1}, {}, scope)
@@ -213,6 +240,23 @@ class SourceFirstTests(unittest.TestCase):
                 s.structure_index({'schema': 'hsr-dialogue-flow-input.v1', 'commit': 'c', 'blobs': folder,
                                    'files': [{'path': self.proof['source'], 'sha': blob}]}, 'c')
 
+    def test_text_only_structure_read_does_not_run_execution_order_algorithms(self):
+        cache = Path(__file__).resolve().parents[1] / '.cache/tests'
+        cache.mkdir(parents=True, exist_ok=True)
+        with tempfile.TemporaryDirectory(dir=cache) as folder:
+            data = json.dumps({'OnStartSequece': [{'TaskList': [{'$type': 'RPG.GameCore.PlaySimpleTalk',
+                'SimpleTalkList': [{'TalkSentenceID': 10}]}]}]}).encode()
+            blob = hashlib.sha1(f'blob {len(data)}\0'.encode() + data).hexdigest()
+            Path(folder, blob).write_bytes(data)
+            with patch.object(s.flow, 'execution_slices', side_effect=AssertionError('no new execution graph')), \
+                 patch.object(s.flow, 'scene_graph', side_effect=AssertionError('no game order comparison')):
+                owners, graphs, _, _ = s.structure_index({'schema': 'hsr-dialogue-flow-input.v1',
+                    'commit': 'c', 'blobs': folder, 'files': [{'path': self.proof['source'], 'sha': blob}]},
+                    'c', verify_order=False)
+            self.assertTrue(owners[(10, 'line')])
+            self.assertEqual(graphs.executions, {})
+            self.assertEqual(dict(graphs), {})
+
     def test_checkpoint_requires_matching_inputs_and_intact_result(self):
         cache = Path(__file__).resolve().parents[1] / '.cache/tests'
         cache.mkdir(parents=True, exist_ok=True)
@@ -253,10 +297,12 @@ class SourceFirstTests(unittest.TestCase):
             with patch.object(s, 'inventory', side_effect=interrupted):
                 with self.assertRaisesRegex(RuntimeError, 'simulated interruption'):
                     s.audit_chapter(*args, cache=(work, version))
-            with patch.object(s, 'inventory', wraps=original) as resumed:
+            with patch.object(s, 'inventory', wraps=original) as resumed, \
+                 patch.object(s, 'classify_order', side_effect=AssertionError('Separate order verification is disabled')):
                 result = s.audit_chapter(*args, cache=(work, version))
                 self.assertEqual(resumed.call_count, 1)
                 self.assertEqual(len(result['occurrences']), 2)
+                self.assertEqual(result['orderComparisons'], [])
             with patch.object(s, 'inventory', wraps=original) as changed:
                 s.audit_chapter(*args, cache=(work, {'policyHash': 'changed'}))
                 self.assertEqual(changed.call_count, 2)
