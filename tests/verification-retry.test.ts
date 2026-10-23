@@ -292,6 +292,25 @@ test('snapshot records restore legacy JSON and reject incomplete or duplicated v
   assert.throws(() => read(header + JSON.stringify(record)));
   assert.throws(() => read(header + JSON.stringify(record) + '\n' + JSON.stringify(record) + '\n'));
   assert.throws(() => read(header + JSON.stringify({ ...record, sha256: hash('changed') }) + '\n'));
+  const compressed = { ...record, encoding: 'gzip', bytes: gzipSync(exact).toString('base64') };
+  const v3 = (size: number) =>
+    JSON.stringify({ schema: 'hsr-verification-state.v3', commit, files: 1, restoredBytes: size }) +
+    '\n';
+  assert.equal(
+    read(v3(Buffer.byteLength(exact)) + JSON.stringify(compressed) + '\n')[0].bytes.toString(),
+    exact,
+  );
+  assert.throws(() => read(v3(1) + JSON.stringify(compressed) + '\n'));
+  assert.throws(() => read(v3(900 * 1024 * 1024) + JSON.stringify(compressed) + '\n'));
+  assert.throws(() => read(v3(Buffer.byteLength(exact)) + JSON.stringify(record) + '\n'));
+  assert.throws(() =>
+    read(
+      v3(Buffer.byteLength(exact)) +
+        JSON.stringify({ ...compressed, sha256: hash('wrong') }) +
+        '\n',
+    ),
+  );
+  assert.throws(() => read(header + JSON.stringify(compressed) + '\n'));
 });
 
 test('legacy journal recovery only acknowledges the exact published content digest', () => {

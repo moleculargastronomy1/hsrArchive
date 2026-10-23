@@ -52,7 +52,9 @@ export async function writeDerived(root, relative, bytes) {
   }
 }
 export const statePath = (file) =>
-  /^public\/search\/locales\/(?:manifest|(?:en|zh-CN|ja)\/search-text--part-(?:0\d|[12]\d|3[01]))\.json$/.test(file) ||
+  /^public\/search\/locales\/(?:manifest|(?:en|zh-CN|ja)\/search-text--part-(?:0\d|[12]\d|3[01]))\.json$/.test(
+    file,
+  ) ||
   /^public\/search\/(?:manifest|part-(?:0\d|[12]\d|3[01]))\.json$/.test(file) ||
   /^(?:src\/data\/(?:codex|simulation|imported-content|train-databank|astropolis-intro|books|trailblaze)\.json|public\/(?:content-update|content-watch|official-videos|books-provenance|trailblaze-provenance|dialogue-flow-provenance|bwiki-provenance|source-first-provenance|simulation-events-provenance|video-order-provenance|video-review-summary|verification-progress)\.json|public\/content\/[A-Za-z0-9_-]+\.json|public\/content\/locales\/(?:manifest|(?:en|zh-CN|ja)\/[A-Za-z0-9_-]+)\.json)$/.test(
     file,
@@ -119,17 +121,37 @@ export async function stateFiles(root) {
 
 export async function packState(root) {
   const files = [];
+  let restoredBytes = 0;
   for (const file of await stateFiles(root)) {
     const bytes = await fs.readFile(path.join(root, file));
-    files.push({ path: file, sha256: hash(bytes), bytes: bytes.toString('base64') });
+    restoredBytes += bytes.length;
+    if (restoredBytes > MAX_SNAPSHOT_BYTES)
+      throw Error('Verification snapshot exceeds the restore size limit');
+    // Compress each exact file before base64. Large TextMaps otherwise expand
+    // the restore envelope by a third even though their transfer is compressed.
+    files.push({
+      path: file,
+      sha256: hash(bytes),
+      encoding: 'gzip',
+      bytes: gzipSync(bytes).toString('base64'),
+    });
   }
   const update = JSON.parse(await fs.readFile(path.join(root, 'public/content-update.json')));
   // Parse one file per line on restore, avoiding V8's single-string size limit.
-  const parts = [Buffer.from(JSON.stringify({
-    schema: 'hsr-verification-state.v2', commit: update.commit, files: files.length,
-  }) + '\n'), ...files.map(file => Buffer.from(JSON.stringify(file) + '\n'))];
+  const parts = [
+    Buffer.from(
+      JSON.stringify({
+        schema: 'hsr-verification-state.v3',
+        commit: update.commit,
+        files: files.length,
+        restoredBytes,
+      }) + '\n',
+    ),
+    ...files.map((file) => Buffer.from(JSON.stringify(file) + '\n')),
+  ];
   const size = parts.reduce((n, part) => n + part.length, 0);
-  if (size > MAX_SNAPSHOT_BYTES) throw Error('Verification snapshot exceeds the restore size limit');
+  if (size > MAX_SNAPSHOT_BYTES)
+    throw Error('Verification snapshot exceeds the restore size limit');
   const bytes = gzipSync(Buffer.concat(parts, size));
   const sha256 = hash(bytes);
   const file = `verification-state-${sha256}.json.gz`;
@@ -163,20 +185,40 @@ export function unpackState(bytes, descriptor) {
   const newline = inflated.indexOf(10);
   let header;
   if (newline >= 0) {
-    try { header = JSON.parse(inflated.subarray(0, newline).toString()); } catch { /* Legacy JSON may be pretty-printed. */ }
+    try {
+      header = JSON.parse(inflated.subarray(0, newline).toString());
+    } catch {
+      /* Legacy JSON may be pretty-printed. */
+    }
   }
-  const data = header?.schema === 'hsr-verification-state.v2' ? header : JSON.parse(inflated.toString());
+  const data = ['hsr-verification-state.v2', 'hsr-verification-state.v3'].includes(header?.schema)
+    ? header
+    : JSON.parse(inflated.toString());
   const count = Array.isArray(data.files) ? data.files.length : data.files;
   if (
-    !['hsr-verification-state.v1', 'hsr-verification-state.v2'].includes(data.schema) ||
+    ![
+      'hsr-verification-state.v1',
+      'hsr-verification-state.v2',
+      'hsr-verification-state.v3',
+    ].includes(data.schema) ||
     data.commit !== descriptor.commit ||
-    !Number.isSafeInteger(count) || count !== descriptor.files || count > 50000 || count < 0 ||
+    !Number.isSafeInteger(count) ||
+    count !== descriptor.files ||
+    count > 50000 ||
+    count < 0 ||
     (data.schema === 'hsr-verification-state.v1' && !Array.isArray(data.files)) ||
-    (data.schema === 'hsr-verification-state.v2' && !Number.isSafeInteger(data.files))
+    (data.schema !== 'hsr-verification-state.v1' && !Number.isSafeInteger(data.files)) ||
+    (data.schema === 'hsr-verification-state.v3' &&
+      (!Number.isSafeInteger(data.restoredBytes) ||
+        data.restoredBytes < 0 ||
+        data.restoredBytes > MAX_SNAPSHOT_BYTES))
   )
     throw new Error('Invalid published verification snapshot');
   function* records() {
-    if (data.schema === 'hsr-verification-state.v1') { yield* data.files; return; }
+    if (data.schema === 'hsr-verification-state.v1') {
+      yield* data.files;
+      return;
+    }
     let start = newline + 1;
     while (start < inflated.length) {
       const end = inflated.indexOf(10, start);
@@ -189,15 +231,29 @@ export function unpackState(bytes, descriptor) {
   // Validate every entry before allowing any file to be restored. Keep original
   // JSON bytes: parsing/re-serializing here would corrupt 64-bit text hashes.
   const entries = [];
+  let restoredBytes = 0;
   for (const item of records()) {
     if (!statePath(item.path) || seen.has(item.path) || typeof item.bytes !== 'string')
       throw new Error('Unsafe or duplicate verification state path');
     seen.add(item.path);
-    const content = Buffer.from(item.bytes, 'base64');
+    const encoded = Buffer.from(item.bytes, 'base64');
+    const compressed = data.schema === 'hsr-verification-state.v3';
+    if (compressed ? item.encoding !== 'gzip' : item.encoding !== undefined)
+      throw Error('Invalid verification state encoding');
+    const content = compressed
+      ? gunzipSync(encoded, {
+          maxOutputLength: Math.max(1, data.restoredBytes - restoredBytes),
+        })
+      : encoded;
+    restoredBytes += content.length;
+    if (restoredBytes > MAX_SNAPSHOT_BYTES)
+      throw Error('Verification snapshot exceeds the restore size limit');
     if (hash(content) !== item.sha256) throw new Error('Verification state file checksum mismatch');
     entries.push({ path: item.path, bytes: content });
   }
   if (entries.length !== count) throw Error('Invalid verification snapshot record count');
+  if (data.schema === 'hsr-verification-state.v3' && restoredBytes !== data.restoredBytes)
+    throw Error('Invalid verification snapshot restored size');
   return entries;
 }
 
