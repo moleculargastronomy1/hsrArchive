@@ -111,6 +111,15 @@ export async function restoreVerification(root, { fetcher = fetch, write = write
       );
     }
     const selected = choice === 'repository' ? repository : bundle;
+    // Search proof is independent of canonical dialogue coverage. Keep the
+    // repository's verified search candidate for exact-input replay after a
+    // newer deployed dialogue baseline replaces the public search files.
+    const searchCandidate = path.join(root, '.cache/search-text/repository');
+    for (const [file, bytes] of repository) {
+      if (!/^public\/search\/(?:manifest|part-\d{2})\.json$/.test(file)) continue;
+      await fs.mkdir(searchCandidate, { recursive: true });
+      await fs.writeFile(path.join(searchCandidate, path.basename(file)), bytes);
+    }
     if (!selected.has('public/verification-progress.json')) {
       const rows =
         choice === 'repository' ? await verificationRows(root) : await verificationRows(candidate);

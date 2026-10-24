@@ -2,7 +2,7 @@ import { useRef, useState, type CSSProperties } from 'react';
 import { X } from 'lucide-react';
 import type { SearchText, SearchTextSource } from '../lib/search-text';
 import GameText from './GameText';
-import { searchTextRow } from '../lib/search-text';
+import { searchTextRow, searchSourceLabel } from '../lib/search-text';
 import { useLocalizations } from '../hooks/useComparison';
 import { LocalizedPassage } from './LanguageComparison';
 import type { ComparisonLanguage } from '../lib/localization';
@@ -38,7 +38,7 @@ export default function SearchTextResults({
               row[2].map((id) => (
                 <small key={id}>
                   {sources[id].kind}
-                  {sources[id].kind !== '로딩 화면' && ` · ${sources[id].label}`}
+                  {searchSourceLabel(sources[id]) && ` · ${searchSourceLabel(sources[id])}`}
                 </small>
               ))
             ) : (

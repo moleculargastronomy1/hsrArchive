@@ -5,6 +5,8 @@ import { execFileSync } from 'node:child_process';
 import { pythonRunner } from './content-process.mjs';
 import { gitBlob, REPOSITORY } from './upstream-content.mjs';
 import { applyDerivedChanges } from './verification-state.mjs';
+import { collectSearchSources } from './search-source-collection.mjs';
+import { createHash } from 'node:crypto';
 
 export function searchRetryDue(state, now = Date.now()) {
   return (
@@ -13,7 +15,7 @@ export function searchRetryDue(state, now = Date.now()) {
   );
 }
 
-export async function refreshSearchText(root = process.cwd()) {
+export async function refreshSearchText(root = process.cwd(), options = {}) {
   const read = async (name, fallback) =>
     JSON.parse(
       await fs.readFile(path.join(root, name)).catch((error) => {
@@ -21,11 +23,31 @@ export async function refreshSearchText(root = process.cwd()) {
         return JSON.stringify(fallback);
       }),
     );
-  const plan = await read('.cache/upstream-content/plan.json');
+  const plan = options.plan ?? (await read('.cache/upstream-content/plan.json'));
   const previous = await read('public/search/manifest.json', {});
   const state = await read('.cache/verification-retry/search-sources.json', {});
   const locales = await read('public/search/locales/manifest.json', {});
-  if (plan.commit === previous.commit && locales.commit === plan.commit && !searchRetryDue(state))
+  const repositoryFile = '.cache/search-text/repository/manifest.json';
+  const repository = await read(repositoryFile, {});
+  const algorithm = createHash('sha256');
+  for (const file of ['import-search-text.py', 'bwiki-dialogue.py', 'import-localizations.py'])
+    algorithm.update(await fs.readFile(path.join(root, 'scripts', file)));
+  const algorithmHash = algorithm.digest('hex');
+  const replay = previous.codeSha256 !== algorithmHash;
+  const sourceKey = (source) => `${source.pageId}:${source.revision}:${source.kind}`;
+  const known = new Set((previous.sources ?? []).map(sourceKey));
+  const repositoryImproved =
+    repository.codeSha256 === algorithmHash &&
+    repository.commit === plan.commit &&
+    repository.sources?.some((source) => !known.has(sourceKey(source)));
+  const due = searchRetryDue(state);
+  if (
+    plan.commit === previous.commit &&
+    locales.commit === plan.commit &&
+    !due &&
+    !replay &&
+    !repositoryImproved
+  )
     return { changed: false, deferred: true };
   if (
     plan.schema !== 'hsr-upstream-plan.v1' ||
@@ -75,29 +97,30 @@ export async function refreshSearchText(root = process.cwd()) {
     execFileSync(
       process.execPath,
       [path.join(root, 'scripts/collect-search-sources.mjs'), stage, root, planFile],
-      { cwd: root, stdio: 'inherit', timeout: 90000 },
+      {
+        cwd: root,
+        stdio: 'inherit',
+        timeout: 90000,
+        env: {
+          ...process.env,
+          ...(!due || options.cacheOnly ? { HSR_SEARCH_CACHE_ONLY: '1' } : {}),
+        },
+      },
     );
   } catch {
-    // New TextMap strings still publish when BWIKI is unavailable or timed out.
-    await fs.mkdir(path.dirname(wikiFile), { recursive: true });
-    await fs.writeFile(
-      wikiFile,
-      JSON.stringify({
-        schema: 'hsr-bwiki-input.v1',
-        commit: plan.commit,
-        pages: (previous.pendingPages ?? []).map((item) => ({
-          ...item,
-          status: 'unavailable',
-          reason: '검색 출처 수집 시간 초과 또는 조회 실패',
-        })),
-        review: [{ reason: '검색 출처 수집 시간 초과 또는 조회 실패; 원문 검색 갱신 계속' }],
-      }),
-    );
+    // Replay verified cache on a timeout as well: an empty fallback would erase
+    // source associations precisely when a changed parser needs revalidation.
+    const fallback = await collectSearchSources(stage, root, planFile, { cacheOnly: true });
+    fallback.review.push({
+      reason: '검색 출처 수집 시간 초과 또는 조회 실패; 검증된 캐시만 재대조',
+    });
+    await fs.writeFile(wikiFile, JSON.stringify(fallback));
     const stateFile = path.join(root, '.cache/verification-retry/search-sources.json');
     await fs.mkdir(path.dirname(stateFile), { recursive: true });
+    const saved = JSON.parse(await fs.readFile(stateFile));
     await fs.writeFile(
       stateFile,
-      JSON.stringify({ ...state, nextRequestAt: new Date(Date.now() + 6 * 3600000).toISOString() }),
+      JSON.stringify({ ...saved, nextReviewAt: new Date(Date.now() + 6 * 3600000).toISOString() }),
     );
   }
   const run = pythonRunner(root, stage);
@@ -107,6 +130,7 @@ export async function refreshSearchText(root = process.cwd()) {
     planFile,
     wikiFile,
     path.join(root, 'public/search/manifest.json'),
+    path.join(root, repositoryFile),
   ]);
   run('import-search-text.py', ['--validate', stage]);
   run('import-search-localizations.py', [

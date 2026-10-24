@@ -22,6 +22,15 @@ export interface SearchTextSource {
   label: string;
 }
 
+export function searchSourceLabel(source: SearchTextSource) {
+  // A BWIKI page title is internal evidence, never a Korean display fallback.
+  return source.kind !== '로딩 화면' &&
+    /[가-힣]/.test(source.label) &&
+    !/[\u3400-\u9fff]/.test(source.label)
+    ? source.label
+    : '';
+}
+
 export const otherTextCategories = [
   { id: 'loading', label: '로딩 화면' },
   { id: 'npc', label: 'NPC 대사' },

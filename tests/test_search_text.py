@@ -98,6 +98,24 @@ class SearchTextTest(unittest.TestCase):
         self.assertNotIn('其他任务长句子不能成为NPC对话', values)
         self.assertNotIn('无关的长句子不能成为NPC对话', values)
 
+    def test_actual_npc_template_extracts_only_dialogue_and_ignores_comments_and_related_content(self):
+        wiki = '{{NPC|名称=无关名字不能当作对话|对话内容={{折叠|标题=随机对话|内容=*帕姆：请不要干扰列车长的日常工作！}}|相关剧情=其他任务长句子不能成为NPC对话}}\n<!--{{NPC|对话内容=注释里面的长句不能作为对话}}-->'
+        values = search.candidates(wiki, 'NPC 대사')
+        self.assertIn('请不要干扰列车长的日常工作!', values)
+        self.assertNotIn('其他任务长句子不能成为NPC对话', values)
+        self.assertNotIn('注释里面的长句不能作为对话', values)
+        self.assertEqual(search.candidates('{{NPC|对话内容=含有重复字段的原文一|对话内容=含有重复字段的原文二}}', 'NPC 대사'), set())
+
+    def test_message_and_mail_are_limited_to_their_actual_body_fields(self):
+        wiki = '{{短信内容|短信标题=这不是应当分类的消息正文|内容={{角色对话|左|三月七|文本|姬子姐有事找你，别忘啦}}{{角色对话|左|三月七|图片|不应该作为文本的图片名称}}}}\n无关的页面介绍不能进入消息正文'
+        values = search.candidates(wiki, '메시지')
+        self.assertIn('姬子姐有事找你,别忘啦', values)
+        self.assertNotIn('不应该作为文本的图片名称', values)
+        self.assertNotIn('这不是应当分类的消息正文', values)
+        mail = '{{邮件|标题=这不是应当分类的邮件正文|内容=感谢你的支持，这是邮件的原文。}}'
+        self.assertIn('感谢你的支持,这是邮件的原文。', search.candidates(mail, '우편'))
+        self.assertNotIn('这不是应当分类的邮件正文', search.candidates(mail, '우편'))
+
     def test_loading_table_and_nested_dialogue_are_exact_candidates(self):
         values = search.candidates('|裂界\n|随星核而出现的空间扭曲现象，不停蚕食着现实。\n{{剧情选项|选项1=这是一个很长的选择选项|剧情1={{对话|帕姆|请不要干扰列车长的日常工作！}}}}', '로딩 화면')
         self.assertIn('随星核而出现的空间扭曲现象,不停蚕食着现实。', values)

@@ -90,6 +90,43 @@ test('a proven published superset restores its dialogue and metadata together', 
   );
 });
 
+test('canonical restore retains the repository search candidate separately for exact-input replay', async (t) => {
+  const f = await fixture(t, ['matched', 'review'], ['matched', 'matched']);
+  for (const [folder, marker] of [
+    [f.root, 'new-search-proof'],
+    [f.remote, 'published-search'],
+  ] as const) {
+    await fs.mkdir(path.join(folder, 'public/search'), { recursive: true });
+    await fs.writeFile(
+      path.join(folder, 'public/search/manifest.json'),
+      JSON.stringify({ marker }),
+    );
+    await fs.writeFile(path.join(folder, 'public/search/part-00.json'), JSON.stringify({ marker }));
+  }
+  const descriptor = await packState(f.remote);
+  const snapshot = await fs.readFile(path.join(f.remote, 'public', descriptor.file));
+  await restoreVerification(f.root, {
+    fetcher: async (url) =>
+      new Response(url.endsWith('verification-state.json') ? JSON.stringify(descriptor) : snapshot),
+  });
+  assert.equal(
+    JSON.parse(await fs.readFile(path.join(f.root, 'public/search/manifest.json'), 'utf8')).marker,
+    'published-search',
+  );
+  assert.equal(
+    JSON.parse(
+      await fs.readFile(path.join(f.root, '.cache/search-text/repository/manifest.json'), 'utf8'),
+    ).marker,
+    'new-search-proof',
+  );
+  assert.equal(
+    JSON.parse(
+      await fs.readFile(path.join(f.root, '.cache/search-text/repository/part-00.json'), 'utf8'),
+    ).marker,
+    'new-search-proof',
+  );
+});
+
 test('snapshot restore rolls back prior files and new files after a later write fails', async (t) => {
   const f = await fixture(t, ['matched', 'review'], ['matched', 'matched']);
   const target = path.join(f.root, 'public/official-videos.json');

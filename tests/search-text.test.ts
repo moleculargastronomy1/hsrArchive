@@ -14,10 +14,15 @@ import {
   searchScopePath,
   matchesOtherText,
   searchTextRow,
+  searchSourceLabel,
   type SearchTextSource,
 } from '../src/lib/search-text.ts';
 import { searchRetryDue, refreshSearchText } from '../scripts/search-text.mjs';
 import { gitBlob } from '../scripts/upstream-content.mjs';
+import {
+  collectSearchSources,
+  selectSearchRequests,
+} from '../scripts/search-source-collection.mjs';
 
 test('supplemental comparison identity keeps full 64-bit hashes and titles are searchable', () => {
   const row: [string, string, number[], string] = [
@@ -84,10 +89,112 @@ test('search backoff is independent and waits for both review and request deadli
   assert.equal(searchRetryDue({ nextRequestAt: new Date(now + 1).toISOString() }, now), false);
   assert.equal(searchRetryDue({ nextReviewAt: new Date(now + 1).toISOString() }, now), false);
   assert.equal(searchRetryDue({ nextRequestAt: new Date(now - 1).toISOString() }, now), true);
-  const collector = fs.readFileSync('scripts/collect-search-sources.mjs', 'utf8');
-  assert.match(collector, /slice\(0, 40\)/);
+  const collector = fs.readFileSync('scripts/search-source-collection.mjs', 'utf8');
+  assert.match(collector, /limit = 40/);
   assert.match(collector, /maxDownloads: 20/);
   assert.doesNotMatch(collector, /saveRetry|readRetry/);
+});
+
+test('limited search collection gives all Other kinds a turn and excludes unrelated queues', () => {
+  const now = Date.now();
+  const requests = Array.from({ length: 100 }, (_, i) => ({
+    title: 'npc' + i,
+    searchKind: 'NPC 대사',
+  }));
+  requests.unshift({ title: 'mission', searchKind: '관련 문서' });
+  for (const kind of ['상호작용', '메시지', '우편', '로딩 화면'])
+    requests.push({ title: kind, searchKind: kind });
+  const selected = selectSearchRequests(requests, { pages: {} }, now);
+  assert.equal(selected.length, 40);
+  assert.deepEqual(
+    new Set(selected.slice(0, 5).map((p) => p.searchKind)),
+    new Set(['NPC 대사', '상호작용', '메시지', '우편', '로딩 화면']),
+  );
+  assert.ok(!selected.some((p) => p.title === 'mission'));
+  assert.ok(
+    !selectSearchRequests(
+      requests,
+      { pages: { npc0: { nextRetryAt: new Date(now + 1).toISOString() } } },
+      now,
+    ).some((p) => p.title === 'npc0'),
+  );
+  for (const label of ['互动文本/空间站', '帕姆', '로딩 过场提示', 'English'])
+    assert.equal(searchSourceLabel({ kind: 'NPC 대사', label } as SearchTextSource), '');
+  assert.equal(searchSourceLabel({ kind: 'NPC 대사', label: '폼폼' } as SearchTextSource), '폼폼');
+});
+
+test('known bodies survive failed discovery and cache replay never issues network requests', async () => {
+  const fixture = await fsp.mkdtemp(path.resolve('.cache/tests/search-discovery-'));
+  try {
+    await fsp.mkdir(path.join(fixture, 'public/search'), { recursive: true });
+    await fsp.writeFile(
+      path.join(fixture, 'public/search/manifest.json'),
+      JSON.stringify({
+        pendingPages: [{ title: 'NPC-example', searchKind: 'NPC 대사' }],
+        sources: [],
+      }),
+    );
+    const planFile = path.join(fixture, 'plan.json');
+    await fsp.writeFile(
+      planFile,
+      JSON.stringify({ schema: 'hsr-upstream-plan.v1', commit: 'a'.repeat(40) }),
+    );
+    const calls: string[] = [];
+    const fetcher = async (url: URL) => {
+      const p = new URL(url).searchParams;
+      calls.push(p.get('list') ?? p.get('rvprop')!);
+      if (p.has('list')) return new Response('', { status: 567 });
+      return Response.json({
+        query: {
+          pages: p
+            .get('titles')!
+            .split('|')
+            .map((title, i) => ({
+              title,
+              pageid: i + 1,
+              ns: 0,
+              revisions: [
+                {
+                  revid: 100 + i,
+                  timestamp: '2026-10-24T00:00:00Z',
+                  ...(p.get('rvprop')!.includes('content')
+                    ? {
+                        slots: { main: { content: '{{NPC|对话内容=这是一条经过验证的中文原文}}' } },
+                      }
+                    : {}),
+                },
+              ],
+            })),
+        },
+      });
+    };
+    const manifest = await collectSearchSources(fixture, fixture, planFile, {
+      fetcher,
+      pause: async () => {},
+    });
+    assert.equal(calls[0], 'ids|timestamp');
+    assert.equal(calls[1], 'ids|timestamp|content');
+    assert.equal(calls[2], 'embeddedin');
+    assert.equal(calls.length, 3);
+    assert.ok(manifest.pages.some((p) => p.title === 'NPC-example' && p.status === 'available'));
+    assert.match(manifest.review[0].reason, /567/);
+    const replayed = await collectSearchSources(fixture, fixture, planFile, {
+      cacheOnly: true,
+      fetcher: async () => {
+        throw Error('Cache replay must not query BWIKI');
+      },
+      pause: async () => {},
+    });
+    assert.ok(
+      replayed.pages.some(
+        (p) => p.title === 'NPC-example' && p.status === 'available' && p.searchKind === 'NPC 대사',
+      ),
+    );
+    assert.equal(calls.length, 3);
+  } finally {
+    assert.ok(fixture.startsWith(path.resolve('.cache/tests') + path.sep));
+    await fsp.rm(fixture, { recursive: true, force: true });
+  }
 });
 
 test('the Other menu contains exactly five confirmed source types and excludes unrelated or unknown rows', () => {

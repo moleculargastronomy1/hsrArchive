@@ -119,11 +119,13 @@ jobs:
           GITHUB_TOKEN: ${{ github.token }}
           HSR_TRAILBLAZE_TITLE: ${{ inputs.trailblaze_title }}
       - name: Refresh search-only TextMap and BWIKI source labels independently
-        if: steps.baseline.outputs.ready == 'true' && steps.refresh.outputs.site_only != 'true'
+        if: steps.baseline.outputs.ready == 'true'
         id: search
         continue-on-error: true
         timeout-minutes: 4
         run: node scripts/search-text.mjs
+        env:
+          HSR_SEARCH_CACHE_ONLY: ${{ steps.refresh.outputs.site_only == 'true' && '1' || '0' }}
       - name: Select publication when canonical content or search improved
         if: steps.baseline.outputs.ready == 'true'
         id: publication

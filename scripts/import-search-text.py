@@ -25,18 +25,42 @@ def code_hash():
 
 
 def candidates(content, kind):
+    if kind in ['NPC 대사', '상호작용', '메시지', '우편', '로딩 화면']:
+        content = re.sub(r'<!--[\s\S]*?-->', '', content)
+    def fields_of(name, field):
+        values = []
+        try:
+            for is_template, body in bwiki.templates(content):
+                if not is_template:
+                    continue
+                parts = bwiki.template_parts(body)
+                if parts[0].strip().lower() != name.lower():
+                    continue
+                fields = [p.split('=', 1)[1] for p in parts[1:]
+                          if '=' in p and p.split('=', 1)[0].strip() == field]
+                if len(fields) == 1:
+                    values.extend(fields)
+        except bwiki.Unresolved:
+            pass
+        return values
     # NPC pages also list unrelated quests and items. Attribute dialogue only
     # inside the explicit NPC conversation section, never from those link lists.
     if kind == 'NPC 대사':
         match = re.search(r'^==\s*NPC对话\s*==\s*\n(.*?)(?=^==[^=]|\Z)', content, re.M | re.S)
-        if not match:
-            return set()
-        content = match[1]
+        sections = fields_of('NPC', '对话内容')
+        if match:
+            sections.append(match[1])
+        content = '\n'.join(sections)
+    elif kind in ['메시지', '우편']:
+        content = '\n'.join(fields_of('短信内容' if kind == '메시지' else '邮件', '内容'))
     result = set()
     def add(value):
         value = re.sub(r'^\s*[：:]\s*', '', value).strip()
         value = re.sub(r'<br\s*/?>', '\n', value, flags=re.I)
-        for part in [value, *value.splitlines()]:
+        parts = [value, *value.splitlines()]
+        if kind == 'NPC 대사':
+            parts.extend(line.split('：', 1)[1] for line in value.splitlines() if '：' in line)
+        for part in parts:
             try:
                 text = bwiki.normalized(bwiki.inline(part))
             except bwiki.Unresolved:
@@ -49,6 +73,10 @@ def candidates(content, kind):
             for is_template, body in bwiki.templates(value):
                 if is_template:
                     fields = bwiki.template_parts(body)
+                    if kind == '메시지' and fields[0] == '角色对话':
+                        if len(fields) == 5 and fields[3] == '文本':
+                            add(fields[4])
+                        continue
                     for field in fields[1:]:
                         field = re.sub(r'^[\w\u3400-\u9fff]+\s*=', '', field)
                         add(field)
@@ -114,8 +142,14 @@ def classify(texts, raw, plan, manifest_path):
         if hashlib.sha256(data).hexdigest() != page['sha256']:
             raise ValueError('Unverified BWIKI search snapshot')
         kind = page.get('searchKind', '관련 문서')
-        keys = {key for text in candidates(data.decode('utf-8'), kind) for key in lookup.get(text, [])}
+        extracted = candidates(data.decode('utf-8'), kind)
+        keys = {key for text in extracted for key in lookup.get(text, [])}
         if not keys:
+            if kind in ['NPC 대사', '상호작용', '메시지', '우편']:
+                review.append({'title': page['pageTitle'], 'searchKind': kind,
+                               'revision': page['revision'], 'candidateStrings': len(extracted),
+                               'reason': '공식 중국어 TextMap에 정확히 일치하는 원문 없음' if extracted else
+                                         '지원하는 본문 필드 없음; 하위 문서 또는 문법 확인 필요'})
             continue
         titles = labels.get(bwiki.normalized(page['pageTitle']), set()) - {''}
         source = {key: page[key] for key in ['pageTitle', 'pageId', 'revision', 'timestamp', 'sha256']}
@@ -127,7 +161,7 @@ def classify(texts, raw, plan, manifest_path):
     return matches, sources, evidence, review
 
 
-def build(root, raw, plan_file, wiki_file=None, previous_file=None):
+def build(root, raw, plan_file, wiki_file=None, previous_file=None, repository_file=None):
     plan = json.loads(plan_file.read_bytes())
     if (plan.get('schema') != 'hsr-upstream-plan.v1' or
             plan.get('repository') != 'DimbreathBot/TurnBasedGameData' or
@@ -154,13 +188,16 @@ def build(root, raw, plan_file, wiki_file=None, previous_file=None):
             texts[key] = value
     matches, sources, chinese_evidence, review = classify(texts, raw, plan, wiki_file)
     evidence.update(chinese_evidence)
-    if previous_file and previous_file.exists():
+    for previous_file in [previous_file, repository_file]:
+        if not previous_file or not previous_file.exists():
+            continue
         previous = json.loads(previous_file.read_bytes())
         # Reuse a published exact match only against the same verified KR/CHS
         # input bytes and the same Korean string. Never infer across versions.
         if (previous.get('schema') == 'hsr-search-text.v1' and
                 previous.get('files') == evidence and previous.get('codeSha256') == code_hash()):
-            source_ids = {s['pageId']: i for i, s in enumerate(sources)}
+            identity = lambda source: (source['pageId'], source['revision'], source['kind'])
+            source_ids = {identity(s): i for i, s in enumerate(sources)}
             for part in previous['parts']:
                 if not re.fullmatch(r'part-\d{2}\.json', part['file']):
                     raise ValueError('Unsafe prior search part')
@@ -172,10 +209,10 @@ def build(root, raw, plan_file, wiki_file=None, previous_file=None):
                         continue
                     for old_id in ids:
                         source = previous['sources'][old_id]
-                        if source['pageId'] not in source_ids:
-                            source_ids[source['pageId']] = len(sources)
+                        if identity(source) not in source_ids:
+                            source_ids[identity(source)] = len(sources)
                             sources.append(source)
-                        index = source_ids[source['pageId']]
+                        index = source_ids[identity(source)]
                         if index not in matches.setdefault(key, []):
                             matches[key].append(index)
     search = root / 'public/content/search-index.json'
