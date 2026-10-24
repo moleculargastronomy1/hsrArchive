@@ -12,6 +12,7 @@ export interface DialogueRow {
   mission: string;
   scene: string;
   speaker: string;
+  displayTitle?: string;
   text: string;
   type: 'dialogue' | 'choice' | 'narration';
   source?: string;

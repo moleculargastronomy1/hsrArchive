@@ -33,7 +33,7 @@ export default function SearchTextResults({
       {rows.map((row) => (
         <div className={`dialogue-row ${languages.length ? 'comparing' : ''}`} key={row[0]}>
           <div className="dialogue-row-meta">
-            <span>{row[3] ?? '기타 텍스트'}</span>
+            <span>{row[3] ?? row[4] ?? '기타 텍스트'}</span>
             {row[2].length ? (
               row[2].map((id) => (
                 <small key={id}>
@@ -84,7 +84,7 @@ export default function SearchTextResults({
                 ? '로딩 화면'
                 : '기타 텍스트'}
             </span>
-            <h2 id="search-text-heading">{selected?.[3] ?? '한국어 원문'}</h2>
+            <h2 id="search-text-heading">{selected?.[3] ?? selected?.[4] ?? '한국어 원문'}</h2>
           </div>
           <button
             className="icon-button"

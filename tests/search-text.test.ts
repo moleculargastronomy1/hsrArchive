@@ -262,6 +262,7 @@ test('failed BWIKI collection still updates TextMap and leaves canonical content
       'bwiki-dialogue.py',
       'import-localizations.py',
       'import-search-localizations.py',
+      'import-other-text.py',
     ])
       await fsp.copyFile(path.resolve('scripts', name), path.join(fixture, 'scripts', name));
     await fsp.writeFile(

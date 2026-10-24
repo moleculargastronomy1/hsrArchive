@@ -34,6 +34,7 @@ import { isBookmarks, isHistory, useStored, type ReadingHistory } from './lib/st
 import WorldArt from './components/WorldArt';
 import EntryArtwork, { hasCover } from './components/EntryArtwork';
 import DialogueBrowser from './components/DialogueBrowser';
+import OtherTextBrowser from './components/OtherTextBrowser';
 import { LanguageComparisonControls } from './components/LanguageComparison';
 import { useComparisonLanguages } from './hooks/useComparison';
 import CategoryIcon from './components/CategoryIcon';
@@ -373,19 +374,32 @@ export default function App() {
               : '임무명과 서적명, 화자와 한국어 원문을 검색하고 맥락을 함께 읽어보세요.'
           }
         />
-        <DialogueBrowser
-          initialQuery={params.get('q') ?? ''}
-          initialScope={
-            otherView
-              ? 'other'
-              : (categories.find((category) => category.id === params.get('scope'))?.id ?? 'all')
-          }
-          initialOtherKind={otherKind}
-          onScopeChange={(scope, kind, query) => {
-            window.location.hash = searchScopePath(query, scope, kind);
-          }}
-          global
-        />
+        {otherView && otherKind !== 'all' ? (
+          <OtherTextBrowser
+            kind={otherKind}
+            groupId={params.get('group')}
+            sectionId={params.get('section')}
+            rowId={params.get('row')}
+            query={params.get('q') ?? ''}
+            onScopeChange={(scope, kind, query) => {
+              window.location.hash = searchScopePath(query, scope, kind);
+            }}
+          />
+        ) : (
+          <DialogueBrowser
+            initialQuery={params.get('q') ?? ''}
+            initialScope={
+              otherView
+                ? 'other'
+                : (categories.find((category) => category.id === params.get('scope'))?.id ?? 'all')
+            }
+            initialOtherKind={otherKind}
+            onScopeChange={(scope, kind, query) => {
+              window.location.hash = searchScopePath(query, scope, kind);
+            }}
+            global
+          />
+        )}
       </>
     );
   } else if (path === '/library') {

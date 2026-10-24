@@ -1,14 +1,20 @@
 import { searchableGameText } from './game-text.ts';
 import type { DialogueRow } from './dialogue.ts';
 
-export type SearchText = [hash: string, text: string, sourceIds: number[], title?: string];
+export type SearchText = [
+  hash: string,
+  text: string,
+  sourceIds: number[],
+  title?: string,
+  speaker?: string,
+];
 export function searchTextRow(row: SearchText): DialogueRow {
   return {
     id: row[0],
     entryId: 'search-text',
     chapterId: `part-${String(BigInt(row[0]) % 32n).padStart(2, '0')}`,
     text: row[1],
-    speaker: '',
+    speaker: row[4] ?? '',
     mission: '',
     scene: '',
     type: 'narration',
@@ -140,6 +146,8 @@ export function textMatches(row: SearchText, terms: string[], sources: SearchTex
     searchableGameText(row[1]) +
     ' ' +
     (row[3] ?? '') +
+    ' ' +
+    (row[4] ?? '') +
     ' ' +
     row[2]
       .map((id) =>

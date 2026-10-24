@@ -112,6 +112,56 @@ export async function collectSearchSources(target, root, planFile, options = {})
     now,
     pause,
   });
+  // The message widget orders subobjects using this separate display template.
+  const layoutFile = path.join(cache, 'message-layout.json');
+  let layout = await read(layoutFile, null);
+  if (
+    !cacheOnly &&
+    !(Date.parse(state.nextRequestAt ?? '') > now) &&
+    Object.keys(cachedIndex).some((title) => title.startsWith('短信/'))
+  ) {
+    try {
+      const url = new URL('https://wiki.biligame.com/sr/api.php');
+      url.search = new URLSearchParams({
+        action: 'query',
+        prop: 'revisions',
+        rvprop: 'ids|timestamp|content',
+        rvslots: 'main',
+        titles: 'Template:短信查询',
+        format: 'json',
+        formatversion: '2',
+        maxlag: '5',
+      });
+      const response = await fetcher(url, { signal: AbortSignal.timeout(12000) });
+      if (!response.ok || !response.headers.get('content-type')?.includes('json'))
+        throw Error('BWIKI 메시지 표시 틀 조회 실패: ' + response.status);
+      const p = (await response.json()).query?.pages?.[0],
+        rev = p?.revisions?.[0];
+      if (
+        p?.ns !== 10 ||
+        !Number.isSafeInteger(rev?.revid) ||
+        typeof rev?.slots?.main?.content !== 'string'
+      )
+        throw Error('BWIKI 메시지 표시 틀 응답 불완전');
+      const bytes = Buffer.from(rev.slots.main.content);
+      const { hash } = await import('./verification-state.mjs');
+      const sha256 = hash(bytes);
+      await fs.writeFile(path.join(cache, sha256 + '.wiki'), bytes);
+      layout = {
+        pageTitle: p.title,
+        pageId: p.pageid,
+        revision: rev.revid,
+        sha256,
+        file: path.join(cache, sha256 + '.wiki'),
+      };
+      await fs.writeFile(layoutFile, JSON.stringify(layout));
+    } catch (error) {
+      review.push({ reason: error.message });
+      state.nextRequestAt = new Date(now + 6 * 3600000).toISOString();
+      state.lastRequestError = error.message;
+    }
+  }
+  manifest.layouts = layout ? [layout] : [];
   for (const p of manifest.pages)
     if (p.status === 'available')
       state.pages[p.title] = {

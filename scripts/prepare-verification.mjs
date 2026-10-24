@@ -116,9 +116,15 @@ export async function restoreVerification(root, { fetcher = fetch, write = write
     // newer deployed dialogue baseline replaces the public search files.
     const searchCandidate = path.join(root, '.cache/search-text/repository');
     for (const [file, bytes] of repository) {
-      if (!/^public\/search\/(?:manifest|part-\d{2})\.json$/.test(file)) continue;
-      await fs.mkdir(searchCandidate, { recursive: true });
-      await fs.writeFile(path.join(searchCandidate, path.basename(file)), bytes);
+      if (
+        !/^public\/search\/(?:(?:manifest|other-catalog|part-\d{2})|(?:other|locales\/(?:en|zh-CN|ja))\/other-(?:npc|interaction|message|mail|loading)-p\d+--s[a-f0-9]{16})\.json$/.test(
+          file,
+        )
+      )
+        continue;
+      const target = path.join(searchCandidate, file.slice('public/search/'.length));
+      await fs.mkdir(path.dirname(target), { recursive: true });
+      await fs.writeFile(target, bytes);
     }
     if (!selected.has('public/verification-progress.json')) {
       const rows =

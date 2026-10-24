@@ -27,6 +27,19 @@ export async function refreshSearchText(root = process.cwd(), options = {}) {
   const previous = await read('public/search/manifest.json', {});
   const state = await read('.cache/verification-retry/search-sources.json', {});
   const locales = await read('public/search/locales/manifest.json', {});
+  const otherCatalog = await read('public/search/other-catalog.json', {});
+  const otherAlgorithm = createHash('sha256');
+  for (const file of ['import-other-text.py', 'bwiki-dialogue.py', 'import-localizations.py'])
+    otherAlgorithm.update(await fs.readFile(path.join(root, 'scripts', file)));
+  const otherChanged = otherCatalog.codeSha256 !== otherAlgorithm.digest('hex');
+  const localeAlgorithm = createHash('sha256');
+  for (const file of [
+    'import-search-localizations.py',
+    'import-localizations.py',
+    'bwiki-dialogue.py',
+  ])
+    localeAlgorithm.update(await fs.readFile(path.join(root, 'scripts', file)));
+  const localeChanged = locales.codeSha256 !== localeAlgorithm.digest('hex');
   const repositoryFile = '.cache/search-text/repository/manifest.json';
   const repository = await read(repositoryFile, {});
   const algorithm = createHash('sha256');
@@ -46,6 +59,8 @@ export async function refreshSearchText(root = process.cwd(), options = {}) {
     locales.commit === plan.commit &&
     !due &&
     !replay &&
+    !otherChanged &&
+    !localeChanged &&
     !repositoryImproved
   )
     return { changed: false, deferred: true };
@@ -55,8 +70,10 @@ export async function refreshSearchText(root = process.cwd(), options = {}) {
     !/^[a-f0-9]{40}$/.test(plan.commit)
   )
     throw Error('Invalid search update plan');
-  const files = plan.files.filter((f) =>
-    /^TextMap\/TextMap(?:KR|EN|CHS|JP)(?:_\d+)?\.json$/.test(f.path),
+  const files = plan.files.filter(
+    (f) =>
+      /^TextMap\/TextMap(?:KR|EN|CHS|JP)(?:_\d+)?\.json$/.test(f.path) ||
+      f.path === 'ExcelOutput/TalkSentenceConfig.json',
   );
   const stage = path.join(root, '.cache/search-text/candidate');
   const raw = path.join(stage, 'raw');
@@ -133,6 +150,15 @@ export async function refreshSearchText(root = process.cwd(), options = {}) {
     path.join(root, repositoryFile),
   ]);
   run('import-search-text.py', ['--validate', stage]);
+  run('import-other-text.py', [
+    stage,
+    raw,
+    planFile,
+    wikiFile,
+    path.join(root, 'public/search/other-catalog.json'),
+    path.join(root, '.cache/search-text/repository/other-catalog.json'),
+  ]);
+  run('import-other-text.py', ['--validate', stage]);
   run('import-search-localizations.py', [
     stage,
     raw,
@@ -146,11 +172,13 @@ export async function refreshSearchText(root = process.cwd(), options = {}) {
     '.cache/search-text/candidate/.cache/search-localization-receipt.json',
   );
   receipt.files.push(...localized.files);
+  const other = await read('.cache/search-text/candidate/.cache/other-text-receipt.json');
+  receipt.files.push(...other.files);
   // Search work cannot publish chapter rows, routes or canonical evidence.
   if (
     receipt.files.some(
       (file) =>
-        !/^public\/search\/(?:(?:manifest|part-\d{2})|locales\/(?:manifest|(?:en|zh-CN|ja)\/search-text--part-\d{2}))\.json$/.test(
+        !/^public\/search\/(?:(?:manifest|other-catalog|part-\d{2})|other\/other-(?:npc|interaction|message|mail|loading)-p\d+--s[a-f0-9]{16}|locales\/(?:manifest|(?:en|zh-CN|ja)\/(?:search-text--part-\d{2}|other-(?:npc|interaction|message|mail|loading)-p\d+--s[a-f0-9]{16})))\.json$/.test(
           file,
         ),
     )

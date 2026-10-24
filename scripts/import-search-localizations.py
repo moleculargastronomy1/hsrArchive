@@ -66,6 +66,9 @@ def build(root, raw, plan_path, wiki_path=None, previous_path=None):
         return texts
 
     korean = textmap('KR')
+    other_file = root / 'public/search/other-catalog.json'
+    other = json.loads(other_file.read_bytes()) if other_file.exists() else {}
+    speakers = other.get('speakers', {}) if other.get('commit') == plan['commit'] else {}
     publications, parts, coverage, titles = [], [], {}, {}
 
     def write(relative, payload):
@@ -85,7 +88,9 @@ def build(root, raw, plan_path, wiki_path=None, previous_path=None):
                 continue
             text = search.localizations.plain(texts.get(key, ''), language)
             if text:
-                buckets[int(key) % search.PARTS].append({'id': key, 'text': text, 'speaker': ''})
+                record = speakers.get(key, {})
+                speaker = record.get('localizedNames', {}).get(language, '') if record.get('text') == search.localizations.plain(korean[key]) else ''
+                buckets[int(key) % search.PARTS].append({'id': key, 'text': text, 'speaker': speaker})
             else:
                 missing += 1
         for index, rows in enumerate(buckets):
@@ -156,6 +161,9 @@ def validate(root):
             any(manifest['files'].get(k) != v for k, v in corpus['files'].items() if k.startswith('TextMapKR'))):
         raise ValueError('Invalid search localization manifest')
     counts = dict.fromkeys(LANGUAGES, 0)
+    other_file = root / 'public/search/other-catalog.json'
+    other = json.loads(other_file.read_bytes()) if other_file.exists() else {}
+    speakers = other.get('speakers', {}) if other.get('commit') == manifest['commit'] else {}
     for part in manifest['parts']:
         data = (folder / part['file']).read_bytes()
         payload = json.loads(data)
@@ -167,7 +175,8 @@ def validate(root):
                 payload['chapterId'] != f'part-{index:02}' or payload['referenceCommit'] != manifest['commit'] or
                 len(rows) != part['rows'] or len({r['id'] for r in rows}) != len(rows) or any(
                     not isinstance(r['id'], str) or not re.fullmatch(r'\d+', r['id']) or int(r['id']) % search.PARTS != index or
-                    not isinstance(r['text'], str) or not r['text'].strip() or r['speaker'] != '' for r in rows)):
+                    not isinstance(r['text'], str) or not r['text'].strip() or
+                    r['speaker'] != speakers.get(r['id'], {}).get('localizedNames', {}).get(language, '') for r in rows)):
             raise ValueError('Invalid search localization part')
         counts[language] += len(rows)
     if any(count != manifest['coverage'][language]['rows'] for language, count in counts.items()):

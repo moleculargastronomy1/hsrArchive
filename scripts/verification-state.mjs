@@ -52,6 +52,9 @@ export async function writeDerived(root, relative, bytes) {
   }
 }
 export const statePath = (file) =>
+  /^public\/search\/(?:other-catalog|(?:other|locales\/(?:en|zh-CN|ja))\/other-(?:npc|interaction|message|mail|loading)-p\d+--s[a-f0-9]{16})\.json$/.test(
+    file,
+  ) ||
   /^public\/search\/locales\/(?:manifest|(?:en|zh-CN|ja)\/search-text--part-(?:0\d|[12]\d|3[01]))\.json$/.test(
     file,
   ) ||

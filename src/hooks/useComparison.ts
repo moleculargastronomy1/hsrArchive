@@ -18,10 +18,11 @@ const cache = new Map<string, Promise<LocalizationState>>();
 export function useLocalizations(
   rows: RowIdentity[],
   languages: ComparisonLanguage[],
-  options: { source?: 'search' | 'content'; referenceCommit?: string } = {},
+  options: { source?: 'search' | 'content'; referenceCommit?: string; version?: string } = {},
 ) {
   const source = options.source ?? 'content';
   const referenceCommit = options.referenceCommit;
+  const version = options.version;
   const [states, setStates] = useState<Record<string, LocalizationState>>({});
   const requests = JSON.stringify([
     ...new Map(
@@ -47,11 +48,11 @@ export function useLocalizations(
       ),
     );
     for (const [key, identity] of entries) {
-      const cacheKey = `${source}/${key}/${referenceCommit ?? ''}`;
+      const cacheKey = `${source}/${key}/${referenceCommit ?? ''}/${version ?? ''}`;
       let pending = cache.get(cacheKey);
       if (!pending) {
         pending = fetch(
-          `${import.meta.env.BASE_URL}${source}/locales/${key}.json${referenceCommit ? '?v=' + referenceCommit : ''}`,
+          `${import.meta.env.BASE_URL}${source}/locales/${key}.json${referenceCommit ? '?v=' + referenceCommit + (version ? '&revision=' + version : '') : ''}`,
         )
           .then(async (response): Promise<LocalizationState> => {
             if (!response.ok) throw new Error('Localization fetch failed');
@@ -79,7 +80,7 @@ export function useLocalizations(
     return () => {
       active = false;
     };
-  }, [requests, retry, source, referenceCommit]);
+  }, [requests, retry, source, referenceCommit, version]);
   return {
     states,
     retry: () => {

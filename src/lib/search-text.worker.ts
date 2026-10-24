@@ -7,6 +7,7 @@ import {
   type SearchText,
   type SearchTextSource,
 } from './search-text';
+import { parseOtherCatalog } from './other-text';
 
 interface Request {
   token: number;
@@ -36,6 +37,13 @@ async function load(base: string) {
     return response;
   };
   const manifest = parseSearchManifest(await (await get('manifest.json')).json());
+  const speakers: Record<string, { text: string; name: string }> = await get('other-catalog.json')
+    .then((r) => r.json())
+    .then((value) => {
+      const catalog = parseOtherCatalog(value);
+      return catalog.commit === manifest.commit ? catalog.speakers : {};
+    })
+    .catch(() => ({}));
   // Titles are optional: an unavailable or older title manifest must never hide text.
   const titles: Record<string, { title: string; text: string }> = await get('locales/manifest.json')
     .then((response) => response.json())
@@ -69,6 +77,8 @@ async function load(base: string) {
           const title = titles[row[0]];
           if (title?.text === row[1] && typeof title.title === 'string' && title.title.trim())
             row[3] = title.title;
+          const speaker = speakers[row[0]];
+          if (speaker?.text === row[1]) row[4] = speaker.name;
         }
       }
     }),

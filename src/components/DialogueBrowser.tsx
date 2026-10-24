@@ -52,11 +52,27 @@ interface DialogueDocument {
   executionReading?: ExecutionReading;
 }
 
-async function loadDialogueDocument(file: string, signal: AbortSignal): Promise<DialogueDocument> {
-  if (!/^content\/[a-zA-Z0-9_-]+\.json$/.test(file)) throw new Error('자료 주소를 확인해 주세요.');
+async function loadDialogueDocument(
+  file: string,
+  signal: AbortSignal,
+  expectedHash?: string,
+): Promise<DialogueDocument> {
+  if (
+    !/^(?:content\/[a-zA-Z0-9_-]+|search\/other\/other-(?:npc|interaction|message|mail|loading)-p\d+--s[a-f0-9]{16})\.json$/.test(
+      file,
+    )
+  )
+    throw new Error('자료 주소를 확인해 주세요.');
   const response = await fetch(`${import.meta.env.BASE_URL}${file}`, { signal });
   if (!response.ok) throw new Error(`본문을 불러오지 못했습니다 (${response.status}).`);
-  const data = await response.json();
+  const bytes = await response.arrayBuffer();
+  if (expectedHash) {
+    const actual = Array.from(new Uint8Array(await crypto.subtle.digest('SHA-256', bytes)))
+      .map((byte) => byte.toString(16).padStart(2, '0'))
+      .join('');
+    if (actual !== expectedHash) throw Error('본문이 갱신되었습니다. 목록에서 다시 열어 주세요.');
+  }
+  const data = JSON.parse(new TextDecoder().decode(bytes));
   if (data.schema !== 'hsr-dialogue.v1' || !isDialogueRows(data.rows))
     throw new Error('본문의 자료 형식을 확인해 주세요.');
   if (data.wikiReading !== undefined && !isWikiReading(data.wikiReading, data.rows))
@@ -79,6 +95,10 @@ export default function DialogueBrowser({
   languages: controlledLanguages,
   footer,
   sourceNote,
+  expectedHash,
+  referenceCommit,
+  localizationSource = 'content',
+  contextPath,
 }: {
   file?: string;
   initialQuery?: string;
@@ -92,6 +112,10 @@ export default function DialogueBrowser({
   languages?: ComparisonLanguage[];
   footer?: ReactNode;
   sourceNote?: string;
+  expectedHash?: string;
+  referenceCommit?: string;
+  localizationSource?: 'content' | 'search';
+  contextPath?: string;
 }) {
   const [storedLanguages, setLanguages] = useComparisonLanguages();
   const languages = controlledLanguages ?? storedLanguages;
@@ -159,7 +183,7 @@ export default function DialogueBrowser({
       setLoading(false);
       return () => controller.abort();
     }
-    loadDialogueDocument(file, controller.signal)
+    loadDialogueDocument(file, controller.signal, expectedHash)
       .then((data) => {
         if (!controller.signal.aborted) {
           setRows(data.rows);
@@ -175,7 +199,7 @@ export default function DialogueBrowser({
         }
       });
     return () => controller.abort();
-  }, [file, retry, onlyOther]);
+  }, [file, retry, onlyOther, expectedHash]);
   const searchIndex = useMemo(
     () =>
       rows.map((row) =>
@@ -389,6 +413,7 @@ export default function DialogueBrowser({
   const translations = useLocalizations(
     [...visible.map((index) => rows[index]), ...context],
     languages,
+    { source: localizationSource, referenceCommit, version: expectedHash },
   );
   const targetRecord = targetRowId ? rows.find((row) => row.id === targetRowId) : undefined;
   const targetTranslationsReady =
@@ -564,7 +589,9 @@ export default function DialogueBrowser({
                             ? '서적 원문'
                             : row.type === 'choice'
                               ? '선택지'
-                              : row.speaker || '장면 설명'}
+                              : row.speaker ||
+                                row.displayTitle ||
+                                (contextPath ? '기타 텍스트' : '장면 설명')}
                         </span>
                         <small>{position?.mission ?? row.bwikiMission ?? row.mission}</small>
                         {global && (
@@ -603,8 +630,13 @@ export default function DialogueBrowser({
                 );
               })}
               {global && (
-                <SearchTextResults rows={extra.rows} sources={extra.sources} query={query}
-                  languages={languages} referenceCommit={extra.commit} />
+                <SearchTextResults
+                  rows={extra.rows}
+                  sources={extra.sources}
+                  query={query}
+                  languages={languages}
+                  referenceCommit={extra.commit}
+                />
               )}
             </div>
           )}
@@ -742,7 +774,9 @@ export default function DialogueBrowser({
                   ? row.scene
                   : row.type === 'choice'
                     ? '선택지'
-                    : row.speaker || '장면 설명'}
+                    : row.speaker ||
+                      row.displayTitle ||
+                      (contextPath ? '기타 텍스트' : '장면 설명')}
               </strong>
               <div
                 className={languages.length ? 'comparison-columns' : undefined}
@@ -846,7 +880,11 @@ export default function DialogueBrowser({
             {selectedRow && (
               <a
                 className="button secondary"
-                href={`#${readerPath(selectedRow.entryId, selectedRow.chapterId, selectedRow.id)}${selectedRow.wikiPosition || selectedRow.executionPosition ? '&occurrence=' + encodeURIComponent(positionKey(selectedRow)) : ''}`}
+                href={
+                  contextPath
+                    ? `#${contextPath}&row=${encodeURIComponent(selectedRow.id)}`
+                    : `#${readerPath(selectedRow.entryId, selectedRow.chapterId, selectedRow.id)}${selectedRow.wikiPosition || selectedRow.executionPosition ? '&occurrence=' + encodeURIComponent(positionKey(selectedRow)) : ''}`
+                }
                 onClick={closeDialog}
               >
                 선택한 대사로
