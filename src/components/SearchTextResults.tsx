@@ -63,6 +63,7 @@ export default function SearchTextResults({
                 key={language}
                 row={searchTextRow(row)}
                 language={language}
+                query={query}
                 {...translations}
               />
             ))}
@@ -110,6 +111,7 @@ export default function SearchTextResults({
                     key={language}
                     row={searchTextRow(selected)}
                     language={language}
+                    query={query}
                     {...translations}
                   />
                 ))}

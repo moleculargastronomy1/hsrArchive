@@ -252,6 +252,11 @@ if (mode === '--plan') {
     await fs.readFile(path.join(stage, '.cache/localization-receipt.json'), 'utf8'),
   );
   receipt.files.push(...localizations.files);
+  execFileSync(process.execPath, [path.join(root, 'scripts/build-chinese-search.mjs'), stage], {
+    cwd: root,
+    stdio: 'inherit',
+  });
+  receipt.files.push('public/content/locales/chinese-search.json');
   const books = JSON.parse(
     await fs.readFile(path.join(stage, '.cache/books-receipt.json'), 'utf8'),
   );

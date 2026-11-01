@@ -74,6 +74,7 @@ __pycache__/
 /public/verification-state.json
 /public/verification-state-*.json.gz
 /public/verification-progress.json
+/public/content/locales/chinese-search.json
 logs/
 tmp/
 temp/

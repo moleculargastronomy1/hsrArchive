@@ -44,11 +44,22 @@ class ContentStageTest(unittest.TestCase):
             for language in ['en', 'zh-CN', 'ja']:
                 files[f'public/content/locales/{language}/entry--chapter.json'] = {
                     'schema': 'hsr-localizations.v1', 'entryId': 'entry', 'chapterId': 'chapter',
-                    'language': language, 'referenceCommit': commit, 'rows': [{'id': 'choice'}, {'id': 'reply'}]}
+                    'language': language, 'referenceCommit': commit,
+                    'rows': [{'id': 'choice', 'speaker': '', 'text': '选择'},
+                             {'id': 'reply', 'speaker': '说话人', 'text': '应答'}]}
             for file, value in files.items():
                 write(file, value)
+            chinese_file = 'public/content/locales/chinese-search.json'
+            files[chinese_file] = {'schema': 'hsr-chinese-search.v1', 'language': 'zh-CN',
+                'referenceCommit': commit,
+                'corpusSha256': hashlib.sha256((root / 'public/content/search-index.json').read_bytes()).hexdigest(),
+                'rows': [['choice', '\n选择'], ['reply', '说话人\n应答']]}
+            write(chinese_file, files[chinese_file])
             self.assertEqual(stage.validate(root), {'chapters': 1, 'rows': 2})
             cases = [
+                (chinese_file, lambda value: value.update(corpusSha256='0' * 64)),
+                (chinese_file, lambda value: value['rows'][0].__setitem__(1, '틀린 중문')),
+                (chinese_file, lambda value: value['rows'].reverse()),
                 ('public/content/search-index.json', lambda value: value['rows'][0].update(text='변경')),
                 ('public/content/search-index.json', lambda value: value['rows'].reverse()),
                 ('public/content/search-index.json', lambda value: value['rows'][0].update(bwikiStatus='review')),

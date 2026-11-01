@@ -141,6 +141,7 @@ jobs:
       - name: Validate final content contracts
         if: steps.publication.outputs.publish == 'true'
         run: |
+          node scripts/build-chinese-search.mjs
           node scripts/source-first-publication.mjs --seal
           python scripts/validate-content-stage.py .
       - name: Test archive behavior

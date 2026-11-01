@@ -7,6 +7,7 @@ export function useSearchText(
   offset: number,
   limit: number,
   filter?: OtherTextFilter,
+  chinese = false,
 ) {
   const worker = useRef<Worker | undefined>(undefined);
   const sequence = useRef(0);
@@ -21,6 +22,8 @@ export function useSearchText(
     commit?: string;
     error?: string;
     filter?: OtherTextFilter;
+    chinese: boolean;
+    chineseError?: string;
   }>();
   useEffect(
     () => () => {
@@ -30,7 +33,13 @@ export function useSearchText(
     [],
   );
   useEffect(() => {
-    if (!enabled) return;
+    if (!enabled) {
+      if (!chinese) {
+        worker.current?.terminate();
+        worker.current = undefined;
+      }
+      return;
+    }
     const token = ++sequence.current;
     try {
       worker.current ??= new Worker(new URL('../lib/search-text.worker.ts', import.meta.url), {
@@ -49,6 +58,8 @@ export function useSearchText(
             commit: data.commit,
             error: data.error,
             filter,
+            chinese,
+            chineseError: data.chineseError,
           });
       };
       current.onerror = () => {
@@ -61,6 +72,7 @@ export function useSearchText(
             rows: [],
             error: '기타 텍스트 검색을 시작하지 못했습니다.',
             filter,
+            chinese,
           });
         current.terminate();
         worker.current = undefined;
@@ -72,6 +84,7 @@ export function useSearchText(
         offset,
         limit,
         filter,
+        chinese,
       });
     } catch {
       setResult({
@@ -82,13 +95,15 @@ export function useSearchText(
         rows: [],
         error: '기타 텍스트 검색을 시작하지 못했습니다.',
         filter,
+        chinese,
       });
     }
     return () => {
       sequence.current++;
     };
-  }, [enabled, query, offset, limit, filter, retry]);
-  const sameQuery = enabled && result?.query === query && result.filter === filter;
+  }, [enabled, query, offset, limit, filter, chinese, retry]);
+  const sameQuery =
+    enabled && result?.query === query && result.filter === filter && result.chinese === chinese;
   const ready = sameQuery && result.offset === offset && result.limit === limit;
   return {
     count: sameQuery ? result.count : 0,
@@ -97,6 +112,7 @@ export function useSearchText(
     commit: sameQuery ? result.commit : undefined,
     loading: enabled && !ready,
     error: sameQuery ? result.error : undefined,
+    chineseError: sameQuery ? result.chineseError : undefined,
     retry: () => {
       setResult(undefined);
       setRetry((value) => value + 1);

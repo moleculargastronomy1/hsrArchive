@@ -141,7 +141,12 @@ export function parseSearchPart(
   return data.rows;
 }
 
-export function textMatches(row: SearchText, terms: string[], sources: SearchTextSource[] = []) {
+export function textMatches(
+  row: SearchText,
+  terms: string[],
+  sources: SearchTextSource[] = [],
+  chinese = '',
+) {
   const text = (
     searchableGameText(row[1]) +
     ' ' +
@@ -149,10 +154,10 @@ export function textMatches(row: SearchText, terms: string[], sources: SearchTex
     ' ' +
     (row[4] ?? '') +
     ' ' +
+    searchableGameText(chinese) +
+    ' ' +
     row[2]
-      .map((id) =>
-        sources[id] ? `${sources[id].kind} ${sources[id].label} ${sources[id].pageTitle}` : '',
-      )
+      .map((id) => (sources[id] ? `${sources[id].kind} ${searchSourceLabel(sources[id])}` : ''))
       .join(' ')
   ).toLocaleLowerCase();
   return terms.every((term) => text.includes(term) || row[0].includes(term));

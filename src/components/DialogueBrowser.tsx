@@ -35,6 +35,8 @@ import VideoVerificationNote from './VideoVerificationNote';
 import SourceDetails from './SourceDetails';
 import SearchTextResults from './SearchTextResults';
 import { useSearchText } from '../hooks/useSearchText';
+import { useChineseSearch } from '../hooks/useChineseSearch';
+import { chineseSearchEnabled, matchesBilingualTerms } from '../lib/chinese-search';
 import { searchTextWindow, otherTextCategories, type OtherTextFilter } from '../lib/search-text';
 import { searchableGameText } from '../lib/game-text';
 import {
@@ -48,6 +50,7 @@ import {
 
 interface DialogueDocument {
   rows: DialogueRow[];
+  sha256?: string;
   wikiReading?: WikiReading;
   executionReading?: ExecutionReading;
 }
@@ -66,11 +69,13 @@ async function loadDialogueDocument(
   const response = await fetch(`${import.meta.env.BASE_URL}${file}`, { signal });
   if (!response.ok) throw new Error(`본문을 불러오지 못했습니다 (${response.status}).`);
   const bytes = await response.arrayBuffer();
-  if (expectedHash) {
-    const actual = Array.from(new Uint8Array(await crypto.subtle.digest('SHA-256', bytes)))
+  let actual: string | undefined;
+  if (expectedHash || file === 'content/search-index.json') {
+    actual = Array.from(new Uint8Array(await crypto.subtle.digest('SHA-256', bytes)))
       .map((byte) => byte.toString(16).padStart(2, '0'))
       .join('');
-    if (actual !== expectedHash) throw Error('본문이 갱신되었습니다. 목록에서 다시 열어 주세요.');
+    if (expectedHash && actual !== expectedHash)
+      throw Error('본문이 갱신되었습니다. 목록에서 다시 열어 주세요.');
   }
   const data = JSON.parse(new TextDecoder().decode(bytes));
   if (data.schema !== 'hsr-dialogue.v1' || !isDialogueRows(data.rows))
@@ -79,7 +84,7 @@ async function loadDialogueDocument(
     throw new Error('출현 위치의 자료 형식을 확인해 주세요.');
   if (data.executionReading !== undefined && !isExecutionReading(data.executionReading, data.rows))
     throw new Error('대사 연결의 자료 형식을 확인해 주세요.');
-  return data;
+  return { ...data, sha256: actual };
 }
 
 export default function DialogueBrowser({
@@ -120,6 +125,7 @@ export default function DialogueBrowser({
   const [storedLanguages, setLanguages] = useComparisonLanguages();
   const languages = controlledLanguages ?? storedLanguages;
   const [canonicalRows, setRows] = useState<DialogueRow[]>([]);
+  const [corpusHash, setCorpusHash] = useState<string>();
   const [reading, setReading] = useState<WikiReading>();
   const [execution, setExecution] = useState<ExecutionReading>();
   const rows = useMemo(
@@ -175,6 +181,7 @@ export default function DialogueBrowser({
     setLoading(true);
     setError('');
     setRows([]);
+    setCorpusHash(undefined);
     setReading(undefined);
     setExecution(undefined);
     setMatches([]);
@@ -187,6 +194,7 @@ export default function DialogueBrowser({
       .then((data) => {
         if (!controller.signal.aborted) {
           setRows(data.rows);
+          setCorpusHash(data.sha256);
           setReading(data.wikiReading);
           setExecution(data.executionReading);
           setLoading(false);
@@ -207,9 +215,11 @@ export default function DialogueBrowser({
       ),
     [rows],
   );
+  const searchChinese = global && chineseSearchEnabled(languages, query);
+  const chinese = useChineseSearch(searchChinese && !onlyOther, query, corpusHash);
   useEffect(() => {
     const token = ++version.current;
-    if (loading) return;
+    if (loading || chinese.loading) return;
     const terms = query.toLocaleLowerCase().trim().split(/\s+/).filter(Boolean);
     setSearching(true);
     const timer = setTimeout(async () => {
@@ -219,7 +229,7 @@ export default function DialogueBrowser({
         for (let index = start; index < Math.min(start + 2000, rows.length); index++) {
           if (
             (scope === 'all' || entries.get(rows[index].entryId)?.category === scope) &&
-            terms.every((term) => searchIndex[index].includes(term))
+            matchesBilingualTerms(searchIndex[index], terms, chinese.matches.get(rows[index].id))
           )
             result.push(index);
         }
@@ -255,7 +265,18 @@ export default function DialogueBrowser({
       clearTimeout(timer);
       version.current++;
     };
-  }, [rows, query, scope, searchIndex, entries, loading, targetRowId, targetOccurrenceId]);
+  }, [
+    rows,
+    query,
+    scope,
+    searchIndex,
+    entries,
+    loading,
+    targetRowId,
+    targetOccurrenceId,
+    chinese.loading,
+    chinese.matches,
+  ]);
   useEffect(() => {
     if (!loading && !searching && !error && !restorePage.current) onReady?.();
   }, [loading, searching, error, onReady]);
@@ -284,9 +305,10 @@ export default function DialogueBrowser({
     extraWindow.offset,
     extraWindow.limit,
     onlyOther ? otherKind : undefined,
+    searchChinese,
   );
   const totalMatches = matches.length + extra.count;
-  const busy = searching || extra.loading;
+  const busy = searching || extra.loading || chinese.loading;
   const totalPages = Math.max(1, Math.ceil(totalMatches / pageSize));
   useEffect(() => {
     if (!loading && !busy && page > totalPages) setPage(totalPages);
@@ -467,7 +489,9 @@ export default function DialogueBrowser({
           aria-label={global ? '원문 검색어' : '이 장에서 검색'}
           placeholder={
             global
-              ? '임무명, 서적명, 화자, 전체 원문을 검색해 보세요'
+              ? languages.includes('zh-CN')
+                ? '임무명, 화자, 한국어·중국어 원문 검색'
+                : '임무명, 서적명, 화자, 전체 원문을 검색해 보세요'
               : '이 장에서 화자나 대사 검색'
           }
           value={draft}
@@ -559,6 +583,20 @@ export default function DialogueBrowser({
               </button>
             </div>
           )}
+          {(chinese.error || extra.chineseError) && (
+            <div className="dialogue-status" role="alert">
+              <p>{chinese.error ?? extra.chineseError} 한국어 검색 결과는 계속 표시합니다.</p>
+              <button
+                className="button secondary"
+                onClick={() => {
+                  chinese.retry();
+                  extra.retry();
+                }}
+              >
+                중국어 검색 다시 시도
+              </button>
+            </div>
+          )}
           {!busy && !totalMatches ? (
             <div className="dialogue-status">
               <p>
@@ -621,6 +659,7 @@ export default function DialogueBrowser({
                             key={language}
                             row={row}
                             language={language}
+                            query={query}
                             {...translations}
                           />
                         ))}
@@ -795,6 +834,7 @@ export default function DialogueBrowser({
                     key={language}
                     row={row}
                     language={language}
+                    query={query}
                     {...translations}
                   />
                 ))}

@@ -81,11 +81,13 @@ export function LocalizedPassage({
   language,
   states,
   retry,
+  query,
 }: {
   row: DialogueRow;
   language: ComparisonLanguage;
   states: Record<string, LocalizationState>;
   retry: () => void;
+  query?: string;
 }) {
   const state = states[localizationKey(row, language)];
   const localized = state?.status === 'ready' ? state.rows.get(row.id) : undefined;
@@ -115,7 +117,7 @@ export function LocalizedPassage({
           {localized.speaker && row.type !== 'choice' && <strong>{localized.speaker}</strong>}
           {row.type === 'choice' && <strong lang="ko">선택지</strong>}
           <p>
-            <GameText text={localized.text} />
+            <GameText text={localized.text} query={query} />
           </p>
         </>
       )}

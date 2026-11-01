@@ -65,7 +65,8 @@ def validate(root):
                     if key in specs and specs[key] != chapter['content']:
                         raise ValueError('Conflicting content descriptors: ' + key)
                     specs[key] = chapter['content']
-    rows, orders = {}, []
+    rows, orders, chinese_rows = {}, [], {}
+    chinese_path = root / 'public/content/locales/chinese-search.json'
     expected_files = {item['file'] for item in specs.values()}
     actual_files = {'content/' + path.name for path in (root / 'public/content').glob('*.json')
                     if path.name != 'search-index.json'}
@@ -141,7 +142,17 @@ def validate(root):
                     localized['referenceCommit'] != commit or len(set(identities)) != len(identities) or
                     not set(identities) <= by_id.keys()):
                 raise ValueError('Invalid final localization: ' + file)
+            if language == 'zh-CN' and chinese_path.exists():
+                chinese_rows.update({row['id']: row['speaker'] + '\n' + row['text'] for row in localized['rows']})
     search = read('public/content/search-index.json')
+    if chinese_path.exists():
+        chinese = json.loads(chinese_path.read_bytes())
+        expected_chinese = [[row['id'], chinese_rows[row['id']]] for row in search['rows'] if row['id'] in chinese_rows]
+        if (chinese.get('schema') != 'hsr-chinese-search.v1' or chinese.get('language') != 'zh-CN' or
+                chinese.get('referenceCommit') != commit or
+                chinese.get('corpusSha256') != hashlib.sha256((root / 'public/content/search-index.json').read_bytes()).hexdigest() or
+                chinese.get('rows') != expected_chinese):
+            raise ValueError('Chinese search must preserve exact comparison IDs/text and the final Korean corpus hash')
     search_ids = [row['id'] for row in search['rows']]
     if len(set(search_ids)) != len(search_ids) or set(search_ids) != rows.keys() or update['rows'] != len(rows):
         raise ValueError('Final search identity/count mismatch')
