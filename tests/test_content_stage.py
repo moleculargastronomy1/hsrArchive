@@ -4,6 +4,10 @@ import importlib.util
 import json
 import tempfile
 import unittest
+import shutil
+import subprocess
+import os
+import sys
 from pathlib import Path
 
 spec = importlib.util.spec_from_file_location('stage', Path(__file__).resolve().parents[1] / 'scripts/validate-content-stage.py')
@@ -33,8 +37,8 @@ class ContentStageTest(unittest.TestCase):
                            {'source': hashlib.sha256(row['source'].encode()).hexdigest()[:16]} for row in rows]
             files = {'src/data/imported-content.json': metadata, 'public/content/entry--chapter.json': payload,
                      'public/content-update.json': {'commit': commit, 'rows': 2},
-                     'public/content/search-index.json': {'rows': search_rows},
-                     'public/content/locales/manifest.json': {'commit': commit}}
+                     'public/content/search-index.json': {'schema': 'hsr-dialogue.v1', 'textReferenceCommit': commit, 'rows': search_rows},
+                     'public/content/locales/manifest.json': {'schema': 'hsr-localization-manifest.v1', 'commit': commit}}
             for name in ['codex', 'simulation', 'books', 'trailblaze']:
                 files['src/data/' + name + '.json'] = []
             files['src/data/trailblaze.json'] = [{'id': 'entry', 'chapters': [
@@ -79,6 +83,48 @@ class ContentStageTest(unittest.TestCase):
                     stage.validate(root)
                 self.assertTrue(all(path.read_bytes() == raw for path, raw in before.items()))
                 write(file, files[file])
+
+            # Reproduce a retry: restore an old index, update the canonical text
+            # and comparisons, and publish a receipt that omits the new index.
+            published = root / 'published'
+            (published / 'scripts').mkdir(parents=True)
+            repository = Path(__file__).resolve().parents[1]
+            for script in (repository / 'scripts').glob('*.py'):
+                shutil.copy2(script, published / 'scripts' / script.name)
+            for file in files:
+                target = published / file
+                target.parent.mkdir(parents=True, exist_ok=True)
+                shutil.copy2(root / file, target)
+            payload['rows'][0]['text'] = '갱신된 선택'
+            search_rows[0]['text'] = '갱신된 선택'
+            chinese_locale = files['public/content/locales/zh-CN/entry--chapter.json']
+            chinese_locale['rows'][0]['text'] = '更新后的选择'
+            write('public/content/entry--chapter.json', payload)
+            write('public/content/search-index.json', files['public/content/search-index.json'])
+            write('public/content/locales/zh-CN/entry--chapter.json', chinese_locale)
+            with self.assertRaisesRegex(ValueError, 'Chinese search must preserve'):
+                stage.validate(root)
+            receipt = [file for file in files if file != chinese_file]
+            command = ['node', '--input-type=module', '-e',
+                'import {publishContentStage} from ' + json.dumps((repository / 'scripts/content-publication.mjs').as_uri()) +
+                '; await publishContentStage(process.argv[1], process.argv[2], JSON.parse(process.argv[3]));',
+                str(published), str(root), json.dumps(receipt)]
+            environment = dict(os.environ, HSR_PYTHON=sys.executable)
+            result = subprocess.run(command, capture_output=True, text=True, encoding='utf-8', env=environment)
+            self.assertEqual(result.returncode, 0, result.stderr)
+            self.assertEqual(stage.validate(published), {'chapters': 1, 'rows': 2})
+            rebuilt = json.loads((published / chinese_file).read_bytes())
+            self.assertEqual(rebuilt['rows'], [['choice', '\n更新后的选择'], ['reply', '说话人\n应答']])
+            self.assertNotEqual(rebuilt['corpusSha256'], files[chinese_file]['corpusSha256'])
+            self.assertEqual([row[0] for row in rebuilt['rows']], ['choice', 'reply'])
+
+            # A real content-contract failure must still leave the live view intact.
+            payload['rows'][0]['bwikiNextIds'] = ['missing']
+            write('public/content/entry--chapter.json', payload)
+            before = {file: (published / file).read_bytes() for file in files}
+            result = subprocess.run(command, capture_output=True, text=True, encoding='utf-8', env=environment)
+            self.assertNotEqual(result.returncode, 0)
+            self.assertTrue(all((published / file).read_bytes() == data for file, data in before.items()))
 
 
 if __name__ == '__main__':

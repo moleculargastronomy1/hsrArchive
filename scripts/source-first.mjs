@@ -6,7 +6,8 @@ import { stateFiles } from './verification-state.mjs';
 import { fetchBwiki } from './fetch-bwiki.mjs';
 import { readRetry, saveRetry, algorithmHash } from './verification-retry.mjs';
 import { pythonRunner } from './content-process.mjs';
-import { publishContentStage } from './content-publication.mjs';
+import { publishContentStage, validateContentStage } from './content-publication.mjs';
+import { chineseSearchFile } from './build-chinese-search.mjs';
 import { retainUnavailableWikiPositions } from './wiki-reading-recovery.mjs';
 import {
   verificationRows,
@@ -374,7 +375,8 @@ async function main() {
     compareVerification(before, await verificationRows(stage)),
     'Source-first partial application',
   );
-  run('validate-content-stage.py', [stage]);
+  await validateContentStage(codeRoot, stage);
+  receipt.files.push(chineseSearchFile);
   await write(path.join(work, 'validated-stage.json'), {
     status: 'passed',
     files: [...new Set(receipt.files)],
