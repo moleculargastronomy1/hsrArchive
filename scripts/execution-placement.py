@@ -22,6 +22,26 @@ def canonical(row):
     return {k: row.get(k) for k in ['id', 'talkId', 'textHash', 'missionId', 'type', 'speaker', 'text', 'source']}
 
 
+def retain_before_text_refresh(payload):
+    """Pin the old proof's originals before projecting another release's text.
+
+    This is historical evidence, never an execution audit of the new release.
+    Validate the original binding before creating it; do not re-sign old proofs.
+    """
+    reading = payload.get('executionReading')
+    if not reading:
+        return
+    if reading.get('displayOrderPolicy') != 'bwiki-only' or reading.get('placements'):
+        raise ValueError('Legacy execution display must be migrated before preserving evidence')
+    validate(reading, payload['rows'], payload.get('textReferenceCommit', payload['referenceCommit']),
+             payload.get('wikiReading'))
+    if 'retainedCanonicalRows' not in reading:
+        referenced = {p['rowId'] for p in reading['occurrences']}
+        referenced.update(a['rowId'] for a in reading.get('additions', []))
+        reading['retainedCanonicalRows'] = {r['id']: canonical(r) for r in payload['rows'] if r['id'] in referenced}
+    reading['verificationMode'] = 'retained-no-order-audit'
+
+
 def invocation_index(documents, tables):
     """Explicit sub-mission dependencies and performance-table calls, not ID prefixes."""
     performances = defaultdict(set)
@@ -365,6 +385,18 @@ def validate(reading, rows, commit, wiki=None):
     require(all(re.fullmatch('[a-f0-9]{64}', reading.get(k, '')) for k in ['codeHash', 'policyHash']), 'code/policy version')
     require(reading.get('canonicalRowsHash') == digest([canonical(r) for r in rows]), 'canonical checksum')
     require(reading.get('wikiReadingHash') == digest(wiki or {}), 'wiki layout version')
+    originals = reading.get('retainedCanonicalRows')
+    if originals is not None:
+        require(retained and isinstance(originals, dict), 'historical evidence mode')
+        referenced = {p['rowId'] for p in reading['occurrences']}
+        referenced.update(a['rowId'] for a in reading.get('additions', []))
+        require(set(originals) == referenced, 'historical row partition')
+        for identity, original in originals.items():
+            row = by_id.get(identity)
+            require(row is not None and original == canonical(original) and original['id'] == identity,
+                    'historical row reference')
+            require(all(original[k] == canonical(row)[k] for k in original if k not in ['text', 'speaker']),
+                    'historical row identity')
     wiki_ids = {p['id'] for p in (wiki or {}).get('occurrences', [])}
     wiki_unplaced = {r for g in (wiki or {}).get('unplaced', []) for r in g['rowIds']}
     nodes = {p['id']: p for p in reading['occurrences']}
@@ -379,7 +411,8 @@ def validate(reading, rows, commit, wiki=None):
                 bool(re.fullmatch('[a-f0-9]{64}', proof.get('sha256', ''))), 'input hashes')
         require(p['missionId'] == 'quest-' + str(proof['missionId']) and
                 (row.get('missionEvidence') == 'bwiki' or row.get('missionId') == p['missionId']), 'mission ownership')
-        require(p['evidenceHash'] == digest([canonical(row), proof['sha256'], p['pointer']]), 'proof checksum')
+        original = originals[p['rowId']] if originals is not None else canonical(row)
+        require(p['evidenceHash'] == digest([original, proof['sha256'], p['pointer']]), 'proof checksum')
         for target in p['nextIds'] + p['replyToIds']:
             q = nodes.get(target)
             require(q is not None and q['source'] == p['source'] and q['phase'] == p['phase'] and
@@ -392,8 +425,9 @@ def validate(reading, rows, commit, wiki=None):
         proof, content = addition['proof'], addition['content']
         require(row is not None and row.get('talkId') == addition['talkId'] == content['talkId'] and
                 row.get('missionId') == 'quest-' + str(addition['missionId']), 'new original ID/mission')
-        require(row['text'] == content['text'] and row['speaker'] == content['speaker'] and
-                hashlib.sha256(row['text'].encode()).hexdigest() == content['koreanHash'], 'new original text')
+        original = originals[addition['rowId']] if originals is not None else row
+        require(original['text'] == content['text'] and original['speaker'] == content['speaker'] and
+                hashlib.sha256(original['text'].encode()).hexdigest() == content['koreanHash'], 'new original text')
         require(proof.get('invocations') and proof['source'] in reading['sources'] and
                 proof['gitBlob'] == reading['sources'][proof['source']]['gitBlob'], 'new original invocation')
         require(any(p['rowId'] == row['id'] and p['source'] == proof['source'] and p['pointer'] == proof['pointer'] for p in nodes.values()), 'new original typed reference')

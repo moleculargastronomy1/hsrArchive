@@ -1,6 +1,9 @@
 import copy
+import hashlib
 import importlib.util
+import json
 from pathlib import Path
+import tempfile
 import unittest
 from types import SimpleNamespace
 
@@ -14,6 +17,7 @@ def load(name, file):
 flow = load('execution_flow_tests', 'restore-dialogue-flow.py')
 projection = load('execution_projection_tests', 'execution-placement.py')
 source_first = load('execution_source_first_tests', 'source-first.py')
+text_projection = load('execution_text_projection_tests', 'project-upstream-content.py')
 
 
 def talk(*ids, kind='PlayAndWaitSimpleTalk'):
@@ -117,6 +121,70 @@ class ProjectionTests(unittest.TestCase):
         projection.validate(reading, self.rows, 'c')
         bad = copy.deepcopy(reading); bad['occurrences'][0]['rowId'] = '2'
         with self.assertRaises(ValueError): projection.validate(bad, self.rows, 'c')
+
+    def test_release_text_refresh_keeps_historical_execution_proof_without_resigning(self):
+        self.version['commit'] = 'c' * 40
+        reading, _ = projection.build(self.payload, self.record, {'source': self.graph('source')},
+                                      {'1', '2'}, self.version)
+        reading.update(displayOrderPolicy='bwiki-only', legacyDisplayPlacements=reading['placements'], placements=[])
+        first = next(p for p in reading['occurrences'] if p['rowId'] == '1')
+        reading['additions'] = [{'rowId': '1', 'talkId': 1, 'missionId': 1,
+            'content': {'talkId': 1, 'text': self.rows[0]['text'], 'speaker': self.rows[0]['speaker'],
+                        'koreanHash': hashlib.sha256(self.rows[0]['text'].encode()).hexdigest()},
+            'proof': {'source': 'source', 'gitBlob': 'a' * 40, 'pointer': first['pointer'],
+                      'invocations': [{'mainMissionId': 1}]}}]
+        self.payload.update(referenceCommit='c' * 40, executionReading=reading)
+        original_proofs = copy.deepcopy(reading['occurrences'])
+        projection.retain_before_text_refresh(self.payload)
+        originals = copy.deepcopy(reading['retainedCanonicalRows'])
+        parent = Path(__file__).resolve().parents[1] / '.cache/tests'
+        parent.mkdir(parents=True, exist_ok=True)
+        with tempfile.TemporaryDirectory(dir=parent) as folder:
+            root = Path(folder)
+            file = 'content/test.json'
+            cat = {'chapters': [{'file': file}]}
+            args = SimpleNamespace(root=root, work=root / '.cache', apply=True)
+            for commit, text in [('d' * 40, '4.7 새 원문'), ('e' * 40, '다음 버전 원문')]:
+                projection.retain_before_text_refresh(self.payload)
+                self.payload['rows'][0], matched = text_projection.refresh_row(self.payload['rows'][0],
+                    {1: {'TalkSentenceText': {'Hash': 99}, 'TextmapTalkSentenceName': {'Hash': 100}}},
+                    {'99': text, '100': '새 화자'}, {})
+                self.assertTrue(matched)
+                self.payload['textReferenceCommit'] = commit
+                source_first.write(root / 'public' / file, self.payload)
+                source_first.preserve_execution(args, cat, {'commit': commit})
+                self.payload = json.loads((root / 'public' / file).read_bytes())
+                reading = self.payload['executionReading']
+                projection.validate(reading, self.payload['rows'], commit)
+                self.assertEqual(reading['commit'], 'c' * 40)
+                self.assertEqual(reading['occurrences'], original_proofs)
+                self.assertEqual(reading['retainedCanonicalRows'], originals)
+                self.assertEqual(reading['placements'], [])
+                self.assertEqual(self.payload['rows'][0]['text'], text)
+            bad = copy.deepcopy(reading)
+            bad['retainedCanonicalRows']['1']['text'] = '위조 원문'
+            with self.assertRaisesRegex(ValueError, 'proof checksum'):
+                projection.validate(bad, self.payload['rows'], commit)
+            for key, value in [('talkId', 99), ('missionId', 'quest-99'), ('source', 'other'),
+                               ('type', 'choice'), ('textHash', '99')]:
+                rows = copy.deepcopy(self.payload['rows']); rows[0][key] = value
+                bad = copy.deepcopy(reading)
+                bad['canonicalRowsHash'] = projection.digest([projection.canonical(r) for r in rows])
+                with self.subTest(field=key), self.assertRaisesRegex(ValueError, 'historical row identity'):
+                    projection.validate(bad, rows, commit)
+            bad = copy.deepcopy(reading); bad['verificationMode'] = 'current'
+            with self.assertRaises(ValueError): projection.validate(bad, self.payload['rows'], commit)
+
+    def test_corrupt_execution_proof_cannot_be_frozen_before_refresh(self):
+        self.version['commit'] = 'c' * 40
+        reading, _ = projection.build(self.payload, self.record, {'source': self.graph('source')},
+                                      {'1', '2'}, self.version)
+        reading.update(displayOrderPolicy='bwiki-only', placements=[])
+        self.payload.update(referenceCommit='c' * 40, executionReading=reading)
+        reading['occurrences'][0]['evidenceHash'] = '0' * 64
+        with self.assertRaisesRegex(ValueError, 'proof checksum'):
+            projection.retain_before_text_refresh(self.payload)
+        self.assertNotIn('retainedCanonicalRows', reading)
 
     def test_multiple_official_invocations_remain_tentative(self):
         reading, report = projection.build(self.payload, self.record,

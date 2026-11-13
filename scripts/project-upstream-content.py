@@ -1,9 +1,14 @@
 """Refresh only exact TalkSentence/hash joins; preserve established scene order and roles."""
 import hashlib
+import importlib.util
 import json
 import re
 import sys
 from pathlib import Path
+
+_execution_spec = importlib.util.spec_from_file_location('projection_execution', Path(__file__).with_name('execution-placement.py'))
+execution = importlib.util.module_from_spec(_execution_spec)
+_execution_spec.loader.exec_module(execution)
 
 
 def plain(value):
@@ -225,6 +230,7 @@ def project(root, raw, manifest_path):
             continue
         payload = json.loads((root / file).read_bytes())
         validate_payload(payload, entry_id, chapter_id)
+        execution.retain_before_text_refresh(payload)
         if entry_id == 'paradise-records' and chapter_id == 'before-moonrise' and len(payload['rows']) == 1:
             doc = introductions['documents'][0]
             payload['rows'][0]['text'] = doc['sections'][0]['rows'][0]['text']

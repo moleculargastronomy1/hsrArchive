@@ -126,6 +126,21 @@ class ProjectionTest(unittest.TestCase):
                  'text': '연결되지 않은 기존 원문', 'replyToIds': ['row'],
                  'bwikiStatus': 'cached', 'bwikiScene': 'scene'},
             ]
+            execution = projection.execution
+            pointer = '/SimpleTalkList/0'
+            original = execution.canonical(legacy_rows[0])
+            old_execution = {
+                'schema': 'hsr-execution-reading.v1', 'commit': old_commit,
+                'codeHash': 'c' * 64, 'policyHash': 'd' * 64,
+                'displayOrderPolicy': 'bwiki-only', 'placements': [],
+                'canonicalRowsHash': execution.digest([execution.canonical(r) for r in legacy_rows]),
+                'wikiReadingHash': execution.digest({}),
+                'sources': {'proof': {'missionId': 1, 'gitBlob': 'e' * 40, 'sha256': 'f' * 64}},
+                'occurrences': [{'id': 'position', 'rowId': 'row', 'talkId': 123, 'type': 'choice',
+                    'missionId': 'quest-1', 'source': 'proof', 'status': 'confirmed', 'pointer': pointer,
+                    'conditions': [], 'conditionsHash': execution.digest([]), 'nextIds': [], 'replyToIds': [],
+                    'evidenceHash': execution.digest([original, 'f' * 64, pointer])}],
+            }
             new_row = {**self.row, 'id': 'new-row', 'chapterId': 'new', 'text': '새 장의 원문'}
             metadata = {}
             chapters = []
@@ -139,7 +154,8 @@ class ProjectionTest(unittest.TestCase):
                                  'upstreamChapterId': 900, 'blocks': []})
                 write(root if chapter_id == 'chapter' else stage, 'public/' + file, {
                     'schema': 'hsr-dialogue.v1', 'entryId': 'entry', 'chapterId': chapter_id,
-                    'referenceCommit': reference, 'textReferenceCommit': reference, 'rows': rows})
+                    'referenceCommit': reference, 'textReferenceCommit': reference, 'rows': rows,
+                    **({'executionReading': old_execution} if chapter_id == 'chapter' else {})})
             entries = [{'id': 'entry', 'title': '보존된 목차', 'chapters': chapters}]
             for file, value in {
                 'src/data/imported-content.json': metadata, 'src/data/trailblaze.json': entries,
@@ -165,6 +181,10 @@ class ProjectionTest(unittest.TestCase):
             updated_rows = load('public/content/entry--chapter.json')['rows']
             self.assertEqual(updated_rows[0], {**legacy_rows[0], 'text': '갱신된 선택'})
             self.assertEqual(updated_rows[1], legacy_rows[1])
+            retained = load('public/content/entry--chapter.json')['executionReading']
+            self.assertEqual(retained['retainedCanonicalRows'], {'row': original})
+            self.assertEqual(retained['occurrences'], old_execution['occurrences'])
+            self.assertEqual(retained['verificationMode'], 'retained-no-order-audit')
             self.assertEqual(load('public/content/entry--new.json')['rows'], [new_row])
             self.assertEqual(load('public/content-update.json')['retainedTextRows'], 1)
             self.assertIn('src/data/trailblaze.json', load('receipt.json')['files'])
