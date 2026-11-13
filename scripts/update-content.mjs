@@ -214,6 +214,13 @@ if (mode === '--plan') {
       stage,
       path.join(stage, '.cache/dialogue-flow/manifest.json'),
     ]);
+  } else {
+    // The full-release stage starts empty. Preserve the historical execution
+    // provenance even when policy disables a new execution-order audit.
+    await fs.copyFile(
+      path.join(root, 'public/dialogue-flow-provenance.json'),
+      path.join(stage, 'public/dialogue-flow-provenance.json'),
+    );
   }
   discoverBwiki(run, stage, raw, planFile);
   const retryState = await readRetry(root),

@@ -144,6 +144,8 @@ class ProjectionTests(unittest.TestCase):
             file = 'content/test.json'
             cat = {'chapters': [{'file': file}]}
             args = SimpleNamespace(root=root, work=root / '.cache', apply=True)
+            old_flow = {'commit': 'c' * 40, 'sources': {'source': {'gitBlob': 'a' * 40}}}
+            source_first.write(root / 'public/dialogue-flow-provenance.json', old_flow)
             for commit, text in [('d' * 40, '4.7 새 원문'), ('e' * 40, '다음 버전 원문')]:
                 projection.retain_before_text_refresh(self.payload)
                 self.payload['rows'][0], matched = text_projection.refresh_row(self.payload['rows'][0],
@@ -161,6 +163,11 @@ class ProjectionTests(unittest.TestCase):
                 self.assertEqual(reading['retainedCanonicalRows'], originals)
                 self.assertEqual(reading['placements'], [])
                 self.assertEqual(self.payload['rows'][0]['text'], text)
+                flow = json.loads((root / 'public/dialogue-flow-provenance.json').read_bytes())
+                self.assertEqual(flow, {**old_flow, 'commit': commit, 'evidenceCommit': 'c' * 40,
+                                       'verificationMode': 'retained-no-order-audit'})
+                receipt = json.loads((root / 'receipt.json').read_bytes())
+                self.assertIn('public/dialogue-flow-provenance.json', receipt['files'])
             bad = copy.deepcopy(reading)
             bad['retainedCanonicalRows']['1']['text'] = '위조 원문'
             with self.assertRaisesRegex(ValueError, 'proof checksum'):
